@@ -121,7 +121,7 @@ function complete(){
   document.dispatchEvent(new Event("pickleup:personal-plan-updated"));
  }catch(err){setStatus("Không lưu được: "+err.message)}
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("pcInputs"))return;
  for(const skill of keys){
   const row=element("label",undefined,"pc-input-row");
