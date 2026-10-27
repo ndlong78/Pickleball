@@ -205,3 +205,13 @@ Ví dụ: `https://ndlong78.github.io/Pickleball/?page=coach`. Chuyển trang gi
 **Kiểm thử:** `npm run test:unit` gồm `tests/page-catalog.test.js` và `tests/page-router.test.js`; `npm run test:responsive` chạy Playwright 7 trang trên nhiều khung nhìn. Chưa xác nhận thiết bị vật lý iPhone/iPad và toàn bộ pipeline CI đã đạt.
 
 Chi tiết cấu trúc và giới hạn: [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## V3.5 Beta – Tối ưu tốc độ từng trang
+
+Từ V3.5, PickleUp **chỉ tải mã JavaScript của trang bạn đang mở**. Trang Tổng quan sử dụng một module bài tập mẫu; những module của Học viện, HLV nâng cao, Tiến bộ và Thi đấu chỉ được tải ở lần truy cập đầu tiên. Các module chung được tái sử dụng khi chuyển trang, không đặt lại đồng hồ.
+
+Các tối ưu đi kèm: stylesheet báo cáo chuyên sâu được tải theo trang; font web không chặn CSS chính; PWA precache **14 tài nguyên lõi** và cache module trang sau khi đã mở. Bạn có thể kiểm tra các số đo trên chính thiết bị tại **Dữ liệu → Tốc độ tải từng trang**.
+
+**Quan trọng với chế độ offline:** Hãy mở trang cần sử dụng ít nhất một lần khi có Internet để module được lưu vào cache. Không xóa dữ liệu Safari/PWA; các điểm tập và lịch sử cũ giữ nguyên.
+
+Kiểm thử: `npm run test:unit` gồm `page-loader.test.js`, `npm run test:responsive` gồm `page-performance.spec.cjs`. Các kiểm tra browser/thiết bị thật và kết quả tốc độ cần được đo riêng trước khi phát hành ổn định. Chi tiết: [PERFORMANCE.md](PERFORMANCE.md).
