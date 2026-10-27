@@ -31,7 +31,7 @@ button:disabled{cursor:not-allowed}
 body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 .mobile-dock{
  display:grid;position:fixed;z-index:140;
- left:50%;right:auto;bottom:14px;
+ left:50%;right:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));
  transform:translateX(-50%);
  width:min(640px,calc(100% - 32px));
  grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
@@ -47,7 +47,7 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
  color:#e4eee6;text-decoration:none;text-align:center;
  font-size:12px;font-weight:700;line-height:1.2;gap:4px;
 }
-.mobile-dock a[aria-current=location]{background:#305143;color:#c9fa74}
+.mobile-dock a[aria-current=location],.mobile-dock a:hover{background:#305143;color:#c9fa74}
 .mobile-dock a:focus-visible{outline:3px solid #b8ef49;outline-offset:2px}
 .mobile-dock .dock-icon{font-size:22px;line-height:1}
 button[aria-label="Cài ứng dụng PickleUp"]{
@@ -102,8 +102,8 @@ button[aria-label="Cài ứng dụng PickleUp"]{
  .sectionHead{align-items:flex-start}
  .topbar{padding-top:env(safe-area-inset-top,0px)}
  .shell{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
- body{padding-bottom:calc(75px + env(safe-area-inset-bottom,0px))}
- button[aria-label="Cài ứng dụng PickleUp"]{bottom:calc(85px + env(safe-area-inset-bottom,0px))!important;right:max(16px,env(safe-area-inset-right,0px))!important;z-index:135!important}
+ body{padding-bottom:calc(105px + env(safe-area-inset-bottom,0px))}
+ button[aria-label="Cài ứng dụng PickleUp"]{bottom:calc(108px + env(safe-area-inset-bottom,0px))!important;right:max(16px,env(safe-area-inset-right,0px))!important;z-index:135!important}
  .mobile-dock{
   left:0;right:0;bottom:0;transform:none;width:100%;
   border-radius:0;grid-template-columns:repeat(4,minmax(0,1fr));
