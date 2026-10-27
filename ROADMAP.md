@@ -211,3 +211,22 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Chưa có đồng bộ tài khoản hoặc phân tích video. Rating 3.0–4.0 là nhóm giáo án nội bộ, không phải DUPR.
 
 **Đề xuất kế tiếp:** V3.2 nghiệm thu mobile + trải nghiệm thực địa và báo cáo kỹ năng sau trận, sau đó mới mở V4.0.
+
+## V3.2 beta – Tactical Insights và QA thiết bị
+
+**Đã triển khai trong mã nguồn**
+- [x] Tạo báo cáo từ 10 trận gần nhất trong nhật ký V3.0, nhóm lại theo 6 kỹ năng nâng cao.
+- [x] So sánh số lần thực hiện đúng cho cùng mã bài, cùng cấp độ và cùng kiểu kiểm tra từ V2.6/V3.1; hiển thị số mẫu và mức chênh lệch.
+- [x] Chọn cấp độ trong báo cáo và đồng bộ khi đổi cấp độ của HLV nâng cao.
+- [x] Nút người dùng chủ động đưa trọng tâm sau trận vào giáo án; không tự động thay đổi kết quả kiểm tra.
+- [x] Mô hình V3.1 chấp nhận tùy chọn `matchFocus` mà vẫn đọc được các kế hoạch cũ.
+- [x] Mobile-first layout, giữ menu cố định bốn mục; kiểm tra smoke flow Chromium/WebKit cho iPhone/iPad/PC.
+- [x] Cập nhật PWA offline và README. Không thêm máy chủ, không chuyển dữ liệu cá nhân ra ngoài.
+
+**Chưa nghiệm thu**
+- [ ] Chạy thành công toàn bộ CI/Playwright và test PWA trên iPhone/iPad thật.
+- [ ] Kiểm tra tình huống dữ liệu cũ, sửa điểm và sao lưu/khôi phục trên hai thiết bị.
+- [ ] Huấn luyện viên rà soát mapping tình huống trận đấu vào nhóm kỹ năng và thống nhất protocol kiểm tra 20 lần.
+- [ ] Không thể kết luận thay đổi trình độ hoặc nguyên nhân thắng/thua dựa trên dữ liệu hiện có.
+
+**Hướng tiếp theo:** V3.3 thử nghiệm trên sân, dashboard theo điều kiện tập và phân tích tình huống đánh đôi; chỉ tiến tới V4.0 sau nghiệm thu sư phạm.
