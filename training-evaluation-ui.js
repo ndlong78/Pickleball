@@ -40,11 +40,11 @@ function draw(){
  if(!$("evalLevel"))return;
  const controls={feed:"pcAttemptFeed",pace:"pcAttemptPace",target:"pcAttemptTarget"};
  for(const [key,id] of Object.entries(controls)){
-  const select=$(id);if(!select)continue;
+  const select=$(id);if(!select||select.options.length>1)continue;
   for(const [value,label] of Object.entries(ctx.OPTIONS[key])){const option=el("option",label);option.value=value;select.append(option)}
  }
  const field=$("matchDoublesIssue");
- if(field)for(const [key,label] of Object.entries(ctx.DOUBLES)){const option=el("option",label);option.value=key;field.append(option)}
+ if(field&&field.options.length<=1)for(const [key,label] of Object.entries(ctx.DOUBLES)){const option=el("option",label);option.value=key;field.append(option)}
  $("evalLevel").addEventListener("change",draw);
  $("evalRefresh").addEventListener("click",draw);
  document.addEventListener("pickleup:training-log-updated",draw);
