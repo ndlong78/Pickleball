@@ -128,7 +128,7 @@ document.addEventListener("pickleup:plan-selected",event=>{
   $("acCoachComplete").hidden=true;
  }
 });
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("acCoachInputs"))return;
  for(const key of keys){
   const label=node("label",undefined,"pc-input-row");
