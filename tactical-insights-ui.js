@@ -30,7 +30,7 @@ function report(){
    const target=$("acCoachMatchFocus");if(!target)return;
    target.value=info.suggested;
    $("acCoachFocusStatus").textContent="Đã chọn ưu tiên "+coach.names[info.suggested]+". Khi tạo giáo án mới, kỹ năng này được đưa lên đầu theo lựa chọn của bạn; điểm sáu kỹ năng vẫn giữ nguyên.";
-   $("advancedCoach").scrollIntoView({behavior:"smooth",block:"start"});
+   window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("advancedCoach").scrollIntoView({behavior:"smooth",block:"start"});
   });
   recommendation.append(btn);
  }else recommendation.append(e("p","Chưa có trọng tâm sau trận để đề xuất. Hãy ghi nhận trận đấu trước."));
