@@ -1,29 +1,45 @@
-/* PickleUp mobile navigation — iOS-safe focus and active section behavior. */
+/* PickleUp: persistent navigation on phone, tablet and desktop. */
 (function(){
 "use strict";
 function init(){
  const dock=document.getElementById("pickleupMobileDock");
  if(!dock)return;
  const links=Array.from(dock.querySelectorAll('a[href^="#"]'));
- function mark(id){for(const a of links){if(a.getAttribute("href")==="#"+id)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")}}
- function updateFromHash(){const hash=decodeURIComponent(location.hash.slice(1));if(hash&&links.some(a=>a.hash==="#"+hash))mark(hash)}
+ const targets=links.map(link=>({link,id:link.getAttribute("href").slice(1),section:document.getElementById(link.getAttribute("href").slice(1))})).filter(x=>x.section);
+ if(!targets.length)return;
+ let lastId="";
+ function mark(id){
+  if(lastId===id)return;
+  lastId=id;
+  for(const {link,id:target} of targets){
+   if(id===target)link.setAttribute("aria-current","location");
+   else link.removeAttribute("aria-current");
+  }
+ }
+ function activeByScroll(){
+  // Last visible milestone in document order; this works even in the long dashboard area.
+  const threshold=Math.min(200,Math.max(90,window.innerHeight*0.33));
+  let selected=targets[0].id;
+  for(const item of targets){
+   if(item.section.getBoundingClientRect().top<=threshold)selected=item.id;
+  }
+  mark(selected);
+ }
+ let queued=false;
+ function onScroll(){
+  if(queued)return;
+  queued=true;
+  requestAnimationFrame(()=>{queued=false;activeByScroll()});
+ }
  dock.addEventListener("click",event=>{
-  const a=event.target.closest('a[href^="#"]');if(a)mark(a.hash.slice(1))
+  const anchor=event.target.closest('a[href^="#"]');
+  if(anchor)mark(anchor.getAttribute("href").slice(1));
  });
- window.addEventListener("hashchange",updateFromHash);
- updateFromHash();
- if(!location.hash)mark("personalCoach");
- const selectors='input:not([type=checkbox]):not([type=range]), textarea, select, [contenteditable="true"]';
- document.addEventListener("focusin",event=>{
-  if(event.target.closest?.(selectors))document.body.classList.add("mobile-keyboard-open");
- });
- document.addEventListener("focusout",()=>{
-  // Allow iOS Safari to move focus to another form field before restoring dock.
-  setTimeout(()=>{
-   const focused=document.activeElement;
-   if(!focused||!focused.matches?.(selectors))document.body.classList.remove("mobile-keyboard-open");
-  },120);
- });
+ window.addEventListener("scroll",onScroll,{passive:true});
+ window.addEventListener("resize",onScroll,{passive:true});
+ window.addEventListener("hashchange",onScroll);
+ // Initial position is often restored by Safari after reload.
+ requestAnimationFrame(activeByScroll);
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
 else init();
