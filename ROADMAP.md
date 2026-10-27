@@ -17,7 +17,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.1 beta | 36 bài với cách triển khai theo kỹ năng, vùng mục tiêu, kỹ thuật và sơ đồ sân minh họa | Đã đưa mã nguồn; cần kiểm thử thực địa |
 | V2.2 beta | Dashboard 6 kỹ năng, tỷ lệ hoàn thành, kết quả từng tuần và ưu tiên luyện tập | Đã đưa mã nguồn; cần kiểm thử giao diện |
 | V2.3 beta | Kiểm tra 6 kỹ năng, lưu lịch sử, đánh giá chuyển nhóm giáo án nội bộ | Đã đưa mã nguồn; cần kiểm thử và hiệu chỉnh ngưỡng |
-| V2.4 | Giáo án thích ứng dựa trên điểm yếu | Chưa làm |
+| V2.4 beta | Tạo giáo án cá nhân từ 6 điểm, 24 drill, ưu tiên 3 kỹ năng, lịch sử và đo tiến bộ | Mã nguồn đã triển khai; cần kiểm thử trên thiết bị |
 | V3.0 | 3.0–4.0: chiến thuật, reset, third shot, nhật ký trận | Kế hoạch |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
@@ -69,3 +69,24 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Huấn luyện viên xác định bài kiểm tra tiêu chuẩn riêng cho từng kỹ năng.
 - [ ] Hiệu chỉnh ngưỡng 11/14/16 bằng dữ liệu thực tế, không dùng làm chứng nhận rating.
 - [ ] Kiểm thử end-to-end trình duyệt và thiết bị.
+
+## V2.4 – Personalized Training Engine (beta)
+
+**Đã triển khai**
+- [x] Nạp sáu điểm từ kiểm tra V2.3 gần nhất; nếu chưa có thì lấy bài học Học viện V2 và cho nhập/sửa thủ công.
+- [x] Chọn ba kỹ năng có điểm thấp nhất; xử lý trường hợp bằng điểm một cách nhất quán.
+- [x] 24 bài tập cụ thể chia sáu kỹ năng, bốn bài mỗi kỹ năng; xoay vòng để tránh lặp ngay khi tạo kế hoạch mới.
+- [x] Lập buổi 60 phút gồm khởi động 10, ba bài 12/12/15, kiểm tra 6 và thả lỏng 5 phút.
+- [x] Lưu kế hoạch, nguồn điểm đầu vào, kết quả sau buổi tập và chênh lệch điểm ưu tiên.
+- [x] Dùng kết quả sau buổi tập cập nhật đầu vào của giáo án tiếp theo; không ghi đè kết quả bài kiểm tra V2.3.
+- [x] Sao lưu và khôi phục kế hoạch tương thích định dạng JSON cũ; phiên bản PWA cache mới.
+- [x] Bộ test thuần Node tại `tests/personalized-core.test.js`.
+
+**Cần hoàn thiện trước khi phát hành ổn định**
+- [ ] Chạy `node --test tests/personalized-core.test.js` và kiểm tra UI trên iPhone Safari, Android Chrome, máy tính, cả online/offline.
+- [ ] Kiểm thử nhập điểm sai, lưu đầy bộ nhớ, hai thiết bị khác nhau và sao lưu/khôi phục.
+- [ ] Huấn luyện viên rà soát độ phù hợp và điều chỉnh mục tiêu theo độ khó drill.
+- [ ] Lưu dữ liệu chi tiết nhiều lần tập của một bài thay vì chỉ điểm tổng kết.
+- [ ] Đồng bộ chọn bài tập với mô-đun đếm giờ và hướng dẫn hình sân, hiện bài được hiển thị dạng giáo án văn bản.
+
+**Nguyên tắc:** Giáo án được chọn bởi bộ quy tắc xác định, chưa sử dụng mô hình AI. Không suy ra cấp độ DUPR, không tự chuyển rating và không đảm bảo đạt 5.0 theo số tuần.
