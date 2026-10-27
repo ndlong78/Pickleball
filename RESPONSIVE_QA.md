@@ -52,3 +52,12 @@ Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác 
 - [x] Luồng kiểm tra: lưu trận → thấy gợi ý → người tập chạm áp dụng → tạo giáo án → xác nhận điểm kiểm tra giữ nguyên → thanh menu vẫn hiển thị và không tràn ngang.
 - [ ] Xác minh kết quả test Chromium/WebKit trong GitHub Actions.
 - [ ] Kiểm tra thật trên iOS Safari/PWA (bàn phím số, nút đề xuất, xoay màn hình, cache mới).
+
+## V3.3 – Thử nhập điều kiện và nhật ký đánh đôi
+
+- [x] Thêm smoke test iPhone 390px, iPad dọc 820px, iPad ngang 1180px và PC 1440px tại `tests/evaluation-responsive.spec.cjs`.
+- [x] Kiểm tra form chưa đủ điều kiện không lưu nhầm; hai lần đủ và trùng điều kiện báo chênh lệch +5/20.
+- [x] Kiểm tra ghi tình huống đánh đôi và menu cố định còn xuất hiện.
+- [ ] Chạy pipeline WebKit/Chromium và sửa mọi lỗi nếu có.
+- [ ] Kiểm tra riêng iPhone SE 320px khi bàn phím nhập liệu mở; iPad xoay ngang/dọc; offline sau cập nhật service worker.
+- [ ] Chụp/đánh giá thủ công tiêu chí không cuộn ngang, không bị menu che nút.
