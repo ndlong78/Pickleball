@@ -122,3 +122,20 @@ Thanh menu bốn mục **🎯 HLV cá nhân · ⏱ Trên sân · 📈 Tiến b�
 - Dùng `responsive.css` và `mobile-ui.js`, PWA cache đổi sang `pickleup-shell-v2-6-universal-menu`.
 
 Kiểm tra: `npm run test:responsive` thực hiện smoke test cho iPhone/iPad và thêm PC 1440px; kiểm tra menu luôn cố định, điều hướng tới cả bốn mục và thao tác lưu kết quả. Đây là kiểm thử trình duyệt mô phỏng, chưa thay cho thử trực tiếp trên thiết bị của người dùng.
+
+## V3.0 beta – Học viện chiến thuật 3.0–4.0
+
+Trong mục **📚 Giáo án** ở menu cố định, chọn cấp độ **3.0–3.5** hoặc **3.5–4.0** và chọn tuần 37–80. Giáo án 60 phút gồm khởi động 10, ba bài tập 12/12/15, kiểm tra 6, thả lỏng 5 phút.
+
+Thư viện V3 gồm **44 bài nâng cao** và giữ nguyên 36 bài V2 (tổng 80). Nội dung chuyên sâu tập trung vào third-shot drop, drop/drive, reset, transition zone, phản công ở kitchen, quyết định chiến thuật và phối hợp đánh đôi. Sơ đồ là **minh họa tình huống**, không phải bản vẽ điểm rơi chính xác.
+
+Ngay sau Học viện là:
+- **Kiểm tra kỹ năng nâng cao**: sáu mục (third shot, reset, di chuyển, counter, đánh đôi, ra quyết định), mỗi mục nhập số lần đạt 0–20. Các ngưỡng là nội bộ, **không chứng nhận 3.5, 4.0 hoặc DUPR**.
+- **Nhật ký trận đấu**: nhập tỷ số một trận đánh đơn/đôi, trọng tâm cần cải thiện và ghi chú ngắn; không cần tên đối thủ.
+- **Dashboard tiến bộ**: lọc theo từng cấp độ; thống kê tiến độ trên tổng 80 giáo án hoặc riêng nhóm đã chọn.
+
+Dữ liệu mới lưu tại `pickleup_advanced_checks_v3` và `pickleup_match_journal_v3`. Bản **Tải bản sao lưu đầy đủ** gồm dữ liệu V2 và V3, file khôi phục cũ vẫn được chấp nhận. Dữ liệu không tự đồng bộ các thiết bị.
+
+**Giới hạn beta**: Học viện có 3.0–4.0, nhưng Personal Coach tự tạo giáo án và đồng hồ riêng vẫn chỉ hỗ trợ 1.0–3.0. Các bài cần huấn luyện viên rà soát trước khi công bố chính thức.
+
+Kiểm thử nội dung: `npm run test:unit` (gồm `tests/advanced-curriculum.test.js`), kiểm tra giao diện `npm run test:responsive`. Tài liệu chính: [ROADMAP.md](ROADMAP.md).
