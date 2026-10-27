@@ -1,0 +1,201 @@
+/* PickleUp 2.6.1 — responsive refinements for iPhone and iPad.
+   Loaded last to override legacy inline CSS without changing data modules. */
+:root{--touch:44px}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:20px}
+body{min-width:0;overflow-x:clip}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video,canvas{max-width:100%;height:auto}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button,a,select,input[type=checkbox]{touch-action:manipulation}
+button:disabled{cursor:not-allowed}
+.shell,main,.section,.card,article,.pc-panel,.pc-run-card,.db-panel,.th-panel,
+.mainGrid,.pc-grid,.pc-run-layout,.db-grid,.timeline,.side{min-width:0;max-width:100%}
+.mainGrid>*,.pc-grid>*,.pc-run-layout>*,.db-grid>*,.herogrid>*{min-width:0}
+.sectionHead>*,.nav>*,.record>*,.th-row>*,.pc-input-row>*{min-width:0}
+.sectionHead{flex-wrap:wrap;align-items:center}
+.sectionHead h2{overflow-wrap:anywhere;line-height:1.22}
+.sub,.goal,.hint,.pc-muted,.pc-drill,.pc-run-guide,.th-insight,.th-row span,
+.record,.week strong,.level p{overflow-wrap:anywhere}
+.db-trend-scroll,.th-bars,.pc-history,.historyList{-webkit-overflow-scrolling:touch}
+.db-trend-scroll,.th-bars{max-width:100%;overscroll-behavior-inline:contain}
+.week,.level,.db-tile,.pc-input-row{min-width:0}
+.pc-run-diagram svg{height:auto!important;width:100%;max-width:380px}
+.pc-run-buttons button,.timerbuttons button,.pc-actions button,.pc-alt,.backupactions button,
+.backupactions label,.primary,.secondary,#pcAttemptSave,.pc-history-item{
+ min-height:var(--touch)}
+.mobile-dock{display:none}
+.section[id],#pcPlan,#pcCompletion{scroll-margin-top:16px}
+#pcRunClock{font-variant-numeric:tabular-nums}
+#pcRunGuide p{overflow-wrap:anywhere}
+#pcRunSegments{max-width:100%}
+#academyDetail{min-width:0}
+#academyDetail .block{min-width:0}
+#pcRunPlayer[hidden],#pcRunEmpty[hidden],#pcRunScore[hidden],
+#pcAttemptArea[hidden],#pcCompletion[hidden]{display:none!important}
+
+/* iPad landscape, compact desktop: avoid forcing 3 narrow coach panels. */
+@media(max-width:1199px){
+ .shell{width:100%;max-width:100%;padding-inline:clamp(18px,3vw,28px)}
+ .herogrid{gap:24px}
+ .mainGrid{grid-template-columns:minmax(0,1fr)}
+ .pc-grid{grid-template-columns:minmax(0,1fr)}
+ .pc-run-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .db-grid{grid-template-columns:minmax(0,1fr)}
+ .side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .side .card:last-child{grid-column:1/-1}
+}
+
+/* iPad portrait, small tablet and landscape phone. */
+@media(max-width:1023px){
+ .navlabel{display:none}
+ .nav{height:68px}
+ .brand{font-size:23px}
+ .navright .pill{font-size:12px;max-width:100%;white-space:normal;text-align:center}
+ .herogrid{grid-template-columns:minmax(0,1fr)}
+ .hero{padding:32px 0 50px}
+ .hero h1{font-size:clamp(35px,5.5vw,53px);letter-spacing:-1.6px}
+ .heroGraphic{height:190px;max-width:100%}
+ .court{left:calc(50% - 120px);top:20px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .weeks{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .mainGrid,.pc-grid,.pc-run-layout,.db-grid{grid-template-columns:minmax(0,1fr)}
+ .side{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pc-inputs,.selftest,.stage-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .roadmap{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .db-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .pc-run-clock{position:static;font-size:clamp(48px,8vw,70px)}
+ .pc-run-card{padding:20px}
+ .th-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sectionHead{align-items:flex-start}
+ body{padding-bottom:calc(75px + env(safe-area-inset-bottom,0px))}
+ .mobile-dock{
+  position:fixed;z-index:140;left:0;right:0;bottom:0;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:4px;background:rgba(16,41,42,.97);color:#fff;
+  border-top:1px solid #526b63;
+  padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:0 -4px 20px #102a2225;
+ }
+ .mobile-dock a{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-width:0;min-height:48px;padding:4px 2px;border-radius:10px;
+  color:#e4eee6;text-decoration:none;text-align:center;
+  font-size:11px;font-weight:700;line-height:1.2;gap:3px;
+ }
+ .mobile-dock a[aria-current=location]{background:#305143;color:#c9fa74}
+ .mobile-dock .dock-icon{font-size:20px;line-height:1}
+ body.mobile-keyboard-open .mobile-dock{display:none}
+ .section[id],#pcPlan,#pcCompletion{scroll-margin-top:18px}
+}
+@media(min-width:750px) and (max-width:1023px){
+ .week{padding:17px 14px;min-height:120px}
+ .stat{padding:17px}
+ .pc-run-card:first-child{display:block}
+ .pc-run-buttons{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .pc-run-buttons button{min-height:54px}
+ .pc-run-segments{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .pc-run-diagram svg{max-width:430px}
+ .th-summary{align-items:center}
+}
+
+/* iPhone landscape, compact phones and narrow iPads */
+@media(max-width:749px){
+ .shell{padding-inline:16px}
+ .nav{height:62px;gap:8px}
+ .brand{font-size:23px}
+ .navright .pill{font-size:10px;padding:7px 9px}
+ .hero{padding:27px 0 44px}
+ .hero h1{font-size:clamp(31px,8vw,44px);letter-spacing:-1px;line-height:1.16}
+ .hero p{font-size:13px;line-height:1.7}
+ .heroGraphic{height:150px;border-radius:16px}
+ .graphicCaption{font-size:10px;max-width:calc(100% - 32px)}
+ .stats{gap:9px;margin-top:-18px}
+ .stat{padding:14px 13px}
+ .stat strong{font-size:23px;line-height:1.1}
+ .stat span{font-size:11px}
+ .section{margin-top:30px}
+ .section h2{font-size:clamp(21px,5.8vw,27px)}
+ .sectionHead{gap:12px;margin-bottom:14px}
+ .sectionHead>.linkbtn{font-size:13px}
+ .mainGrid,.pc-grid,.pc-run-layout,.db-grid{gap:12px}
+ .weeks{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .week{padding:14px;min-height:109px;border-radius:13px}
+ .week .emoji{display:inline-block;font-size:21px;margin:6px 0}
+ .week strong{font-size:12px}
+ .week small{font-size:11px}
+ .sessionHead{padding:17px}
+ .sessionHead h3{font-size:21px}
+ .timeline{padding:0 15px 14px}
+ .block{grid-template-columns:40px minmax(0,1fr);gap:10px}
+ .side{display:flex;flex-direction:column}
+ .side .card{padding:17px}
+ .pc-panel,.pc-run-card,.th-panel,.db-panel{padding:16px;border-radius:16px}
+ .pc-inputs,.selftest,.stage-list{grid-template-columns:minmax(0,1fr)}
+ .pc-inputs{gap:8px}
+ .pc-input-row{padding:11px 12px;font-size:13px;min-height:48px}
+ .pc-input-wrap input,.pc-actions input,.stage-check input{font-size:16px;min-height:44px;width:80px}
+ .pc-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .pc-actions button{width:100%;min-height:48px;padding:10px}
+ .pc-actions:has(#pcOpenRun){grid-template-columns:minmax(0,1fr)}
+ .pc-stats{gap:8px}
+ .pc-stats>div{min-width:0;padding:10px}
+ .pc-stats strong{font-size:12px;overflow-wrap:anywhere}
+ .pc-run-clock{font-size:clamp(49px,14vw,68px);margin:12px 0}
+ .pc-run-buttons{gap:8px}
+ .pc-run-buttons button{min-height:54px;font-size:13px;padding:10px 6px}
+ .pc-run-segments{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .pc-run-segment{font-size:11px;line-height:1.3;padding:8px}
+ .pc-run-diagram svg{max-width:320px}
+ .pc-run-guide{font-size:14px}
+ .pc-attempt input,.th-filters select{font-size:16px;min-height:48px}
+ .th-filters{grid-template-columns:minmax(0,1fr)}
+ .th-summary{align-items:stretch}
+ .th-summary>*{min-width:0}
+ .db-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .db-tile{padding:12px;min-width:0}
+ .db-tile strong{font-size:22px}
+ .db-skill-head{flex-wrap:wrap}
+ .db-column{width:40px}
+ .backupactions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+ .backupactions button,.backupactions label{width:100%;max-width:100%;text-align:center;min-height:48px}
+ .backupactions label select{max-width:100%;width:100%}
+ .level{padding:13px}
+ .level strong{font-size:19px}
+ .roadmap{gap:9px}
+ .stage-check{min-height:56px}
+ .stage-check input{width:72px;flex:0 0 72px}
+ .record{flex-wrap:wrap}
+ .record strong{white-space:nowrap}
+ .footer{padding-bottom:24px}
+}
+/* Very narrow screens (older iPhone SE 320px) */
+@media(max-width:359px){
+ .shell{padding-inline:12px}
+ .brand{font-size:21px}
+ .navright .pill{font-size:9px;padding:6px}
+ .hero h1{font-size:30px}
+ .weeks{gap:7px}
+ .week{padding:11px}
+ .stat span{font-size:10px}
+ .mobile-dock{padding-inline:6px}
+ .mobile-dock a{font-size:10px}
+ .pc-actions{grid-template-columns:minmax(0,1fr)}
+ .roadmap{grid-template-columns:minmax(0,1fr)}
+}
+/* Large-text accessibility, short landscape phones */
+@media(max-height:480px) and (orientation:landscape) and (max-width:1023px){
+ .mobile-dock{padding-top:3px;padding-bottom:calc(3px + env(safe-area-inset-bottom,0px))}
+ .mobile-dock a{min-height:39px;font-size:10px}
+ .mobile-dock .dock-icon{font-size:16px}
+}
+/* Safari/iOS zoom prevention: inputs are always at least 16px where interacted with. */
+@media(pointer:coarse){
+ input:not([type=range]):not([type=checkbox]),select,textarea{font-size:16px!important}
+ .pc-run-buttons button,.primary,.pc-alt,.secondary{min-height:48px}
+}
+@media(hover:none){.week:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
