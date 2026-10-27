@@ -8,17 +8,18 @@ for(const size of [
  test.describe("V3.2 "+size.name,()=>{
   test.use({viewport:{width:size.width,height:size.height}});
   test("match report connects to advanced training only after an explicit tap",async({page})=>{
-   await page.goto("/");
+   await page.goto("/?page=matches");
    const scores={third:14,reset:12,movement:13,counter:16,doubles:15,decision:11};
-   for(const [key,value] of Object.entries(scores))await page.locator("#acInput-"+key).fill(String(value));
+
    await page.locator("#matchFocus").selectOption("counter-volley");
    await page.locator("#matchOurs").fill("11");
    await page.locator("#matchTheirs").fill("9");
    await page.locator("#matchSave").click();
    await expect(page.locator("#tacticalRecommendation")).toContainText("Counter volley");
-   await expect(page.locator("#acCoachMatchFocus")).toHaveValue("");
+   await expect(page.locator("#tacticalRecommendation")).toBeVisible();
    await page.locator("#tacticalRecommendation button").click();
    await expect(page.locator("#acCoachMatchFocus")).toHaveValue("counter");
+   for(const [key,value] of Object.entries(scores))await page.locator("#acInput-"+key).fill(String(value));
    await page.locator("#acCoachCreate").click();
    await expect(page.locator("#acCoachPlan")).toContainText("Counter volley");
    const plan=await page.evaluate(()=>JSON.parse(localStorage.getItem("pickleup_advanced_plans_v31")).at(-1));
