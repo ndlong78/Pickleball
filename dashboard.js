@@ -15,9 +15,10 @@ function entries(){
 }
 function node(tag,cls,content){const x=document.createElement(tag);if(cls)x.className=cls;if(content!==undefined)x.textContent=String(content);return x}
 function draw(){
- const data=entries(),count=data.length,mean=count?Math.round(data.reduce((n,x)=>n+x.r.score,0)/count*5):null;
- $("dbCompleted").textContent=count+"/36";$("dbAverage").textContent=mean===null?"—":mean+"%";
- $("dbProgress").style.width=(count/36*100)+"%";
+ const activeLevel=$("dbLevel")?.value||"all";
+ const data=entries().filter(x=>activeLevel==="all"||x.s.level===activeLevel),total=activeLevel==="all"?sessions.length:sessions.filter(x=>x.level===activeLevel).length,count=data.length,mean=count?Math.round(data.reduce((n,x)=>n+x.r.score,0)/count*5):null;
+ $("dbCompleted").textContent=count+"/"+total;$("dbAverage").textContent=mean===null?"—":mean+"%";
+ $("dbProgress").style.width=(total?count/total*100:0)+"%";
  const skills=$("dbSkills");skills.replaceChildren();
  const sums={};
  keys.forEach(k=>sums[k]=data.filter(x=>x.s.skill===k));
@@ -31,7 +32,7 @@ function draw(){
  });
  const note=$("dbRecommendation");
  if(!count){note.textContent="Chưa có dữ liệu luyện tập. Hãy hoàn thành bài kiểm tra cuối buổi và lưu kết quả trong Học viện."; }
- else{const candidates=sessions.filter(s=>s.skill===weakest&&!data.some(x=>x.s.id===s.id));const target=candidates[0];note.textContent="Kỹ năng có tỷ lệ đạt mục tiêu thấp nhất trong dữ liệu hiện tại: "+names[weakest]+". "+(target?"Gợi ý bài tiếp theo: tuần "+target.week+" – "+target.title+".":"Bạn đã ghi nhận tất cả các bài thuộc kỹ năng này.")+" Tỷ lệ ở các bài có độ khó khác nhau không phản ánh trực tiếp trình độ thực tế.";}
+ else{const candidates=sessions.filter(s=>s.skill===weakest&&(activeLevel==="all"||s.level===activeLevel)&&!data.some(x=>x.s.id===s.id));const target=candidates[0];note.textContent="Kỹ năng có tỷ lệ đạt mục tiêu thấp nhất trong dữ liệu hiện tại: "+names[weakest]+". "+(target?"Gợi ý bài tiếp theo: tuần "+target.week+" – "+target.title+".":"Bạn đã ghi nhận tất cả các bài thuộc kỹ năng này.")+" Các bài ở cấp độ khác nhau không có độ khó tương đương; nên chọn một cấp độ để so sánh.";}
  const trend=$("dbTrend");trend.replaceChildren();
  if(!count){trend.append(node("p","sub","Lưu kết quả ít nhất một buổi để xem lịch sử tiến bộ."));}
  else{
@@ -48,5 +49,6 @@ draw();
 window.addEventListener("storage",e=>{if(["pickleup_scores","pickleup_academy_v2"].includes(e.key))draw()});
 document.addEventListener("pickleup:score-saved",draw);
 $("dbRefresh").addEventListener("click",draw);
+$("dbLevel")?.addEventListener("change",draw);
 });
 })();
