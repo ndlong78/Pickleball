@@ -1,1 +1,42 @@
-const CACHE='pickleup-shell-v3-4-modular-final';const ASSETS=['./','./index.html','./modules/page-catalog.js','./modules/page-router.js','./modules/page-layout.css','./modules/weekly-practice.js','./modules/assessments-and-backup.js','./modules/academy-page.js','./modules/pwa-client.js','./responsive.css','./mobile-ui.js','./curriculum.js','./advanced-curriculum.js','./advanced-diagrams.js','./advanced-readiness.js','./advanced-coach-core.js','./advanced-coach-ui.js','./tactical-insights-core.js','./tactical-insights-ui.js','./tactical-insights.css','./match-journal.js','./advanced.css','./court-diagrams.js','./dashboard.js','./stage-assessment.js','./personalized-core.js','./personalized-ui.js','./practice-clock.js','./practice-diagrams.js','./practice-runner.js','./practice-conditions.js','./training-log-core.js','./training-evaluation-core.js','./training-evaluation-ui.js','./training-evaluation.css','./training-history-ui.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()))});self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('pickleup-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;event.respondWith(fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy))}return response}).catch(()=>caches.match(event.request).then(hit=>hit||caches.match('./index.html'))))});
+/* PickleUp V3.5 — small offline shell + on-demand cache for visited pages.
+   Page-specific JS/CSS is cached only when the user opens that page. */
+const CACHE="pickleup-shell-v3-5-lazy1";
+const SHELL=[
+ "./","./index.html","./responsive.css","./advanced.css",
+ "./modules/page-layout.css","./modules/page-catalog.js","./modules/page-loader.js",
+ "./modules/page-router.js","./mobile-ui.js","./modules/pwa-client.js",
+ "./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png"
+];
+self.addEventListener("install",event=>{
+ event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));
+});
+self.addEventListener("activate",event=>{
+ event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith("pickleup-")&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener("fetch",event=>{
+ const req=event.request,url=new URL(req.url);
+ if(req.method!=="GET"||url.origin!==self.location.origin)return;
+ if(req.mode==="navigate"){
+  event.respondWith(
+   fetch(req).then(async response=>{
+    if(response.ok){
+     const c=await caches.open(CACHE);
+     await c.put("./index.html",response.clone());
+    }
+    return response;
+   }).catch(async()=>await caches.match("./index.html")||Response.error())
+  );
+  return;
+ }
+ // Cache-first makes returning to a page instant; revalidate assets in background.
+ event.respondWith((async()=>{
+  const cache=await caches.open(CACHE);
+  const hit=await cache.match(req);
+  const refresh=fetch(req).then(response=>{
+   if(response.ok) return cache.put(req,response.clone()).then(()=>response);
+   return response;
+  });
+  if(hit){event.waitUntil(refresh.catch(()=>{}));return hit}
+  try{return await refresh}catch(_){return Response.error()}
+ })());
+});
