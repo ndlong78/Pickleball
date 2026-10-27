@@ -43,6 +43,7 @@ function render(page){
   else a.removeAttribute("aria-current");
  }
  document.title=p.title+" | PickleUp";
+ root.PICKLEUP_PAGE_LOADER?.ensure(p.id).catch(()=>{});
  document.dispatchEvent(new CustomEvent("pickleup:route-change",{detail:{page:p.id}}));
 }
 function scrollToSection(section){
