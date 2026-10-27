@@ -27,10 +27,16 @@ function report(){
   recommendation.append(e("p","Trọng tâm xuất hiện nhiều nhất trong "+info.matchCount+" trận gần nhất: "+coach.names[info.suggested]+" ("+info.votes[info.suggested]+" lần)."));
   const btn=e("button","Đưa trọng tâm này vào HLV nâng cao","pc-alt");btn.type="button";
   btn.addEventListener("click",()=>{
-   const target=$("acCoachMatchFocus");if(!target)return;
-   target.value=info.suggested;
-   $("acCoachFocusStatus").textContent="Đã chọn ưu tiên "+coach.names[info.suggested]+". Khi tạo giáo án mới, kỹ năng này được đưa lên đầu theo lựa chọn của bạn; điểm sáu kỹ năng vẫn giữ nguyên.";
-   window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("advancedCoach").scrollIntoView({behavior:"smooth",block:"start"});
+   const priority=info.suggested;
+   window.PICKLEUP_ROUTER?.openSection("advancedCoach");
+   const ready=window.PICKLEUP_PAGE_LOADER?.ensure("coach")||Promise.resolve();
+   ready.then(()=>{
+    const target=$("acCoachMatchFocus");if(!target)return;
+    target.value=priority;
+    target.dispatchEvent(new Event("change"));
+    $("acCoachFocusStatus").textContent="Đã chọn ưu tiên "+coach.names[priority]+". Điểm kiểm tra gốc không thay đổi.";
+    $("advancedCoach").scrollIntoView({behavior:"smooth",block:"start"});
+   }).catch(()=>{$("acCoachFocusStatus").textContent="Không tải được HLV nâng cao. Hãy kiểm tra mạng và thử lại."});
   });
   recommendation.append(btn);
  }else recommendation.append(e("p","Chưa có trọng tâm sau trận để đề xuất. Hãy ghi nhận trận đấu trước."));
