@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101e22">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="PickleUp">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="description" content="Lộ trình tập Pickleball 60 phút mỗi tuần, dành cho người mới bắt đầu.">
   <title>PickleUp · Huấn luyện Pickleball</title>
   <style>
@@ -44,6 +50,20 @@ $('score').addEventListener('input',updateScore);$('saveScore').addEventListener
 function renderHistory(){const rows=Object.entries(stored).filter(([k,v])=>sessions[k]&&v&&Number.isFinite(v.score)).sort((a,b)=>Number(a[0])-Number(b[0]));$('completedCount').textContent=`${rows.length}/6`;$('bestRate').textContent=rows.length?`${rows[rows.length-1][1].score*5}%`:'—';$('historyList').innerHTML=rows.length?rows.map(([k,v])=>`<div class="record"><span>Tuần ${Number(k)+1} · ${sessions[k].title}</span><strong>${v.score}/20 · ${v.score*5}%</strong></div>`).join(''):'<div class="empty">Chưa có kết quả. Hãy chọn một tuần, thực hiện bài kiểm tra và bấm “Lưu kết quả tuần này”.</div>'}
 $('clearHistory').addEventListener('click',()=>{if(confirm('Xoá toàn bộ điểm đã lưu trên thiết bị này?')){stored={};localStorage.removeItem('pickleup_scores');render()}});$('download').addEventListener('click',()=>{const payload={app:'PickleUp',exportedAt:new Date().toISOString(),records:Object.entries(stored).map(([i,v])=>({week:Number(i)+1,skill:sessions[i]?.title,score:v.score,total:20,date:v.date}))};const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='pickleup-ket-qua.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});$('jump').addEventListener('click',()=>$('practice').scrollIntoView({behavior:'smooth'}));
 let remaining=600,deadline=0,interval=null;function drawClock(){const m=Math.floor(remaining/60),s=remaining%60;$('clock').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}function stop(){if(interval)clearInterval(interval);interval=null;$('playTimer').textContent='Bắt đầu'}function preset(){stop();remaining=Number($('timerPreset').value);drawClock()}$('timerPreset').addEventListener('change',preset);$('resetTimer').addEventListener('click',preset);$('playTimer').addEventListener('click',()=>{if(interval){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));stop();drawClock();return}if(remaining<=0)remaining=Number($('timerPreset').value);deadline=Date.now()+remaining*1000;$('playTimer').textContent='Tạm dừng';interval=setInterval(()=>{remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));drawClock();if(!remaining){stop();try{const A=window.AudioContext||window.webkitAudioContext;if(A){let c=new A(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=730;g.gain.value=.07;o.start();o.stop(c.currentTime+.25);o.onended=()=>c.close()}}catch(e){}alert('Đã hết thời gian! Chuyển sang phần tiếp theo nhé.')}},250)});render();
+</script>
+<script>
+(function(){
+  if(!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol))return;
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('PWA offline unavailable',err)));
+  let pendingPrompt=null;
+  const btn=document.createElement('button');
+  btn.type='button';btn.textContent='Cài PickleUp';btn.setAttribute('aria-label','Cài ứng dụng PickleUp');
+  btn.style.cssText='position:fixed;bottom:18px;right:18px;z-index:99;background:#142d30;color:#b8ef49;border:2px solid #b8ef49;border-radius:999px;padding:11px 18px;font-weight:700;box-shadow:0 8px 24px #0003;display:none';
+  document.body.appendChild(btn);
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();pendingPrompt=event;btn.style.display='block'});
+  btn.addEventListener('click',async()=>{if(!pendingPrompt)return;const prompt=pendingPrompt;pendingPrompt=null;btn.style.display='none';await prompt.prompt()});
+  window.addEventListener('appinstalled',()=>{pendingPrompt=null;btn.remove()});
+})();
 </script>
 </body>
 </html>
