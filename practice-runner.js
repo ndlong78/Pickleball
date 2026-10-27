@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  const selected=$("pcPlan")?.dataset.planId;
  const plans=read(plansKey,[]);
  if(selected&&Array.isArray(plans))loadPlan(plans.find(p=>p.id===selected)||null);else render();
+ $("pcOpenRun").addEventListener("click",()=>{$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
  $("pcRunStart").addEventListener("click",startPause);
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
