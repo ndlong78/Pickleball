@@ -20,7 +20,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.4 beta | Tạo giáo án cá nhân từ 6 điểm, 24 drill, ưu tiên 3 kỹ năng, lịch sử và đo tiến bộ | Mã nguồn đã triển khai; cần kiểm thử trên thiết bị |
 | V2.5 beta | Chế độ trên sân: đồng hồ theo 6 phần, sơ đồ cho 24 drill, điều khiển và tiếp tục sau tải lại | Đã đưa mã nguồn; cần kiểm thử trình duyệt/thiết bị |
 | V2.6 beta | Mobile-first: kết quả nhiều lần/cùng drill, biểu đồ so sánh cùng cấp độ và giữ màn hình sáng nếu hỗ trợ | Đã cập nhật mã nguồn; chờ kiểm thử thiết bị |
-| V3.0 | 3.0–4.0: chiến thuật, reset, third shot, nhật ký trận | Kế hoạch |
+| V3.0 beta | 44 giáo án 3.0–4.0, kiểm tra kỹ năng chuyên sâu, nhật ký trận đấu | Đã đưa mã nguồn; cần kiểm thử thiết bị và HLV duyệt |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -29,7 +29,8 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - 2.0–2.5: 12 buổi
 - 2.5–3.0: 16 buổi
 - Tổng 36 buổi cơ bản; 3 drill mỗi buổi.
-- 3.0–5.0: dự kiến phát triển sau khi có phản hồi từ tập luyện thực tế.
+- 3.0–3.5: 20 buổi mới; 3.5–4.0: 24 buổi mới, đưa tổng thư viện lên 80 buổi.
+- 4.0–5.0: dự kiến phát triển sau khi có phản hồi tập luyện và thi đấu thực tế.
 
 ## Định nghĩa hoàn thành V2.1
 - [x] 36 mã buổi học ổn định PU-001...PU-036.
@@ -165,3 +166,26 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [x] Dự phòng không gian ở cuối trang để menu không đè nội dung.
 - [x] Cập nhật cache PWA, test menu cố định và điều hướng ở các kích thước gồm PC 1440px.
 - [ ] Nghiệm thu trực tiếp trên Safari iPhone/iPad và Chrome/Edge PC; xác minh hành vi khi bàn phím ảo mở.
+
+## V3.0 beta – Chiến thuật từ 3.0 đến 4.0
+
+**Đã triển khai**
+- [x] Giữ nguyên mã 36 buổi cơ bản (PU-001..PU-036). Thêm 20 giáo án 3.0–3.5 và 24 giáo án 3.5–4.0 (PU-037..PU-080).
+- [x] 11 nhóm tình huống nâng cao, 44 tiêu đề/bài kiểm tra khác nhau, ba drill cho mỗi buổi, tổng 60 phút.
+- [x] Các trọng tâm: third-shot drop, chọn drop/drive, cú thứ năm, reset và transition, dink dưới áp lực, counter volley, phối hợp đánh đôi, phòng thủ sang phản công.
+- [x] Bổ sung bộ lọc cấp độ Học viện và sơ đồ chiến thuật minh họa theo 11 tình huống.
+- [x] Dashboard thống kê theo cấp độ: không gộp khó/dễ mà không thể chọn lọc, tiến độ được tính dựa trên 80 buổi.
+- [x] Kiểm tra riêng sáu kỹ năng chiến thuật nâng cao cho hai nhóm 3.0–3.5 và 3.5–4.0, lưu lịch sử cục bộ.
+- [x] Nhật ký trận đấu đơn/đôi: lưu tỷ số, kỹ thuật trọng tâm và ghi chú, không yêu cầu tên đối thủ.
+- [x] Bản sao lưu JSON hỗ trợ 80 kết quả học viện và hai nguồn mới `advancedChecks`, `matchJournal`; không xóa dữ liệu V2.
+- [x] Tài nguyên V3 cache trong PWA; thêm kiểm thử hồi quy `tests/advanced-curriculum.test.js`.
+- [x] Giữ nguyên menu bốn mục cố định dưới trên PC/iPad/iPhone.
+
+**Chưa nghiệm thu ổn định**
+- [ ] Chạy workflow và kiểm thử thực tế theo iOS Safari, Android Chrome, desktop.
+- [ ] Huấn luyện viên đối chiếu từng bài với luật hiện hành, mức vận động và khả năng tiến bộ thực tế.
+- [ ] Xác thực ngưỡng 13/15 của kiểm tra chuyên sâu bằng dữ liệu tập thật; tuyệt đối không sử dụng làm rating DUPR.
+- [ ] Đồng bộ Personalized Coach và đồng hồ tự động cho 3.0–4.0; hiện giáo án nâng cao dùng Học viện, Personal Coach duy trì 1.0–3.0.
+- [ ] Nhật ký trận hiện lưu tỷ số một trận, chưa phân tích điểm số theo rally hoặc vị trí.
+
+**Kế tiếp:** V3.1 kiểm thử sư phạm, cải thiện biểu đồ chiến thuật và mở Personalized Coach riêng cho 3.0–4.0; V4.0 sau khi nghiệm thu mới mở 4.0–5.0.
