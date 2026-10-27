@@ -4,6 +4,11 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "advanced-*.js"
+      - "advanced.css"
+      - "match-journal.js"
+      - "curriculum.js"
+      - "dashboard.js"
       - "responsive.css"
       - "mobile-ui.js"
       - "personalized-ui.js"
