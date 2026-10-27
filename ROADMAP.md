@@ -23,6 +23,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.0 beta | 44 giáo án 3.0–4.0, kiểm tra kỹ năng chuyên sâu, nhật ký trận đấu | Đã đưa mã nguồn; cần kiểm thử thiết bị và HLV duyệt |
 | V3.1 beta | Personal Coach 3.0–4.0, đồng hồ, sơ đồ, điểm sau tập và lịch sử kế hoạch | Đã cập nhật mã nguồn; cần QA trên sân/thiết bị |
 | V3.2 beta | Phản hồi sau trận → báo cáo tiến bộ cùng bài → gợi ý giáo án theo lựa chọn người tập | Đã cập nhật mã nguồn; chờ kiểm thử trình duyệt và thực địa |
+| V3.3 beta | Ghi điều kiện tập, so sánh tương đương và theo dõi tình huống đánh đôi | Đã cập nhật mã nguồn; cần nghiệm thu thiết bị và sư phạm |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -231,3 +232,23 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Không thể kết luận thay đổi trình độ hoặc nguyên nhân thắng/thua dựa trên dữ liệu hiện có.
 
 **Hướng tiếp theo:** V3.3 thử nghiệm trên sân, dashboard theo điều kiện tập và phân tích tình huống đánh đôi; chỉ tiến tới V4.0 sau nghiệm thu sư phạm.
+
+## V3.3 beta – Practice Conditions & Doubles Review
+
+**Đã triển khai mã nguồn**
+- [x] Cách cấp bóng, tốc độ bài tập và độ rộng vùng mục tiêu cho từng lượt tập mới; lưu trong bản ghi theo schema tùy chọn để bảo toàn dữ liệu V2.6/V3.1.
+- [x] Kiểm tra dữ liệu đầu vào và chặn lưu lượt mới khi chưa chọn đủ ba điều kiện, không làm mất bản ghi cũ.
+- [x] Báo cáo lọc theo cấp độ, nhóm dữ liệu cùng bài, loại đánh giá và ba điều kiện; loại các bản ghi cũ thiếu điều kiện khỏi phép so sánh tương đương.
+- [x] Nhật ký đánh đôi bổ sung một tình huống cần cải thiện (tùy chọn); tổng hợp tối đa 20 trận gần đây có phân loại.
+- [x] Lịch sử lần tập cũ hiện phân nhóm theo điều kiện và ghi rõ dữ liệu thiếu điều kiện.
+- [x] CSS mobile-first, menu cố định PC/iPad/iPhone giữ nguyên.
+- [x] PWA cache mới và kiểm thử Node + Playwright/Chromium/WebKit trong repository.
+
+**Chưa nghiệm thu**
+- [ ] Xác nhận pipeline GitHub Actions đạt và thao tác đúng trên iPhone/iPad thật, cả chế độ PWA offline.
+- [ ] Huấn luyện viên rà soát giao thức 20 lượt kiểm tra theo từng drill để bảo đảm độ khó tương đương.
+- [ ] Kiểm thử thao tác phục hồi bản sao lưu cũ/mới trên hai trình duyệt và trường hợp dung lượng lưu trữ đầy.
+- [ ] Xem lại yêu cầu nhập điều kiện sau thử nghiệm thực tế để tránh làm buổi tập bị gián đoạn.
+- [ ] Không suy ra DUPR hay quan hệ nhân quả từ chênh lệch điểm.
+
+**Sau V3.3:** Dùng phản hồi trên sân để chuẩn hóa bài kiểm tra và cải thiện chiến thuật đánh đôi trước khi mở giáo án 4.0–5.0.
