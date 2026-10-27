@@ -183,3 +183,25 @@ Kiểm thử nội dung: `npm run test:unit` (gồm `tests/advanced-curriculum.t
 **Hạn chế khoa học:** Ngay cả khi cách cấp bóng, tốc độ và vùng mục tiêu trùng nhau, sự khác nhau về đối tác, vị trí sân, mệt mỏi và việc đếm lượt cũng có thể ảnh hưởng kết quả. Chênh lệch 0–20 không chứng minh quan hệ nguyên nhân hoặc thay thế xếp hạng DUPR.
 
 **Mã nguồn V3.3:** `practice-conditions.js`, `training-evaluation-core.js`, `training-evaluation-ui.js`, `training-evaluation.css`. Kiểm thử `npm run test:unit` và `npm run test:responsive`, gồm `tests/training-evaluation.test.js`, `tests/evaluation-responsive.spec.cjs`. Cần nghiệm thu thêm trên thiết bị iOS thực tế.
+
+## V3.4 – Website chia thành 7 trang chức năng
+
+**Giao diện mới** dùng thanh điều hướng đầy đủ bảy trang và giữ thanh menu dưới bốn mục trên mọi thiết bị. Các trang riêng được định tuyến tĩnh bằng `?page=` (không cần backend):
+
+| Trang | URL | Chức năng |
+|---|---|---|
+| Tổng quan | `?page=home` | Giới thiệu, buổi mẫu, liên kết nhanh |
+| HLV cá nhân | `?page=coach` | Tự đánh giá + hai HLV cơ bản/nâng cao |
+| Trên sân | `?page=court` | Timer, hướng dẫn drill, 20 lượt và sơ đồ |
+| Học viện | `?page=academy` | 80 buổi tập và roadmap |
+| Tiến bộ | `?page=progress` | Dashboard, lịch sử, báo cáo điều kiện, chuyển cấp |
+| Thi đấu | `?page=matches` | Ghi trận đơn/đôi và phân tích chiến thuật |
+| Dữ liệu | `?page=settings` | Sao lưu/khôi phục, xóa riêng điểm sáu tuần mẫu |
+
+Ví dụ: `https://ndlong78.github.io/Pickleball/?page=coach`. Chuyển trang giữ nguyên trạng thái JavaScript và `localStorage`, đồng hồ đã chạy không bị tự đặt lại; nút Back/Forward hoạt động. Các URL hash cũ như `/#academy` vẫn được nhận diện.
+
+**Refactor mã nguồn:** `index.html` chuyển những đoạn JS nhúng sang `modules/weekly-practice.js`, `modules/assessments-and-backup.js`, `modules/academy-page.js`, `modules/pwa-client.js`; router và cấu hình trang ở `modules/page-router.js` / `modules/page-catalog.js`, kiểu trình bày ở `modules/page-layout.css`. Không sao chép mã nguồn thành nhiều file HTML.
+
+**Kiểm thử:** `npm run test:unit` gồm `tests/page-catalog.test.js` và `tests/page-router.test.js`; `npm run test:responsive` chạy Playwright 7 trang trên nhiều khung nhìn. Chưa xác nhận thiết bị vật lý iPhone/iPad và toàn bộ pipeline CI đã đạt.
+
+Chi tiết cấu trúc và giới hạn: [ARCHITECTURE.md](ARCHITECTURE.md).
