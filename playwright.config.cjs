@@ -1,7 +1,7 @@
 const {defineConfig,devices}=require("@playwright/test");
 module.exports=defineConfig({
  testDir:"./tests",
- testMatch:["responsive.spec.cjs","tactical-responsive.spec.cjs"],
+ testMatch:["responsive.spec.cjs","tactical-responsive.spec.cjs","evaluation-responsive.spec.cjs"],
  timeout:30000,
  retries:process.env.CI?1:0,
  reporter:process.env.CI?[["list"],["html",{open:"never"}]]:"list",
