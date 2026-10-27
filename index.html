@@ -59,6 +59,7 @@
 <link rel="stylesheet" href="./responsive.css">
 <link rel="stylesheet" href="./advanced.css">
 <link rel="stylesheet" href="./tactical-insights.css">
+<link rel="stylesheet" href="./training-evaluation.css">
 </head>
 <body>
 <header class="topbar"><div class="shell nav"><div class="brand">pickle<b>up.</b></div>
@@ -156,6 +157,11 @@
    <p id="pcAttemptHint" class="sub">Ghi sau 20 lần thử.</p>
    <label for="pcAttemptHits">Số lần thực hiện đúng /20</label>
    <input id="pcAttemptHits" type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="0–20">
+   <div class="pc-conditions">
+    <label for="pcAttemptFeed">Cách cấp bóng<select id="pcAttemptFeed"><option value="">Chọn cách cấp bóng</option></select></label>
+    <label for="pcAttemptPace">Tốc độ bài tập<select id="pcAttemptPace"><option value="">Chọn tốc độ</option></select></label>
+    <label for="pcAttemptTarget">Vùng mục tiêu<select id="pcAttemptTarget"><option value="">Chọn độ rộng mục tiêu</option></select></label>
+   </div>
    <label for="pcAttemptNote">Ghi chú ngắn (không bắt buộc)</label>
    <input id="pcAttemptNote" type="text" maxlength="240" placeholder="Ví dụ: giữ bóng thấp hơn">
    <button type="button" class="primary" id="pcAttemptSave">Lưu một lần tập</button>
@@ -189,6 +195,24 @@
  <p class="sub">Ngưỡng nội bộ chỉ để định hướng bài tập; không chứng nhận DUPR hoặc khả năng thi đấu cấp 4.0.</p>
 </div>
 </section>
+<section class="section" id="trainingEvaluation">
+<div class="sectionHead"><div><div class="kicker">PickleUp V3.3 · Đánh giá thực tế</div><h2>Tiến bộ trong điều kiện tương đương</h2>
+<p class="sub">Phân tích riêng các lượt tập có đủ thông tin về cách cấp bóng, tốc độ và vùng mục tiêu; tổng hợp những vấn đề thường gặp khi đánh đôi.</p></div>
+<button type="button" class="linkbtn" id="evalRefresh">Cập nhật</button></div>
+<div class="card eval-panel">
+ <div class="advanced-field"><label for="evalLevel">Nhóm trình độ</label>
+ <select id="evalLevel"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option><option selected>3.0–3.5</option><option>3.5–4.0</option></select></div>
+ <p id="evalTotals" class="eval-hint" role="status" aria-live="polite"></p>
+ <p id="evalUnknown" class="sub"></p>
+ <div class="eval-grid">
+  <div><h3>Những bài đã tập lại cùng điều kiện</h3><div id="evalComparison"></div></div>
+  <div><h3>Phối hợp đánh đôi</h3><p id="evalDoublesSummary" class="sub"></p>
+    <div id="evalDoubles"></div><div id="evalSuggestion" class="eval-hint"></div></div>
+ </div>
+ <p id="evalDisclaimer" class="sub"></p>
+ <div class="advanced-links"><a href="#pcOnCourt">Ghi một lần tập</a><a href="#matchJournal">Ghi tình huống đánh đôi</a></div>
+</div>
+</section>
 <section class="section" id="tacticalReport">
  <div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Phân tích chiến thuật</div><h2>Hiệu quả tập luyện & bài học sau trận</h2>
  <p class="sub">Gộp phản hồi sau trận với lịch sử tập nâng cao, nhưng không đánh đồng ý kiến định tính với điểm kiểm tra.</p></div>
@@ -216,7 +240,9 @@
   <div class="advanced-field"><label for="matchOurs">Điểm đội mình</label><input id="matchOurs" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="11"></div>
   <div class="advanced-field"><label for="matchTheirs">Điểm đối phương</label><input id="matchTheirs" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="9"></div>
  </div>
- <div class="advanced-field" style="margin:14px 0"><label for="matchNotes">Điều rút ra sau trận (không bắt buộc)</label><textarea id="matchNotes" maxlength="280" placeholder="Ví dụ: cú drop thường cao khi bị trả sâu"></textarea></div>
+ <div class="advanced-field" id="matchDoublesField" style="margin:14px 0"><label for="matchDoublesIssue">Tình huống phối hợp đánh đôi (tùy chọn)</label>
+<select id="matchDoublesIssue"><option value="">Chưa phân loại</option></select></div>
+<div class="advanced-field" style="margin:14px 0"><label for="matchNotes">Điều rút ra sau trận (không bắt buộc)</label><textarea id="matchNotes" maxlength="280" placeholder="Ví dụ: cú drop thường cao khi bị trả sâu"></textarea></div>
  <button type="button" id="matchSave" class="primary">Lưu nhật ký trận đấu</button>
  <p id="matchStatus" class="outcome" role="status" aria-live="polite"></p>
 </div>
@@ -299,6 +325,7 @@ document.getElementById('restoreFile').addEventListener('change',async event=>{c
 <script src="./dashboard.js" defer></script>
 <script src="./stage-assessment.js" defer></script>
 <script src="./personalized-core.js"></script>
+<script src="./practice-conditions.js"></script>
 <script src="./training-log-core.js"></script>
 <script src="./personalized-ui.js"></script>
 <script src="./practice-clock.js"></script>
@@ -309,6 +336,8 @@ document.getElementById('restoreFile').addEventListener('change',async event=>{c
 <script src="./advanced-coach-ui.js"></script>
 <script src="./tactical-insights-ui.js"></script>
 <script src="./training-history-ui.js"></script>
+<script src="./training-evaluation-core.js"></script>
+<script src="./training-evaluation-ui.js"></script>
 <script src="./mobile-ui.js" defer></script>
 <script>
 (function(){
