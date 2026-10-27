@@ -68,3 +68,18 @@ Mở phần **Giáo án cá nhân hóa 60 phút** trên trang chính.
 **Kiểm thử tại máy tính** (yêu cầu Node.js): `node --test tests/personalized-core.test.js`.
 
 **Roadmap:** [ROADMAP.md](ROADMAP.md).
+
+## V2.5 beta – Chế độ tập luyện trên sân
+
+- Trong **Giáo án cá nhân hóa 60 phút**, nhập đủ sáu điểm rồi tạo giáo án (hoặc chọn kế hoạch đã lưu).
+- Chọn **Vào chế độ tập trên sân**. Một kế hoạch có sáu phần: khởi động 10 phút, ba drill 12/12/15 phút, kiểm tra 6 phút, thả lỏng 5 phút.
+- Trong phần đang tập, xem hướng dẫn, lưu ý kỹ thuật và sơ đồ vector của bài; dùng **Bắt đầu**, **Tạm dừng**, **Phần tiếp theo**, **Phần trước** hoặc **Đặt lại**.
+- Khi hết giờ của một phần, đồng hồ dừng. Hãy nhấn **Phần tiếp theo** khi bạn sẵn sàng, không tự chuyển trong khi chưa hoàn thành hoạt động thực tế.
+- Kết thúc phần kiểm tra hoặc buổi tập, nhấn **Nhập kết quả sau tập** để chuyển tới ô ghi kết quả trong Personal Coach V2.4.
+- Trạng thái thời gian tạm thời lưu tại `pickleup_practice_state_v25` cho giáo án đang chọn, có thể khôi phục sau tải lại trang. Đồng hồ dùng thời gian thực khi ứng dụng bị đưa xuống nền; âm báo và hoạt động khi khóa màn hình tùy thuộc trình duyệt, **chưa được bảo đảm**.
+- Sơ đồ sân là hình minh họa cho 24 drill, không phải hình đo kích thước chuẩn và không thay thế kiểm tra quy tắc đánh bóng.
+- Mã nguồn: `practice-clock.js`, `practice-runner.js`, `practice-diagrams.js`; test tại `tests/practice-clock.test.js`.
+
+### Kiểm thử lập trình
+
+Chạy `node --test tests/personalized-core.test.js tests/practice-clock.test.js` trên máy có Node.js. Cần kiểm thử thủ công PWA trên điện thoại thực tế trước khi dùng rộng rãi.
