@@ -16,22 +16,31 @@ const names=Object.fromEntries(categories.map(x=>[x.key,x.name]));
 function validScores(values){
  return !!values&&typeof values==="object"&&categories.every(c=>Number.isInteger(values[c.key])&&values[c.key]>=0&&values[c.key]<=20);
 }
-function priorities(values){if(!validScores(values))return [];return categories.map(c=>c.key).sort((a,b)=>values[a]-values[b]||categories.findIndex(c=>c.key===a)-categories.findIndex(c=>c.key===b)).slice(0,3)}
+function priorities(values,focusMetric=null){
+ if(!validScores(values))return [];
+ const ranked=categories.map(c=>c.key).sort((a,b)=>values[a]-values[b]||categories.findIndex(c=>c.key===a)-categories.findIndex(c=>c.key===b));
+ // A match-note signal influences a plan ONLY following the learner's explicit choice.
+ if(focusMetric&&names[focusMetric])return [focusMetric,...ranked.filter(x=>x!==focusMetric)].slice(0,3);
+ return ranked.slice(0,3);
+}
 function validPlan(p){
  if(!p||p.version!=="3.1"||!levels.includes(p.level)||typeof p.id!=="string"||p.id.length>100||typeof p.createdAt!=="string"||!Number.isFinite(Date.parse(p.createdAt))||!validScores(p.scores)||!Array.isArray(p.exercises)||p.exercises.length!==3||!p.checkpoint||!names[p.checkpoint.skill])return false;
  if(p.exercises.some(e=>!e||!/^ADV-PU-0(?:3[7-9]|[4-7][0-9]|80)$/.test(e.id)||typeof e.skill!=="string"||!names[e.metric]||typeof e.name!=="string"||typeof e.instructions!=="string"||![12,15].includes(e.minutes)||typeof e.setup!=="string"||e.setup.length>1000||e.instructions.length>1800))return false;
+ if(p.matchFocus!==undefined&&p.matchFocus!==null&&!names[p.matchFocus])return false;
  if(p.exercises.map(e=>e.minutes).join(",")!=="12,12,15")return false;
  if(!Number.isInteger(p.checkpoint.baseline)||p.checkpoint.baseline<0||p.checkpoint.baseline>20||!Number.isInteger(p.checkpoint.target)||p.checkpoint.target<0||p.checkpoint.target>20)return false;
  if(p.checkScore!==null&&p.checkScore!==undefined&&(!Number.isInteger(p.checkScore)||p.checkScore<0||p.checkScore>20))return false;
  return p.completedAt===null||p.completedAt===undefined||typeof p.completedAt==="string"&&Number.isFinite(Date.parse(p.completedAt));
 }
 function validateList(value){return Array.isArray(value)&&value.length<=100&&value.every(validPlan)}
-function createPlan(values,previous=[],level="3.0–3.5",createdAt=new Date().toISOString(),curriculum=root.PICKLEUP_ADVANCED_CURRICULUM||[]){
+function createPlan(values,previous=[],level="3.0–3.5",createdAt=new Date().toISOString(),curriculum=root.PICKLEUP_ADVANCED_CURRICULUM||[],options={}){
  if(!validScores(values))throw Error("Cần đủ sáu kết quả nguyên từ 0 đến 20.");
  if(!levels.includes(level))throw Error("Chọn nhóm 3.0–3.5 hoặc 3.5–4.0.");
  if(!Array.isArray(previous))throw Error("Lịch sử giáo án không hợp lệ.");
  const recent=previous.filter(p=>validPlan(p)).slice(-100);
- const weak=priorities(values),used=new Set();
+ const requested=options?.focusMetric||null;
+ if(requested&&!names[requested])throw Error("Kỹ năng ưu tiên từ trận đấu không hợp lệ.");
+ const weak=priorities(values,requested),used=new Set();
  const exercises=weak.map((metric,i)=>{
   const cat=categories.find(c=>c.key===metric);
   const candidates=curriculum.filter(x=>x.level===level&&cat.foci.includes(x.focus)&&!used.has(x.id));
@@ -53,6 +62,7 @@ function createPlan(values,previous=[],level="3.0–3.5",createdAt=new Date().to
  const plan={
   id:"PU31-"+createdAt.replace(/[^0-9]/g,"").slice(0,17)+"-"+(recent.length+1),
   version:"3.1",createdAt,level,scores:{...values},exercises,
+  matchFocus:requested,
   checkpoint:{skill:weak[0],baseline:values[weak[0]],target:exercises[0].target,attempts:20},
   minutes:{warmup:10,drills:[12,12,15],assessment:6,cooldown:5},
   completedAt:null,checkScore:null
