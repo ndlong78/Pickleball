@@ -96,3 +96,18 @@ Chạy `node --test tests/personalized-core.test.js tests/practice-clock.test.js
 **Đánh giá:** Các số lượt thành công là kết quả luyện tập cá nhân. Ngay cả khi cùng mã drill, các điều kiện thực tế và độ khó có thể thay đổi nên biểu đồ không phải rating thi đấu.
 
 **Trạng thái:** V2.6 beta đã có mã nguồn nhưng chưa kiểm thử trực tiếp trên iPhone/Android thật. Đọc [ROADMAP.md](ROADMAP.md) để biết tiêu chí phát hành.
+
+## Bản vá giao diện V2.6.1 – iPhone & iPad
+
+PickleUp đã bổ sung `responsive.css` (nạp sau các style cũ) và `mobile-ui.js` để hỗ trợ:
+- iPhone: thiết kế một cột, nút chạm ≥44px, ô nhập không tự zoom, thanh điều hướng dưới có khoảng tránh Home Indicator.
+- iPad dọc: khu vực huấn luyện và đồng hồ chuyển bố cục một cột thoáng hơn.
+- iPad ngang: điều hướng nhanh phía trên, đồng hồ và hướng dẫn hiển thị hai cột khi đủ chỗ.
+- Biểu đồ/nhật ký dài được cuộn trong khung, không kéo tràn trang.
+- PWA: cache phiên bản mới cho CSS và JavaScript.
+
+**Cách kiểm tra bản mới**: kết nối mạng, tải lại trang PickleUp. Với bản đã thêm vào màn hình chính, đóng rồi mở lại ứng dụng và tải lại khi có mạng. Trước khi xóa dữ liệu trình duyệt hoặc PWA, hãy xuất tệp sao lưu kết quả.
+
+**Kiểm thử**: đã thêm cấu hình Playwright Chromium/WebKit và workflow GitHub Actions chạy trên năm kích thước iPhone/iPad. Đây là mô phỏng trình duyệt, không thay thế nghiệm thu trên thiết bị Apple. Xem [RESPONSIVE_QA.md](RESPONSIVE_QA.md) để thực hiện checklist thực tế.
+
+**Lưu ý**: V2.6.1 sửa bố cục và thao tác, không thay đổi các khóa dữ liệu luyện tập từ V2.4 đến V2.6.
