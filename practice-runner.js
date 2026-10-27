@@ -4,7 +4,8 @@
 const clock=window.PICKLEUP_PRACTICE_CLOCK,draw=window.PICKLEUP_DRILL_DIAGRAM;
 if(!clock)return;
 const storageKey="pickleup_practice_state_v25",plansKey="pickleup_plans_v24",$=id=>document.getElementById(id);
-let plan=null,state=null,lastExpired=-1,wakeLock=null;
+let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false;
+const logApi=window.PICKLEUP_TRAINING_LOG;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
 function save(){try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
 function message(value){$("pcRunMessage").textContent=value}
@@ -54,6 +55,13 @@ function render(){
  const items=$("pcRunSegments");items.replaceChildren();
  clock.stages.forEach((s,i)=>{const el=document.createElement("span");el.className="pc-run-segment"+(i===state.index?" is-active":"")+(i<state.index?" is-done":"");el.textContent=(i+1)+". "+s.title;items.append(el)});
  $("pcRunScore").hidden=!done&&state.index!==4;
+ const active=state.index>=1&&state.index<=3;
+ $("pcAttemptArea").hidden=!active;
+ if(active){
+  const drill=plan.exercises[state.index-1];
+  $("pcAttemptName").textContent="Ghi một lần tập: "+drill.skillName+" — "+drill.name;
+  $("pcAttemptHint").textContent="Thực hiện 20 lượt cùng bài và cấp độ, sau đó nhập số lần đúng. Có thể ghi nhiều lần ở cùng bài.";
+ }
 }
 function advance(direction){
  if(!state)return;
@@ -69,6 +77,30 @@ function startPause(){
 function reset(){
  if(!state||!confirm("Đặt lại đồng hồ về phần khởi động của kế hoạch này?"))return;
  state=clock.reset(state);save();lastExpired=-1;render();message("Đã đặt lại đồng hồ.");
+}
+function saveAttempt(){
+ if(!plan||!state||state.index<1||state.index>3||!logApi)return;
+ const drill=plan.exercises[state.index-1],input=$("pcAttemptHits"),value=input.value.trim(),hits=Number(value);
+ if(!value||!Number.isInteger(hits)||hits<0||hits>20){message("Vui lòng nhập số nguyên từ 0 đến 20 cho bài tập.");return}
+ try{
+  logApi.record(localStorage,{planId:plan.id,exerciseId:drill.id,skill:drill.skill,level:plan.level,kind:"drill",hits,note:$("pcAttemptNote").value});
+  input.value="";$("pcAttemptNote").value="";
+  message("Đã lưu "+hits+"/20 cho "+drill.skillName+". Có thể ghi thêm lần tập khác.");
+  document.dispatchEvent(new Event("pickleup:training-log-updated"));
+ }catch(e){message("Không thể lưu lần tập: "+e.message)}
+}
+async function toggleWake(){
+ if(!("wakeLock" in navigator)){
+  $("pcWakeToggle").checked=false;
+  message("Trình duyệt này chưa hỗ trợ giữ màn hình sáng. Hãy điều chỉnh thời gian khóa màn hình trên điện thoại.");
+  return;
+ }
+ wakeWanted=$("pcWakeToggle").checked;
+ if(!wakeWanted){try{if(wakeLock)await wakeLock.release()}catch(_){}wakeLock=null;return}
+ try{
+  wakeLock=await navigator.wakeLock.request("screen");
+  message("Đã yêu cầu giữ màn hình sáng. Tính năng có thể tự ngắt khi khóa màn hình hoặc tiết kiệm pin.");
+ }catch(e){wakeWanted=false;$("pcWakeToggle").checked=false;message("Không bật được giữ màn hình sáng trên thiết bị này.")}
 }
 function pulse(){
  if(!state||!state.running)return;
@@ -87,6 +119,8 @@ document.addEventListener("DOMContentLoaded",()=>{
  const plans=read(plansKey,[]);
  if(selected&&Array.isArray(plans))loadPlan(plans.find(p=>p.id===selected)||null);else render();
  $("pcOpenRun").addEventListener("click",()=>{$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
+ $("pcAttemptSave").addEventListener("click",saveAttempt);
+ $("pcWakeToggle").addEventListener("change",toggleWake);
  $("pcRunStart").addEventListener("click",startPause);
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
@@ -94,6 +128,9 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("pcRunScore").addEventListener("click",()=>{$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()});
  // Wall-clock deadlines recover from mobile background throttling without incorrectly skipping stages.
  setInterval(pulse,350);
- document.addEventListener("visibilitychange",()=>{if(!document.hidden&&state){state=clock.tick(state);save();render()}});
+ document.addEventListener("visibilitychange",()=>{
+ if(!document.hidden&&state){state=clock.tick(state);save();render()}
+ if(!document.hidden&&wakeWanted&&!wakeLock)toggleWake();
+});
 });
 })();
