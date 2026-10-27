@@ -1,11 +1,11 @@
 {
   "name": "pickleup",
   "private": true,
-  "version": "3.4.0-beta.1",
+  "version": "3.5.0-beta.1",
   "description": "PickleUp responsive PWA",
   "scripts": {
     "test:responsive": "playwright test",
-    "test:unit": "node --test tests/personalized-core.test.js tests/practice-clock.test.js tests/training-log.test.js tests/advanced-curriculum.test.js tests/advanced-coach.test.js tests/tactical-insights.test.js tests/training-evaluation.test.js tests/page-catalog.test.js tests/page-router.test.js"
+    "test:unit": "node --test tests/personalized-core.test.js tests/practice-clock.test.js tests/training-log.test.js tests/advanced-curriculum.test.js tests/advanced-coach.test.js tests/tactical-insights.test.js tests/training-evaluation.test.js tests/page-catalog.test.js tests/page-router.test.js tests/page-loader.test.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0"
