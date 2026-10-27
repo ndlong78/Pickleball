@@ -38,13 +38,15 @@ for(const screen of devices){
    expect(end.y).toBeGreaterThanOrEqual(-2);
   });
   test("V3 academy filters 20 and 24 advanced lessons and logs a match",async({page})=>{
-   await page.goto("/");
+   await page.goto("/?page=academy");
    await page.locator("#academyLevel").selectOption({label:"3.0–3.5"});
    await expect(page.locator("#academyWeek option")).toHaveCount(20);
    await page.locator("#academyLevel").selectOption({label:"3.5–4.0"});
    await expect(page.locator("#academyWeek option")).toHaveCount(24);
    await expect(page.locator("#academyDetail")).toContainText("Kiểm tra");
+   await page.locator('#pageNavigation a[data-route="coach"]').click();
    await expect(page.locator("#advancedCheckInputs input")).toHaveCount(6);
+   await page.locator('#pageNavigation a[data-route="matches"]').click();
    await page.locator("#matchOurs").fill("11");
    await page.locator("#matchTheirs").fill("9");
    await page.locator("#matchSave").click();
@@ -66,7 +68,7 @@ for(const screen of devices){
    }
   });
   test("V3.1 generates advanced training, uses court timer and saves results",async({page})=>{
-   await page.goto("/");
+   await page.goto("/?page=coach");
    const scores={third:12,reset:10,movement:15,counter:14,doubles:13,decision:11};
    for(const [key,value] of Object.entries(scores))await page.locator("#acInput-"+key).fill(String(value));
    await page.locator("#acCoachCreate").click();
@@ -83,16 +85,18 @@ for(const screen of devices){
    await page.locator("#pcAttemptTarget").selectOption("standard");
    await page.locator("#pcAttemptSave").click();
    await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
+   await page.locator('#pageNavigation a[data-route="coach"]').click();
    await page.locator("#acCoachResult").fill("14");
    await page.locator("#acCoachSave").click();
    await expect(page.locator("#acCoachStatus")).toContainText("Đã lưu");
    await page.reload();
    await expect(page.locator("#acCoachPlan")).toContainText("Reset");
-   await expect(page.locator("#pcRunPlayer")).toBeVisible();
    await expect(page.locator("#acCoachFinished")).toContainText("1");
+   await page.locator('#pageNavigation a[data-route="court"]').click();
+   await expect(page.locator("#pcRunPlayer")).toBeVisible();
   });
   test("personal coach and on-court timer can be used without clipped controls",async({page})=>{
-   await page.goto("/");
+   await page.goto("/?page=coach");
    const scores={serve:15,return:13,dink:12,volley:14,position:16,strategy:10};
    for(const [skill,value] of Object.entries(scores))await page.locator("#pc-"+skill).fill(String(value));
    await page.locator("#pcGenerate").click();
@@ -113,6 +117,7 @@ for(const screen of devices){
    await page.locator("#pcAttemptTarget").selectOption("standard");
    await page.locator("#pcAttemptSave").click();
    await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
+   await page.locator('#pageNavigation a[data-route="progress"]').click();
    await page.locator("#thRefresh").click();
    await expect(page.locator("#thTotal")).toContainText("1 lần tập");
   });
