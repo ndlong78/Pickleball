@@ -37,3 +37,6 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
  html.pickleup-routing main>.section[data-page-current]{margin-top:23px}
 }
 @media(prefers-reduced-motion:reduce){#pageNavigation{scroll-behavior:auto}}
+
+/* Keep the four-item universal menu highlighted in route-based mode. */
+.mobile-dock a[aria-current="page"]{background:#305143;color:#c9fa74}
