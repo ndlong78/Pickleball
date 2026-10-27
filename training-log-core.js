@@ -17,6 +17,7 @@ function isEntry(r){
 }
 function validateList(input){return Array.isArray(input)&&input.length<=MAX&&input.every(isEntry)}
 function build(input,date=new Date().toISOString(),id){
+ if(input?.hits===undefined||input?.hits===null||String(input.hits).trim()==="")throw Error("Thiếu số lần thực hiện đúng.");
  const item={id:id||("PU26-"+String(Date.now())+"-"+Math.random().toString(36).slice(2,10)),
  planId:String(input?.planId||""),exerciseId:String(input?.exerciseId||""),
  skill:String(input?.skill||""),level:String(input?.level||""),
@@ -35,7 +36,13 @@ function read(storage){
  try{const rows=JSON.parse(storage.getItem(KEY)||"[]");return validateList(rows)?rows:[]}catch(_){return []}
 }
 function record(storage,input){
- const item=build(input),next=append(read(storage),item);
+ const item=build(input),raw=storage.getItem(KEY);
+ let previous=[];
+ if(raw!==null){
+  try{previous=JSON.parse(raw)}catch(_){throw Error("Nhật ký bị lỗi JSON. Hãy sao lưu dữ liệu trước khi tiếp tục.")}
+  if(!validateList(previous))throw Error("Nhật ký hiện tại không hợp lệ; không ghi đè dữ liệu cũ.");
+ }
+ const next=append(previous,item);
  storage.setItem(KEY,JSON.stringify(next));return item;
 }
 function matching(rows,{skill,exerciseId,level,kind="drill"}){
