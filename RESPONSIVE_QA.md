@@ -37,3 +37,11 @@ Bài test:
 
 ## Giới hạn
 Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác nhận thử nghiệm trực tiếp trên iPhone/iPad thật. GitHub Actions cần chạy thành công để chốt nghiệm thu tự động. Chưa đo tương phản màu và các tình huống bật chữ hệ thống cực lớn trên mọi phiên bản iOS.
+
+## Điều hướng thống nhất V2.6.2 – mọi thiết bị
+
+- [x] Mã nguồn đã cấu hình cho thanh điều hướng bốn mục luôn cố định cạnh dưới (bao gồm PC ≥1024px).
+- [x] Đã cập nhật test WebKit/Chromium để kiểm tra menu vẫn hiện diện ở khung PC 1440px, iPad và iPhone sau khi cuộn.
+- [ ] Chạy thành công workflow và kiểm tra thực tế menu không che nội dung ở cuối trang.
+- [ ] Trên iPhone/iPad: thử khi bàn phím mở, xoay màn hình và dùng PWA từ Home Screen.
+- [ ] Trên PC: kiểm tra ở độ phóng đại 100%, 125%, 150% và màn hình nhỏ.
