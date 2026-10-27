@@ -34,7 +34,7 @@ function submit(){
   localStorage.setItem(KEY,JSON.stringify(previous.concat(entry).slice(-500)));
   $("matchNotes").value="";$("matchOurs").value="";$("matchTheirs").value="";
   $("matchStatus").textContent="Đã lưu trận đấu và trọng tâm cần luyện tập.";
-  draw();
+  draw();document.dispatchEvent(new Event("pickleup:match-saved"));
  }catch(err){$("matchStatus").textContent="Không lưu được nhật ký: "+err.message}
 }
 document.addEventListener("DOMContentLoaded",()=>{
