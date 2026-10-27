@@ -99,6 +99,7 @@ async function toggleWake(){
  if(!wakeWanted){try{if(wakeLock)await wakeLock.release()}catch(_){}wakeLock=null;return}
  try{
   wakeLock=await navigator.wakeLock.request("screen");
+  wakeLock.addEventListener?.("release",()=>{wakeLock=null});
   message("Đã yêu cầu giữ màn hình sáng. Tính năng có thể tự ngắt khi khóa màn hình hoặc tiết kiệm pin.");
  }catch(e){wakeWanted=false;$("pcWakeToggle").checked=false;message("Không bật được giữ màn hình sáng trên thiết bị này.")}
 }
