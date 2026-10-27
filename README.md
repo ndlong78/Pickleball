@@ -111,3 +111,14 @@ PickleUp đã bổ sung `responsive.css` (nạp sau các style cũ) và `mobile-
 **Kiểm thử**: đã thêm cấu hình Playwright Chromium/WebKit và workflow GitHub Actions chạy trên năm kích thước iPhone/iPad. Đây là mô phỏng trình duyệt, không thay thế nghiệm thu trên thiết bị Apple. Xem [RESPONSIVE_QA.md](RESPONSIVE_QA.md) để thực hiện checklist thực tế.
 
 **Lưu ý**: V2.6.1 sửa bố cục và thao tác, không thay đổi các khóa dữ liệu luyện tập từ V2.4 đến V2.6.
+
+## Điều hướng cố định trên tất cả thiết bị (V2.6.2)
+
+Thanh menu bốn mục **🎯 HLV cá nhân · ⏱ Trên sân · 📈 Tiến bộ · 📚 Giáo án** luôn hiển thị ở **cạnh dưới cửa sổ** khi cuộn trang, trên **PC, iPad ngang/dọc và iPhone**.
+- PC: menu gọn, nằm giữa phía dưới; không còn một menu bốn mục khác trùng lặp ở phía trên.
+- iPad/iPhone: menu trải toàn chiều rộng, chừa khoảng `safe-area` cho Home Indicator.
+- Truy cập từng mục bằng nút; phần đang đọc được đánh dấu khi cuộn.
+- Nội dung cuối trang có khoảng trống để menu không che nút/lịch sử.
+- Dùng `responsive.css` và `mobile-ui.js`, PWA cache đổi sang `pickleup-shell-v2-6-universal-menu`.
+
+Kiểm tra: `npm run test:responsive` thực hiện smoke test cho iPhone/iPad và thêm PC 1440px; kiểm tra menu luôn cố định, điều hướng tới cả bốn mục và thao tác lưu kết quả. Đây là kiểm thử trình duyệt mô phỏng, chưa thay cho thử trực tiếp trên thiết bị của người dùng.
