@@ -3,13 +3,13 @@
 (function(root){
 "use strict";
 const KEY="pickleup_training_log_v26",MAX=1000;
-const skills=["serve","return","dink","volley","position","strategy"],levels=["1.0–2.0","2.0–2.5","2.5–3.0"];
+const skills=["serve","return","dink","volley","position","strategy"],levels=["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0"];
 function isEntry(r){
  return !!r&&typeof r==="object"&&!Array.isArray(r)
  &&typeof r.id==="string"&&r.id.length>0&&r.id.length<=100
  &&typeof r.planId==="string"&&r.planId.length>0&&r.planId.length<=100
- &&typeof r.exerciseId==="string"&&/^(serve|return|dink|volley|position|strategy)-[1-4]$/.test(r.exerciseId)
- &&skills.includes(r.skill)&&r.exerciseId.startsWith(r.skill+"-")
+ &&typeof r.exerciseId==="string"&&/^(?:(?:serve|return|dink|volley|position|strategy)-[1-4]|ADV-PU-0(?:3[7-9]|[4-7][0-9]|80))$/.test(r.exerciseId)
+ &&skills.includes(r.skill)&&(r.exerciseId.startsWith("ADV-PU-")||r.exerciseId.startsWith(r.skill+"-"))
  &&levels.includes(r.level)&&["drill","assessment"].includes(r.kind)
  &&Number.isInteger(r.hits)&&r.hits>=0&&r.hits<=20
  &&r.attempts===20&&typeof r.date==="string"&&!Number.isNaN(Date.parse(r.date))
