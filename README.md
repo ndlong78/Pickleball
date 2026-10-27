@@ -42,3 +42,7 @@ Trước khi xóa dữ liệu trình duyệt hay chuyển điện thoại, chọ
 ## V2.1 beta
 
 Đọc [ROADMAP.md](ROADMAP.md) để xem tiến độ, tiêu chí nghiệm thu và giới hạn triển khai. Giáo án đã bổ sung cách bố trí, vùng mục tiêu, gợi ý kỹ thuật và sơ đồ sân minh họa chung. Bản này cần kiểm thử trên sân và các thiết bị trước khi công bố là chương trình huấn luyện hoàn chỉnh.
+
+## V2.2 beta
+
+Dashboard gồm số buổi đã ghi nhận/36, tỷ lệ đúng trung bình, sáu biểu đồ kỹ năng, kết quả theo tuần và gợi ý kỹ năng ưu tiên. Dữ liệu lưu cục bộ trên trình duyệt. Dashboard không suy ra DUPR; kết quả ghi lại gần nhất cho mỗi bài, chưa là lịch sử nhiều lần tập. Mã nguồn: [dashboard.js](dashboard.js).
