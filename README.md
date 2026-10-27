@@ -50,3 +50,21 @@ Dashboard gồm số buổi đã ghi nhận/36, tỷ lệ đúng trung bình, s�
 ## V2.3 beta – Kiểm tra chuyển cấp
 
 Trong mục **Kiểm tra chuyển cấp**, chọn nhóm giáo án và nhập số lần đạt trong 20 lượt cho sáu kỹ năng. Hệ thống lưu lịch sử gần nhất, gợi ý kỹ năng cần bổ sung và kết quả tự đánh giá nội bộ. Ngưỡng 11/14/16 trên 20 chỉ là mốc thử nghiệm, không dùng suy ra rating chính thức. Dữ liệu được bao gồm trong bản sao lưu JSON.
+
+## V2.4 beta – Personal Coach (cá nhân hóa 60 phút)
+
+Mở phần **Giáo án cá nhân hóa 60 phút** trên trang chính.
+
+1. Nhấn **Nạp điểm đã lưu** để dùng dữ liệu V2.3/Học viện, hoặc nhập đủ 6 kết quả thủ công (0–20).
+2. Chọn nhóm giáo án 1.0–2.0, 2.0–2.5 hoặc 2.5–3.0; nhấn **Tạo giáo án 60 phút**.
+3. Hệ thống sắp xếp ba kỹ năng cần ưu tiên và chọn một bài cụ thể cho mỗi kỹ năng trong tổng thư viện 24 bài. Giáo án 10 + 12 + 12 + 15 + 6 + 5 = 60 phút.
+4. Sau khi tập, nhập kết quả 20 lần kiểm tra của kỹ năng ưu tiên số một; nhấn **Lưu kết quả buổi tập**.
+5. Lần sau hệ thống sử dụng điểm mới để gợi ý ba ưu tiên khác nếu cần, và luân phiên bài tập.
+
+**Giới hạn:** Các điểm có thể là tự đo, chưa đồng nhất mức độ khó; việc chọn bài là bộ quy tắc offline chứ chưa phải AI. Kế hoạch lưu cục bộ tại `pickleup_plans_v24`, được xuất/nhập trong bản sao lưu JSON tương thích phiên bản trước. Người dùng cần nhập điểm từ cuộc hội thoại ChatGPT theo cách thủ công vì website không kết nối dữ liệu trò chuyện.
+
+**Mã nguồn:** [personalized-core.js](personalized-core.js) (quy tắc + 24 drill), [personalized-ui.js](personalized-ui.js) (giao diện), [tests/personalized-core.test.js](tests/personalized-core.test.js) (kiểm thử).
+
+**Kiểm thử tại máy tính** (yêu cầu Node.js): `node --test tests/personalized-core.test.js`.
+
+**Roadmap:** [ROADMAP.md](ROADMAP.md).
