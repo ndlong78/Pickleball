@@ -49,3 +49,16 @@ Các module chuyên biệt cũ vẫn dùng chung trên tất cả trang:
 - [ ] Chạy và xác minh kết quả CI Chromium/WebKit, thử trên iOS Safari và Android thật.
 - [ ] Kiểm thử offline sâu cho URL đã bookmark, tình huống PWA cũ đang còn cache.
 - [ ] Huấn luyện viên kiểm tra các thao tác trên sân và tính hợp lý của việc chia trang.
+
+## V3.5 – Runtime load theo trang
+
+Mô hình dữ liệu, HTML và route bảy trang của V3.4 **không thay đổi**. Tuy nhiên, V3.5 chỉ tải lõi router rồi nạp module cho trang đang mở.
+
+- Manifest dependency/asset: `modules/page-loader.js` (`PAGE_FILES` và `PAGE_STYLES`).
+- Script nạp trễ khởi tạo bằng `PICKLEUP_READY(fn)` để không bỏ lỡ `DOMContentLoaded`.
+- Bộ tải giữ một bản mỗi script/style, tránh khởi tạo trùng module chung.
+- PWA precache 14 tài nguyên lõi; module các trang khác cache sau lần truy cập online.
+- Số đo nạp module của phiên hiện tại: `?page=settings#performanceDiagnostics`.
+- Trang Trên sân và Thi đấu tự tạo các lựa chọn input, không cần mở trang Tiến bộ trước.
+
+Xem [PERFORMANCE.md](PERFORMANCE.md) để biết mức tối ưu và các giới hạn offline.
