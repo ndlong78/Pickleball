@@ -9,6 +9,11 @@ function valid(v){return Number.isInteger(v)&&v>=0&&v<=20}
 function latestInputs(){
  const tests=read("pickleup_stage_checks_v23",[]);
  const stage=Array.isArray(tests)?tests.filter(t=>t&&core.validScores(t.values)&&core.levels.includes(t.level)).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")))[0]:null;
+ const lastCompleted=history().filter(p=>p.completedAt&&valid(p.checkScore)&&p.checkpoint&&core.validScores(p.scores)).sort((a,b)=>String(b.completedAt).localeCompare(String(a.completedAt)))[0];
+ if(lastCompleted&&(!stage||String(lastCompleted.completedAt)>=String(stage.date||""))){
+  const next={...lastCompleted.scores};next[lastCompleted.checkpoint.skill]=lastCompleted.checkScore;
+  return {scores:next,level:lastCompleted.level,source:"Kết quả cập nhật sau lần tập cá nhân gần nhất ("+new Date(lastCompleted.completedAt).toLocaleDateString("vi-VN")+"). Có thể chỉnh lại sáu điểm."};
+ }
  if(stage)return {scores:{...stage.values},level:stage.level,source:"Bài kiểm tra chuyển cấp V2.3 gần nhất ("+new Date(stage.date).toLocaleDateString("vi-VN")+")"};
  const source=read("pickleup_academy_v2",{}),legacy=read("pickleup_scores",{}),lessons=window.PICKLEUP_CURRICULUM||[],out={},dateBySkill={};
  for(const [id,record] of Object.entries(source||{})){
@@ -95,6 +100,8 @@ function complete(){
   if(i<0)throw Error("Không tìm thấy kế hoạch; hãy tạo giáo án mới.");
   const updated={...plans[i],completedAt:new Date().toISOString(),checkScore:score};
   plans[i]=updated;localStorage.setItem(storageKey,JSON.stringify(plans));
+  $("pc-"+updated.checkpoint.skill).value=String(score);
+  $("pcSource").textContent="Đã cập nhật điểm "+core.names[updated.checkpoint.skill]+" sau buổi tập. Kế hoạch tiếp theo sẽ sử dụng điểm mới khi bạn chọn Tạo giáo án.";
   render(updated);renderHistory();
   const d=score-updated.checkpoint.baseline;
   setStatus("Đã lưu kết quả: "+score+"/20 ("+(d>=0?"+":"")+d+" so với đầu vào).");
