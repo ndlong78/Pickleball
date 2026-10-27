@@ -23,6 +23,10 @@ button:disabled{cursor:not-allowed}
 .pc-run-buttons button,.timerbuttons button,.pc-actions button,.pc-alt,.backupactions button,
 .backupactions label,.primary,.secondary,#pcAttemptSave,.pc-history-item{
  min-height:var(--touch)}
+.top-shortcuts{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;min-width:0}
+.top-shortcuts a{display:flex;align-items:center;justify-content:center;color:#e0eee1;text-decoration:none;
+ font-size:12px;font-weight:700;padding:10px 13px;border-radius:9px;min-height:44px;white-space:nowrap}
+.top-shortcuts a:hover,.top-shortcuts a:focus-visible{background:#284e43;color:#c9fa74}
 .mobile-dock{display:none}
 .section[id],#pcPlan,#pcCompletion{scroll-margin-top:16px}
 #pcRunClock{font-variant-numeric:tabular-nums}
@@ -47,6 +51,7 @@ button:disabled{cursor:not-allowed}
 
 /* iPad portrait, small tablet and landscape phone. */
 @media(max-width:1023px){
+ .top-shortcuts{display:none}
  .navlabel{display:none}
  .nav{height:68px}
  .brand{font-size:23px}
