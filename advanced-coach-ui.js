@@ -9,6 +9,13 @@ function node(tag,text,cls){const el=document.createElement(tag);if(text!==undef
 function valid(n){return Number.isInteger(n)&&n>=0&&n<=20}
 function read(key,otherwise){try{return JSON.parse(localStorage.getItem(key)||"null")??otherwise}catch(_){return otherwise}}
 function history(){const list=read(core.KEY,[]);return Array.isArray(list)?list.filter(core.validPlan):[]}
+function writableHistory(){
+ const raw=localStorage.getItem(core.KEY);
+ if(raw===null)return [];
+ let plans;try{plans=JSON.parse(raw)}catch(_){throw Error("Lịch sử giáo án bị lỗi JSON; hãy sao lưu trước khi ghi thêm.")}
+ if(!core.validateList(plans))throw Error("Lịch sử giáo án không hợp lệ; không ghi đè dữ liệu cũ.");
+ return plans;
+}
 function status(s){$("acCoachStatus").textContent=s}
 function chooseSource(){
  const checks=read("pickleup_advanced_checks_v3",[]);
@@ -84,7 +91,7 @@ function showHistory(){
 }
 function make(){
  try{
-  const scores=scoresFromInputs(),plans=history();
+  const scores=scoresFromInputs(),plans=writableHistory();
   const plan=core.createPlan(scores,plans,$("acCoachLevel").value,new Date().toISOString());
   const next=plans.concat(plan).slice(-100);
   localStorage.setItem(core.KEY,JSON.stringify(next));
@@ -97,7 +104,7 @@ function complete(){
  const str=$("acCoachResult").value.trim(),result=Number(str);
  if(!str||!valid(result)){status("Nhập kết quả nguyên từ 0 đến 20.");return}
  try{
-  const plans=history(),idx=plans.findIndex(p=>p.id===current.id);
+  const plans=writableHistory(),idx=plans.findIndex(p=>p.id===current.id);
   if(idx<0)throw Error("Không tìm thấy giáo án đã lưu.");
   const before=plans[idx],updated={...before,completedAt:new Date().toISOString(),checkScore:result};
   plans[idx]=updated;localStorage.setItem(core.KEY,JSON.stringify(plans));
