@@ -19,6 +19,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.3 beta | Kiểm tra 6 kỹ năng, lưu lịch sử, đánh giá chuyển nhóm giáo án nội bộ | Đã đưa mã nguồn; cần kiểm thử và hiệu chỉnh ngưỡng |
 | V2.4 beta | Tạo giáo án cá nhân từ 6 điểm, 24 drill, ưu tiên 3 kỹ năng, lịch sử và đo tiến bộ | Mã nguồn đã triển khai; cần kiểm thử trên thiết bị |
 | V2.5 beta | Chế độ trên sân: đồng hồ theo 6 phần, sơ đồ cho 24 drill, điều khiển và tiếp tục sau tải lại | Đã đưa mã nguồn; cần kiểm thử trình duyệt/thiết bị |
+| V2.6 beta | Mobile-first: kết quả nhiều lần/cùng drill, biểu đồ so sánh cùng cấp độ và giữ màn hình sáng nếu hỗ trợ | Đã cập nhật mã nguồn; chờ kiểm thử thiết bị |
 | V3.0 | 3.0–4.0: chiến thuật, reset, third shot, nhật ký trận | Kế hoạch |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
@@ -87,7 +88,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Chạy `node --test tests/personalized-core.test.js` và kiểm tra UI trên iPhone Safari, Android Chrome, máy tính, cả online/offline.
 - [ ] Kiểm thử nhập điểm sai, lưu đầy bộ nhớ, hai thiết bị khác nhau và sao lưu/khôi phục.
 - [ ] Huấn luyện viên rà soát độ phù hợp và điều chỉnh mục tiêu theo độ khó drill.
-- [ ] Lưu dữ liệu chi tiết nhiều lần tập của một bài thay vì chỉ điểm tổng kết.
+- [x] Bổ sung nhật ký nhiều lần tập của cùng bài tại V2.6, vẫn giữ dữ liệu tổng kết V2.4.
 - [ ] Đồng bộ chọn bài tập với mô-đun đếm giờ và hướng dẫn hình sân, hiện bài được hiển thị dạng giáo án văn bản.
 
 **Nguyên tắc:** Giáo án được chọn bởi bộ quy tắc xác định, chưa sử dụng mô hình AI. Không suy ra cấp độ DUPR, không tự chuyển rating và không đảm bảo đạt 5.0 theo số tuần.
@@ -112,5 +113,27 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Chưa tự động phân tích video, chưa xếp hạng thi đấu chính thức.
 
 **Bước kế tiếp**
-- V2.6 đề xuất: nâng trải nghiệm di động, tự động ghi lịch sử nhiều lần tập, biểu đồ tiến bộ thực theo cùng độ khó, tổng hợp phản hồi người chơi.
+- V2.6 beta: đã thêm giao diện di động, lưu từng lần tập và biểu đồ so sánh cùng bài/cấp độ. Cần kiểm thử thực địa.
 - V3.0: mở rộng giáo trình và bài kiểm tra chuyên sâu lên 3.0–4.0 khi V2.1–2.5 đã được kiểm chứng.
+
+## V2.6 beta – Mobile Training Log
+
+**Phạm vi hiện có**
+- [x] Ghi số lần thành công trên 20 lần cho từng drill trong ba giai đoạn bài tập trên sân, hỗ trợ ghi chú ngắn.
+- [x] Mỗi lần thực hiện được lưu thêm vào nhật ký `pickleup_training_log_v26` (tối đa 1000 lượt gần nhất), không ghi đè bài trước.
+- [x] Ghi lần kiểm tra cuối buổi khi người chơi hoàn thành kế hoạch V2.4 lần đầu. Chỉnh sửa lại điểm cũ không giả làm một lần tập mới.
+- [x] Biểu đồ so sánh **cùng mã drill + cùng cấp độ + cùng loại đánh giá**; cần ít nhất hai lần mới tính tăng/giảm.
+- [x] Lọc theo sáu kỹ năng và drill, xem 12 lần gần nhất, ghi chú từng lần.
+- [x] Trình bày thân thiện điện thoại: trường số 16px, mục tiêu chạm >=44px, đồng hồ có vị trí bám khi cuộn trong khu vực.
+- [x] Tùy chọn `Screen Wake Lock` nếu trình duyệt hỗ trợ. Không bảo đảm hoạt động khi khóa màn hình, chuyển app hoặc tiết kiệm pin.
+- [x] Bản sao lưu/khôi phục JSON mang theo `trainingLog` và kiểm tra schema; mã nguồn từ các phiên bản trước vẫn tương thích.
+- [x] PWA cache V2.6, bài test Node tại `tests/training-log.test.js`.
+
+**Giới hạn và kiểm thử còn lại**
+- [ ] Xác nhận chạy website và cài PWA trên iOS Safari, Android Chrome, máy tính.
+- [ ] Kiểm thử thực tế trên sân cùng huấn luyện viên: thước đo '20 lần đạt' phải phù hợp cho từng drill.
+- [ ] So sánh xu hướng chỉ có ý nghĩa tương đối nếu giữ giống người cấp bóng, mục tiêu và điều kiện.
+- [ ] Đo/hiệu chỉnh không mất dữ liệu khi trình duyệt đầy quota hoặc người dùng xóa dữ liệu cục bộ.
+- [ ] Chưa hỗ trợ đồng bộ đa thiết bị, báo cáo video hay xếp hạng DUPR.
+
+**Tiếp theo**: kiểm thử nghiệm thu V2.6 và rà soát sư phạm trước khi phát triển giáo trình V3.0 (3.0–4.0).
