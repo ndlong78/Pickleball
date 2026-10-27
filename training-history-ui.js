@@ -48,7 +48,7 @@ function render(){
   p.append(when,el("strong",r.hits+"/20"));history.append(p)
  });
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("thSkill"))return;
  const select=$("thSkill");
  for(const s of api.skills){const opt=el("option",names[s]);opt.value=s;select.append(opt)}
