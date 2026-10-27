@@ -155,3 +155,13 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Phân tích phản hồi trực quan và độ dễ dùng trực tiếp từ người tập.
 
 **Lưu ý**: chỉ thay đổi trình bày, không thay đổi các điểm hoặc lịch sử luyện tập trước đây.
+
+## V2.6.2 – Thanh điều hướng cố định thống nhất
+
+- [x] Menu bốn mục hiện diện trên mọi cỡ màn hình: PC, iPad dọc/ngang và iPhone.
+- [x] Trên PC menu cố định giữa cạnh dưới; trên thiết bị hẹp menu chiếm hết chiều rộng và chừa vùng an toàn iOS.
+- [x] Loại bỏ menu điều hướng trùng trên header.
+- [x] Cập nhật màu nhấn mục đang đọc theo vị trí cuộn hoặc khi điều hướng.
+- [x] Dự phòng không gian ở cuối trang để menu không đè nội dung.
+- [x] Cập nhật cache PWA, test menu cố định và điều hướng ở các kích thước gồm PC 1440px.
+- [ ] Nghiệm thu trực tiếp trên Safari iPhone/iPad và Chrome/Edge PC; xác minh hành vi khi bàn phím ảo mở.
