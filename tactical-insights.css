@@ -1,0 +1,39 @@
+/* PickleUp V3.2 — responsive tactical report. Matches remain qualitative. */
+.tactical-panel{padding:22px;min-width:0}
+.tactical-level{max-width:330px;margin-bottom:16px}
+.tactical-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 22px}
+.tactical-stat{background:#edf6e5;border-radius:12px;padding:13px;min-width:0}
+.tactical-stat strong{font-size:24px;line-height:1.2;display:block;color:#224b37}
+.tactical-stat span{font-size:11px;line-height:1.45;color:#53715c}
+.tactical-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.tactical-grid>div{min-width:0}
+.tactical-grid h3{font-size:17px;margin:0 0 16px}
+.tactical-signal{margin:10px 0}
+.tactical-signal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;flex-wrap:wrap}
+.tactical-signal-head strong{white-space:nowrap}
+.tactical-track{height:9px;background:#e8efe4;border-radius:99px;overflow:hidden;margin-top:7px}
+.tactical-fill{height:100%;background:#6eab4b;border-radius:99px;transition:width .2s}
+.tactical-recommendation{background:#eef6e9;border-radius:11px;padding:14px;margin-top:16px;line-height:1.6;font-size:12px}
+.tactical-recommendation .pc-alt{max-width:100%;margin-top:7px;white-space:normal}
+.tactical-comparison{border-bottom:1px solid #dfe8dc;padding:12px 0}
+.tactical-comparison:first-child{padding-top:0}
+.tactical-comparison:last-child{border-bottom:0}
+.tactical-comparison p{font-size:12px}
+#tacticalNotice{margin-top:16px;line-height:1.65}
+#acCoachMatchFocus{width:100%;min-height:48px}
+@media(max-width:1023px){
+ .tactical-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+}
+@media(max-width:749px){
+ .tactical-panel{padding:16px}
+ .tactical-stats{gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .tactical-stat{padding:11px}
+ .tactical-stat strong{font-size:21px}
+ .tactical-stats>.tactical-stat:last-child{grid-column:1/-1}
+ .tactical-level{max-width:100%}
+ .tactical-signal-head{font-size:12px}
+ .tactical-recommendation .pc-alt{width:100%;min-height:48px}
+}
+@media(hover:none){
+ .tactical-fill{transition:none}
+}
