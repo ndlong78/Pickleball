@@ -36,6 +36,26 @@
 <style>
 #pcRunPlayer[hidden],#pcRunEmpty[hidden],#pcRunScore[hidden]{display:none!important}.pc-run-layout{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px}.pc-run-card{background:#fff;border:1px solid #dce7dc;border-radius:16px;padding:20px}.pc-run-clock{font-size:clamp(42px,7vw,70px);font-variant-numeric:tabular-nums;font-weight:800;text-align:center;letter-spacing:-2px;line-height:1.2;margin:20px 0}.pc-run-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.pc-run-buttons button{min-height:44px;border-radius:10px;border:1px solid #c9debf;background:#f0f8e8;color:#19382e;font-weight:750;font-size:12px;padding:9px}.pc-run-buttons button:first-child{background:#b8ef49;border-color:#b8ef49}.pc-run-buttons button:disabled{opacity:.48;cursor:not-allowed}.pc-run-progress{height:9px;border-radius:999px;background:#dfe9db;overflow:hidden;margin:16px 0}.pc-run-progress div{height:100%;width:0;background:#70ad47;transition:width .2s}.pc-run-segments{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.pc-run-segment{border-radius:8px;background:#f0f4ed;font-size:11px;padding:8px;color:#6f827a}.pc-run-segment.is-active{background:#e0f4c4;color:#18392b;font-weight:700}.pc-run-segment.is-done{color:#2f7b56;background:#edf8e7}.pc-run-guide{line-height:1.8;font-size:13px}.pc-run-guide h4{font-size:18px;margin:0 0 10px}.pc-run-diagram svg{height:auto}.pc-run-message{font-size:12px;min-height:25px;color:#4d7060}.pc-run-empty{padding:20px;color:#56706a;font-size:13px}.pc-run-help{font-size:11px;color:#6a8078;margin:12px 0 0}@media(max-width:760px){.pc-run-layout{grid-template-columns:1fr}.pc-run-card{padding:16px}.pc-run-segments{grid-template-columns:repeat(2,1fr)}}
 </style>
+<style>
+/* V2.6: mobile-first practice and repeatable measurement */
+.pc-attempt{margin-top:18px;border-top:1px solid #dde9d8;padding-top:14px;display:grid;gap:8px}
+.pc-attempt[hidden]{display:none!important}.pc-attempt h4{margin:0}
+.pc-attempt label,.pc-wake{font-size:13px;font-weight:600;color:#294f3c}
+.pc-attempt input,.th-filters select{width:100%;padding:11px;border:1px solid #c4d9bb;border-radius:10px;background:white;color:#142d30;font-size:16px}
+.pc-attempt button{min-height:48px}.pc-wake{display:flex;align-items:center;gap:9px;margin-top:13px}
+.pc-wake input{width:20px;height:20px;accent-color:#5d993b}
+.th-panel{padding:22px}.th-summary{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#f0f7e9;border-radius:11px;padding:13px;margin-bottom:18px}
+.th-summary strong{font-size:18px}.th-summary span{font-size:12px;color:#61766e}
+.th-filters{display:grid;grid-template-columns:1fr 1.5fr;gap:12px}.th-filters label{font-size:12px;font-weight:700}
+.th-filters select{display:block;margin-top:7px}.th-insight{font-size:13px;font-weight:600;padding:12px;background:#eef5e8;border-radius:10px}
+.th-bars{min-height:230px;display:flex;gap:10px;align-items:end;overflow-x:auto;border-bottom:1px solid #d9e6d4;padding:16px 10px 0}
+.th-col{flex:0 0 47px;height:200px;display:flex;align-items:center;justify-content:end;flex-direction:column;gap:5px}
+.th-col strong{font-size:11px}.th-col span{font-size:11px;color:#6d8076}
+.th-bar{width:29px;border-radius:5px 5px 0 0;background:#78af4e;min-height:3px}
+.th-row{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;border-bottom:1px solid #e4ebe1;padding:9px 0}
+.th-row span{overflow-wrap:anywhere}.th-row strong{white-space:nowrap}
+@media(max-width:750px){.th-filters{grid-template-columns:1fr}.th-panel{padding:16px}.pc-run-buttons button{min-height:50px;font-size:13px}.pc-run-clock{position:sticky;top:0;background:#fff;z-index:3;padding:10px 0;border-bottom:1px solid #e4eae0}.pc-run-card{scroll-margin-top:12px}.pc-attempt input{min-height:48px}}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="shell nav"><div class="brand">pickle<b>up.</b></div><div class="navright"><span class="navlabel">HUẤN LUYỆN PICKLEBALL CÁ NHÂN</span><span class="pill"><i class="dot"></i>Người mới bắt đầu</span></div></div></header>
@@ -82,6 +102,7 @@
   <div class="pc-run-buttons"><button type="button" id="pcRunStart">Bắt đầu</button><button type="button" id="pcRunReset">Đặt lại</button><button type="button" id="pcRunPrev">← Phần trước</button><button type="button" id="pcRunNext">Phần tiếp theo →</button></div>
   <div class="pc-run-progress"><div id="pcRunProgress"></div></div>
   <div id="pcRunSegments" class="pc-run-segments"></div>
+  <label class="pc-wake"><input type="checkbox" id="pcWakeToggle"> Giữ màn hình sáng khi tập (nếu thiết bị hỗ trợ)</label>
   <p id="pcRunMessage" class="pc-run-message" role="status" aria-live="polite"></p>
   <button type="button" id="pcRunScore" class="primary" hidden>Nhập kết quả sau tập</button>
   <p class="pc-run-help">Đồng hồ dùng mốc thời gian thực để hạn chế sai lệch khi màn hình tạm ngưng. Hết một phần sẽ dừng và chờ bạn chuyển phần; không tự xác nhận hoàn thành giáo án.</p>
@@ -89,7 +110,30 @@
  <div class="pc-run-card">
   <div id="pcRunGuide" class="pc-run-guide"></div>
   <div class="pc-run-diagram" id="pcRunDiagram"></div>
+  <div class="pc-attempt" id="pcAttemptArea" hidden>
+   <h4 id="pcAttemptName">Lưu kết quả bài tập</h4>
+   <p id="pcAttemptHint" class="sub">Ghi sau 20 lần thử.</p>
+   <label for="pcAttemptHits">Số lần thực hiện đúng /20</label>
+   <input id="pcAttemptHits" type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="0–20">
+   <label for="pcAttemptNote">Ghi chú ngắn (không bắt buộc)</label>
+   <input id="pcAttemptNote" type="text" maxlength="240" placeholder="Ví dụ: giữ bóng thấp hơn">
+   <button type="button" class="primary" id="pcAttemptSave">Lưu một lần tập</button>
+  </div>
  </div>
+</div>
+</section>
+<section class="section" id="trainingHistory">
+<div class="sectionHead"><div><div class="kicker">PickleUp V2.6 · Training Insights</div><h2>Lịch sử luyện tập nhiều lần</h2><p class="sub">So sánh các lần tập của cùng bài, cùng cấp độ và cùng kiểu kiểm tra. Không cộng gộp bài dễ với bài khó.</p></div><button type="button" id="thRefresh" class="linkbtn">Làm mới</button></div>
+<div class="card th-panel">
+ <div class="th-summary"><strong id="thTotal">0 lần tập đã lưu</strong><span id="thSkillsCount">0/6 kỹ năng có dữ liệu</span></div>
+ <div class="th-filters">
+  <label for="thSkill">Kỹ năng <select id="thSkill"><option value="all">Tất cả kỹ năng</option></select></label>
+  <label for="thDrill">Bài tập / độ khó <select id="thDrill"><option value="">Chọn bài tập</option></select></label>
+ </div>
+ <p id="thComparison" class="th-insight" role="status">Chưa có dữ liệu.</p>
+ <div id="thTrend"></div>
+ <h3>Nhật ký lần tập</h3><div id="thEntries"></div>
+ <p class="sub">Mỗi lần ghi nhận dùng 20 lượt thử. Biến động có thể đến từ đối thủ, cách cấp bóng hoặc thể trạng; không tương đương xếp hạng thi đấu.</p>
 </div>
 </section>
 <section class="section" id="dashboard"><div class="sectionHead"><div><div class="kicker">Thống kê PickleUp V2.2</div><h2>Dashboard tiến bộ</h2><p class="sub">Theo dõi kết quả 36 giáo án, so sánh sáu kỹ năng và xác định nội dung cần luyện thêm.</p></div><button type="button" id="dbRefresh" class="linkbtn">Cập nhật số liệu</button></div><div class="db-summary"><div class="db-tile"><strong id="dbCompleted">0/36</strong><span class="sub">Giáo án đã ghi nhận</span></div><div class="db-tile"><strong id="dbAverage">—</strong><span class="sub">Tỷ lệ chính xác trung bình</span></div><div class="db-tile"><strong>6</strong><span class="sub">Nhóm kỹ năng</span></div></div><div class="db-bar" aria-label="Tiến độ hoàn thành 36 giáo án"><div class="db-fill" id="dbProgress" style="width:0"></div></div><p class="sub" id="dbLast"></p><div class="db-grid"><article class="card db-panel"><h3>Sáu nhóm kỹ năng</h3><div id="dbSkills"></div></article><article class="card db-panel"><h3>Kết quả theo tuần</h3><div id="dbTrend"></div></article></div><div class="db-note" style="margin-top:14px"><strong>Gợi ý tập luyện</strong><div id="dbRecommendation"></div></div><p class="sub">Đây là thống kê từ bài kiểm tra cá nhân, không phải xếp hạng DUPR hoặc chứng nhận trình độ. Mỗi tuần chỉ lưu kết quả mới nhất.</p></section><section class="section" id="academy"><div class="sectionHead"><div><div class="kicker">Học viện PickleUp V2</div><h2>36 buổi tập từ 1.0 đến 3.0</h2><p class="sub">Chọn cấp độ và bài học. Lộ trình tăng độ khó theo tuần; tập với một bạn đánh hoặc người đưa bóng.</p></div></div><div class="card" style="padding:20px"><div class="backupactions"><label for="academyLevel">Cấp độ <select id="academyLevel"><option value="all">Tất cả</option><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option></select></label><label for="academyWeek">Tuần tập <select id="academyWeek" aria-label="Chọn giáo án"></select></label></div><div id="academyDetail" class="timeline" aria-live="polite"></div><div class="backupactions" style="align-items:center"><label for="academyScore">Số lần đạt / 20 <input type="number" min="0" max="20" value="12" id="academyScore" style="display:block;max-width:110px;border:1px solid #b4cab1;border-radius:8px;padding:8px"></label><button type="button" id="academySave">Lưu kết quả bài này</button></div><p id="academyStatus" class="outcome" role="status"></p></div></section><section class="section" id="levelRoadmap"><div class="sectionHead"><div><div class="kicker">Hành trình dài hạn</div><h2>Từ mới bắt đầu đến 5.0</h2><p class="sub">Mỗi cấp độ mở rộng kỹ thuật và chiến thuật. Đây là lộ trình tham khảo, không phải chứng nhận xếp hạng.</p></div></div><div class="roadmap" id="levelCards"></div></section>
@@ -154,10 +198,12 @@ document.getElementById('restoreFile').addEventListener('change',async event=>{c
 <script src="./dashboard.js" defer></script>
 <script src="./stage-assessment.js" defer></script>
 <script src="./personalized-core.js"></script>
+<script src="./training-log-core.js"></script>
 <script src="./personalized-ui.js"></script>
 <script src="./practice-clock.js"></script>
 <script src="./practice-diagrams.js"></script>
 <script src="./practice-runner.js"></script>
+<script src="./training-history-ui.js"></script>
 <script>
 (function(){
 const data=window.PICKLEUP_CURRICULUM||[];
