@@ -13,7 +13,8 @@ function isEntry(r){
  &&levels.includes(r.level)&&["drill","assessment"].includes(r.kind)
  &&Number.isInteger(r.hits)&&r.hits>=0&&r.hits<=20
  &&r.attempts===20&&typeof r.date==="string"&&!Number.isNaN(Date.parse(r.date))
- &&typeof r.note==="string"&&r.note.length<=240;
+ &&typeof r.note==="string"&&r.note.length<=240
+ &&(r.conditions===undefined||root.PICKLEUP_PRACTICE_CONDITIONS?.valid(r.conditions)===true);
 }
 function validateList(input){return Array.isArray(input)&&input.length<=MAX&&input.every(isEntry)}
 function build(input,date=new Date().toISOString(),id){
@@ -23,6 +24,7 @@ function build(input,date=new Date().toISOString(),id){
  skill:String(input?.skill||""),level:String(input?.level||""),
  kind:input?.kind||"drill",hits:Number(input?.hits),attempts:20,
  date,note:String(input?.note||"").trim().slice(0,240)};
+ if(input?.conditions!==undefined){item.conditions=input.conditions;}
  if(!isEntry(item))throw Error("Kết quả không hợp lệ. Nhập số nguyên từ 0 đến 20 và chọn đúng bài tập.");
  return item;
 }
@@ -45,8 +47,8 @@ function record(storage,input){
  const next=append(previous,item);
  storage.setItem(KEY,JSON.stringify(next));return item;
 }
-function matching(rows,{skill,exerciseId,level,kind="drill"}){
- return rows.filter(r=>r.skill===skill&&r.exerciseId===exerciseId&&r.level===level&&r.kind===kind)
+function matching(rows,{skill,exerciseId,level,kind="drill",conditionsKey=undefined}){
+ return rows.filter(r=>r.skill===skill&&r.exerciseId===exerciseId&&r.level===level&&r.kind===kind&&(conditionsKey===undefined||(root.PICKLEUP_PRACTICE_CONDITIONS?.signature(r.conditions)||"legacy")===conditionsKey))
  .slice().sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
 }
 function compare(rows,filter){
