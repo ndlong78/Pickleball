@@ -118,6 +118,16 @@ function pulse(){
 }
 document.addEventListener("pickleup:plan-selected",event=>loadPlan(event.detail?.plan||null));
 (window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
+ const cond=window.PICKLEUP_PRACTICE_CONDITIONS;
+ if(cond){
+  const ids={feed:"pcAttemptFeed",pace:"pcAttemptPace",target:"pcAttemptTarget"};
+  for(const [kind,id] of Object.entries(ids)){
+   const field=$(id);
+   if(field&&field.options.length<=1)for(const [value,label] of Object.entries(cond.OPTIONS[kind])){
+    const item=document.createElement("option");item.value=value;item.textContent=label;field.append(item);
+   }
+  }
+ }
  if(!$("pcOnCourt"))return;
  const selected=$("pcPlan")?.dataset.planId;
  const plans=read(plansKey,[]);
