@@ -65,6 +65,29 @@ for(const screen of devices){
     await expect(page.locator('#pickleupMobileDock a[href="'+link.href+'"]')).toHaveAttribute("aria-current","location");
    }
   });
+  test("V3.1 generates advanced training, uses court timer and saves results",async({page})=>{
+   await page.goto("/");
+   const scores={third:12,reset:10,movement:15,counter:14,doubles:13,decision:11};
+   for(const [key,value] of Object.entries(scores))await page.locator("#acInput-"+key).fill(String(value));
+   await page.locator("#acCoachCreate").click();
+   await expect(page.locator("#acCoachPlan")).toContainText("Reset");
+   await expect(page.locator("#acCoachPlan")).toContainText("60");
+   await page.locator("#acCoachRun").click();
+   await expect(page.locator("#pcRunPlayer")).toBeVisible();
+   await page.locator("#pcRunNext").click();
+   await expect(page.locator("#pcRunGuide")).toContainText("Reset");
+   await expect(page.locator("#pcRunDiagram svg")).toBeVisible();
+   await page.locator("#pcAttemptHits").fill("13");
+   await page.locator("#pcAttemptSave").click();
+   await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
+   await page.locator("#acCoachResult").fill("14");
+   await page.locator("#acCoachSave").click();
+   await expect(page.locator("#acCoachStatus")).toContainText("Đã lưu");
+   await page.reload();
+   await expect(page.locator("#acCoachPlan")).toContainText("Reset");
+   await expect(page.locator("#pcRunPlayer")).toBeVisible();
+   await expect(page.locator("#acCoachFinished")).toContainText("1");
+  });
   test("personal coach and on-court timer can be used without clipped controls",async({page})=>{
    await page.goto("/");
    const scores={serve:15,return:13,dink:12,volley:14,position:16,strategy:10};
