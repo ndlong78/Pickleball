@@ -43,7 +43,7 @@ function draw(){
  }
  const latest=$("dbLast");if(count){const q=data[data.length-1];latest.textContent="Buổi gần nhất trong lộ trình có dữ liệu: tuần "+q.s.week+" · "+q.r.score+"/20."}else latest.textContent="Chưa có buổi tập được ghi nhận.";
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
 if(!$("dbSkills"))return;
 draw();
 window.addEventListener("storage",e=>{if(["pickleup_scores","pickleup_academy_v2"].includes(e.key))draw()});
