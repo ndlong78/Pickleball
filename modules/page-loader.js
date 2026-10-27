@@ -10,7 +10,7 @@ const PAGE_FILES={
  academy:["curriculum.js","advanced-curriculum.js","advanced-diagrams.js","court-diagrams.js","modules/assessments-and-backup.js","modules/academy-page.js"],
  progress:["modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
  matches:["curriculum.js","advanced-curriculum.js","practice-conditions.js","advanced-coach-core.js","tactical-insights-core.js","match-journal.js","tactical-insights-ui.js"],
- settings:["modules/weekly-practice.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/assessments-and-backup.js"]
+ settings:["modules/weekly-practice.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/assessments-and-backup.js","modules/page-performance.js"]
 };
 const PAGE_STYLES={
  matches:["tactical-insights.css"],
