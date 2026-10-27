@@ -169,3 +169,17 @@ Kiểm thử nội dung: `npm run test:unit` (gồm `tests/advanced-curriculum.t
 **Kiểm thử:** `npm run test:unit` gồm `tests/tactical-insights.test.js`; `npm run test:responsive` gồm kiểm tra giao diện Chromium/WebKit kích thước iPhone, iPad, PC. Các bài kiểm thử tự động chưa thay thế nghiệm thu thực tế trên sân.
 
 **Giới hạn:** Số lần nhắc tới một kỹ năng sau trận phụ thuộc cảm nhận người chơi, không chứng minh nguyên nhân thắng/thua. Biểu đồ cùng bài vẫn có sai khác người cấp bóng, mặt sân, mệt mỏi. Đây không phải rating DUPR hoặc AI phân tích video.
+
+## V3.3 beta – Đánh giá điều kiện tập và phối hợp đánh đôi
+
+**Mục tiêu:** So sánh kết quả bài tập một cách thận trọng bằng cách ghi thêm điều kiện thực hiện. Dữ liệu cũ không bị xóa hoặc sửa.
+
+1. Trong **⏱ Trên sân**, chọn từng phần bài tập; sau 20 lượt kiểm tra, nhập số lần đúng và chọn đầy đủ **Cách cấp bóng** (bạn tập / máy bắn / pha bóng), **Tốc độ** (chậm / vừa / gần thi đấu), **Vùng mục tiêu** (rộng / tiêu chuẩn / hẹp). Kết quả mới sẽ lưu vào khóa cũ `pickleup_training_log_v26` cùng trường `conditions` tùy chọn.
+2. Mở **Tiến bộ trong điều kiện tương đương**. Chọn nhóm trình độ, xem số lượt đủ điều kiện và kết quả của nhóm gồm cùng mã bài, cấp độ, loại kiểm tra và cả ba thông tin điều kiện. Mỗi nhóm cần ít nhất hai lần đo.
+3. Trong **Nhật ký thi đấu**, nếu đánh đôi, có thể chọn một tình huống phối hợp cần cải thiện: bỏ khoảng giữa, giao tiếp, di chuyển lên kitchen, xử lý cú thứ ba, hoặc không có vấn đề cụ thể. V3.3 tổng hợp tối đa 20 trận đánh đôi gần nhất đã ghi phân loại.
+4. Các lượt tập và trận cũ không có trường mới **vẫn hợp lệ**. Hệ thống chỉ phân tách chúng ra thành dữ liệu chưa ghi đủ điều kiện, không tự suy diễn rằng chúng tương đương.
+5. Bản sao lưu/khôi phục JSON sử dụng các khóa cũ và chấp nhận trường bổ sung; dữ liệu lưu trong trình duyệt, không tự đồng bộ đa thiết bị.
+
+**Hạn chế khoa học:** Ngay cả khi cách cấp bóng, tốc độ và vùng mục tiêu trùng nhau, sự khác nhau về đối tác, vị trí sân, mệt mỏi và việc đếm lượt cũng có thể ảnh hưởng kết quả. Chênh lệch 0–20 không chứng minh quan hệ nguyên nhân hoặc thay thế xếp hạng DUPR.
+
+**Mã nguồn V3.3:** `practice-conditions.js`, `training-evaluation-core.js`, `training-evaluation-ui.js`, `training-evaluation.css`. Kiểm thử `npm run test:unit` và `npm run test:responsive`, gồm `tests/training-evaluation.test.js`, `tests/evaluation-responsive.spec.cjs`. Cần nghiệm thu thêm trên thiết bị iOS thực tế.
