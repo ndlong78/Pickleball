@@ -137,3 +137,21 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Chưa hỗ trợ đồng bộ đa thiết bị, báo cáo video hay xếp hạng DUPR.
 
 **Tiếp theo**: kiểm thử nghiệm thu V2.6 và rà soát sư phạm trước khi phát triển giáo trình V3.0 (3.0–4.0).
+
+## V2.6.1 – Responsive iPhone / iPad hotfix
+
+**Đã cập nhật mã nguồn**
+- [x] Bổ sung CSS responsive cuối trang: điện thoại ≤749px, iPad dọc 750–1023px, tablet ngang 1024–1199px; xử lý hình, biểu đồ và ô nhập tránh tràn ngang.
+- [x] Bổ sung vùng an toàn Safari `viewport-fit=cover`, padding cho tai thỏ/Home Indicator.
+- [x] Điều hướng dưới cho điện thoại và iPad dọc; điều hướng trên cho iPad ngang.
+- [x] Touch target ≥44px cho các nút chính, cỡ chữ ô nhập ≥16px trên màn hình cảm ứng và xử lý khi bàn phím đang mở.
+- [x] Responsive PWA cache với `responsive.css` và `mobile-ui.js`.
+- [x] Có test tự động Chromium/WebKit ở năm kích thước iPhone/iPad, triển khai workflow CI.
+- [x] Tài liệu [RESPONSIVE_QA.md](RESPONSIVE_QA.md) hướng dẫn kiểm thử thực tế.
+
+**Chưa kết luận nghiệm thu**
+- [ ] Kiểm tra kết quả pipeline CI và sửa mọi lỗi còn lại.
+- [ ] Kiểm tra bằng iPhone/iPad thật trên Safari, PWA đã cài, bàn phím, khi xoay màn hình.
+- [ ] Phân tích phản hồi trực quan và độ dễ dùng trực tiếp từ người tập.
+
+**Lưu ý**: chỉ thay đổi trình bày, không thay đổi các điểm hoặc lịch sử luyện tập trước đây.
