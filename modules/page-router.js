@@ -82,6 +82,9 @@ function onClick(event){
 }
 function restore(){
  const route=fromLocation();
+ const url=new URL(root.location.href);
+ // Canonicalize old #section bookmarks into the new shareable page URL.
+ if(url.searchParams.get(pageParam)!==route.page)root.history.replaceState({pickleupPage:route.page},"",hrefFor(route.page,route.section));
  render(route.page);
  root.requestAnimationFrame(()=>scrollToSection(route.section));
 }
