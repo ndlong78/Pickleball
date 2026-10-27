@@ -49,7 +49,7 @@ function report(){
  const summary=$("acCoachMatchSuggestion");
  if(summary)summary.textContent=info.suggested?"Nhật ký gợi ý: "+coach.names[info.suggested]+" ("+info.votes[info.suggested]+"/"+info.matchCount+" trận). Chỉ áp dụng khi bạn chọn.":"Chưa có gợi ý dựa trên nhật ký trận đấu.";
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("tacticalLevel"))return;
  $("tacticalLevel").addEventListener("change",report);
  $("tacticalRefresh").addEventListener("click",report);
