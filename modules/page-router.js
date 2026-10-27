@@ -46,11 +46,11 @@ function render(page){
  document.dispatchEvent(new CustomEvent("pickleup:route-change",{detail:{page:p.id}}));
 }
 function scrollToSection(section){
- if(!section){root.scrollTo({top:0,behavior:"instant"});return}
+ if(!section){root.scrollTo({top:0,behavior:"auto"});return}
  const item=document.getElementById(section);
  if(!item||item.getAttribute("data-pickleup-page")!==current)return;
  const top=Math.max(0,item.getBoundingClientRect().top+root.scrollY-18);
- root.scrollTo({top,behavior:"instant"});
+ root.scrollTo({top,behavior:"auto"});
 }
 function openPage(page,section=null,replace=false){
  if(!byId.has(page))page=DEFAULT;
