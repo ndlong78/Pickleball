@@ -41,6 +41,13 @@ function submit(){
 }
 (window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("matchFocus"))return;
+ const issueField=$("matchDoublesIssue"),cond=window.PICKLEUP_PRACTICE_CONDITIONS;
+ if(issueField&&cond&&issueField.options.length<=1){
+  for(const [value,label] of Object.entries(cond.DOUBLES)){
+   const option=node("option",label);option.value=value;issueField.append(option);
+  }
+ }
+
  foci.forEach(k=>{const e=node("option",labels[k]);e.value=k;$("matchFocus").append(e)});
  if($("matchMode")&&$("matchDoublesField")){$("matchMode").addEventListener("change",()=>{$("matchDoublesField").hidden=$("matchMode").value!=="doubles"});$("matchMode").dispatchEvent(new Event("change"))}
  $("matchSave").addEventListener("click",submit);draw();
