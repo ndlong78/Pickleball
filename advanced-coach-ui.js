@@ -120,6 +120,13 @@ function complete(){
   status("Đã lưu: "+result+"/20 ("+sign+note+" so với đầu vào)."+logMessage);
  }catch(err){status("Lỗi lưu kết quả: "+err.message)}
 }
+document.addEventListener("pickleup:plan-selected",event=>{
+ const chosen=event.detail?.plan;
+ if(chosen&&chosen.version!=="3.1"&&$("acCoachRun")){
+  $("acCoachRun").disabled=true;
+  $("acCoachComplete").hidden=true;
+ }
+});
 document.addEventListener("DOMContentLoaded",()=>{
  if(!$("acCoachInputs"))return;
  for(const key of keys){
