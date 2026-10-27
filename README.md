@@ -155,3 +155,17 @@ Kiểm thử nội dung: `npm run test:unit` (gồm `tests/advanced-curriculum.t
 **Giới hạn:** Hiện là công cụ cá nhân hóa dựa trên quy tắc, không phải mô hình AI huấn luyện thực tế. Số lượt thành công chỉ có thể so sánh khi cùng độ khó và điều kiện. Nhóm 3.0–4.0 không phải rating DUPR.
 
 **Kiểm thử:** `npm run test:unit` bao gồm `tests/advanced-coach.test.js`, `npm run test:responsive` kiểm tra tạo giáo án nâng cao, đồng hồ và lưu kết quả trên các kích thước màn hình. Xem [ROADMAP.md](ROADMAP.md) để biết danh sách việc chưa nghiệm thu.
+
+## V3.2 beta – Báo cáo chiến thuật liên kết nhật ký trận và huấn luyện
+
+- Mở mục **Phân tích chiến thuật V3.2** bằng liên kết trong **HLV nâng cao** hoặc **Nhật ký thi đấu**.
+- Phần **Trọng tâm sau trận** tổng hợp **tối đa 10 trận gần nhất**, đếm số lần người chơi tự ghi nhận kỹ năng cần luyện. Đây là dữ liệu định tính, không phải điểm kiểm tra.
+- Phần **Tiến bộ cùng bài tập** chọn cấp độ 3.0–3.5 hoặc 3.5–4.0, chỉ so sánh những lần tập có cùng mã bài, cùng cấp độ và cùng loại kiểm tra. Cần ít nhất hai lần đo mới tính chênh lệch.
+- Chọn **Đưa trọng tâm này vào HLV nâng cao** để chủ động ưu tiên kỹ năng được ghi nhận nhiều sau trận. Có thể chỉnh hoặc bỏ lựa chọn trong ô **Ưu tiên theo nhật ký trận đấu**. Không tự đổi sáu điểm kỹ năng gốc.
+- Thuật toán chỉ chọn một kỹ năng ưu tiên khi người tập yêu cầu; hai bài còn lại lấy từ các kỹ năng có điểm kiểm tra thấp nhất. Nếu bỏ chọn, HLV hoạt động như V3.1.
+- Mọi dữ liệu vẫn ở trình duyệt, sử dụng các khóa V3/V3.1 hiện có: `pickleup_match_journal_v3`, `pickleup_training_log_v26`, `pickleup_advanced_plans_v31`. Lựa chọn `matchFocus` là trường tùy chọn trong kế hoạch V3.1, tương thích kế hoạch đã lưu.
+- PWA cache V3.2 thêm `tactical-insights-core.js`, `tactical-insights-ui.js`, `tactical-insights.css`.
+
+**Kiểm thử:** `npm run test:unit` gồm `tests/tactical-insights.test.js`; `npm run test:responsive` gồm kiểm tra giao diện Chromium/WebKit kích thước iPhone, iPad, PC. Các bài kiểm thử tự động chưa thay thế nghiệm thu thực tế trên sân.
+
+**Giới hạn:** Số lần nhắc tới một kỹ năng sau trận phụ thuộc cảm nhận người chơi, không chứng minh nguyên nhân thắng/thua. Biểu đồ cùng bài vẫn có sai khác người cấp bóng, mặt sân, mệt mỏi. Đây không phải rating DUPR hoặc AI phân tích video.
