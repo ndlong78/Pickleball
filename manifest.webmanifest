@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "PickleUp – Huấn luyện Pickleball",
+  "short_name": "PickleUp",
+  "description": "Giáo án Pickleball 60 phút mỗi tuần, theo dõi tiến bộ offline",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7f2",
+  "theme_color": "#101e22",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
