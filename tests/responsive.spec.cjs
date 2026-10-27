@@ -37,6 +37,20 @@ for(const screen of devices){
    expect(end.y+end.height).toBeLessThanOrEqual(screen.height+2);
    expect(end.y).toBeGreaterThanOrEqual(-2);
   });
+  test("V3 academy filters 20 and 24 advanced lessons and logs a match",async({page})=>{
+   await page.goto("/");
+   await page.locator("#academyLevel").selectOption({label:"3.0–3.5"});
+   await expect(page.locator("#academyWeek option")).toHaveCount(20);
+   await page.locator("#academyLevel").selectOption({label:"3.5–4.0"});
+   await expect(page.locator("#academyWeek option")).toHaveCount(24);
+   await expect(page.locator("#academyDetail")).toContainText("Kiểm tra");
+   await expect(page.locator("#advancedCheckInputs input")).toHaveCount(6);
+   await page.locator("#matchOurs").fill("11");
+   await page.locator("#matchTheirs").fill("9");
+   await page.locator("#matchSave").click();
+   await expect(page.locator("#matchSummary")).toContainText("1 trận");
+   await expect(page.locator("#matchHistory")).toContainText("11–9");
+  });
   test("persistent menu links navigate to all four sections",async({page})=>{
    await page.goto("/");
    const links=[
