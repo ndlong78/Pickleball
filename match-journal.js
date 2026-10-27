@@ -39,7 +39,7 @@ function submit(){
   draw();document.dispatchEvent(new Event("pickleup:match-saved"));
  }catch(err){$("matchStatus").textContent="Không lưu được nhật ký: "+err.message}
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("matchFocus"))return;
  foci.forEach(k=>{const e=node("option",labels[k]);e.value=k;$("matchFocus").append(e)});
  if($("matchMode")&&$("matchDoublesField")){$("matchMode").addEventListener("change",()=>{$("matchDoublesField").hidden=$("matchMode").value!=="doubles"});$("matchMode").dispatchEvent(new Event("change"))}
