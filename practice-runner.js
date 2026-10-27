@@ -5,7 +5,7 @@ const clock=window.PICKLEUP_PRACTICE_CLOCK,draw=window.PICKLEUP_DRILL_DIAGRAM;
 if(!clock)return;
 const storageKey="pickleup_practice_state_v25",plansKey="pickleup_plans_v24",$=id=>document.getElementById(id);
 let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false,renderedDrillKey=null;
-const logApi=window.PICKLEUP_TRAINING_LOG;
+const logApi=window.PICKLEUP_TRAINING_LOG,conditionsApi=window.PICKLEUP_PRACTICE_CONDITIONS;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
 function save(){try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
 function message(value){$("pcRunMessage").textContent=value}
@@ -84,7 +84,9 @@ function saveAttempt(){
  const drill=plan.exercises[state.index-1],input=$("pcAttemptHits"),value=input.value.trim(),hits=Number(value);
  if(!value||!Number.isInteger(hits)||hits<0||hits>20){message("Vui lòng nhập số nguyên từ 0 đến 20 cho bài tập.");return}
  try{
-  logApi.record(localStorage,{planId:plan.id,exerciseId:drill.id,skill:drill.skill,level:plan.level,kind:"drill",hits,note:$("pcAttemptNote").value});
+  const conditions=conditionsApi?.fromSelect({feed:$("pcAttemptFeed").value,pace:$("pcAttemptPace").value,target:$("pcAttemptTarget").value});
+  if(!conditions)throw Error("Hãy chọn đủ cách cấp bóng, tốc độ và vùng mục tiêu để ghi lượt tập có thể so sánh.");
+  logApi.record(localStorage,{planId:plan.id,exerciseId:drill.id,skill:drill.skill,level:plan.level,kind:"drill",hits,note:$("pcAttemptNote").value,conditions});
   input.value="";$("pcAttemptNote").value="";
   message("Đã lưu "+hits+"/20 cho "+drill.skillName+". Có thể ghi thêm lần tập khác.");
   document.dispatchEvent(new Event("pickleup:training-log-updated"));
