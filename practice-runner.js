@@ -117,7 +117,7 @@ function pulse(){
  }
 }
 document.addEventListener("pickleup:plan-selected",event=>loadPlan(event.detail?.plan||null));
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("pcOnCourt"))return;
  const selected=$("pcPlan")?.dataset.planId;
  const plans=read(plansKey,[]);
