@@ -83,3 +83,16 @@ Mở phần **Giáo án cá nhân hóa 60 phút** trên trang chính.
 ### Kiểm thử lập trình
 
 Chạy `node --test tests/personalized-core.test.js tests/practice-clock.test.js` trên máy có Node.js. Cần kiểm thử thủ công PWA trên điện thoại thực tế trước khi dùng rộng rãi.
+
+## V2.6 beta – Lịch sử nhiều lần tập và giao diện di động
+
+- Trong **Chế độ tập luyện trên sân**, mở từng bài tập 1–3, thực hiện 20 lượt rồi nhập số lượt thành công (0–20) và ghi chú ngắn, chọn **Lưu một lần tập**. Có thể lưu nhiều lần cho cùng drill.
+- Mở mục **Lịch sử luyện tập nhiều lần**, chọn kỹ năng và bài để xem từng lượt cùng biểu đồ. Hệ thống **chỉ so sánh cùng mã drill, nhóm cấp độ và loại kiểm tra**; một kết quả đơn lẻ không được coi là cải thiện.
+- Khi **lưu kết quả kiểm tra cuối buổi lần đầu** ở Personal Coach, nhật ký ghi một kết quả `assessment`. Việc sửa lại điểm không tạo thêm lượt giả.
+- Trên điện thoại, nút điều khiển lớn hơn, form hỗ trợ nhập số và đồng hồ được bám trong khu vực tập. Tùy chọn **Giữ màn hình sáng** dùng Screen Wake Lock nếu trình duyệt cho phép; không đảm bảo khi khóa màn hình/chuyển app.
+- Dữ liệu nằm trong `localStorage` ở khóa `pickleup_training_log_v26`, giữ tối đa 1.000 lượt gần đây; dữ liệu lịch sử cũ vẫn nguyên và hoạt động song song. Bản sao lưu JSON gồm mảng `trainingLog`, dữ liệu cũ vẫn phục hồi bình thường.
+- Dùng `training-log-core.js` và `training-history-ui.js`. Kiểm thử qua `node --test tests/training-log.test.js`.
+
+**Đánh giá:** Các số lượt thành công là kết quả luyện tập cá nhân. Ngay cả khi cùng mã drill, các điều kiện thực tế và độ khó có thể thay đổi nên biểu đồ không phải rating thi đấu.
+
+**Trạng thái:** V2.6 beta đã có mã nguồn nhưng chưa kiểm thử trực tiếp trên iPhone/Android thật. Đọc [ROADMAP.md](ROADMAP.md) để biết tiêu chí phát hành.
