@@ -139,3 +139,19 @@ Dữ liệu mới lưu tại `pickleup_advanced_checks_v3` và `pickleup_match_j
 **Giới hạn beta**: Học viện có 3.0–4.0, nhưng Personal Coach tự tạo giáo án và đồng hồ riêng vẫn chỉ hỗ trợ 1.0–3.0. Các bài cần huấn luyện viên rà soát trước khi công bố chính thức.
 
 Kiểm thử nội dung: `npm run test:unit` (gồm `tests/advanced-curriculum.test.js`), kiểm tra giao diện `npm run test:responsive`. Tài liệu chính: [ROADMAP.md](ROADMAP.md).
+
+## V3.1 beta – Personal Coach nâng cao 3.0–4.0
+
+1. Trong **🎯 HLV cá nhân**, chọn đường dẫn **HLV nâng cao 3.0–4.0**.
+2. Làm bài **Kiểm tra nâng cao** để ghi sáu điểm (third-shot, reset, di chuyển, counter volley, phối hợp đánh đôi, quyết định chiến thuật), hoặc nhập trực tiếp số lần đúng 0–20 cho mỗi kỹ năng.
+3. Chọn **3.0–3.5** hay **3.5–4.0**, rồi nhấn **Tạo buổi tập 60 phút**.
+4. Hệ thống chọn ba kỹ năng điểm thấp nhất; lấy bài từ 44 giáo án nâng cao, luân phiên để tránh lặp, phân bổ 10 + 12 + 12 + 15 + 6 + 5 phút.
+5. Nhấn **Vào chế độ tập trên sân** để dùng đồng hồ sáu phần và xem sơ đồ kỹ thuật. Có thể ghi nhiều lượt thử 20 lần sau từng drill.
+6. Sau kiểm tra cuối buổi, nhập kết quả và lưu; lần tạo bài tiếp theo sẽ ưu tiên dữ liệu kiểm tra cập nhật nếu mới hơn dữ liệu kiểm tra V3.0.
+7. Chọn lại giáo án từ nhật ký V3.1 để tiếp tục. Trang nhớ lựa chọn cơ bản/nâng cao đã dùng lần gần nhất.
+
+**Dữ liệu và riêng tư:** Giáo án lưu tại `pickleup_advanced_plans_v31`, lựa chọn đang sử dụng tại `pickleup_selected_plan_v31`, không yêu cầu đăng nhập hoặc chuyển dữ liệu lên máy chủ. Bản sao lưu JSON bao gồm kế hoạch mới; lịch sử V2 vẫn giữ nguyên. Nhật ký 20 lần thử nhận mã nâng cao `ADV-PU-037`…`ADV-PU-080`.
+
+**Giới hạn:** Hiện là công cụ cá nhân hóa dựa trên quy tắc, không phải mô hình AI huấn luyện thực tế. Số lượt thành công chỉ có thể so sánh khi cùng độ khó và điều kiện. Nhóm 3.0–4.0 không phải rating DUPR.
+
+**Kiểm thử:** `npm run test:unit` bao gồm `tests/advanced-coach.test.js`, `npm run test:responsive` kiểm tra tạo giáo án nâng cao, đồng hồ và lưu kết quả trên các kích thước màn hình. Xem [ROADMAP.md](ROADMAP.md) để biết danh sách việc chưa nghiệm thu.
