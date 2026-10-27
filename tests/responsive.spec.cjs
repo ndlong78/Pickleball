@@ -62,7 +62,7 @@ for(const screen of devices){
    for(const link of links){
     await page.locator('#pickleupMobileDock a[href="'+link.href+'"]').click();
     await expect(page.locator("#"+link.target)).toBeInViewport();
-    await expect(page.locator('#pickleupMobileDock a[href="'+link.href+'"]')).toHaveAttribute("aria-current","location");
+    await expect(page.locator('#pickleupMobileDock a[href="'+link.href+'"]')).toHaveAttribute("aria-current","page");
    }
   });
   test("V3.1 generates advanced training, uses court timer and saves results",async({page})=>{
