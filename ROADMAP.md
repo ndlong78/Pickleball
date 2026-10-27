@@ -16,7 +16,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.0 beta | 36 buổi 1.0–3.0, bộ lọc, lưu kết quả riêng | Đã đưa mã nguồn |
 | V2.1 beta | 36 bài với cách triển khai theo kỹ năng, vùng mục tiêu, kỹ thuật và sơ đồ sân minh họa | Đã đưa mã nguồn; cần kiểm thử thực địa |
 | V2.2 beta | Dashboard 6 kỹ năng, tỷ lệ hoàn thành, kết quả từng tuần và ưu tiên luyện tập | Đã đưa mã nguồn; cần kiểm thử giao diện |
-| V2.3 | Kiểm tra chuyển cấp, nhận diện lỗ hổng kỹ năng | Chưa làm |
+| V2.3 beta | Kiểm tra 6 kỹ năng, lưu lịch sử, đánh giá chuyển nhóm giáo án nội bộ | Đã đưa mã nguồn; cần kiểm thử và hiệu chỉnh ngưỡng |
 | V2.4 | Giáo án thích ứng dựa trên điểm yếu | Chưa làm |
 | V3.0 | 3.0–4.0: chiến thuật, reset, third shot, nhật ký trận | Kế hoạch |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
@@ -60,3 +60,12 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Kiểm thử trình duyệt/điện thoại thật và trường hợp điểm bị lỗi.
 - [ ] Ghi lịch sử nhiều lần thực hiện trong cùng buổi; hiện lưu kết quả gần nhất của mỗi tuần.
 - [ ] Đánh giá trọng số độ khó để so sánh công bằng giữa các kỹ năng.
+
+## V2.3 – Nghiệm thu
+- [x] Nhập 6 kỹ năng (mỗi kỹ năng 0–20), kết quả và đề xuất ôn tập.
+- [x] Ba nhóm giáo án 1.0–2.0, 2.0–2.5, 2.5–3.0.
+- [x] Lưu lịch sử kiểm tra riêng, hỗ trợ sao lưu/khôi phục.
+- [x] PWA cache module đánh giá.
+- [ ] Huấn luyện viên xác định bài kiểm tra tiêu chuẩn riêng cho từng kỹ năng.
+- [ ] Hiệu chỉnh ngưỡng 11/14/16 bằng dữ liệu thực tế, không dùng làm chứng nhận rating.
+- [ ] Kiểm thử end-to-end trình duyệt và thiết bị.
