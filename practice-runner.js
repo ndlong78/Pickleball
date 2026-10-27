@@ -4,7 +4,7 @@
 const clock=window.PICKLEUP_PRACTICE_CLOCK,draw=window.PICKLEUP_DRILL_DIAGRAM;
 if(!clock)return;
 const storageKey="pickleup_practice_state_v25",plansKey="pickleup_plans_v24",$=id=>document.getElementById(id);
-let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false;
+let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false,renderedDrillKey=null;
 const logApi=window.PICKLEUP_TRAINING_LOG;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
 function save(){try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
@@ -18,7 +18,7 @@ function phaseInfo(index){
  return {name:step.title+" · "+(window.PICKLEUP_PERSONAL_CORE?.names[c.skill]||c.skill),minutes:6,info:"Thực hiện 20 lượt kiểm tra kỹ năng ưu tiên số một. Mốc trước tập "+c.baseline+"/20, mục tiêu tham khảo "+c.target+"/20. Chỉ tính lượt hợp lệ đúng mục tiêu.",skill:c.skill,exercise:plan.exercises[0]};
 }
 function loadPlan(p){
- if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;render();return}
+ if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;renderedDrillKey=null;render();return}
  const old=read(storageKey,null),changing=plan?.id!==p.id;
  plan=p;if(changing){state=clock.readStored(old,plan.id);lastExpired=-1}
  render();
@@ -58,10 +58,11 @@ function render(){
  const active=state.index>=1&&state.index<=3;
  $("pcAttemptArea").hidden=!active;
  if(active){
-  const drill=plan.exercises[state.index-1];
+  const drill=plan.exercises[state.index-1],drillKey=plan.id+"|"+drill.id;
+  if(renderedDrillKey!==drillKey){$("pcAttemptHits").value="";$("pcAttemptNote").value="";renderedDrillKey=drillKey}
   $("pcAttemptName").textContent="Ghi một lần tập: "+drill.skillName+" — "+drill.name;
-  $("pcAttemptHint").textContent="Thực hiện 20 lượt cùng bài và cấp độ, sau đó nhập số lần đúng. Có thể ghi nhiều lần ở cùng bài.";
- }
+  $("pcAttemptHint").textContent="Sau phần luyện kỹ thuật, kiểm tra 20 lượt với cùng mục tiêu, cùng cấp độ và ghi số lần đúng. Mục tiêu 20 lượt này riêng với các hiệp trong hướng dẫn.";
+ }else renderedDrillKey=null;
 }
 function advance(direction){
  if(!state)return;
