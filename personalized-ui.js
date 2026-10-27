@@ -100,13 +100,23 @@ function complete(){
  try{
   const plans=history(),i=plans.findIndex(p=>p.id===current.id);
   if(i<0)throw Error("Không tìm thấy kế hoạch; hãy tạo giáo án mới.");
+  const wasCompleted=Boolean(plans[i].completedAt);
   const updated={...plans[i],completedAt:new Date().toISOString(),checkScore:score};
   plans[i]=updated;localStorage.setItem(storageKey,JSON.stringify(plans));
+  // Append the first measured checkpoint only; editing an earlier score is not a new attempt.
+  let logWarning="";
+  if(!wasCompleted&&window.PICKLEUP_TRAINING_LOG){
+   try{
+    const e=updated.exercises[0];
+    window.PICKLEUP_TRAINING_LOG.record(localStorage,{planId:updated.id,exerciseId:e.id,skill:e.skill,level:updated.level,kind:"assessment",hits:score,note:"Kiểm tra cuối buổi"});
+    document.dispatchEvent(new Event("pickleup:training-log-updated"));
+   }catch(err){logWarning=" (Điểm kế hoạch đã lưu, nhưng nhật ký lần tập chưa lưu được: "+err.message+")"}
+  }
   $("pc-"+updated.checkpoint.skill).value=String(score);
   $("pcSource").textContent="Đã cập nhật điểm "+core.names[updated.checkpoint.skill]+" sau buổi tập. Kế hoạch tiếp theo sẽ sử dụng điểm mới khi bạn chọn Tạo giáo án.";
   render(updated);renderHistory();
   const d=score-updated.checkpoint.baseline;
-  setStatus("Đã lưu kết quả: "+score+"/20 ("+(d>=0?"+":"")+d+" so với đầu vào).");
+  setStatus("Đã lưu kết quả: "+score+"/20 ("+(d>=0?"+":"")+d+" so với đầu vào)."+logWarning);
   document.dispatchEvent(new Event("pickleup:personal-plan-updated"));
  }catch(err){setStatus("Không lưu được: "+err.message)}
 }
