@@ -45,3 +45,10 @@ Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác 
 - [ ] Chạy thành công workflow và kiểm tra thực tế menu không che nội dung ở cuối trang.
 - [ ] Trên iPhone/iPad: thử khi bàn phím mở, xoay màn hình và dùng PWA từ Home Screen.
 - [ ] Trên PC: kiểm tra ở độ phóng đại 100%, 125%, 150% và màn hình nhỏ.
+
+## V3.2 – Kiểm tra báo cáo chiến thuật trên các thiết bị
+
+- [x] Đã bổ sung Playwright smoke test `tests/tactical-responsive.spec.cjs` cho iPhone 390px, iPad dọc 820px, iPad ngang 1180px và PC 1440px.
+- [x] Luồng kiểm tra: lưu trận → thấy gợi ý → người tập chạm áp dụng → tạo giáo án → xác nhận điểm kiểm tra giữ nguyên → thanh menu vẫn hiển thị và không tràn ngang.
+- [ ] Xác minh kết quả test Chromium/WebKit trong GitHub Actions.
+- [ ] Kiểm tra thật trên iOS Safari/PWA (bàn phím số, nút đề xuất, xoay màn hình, cache mới).
