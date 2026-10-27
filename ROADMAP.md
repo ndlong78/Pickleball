@@ -15,7 +15,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V1.1 | PWA, tự đánh giá 6 kỹ năng, backup/restore | Đã đưa mã nguồn |
 | V2.0 beta | 36 buổi 1.0–3.0, bộ lọc, lưu kết quả riêng | Đã đưa mã nguồn |
 | V2.1 beta | 36 bài với cách triển khai theo kỹ năng, vùng mục tiêu, kỹ thuật và sơ đồ sân minh họa | Đã đưa mã nguồn; cần kiểm thử thực địa |
-| V2.2 | Dashboard tiến bộ 6 kỹ năng và xu hướng theo thời gian | Chưa làm |
+| V2.2 beta | Dashboard 6 kỹ năng, tỷ lệ hoàn thành, kết quả từng tuần và ưu tiên luyện tập | Đã đưa mã nguồn; cần kiểm thử giao diện |
 | V2.3 | Kiểm tra chuyển cấp, nhận diện lỗ hổng kỹ năng | Chưa làm |
 | V2.4 | Giáo án thích ứng dựa trên điểm yếu | Chưa làm |
 | V3.0 | 3.0–4.0: chiến thuật, reset, third shot, nhật ký trận | Kế hoạch |
@@ -51,3 +51,12 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - Tránh các bài tập đòi hỏi quá sức; tăng khó theo kỹ năng đã kiểm chứng.
 - Giữ hỗ trợ offline nhưng cập nhật cache khi phiên bản đổi; kiểm tra cập nhật PWA thực tế.
 - Khi thêm backend, phải có phương án đồng ý xử lý dữ liệu, bảo mật và sao lưu.
+
+## V2.2 – tiêu chí nghiệm thu
+- [x] Hiển thị 6 nhóm kỹ năng, số giáo án đã lưu và tỷ lệ thành công trung bình.
+- [x] Biểu đồ kết quả theo tuần, biểu đồ thanh theo kỹ năng.
+- [x] Gợi ý nội dung tập dựa trên kỹ năng yếu nhất có dữ liệu.
+- [x] Đọc dữ liệu V2.1, không thay đổi khóa localStorage; PWA cache mã mới.
+- [ ] Kiểm thử trình duyệt/điện thoại thật và trường hợp điểm bị lỗi.
+- [ ] Ghi lịch sử nhiều lần thực hiện trong cùng buổi; hiện lưu kết quả gần nhất của mỗi tuần.
+- [ ] Đánh giá trọng số độ khó để so sánh công bằng giữa các kỹ năng.
