@@ -39,6 +39,7 @@ button:disabled{cursor:not-allowed}
 
 /* iPad landscape, compact desktop: avoid forcing 3 narrow coach panels. */
 @media(max-width:1199px){
+ .navlabel{display:none}
  .shell{width:100%;max-width:100%;padding-inline:clamp(18px,3vw,28px)}
  .herogrid{gap:24px}
  .mainGrid{grid-template-columns:minmax(0,1fr)}
