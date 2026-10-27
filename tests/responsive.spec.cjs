@@ -71,7 +71,7 @@ for(const screen of devices){
    for(const [key,value] of Object.entries(scores))await page.locator("#acInput-"+key).fill(String(value));
    await page.locator("#acCoachCreate").click();
    await expect(page.locator("#acCoachPlan")).toContainText("Reset");
-   await expect(page.locator("#acCoachPlan")).toContainText("60");
+   await expect(page.locator("#acCoachPlan")).toContainText("Kiểm tra – 6 phút");
    await page.locator("#acCoachRun").click();
    await expect(page.locator("#pcRunPlayer")).toBeVisible();
    await page.locator("#pcRunNext").click();
