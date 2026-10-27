@@ -67,7 +67,10 @@ button:disabled{cursor:not-allowed}
  .pc-run-card{padding:20px}
  .th-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
  .sectionHead{align-items:flex-start}
+ .topbar{padding-top:env(safe-area-inset-top,0px)}
+ .shell{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
  body{padding-bottom:calc(75px + env(safe-area-inset-bottom,0px))}
+ button[aria-label="Cài ứng dụng PickleUp"]{bottom:calc(85px + env(safe-area-inset-bottom,0px))!important;right:max(16px,env(safe-area-inset-right,0px))!important;z-index:135!important}
  .mobile-dock{
   position:fixed;z-index:140;left:0;right:0;bottom:0;
   display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
@@ -101,7 +104,7 @@ button:disabled{cursor:not-allowed}
 
 /* iPhone landscape, compact phones and narrow iPads */
 @media(max-width:749px){
- .shell{padding-inline:16px}
+ .shell{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
  .nav{height:62px;gap:8px}
  .brand{font-size:23px}
  .navright .pill{font-size:10px;padding:7px 9px}
