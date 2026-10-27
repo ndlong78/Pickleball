@@ -92,11 +92,12 @@ function showHistory(){
 function make(){
  try{
   const scores=scoresFromInputs(),plans=writableHistory();
-  const plan=core.createPlan(scores,plans,$("acCoachLevel").value,new Date().toISOString());
+  const requested=$("acCoachMatchFocus").value||null;
+  const plan=core.createPlan(scores,plans,$("acCoachLevel").value,new Date().toISOString(),window.PICKLEUP_ADVANCED_CURRICULUM||[],{focusMetric:requested});
   const next=plans.concat(plan).slice(-100);
   localStorage.setItem(core.KEY,JSON.stringify(next));
   select(plan,true);showHistory();
-  status("Đã tạo và lưu giáo án mới. Ba ưu tiên: "+plan.exercises.map(e=>e.skillName).join(", ")+".");
+  status("Đã tạo và lưu giáo án mới. Ba ưu tiên: "+plan.exercises.map(e=>e.skillName).join(", ")+". "+(requested?"Đã áp dụng ưu tiên được bạn chọn từ nhật ký trận đấu.":"Chọn thuần theo điểm kỹ năng."));
  }catch(err){status("Không tạo được giáo án: "+err.message)}
 }
 function complete(){
@@ -136,6 +137,10 @@ document.addEventListener("DOMContentLoaded",()=>{
   input.setAttribute("aria-label",names[key]+" số lượt thành công");
   wrap.append(input,document.createTextNode("/20"));label.append(text,wrap);$("acCoachInputs").append(label);
  }
+ const focus=$("acCoachMatchFocus");
+ for(const category of core.categories){const option=node("option",category.name);option.value=category.key;focus.append(option)}
+ focus.value="";
+ focus.addEventListener("change",()=>{$("acCoachFocusStatus").textContent=focus.value?"Bạn đã chọn ưu tiên "+core.names[focus.value]+". Kỹ năng này được đưa lên đầu trong giáo án mới; điểm bài kiểm tra không thay đổi.":"Không thêm ưu tiên từ nhật ký; chọn ba kỹ năng có điểm thấp nhất.";});
  populate();$("acCoachImport").addEventListener("click",()=>{populate();status("Đã nạp điểm có sẵn, có thể điều chỉnh thủ công.")});
  $("acCoachCreate").addEventListener("click",make);
  $("acCoachRun").addEventListener("click",()=>{
