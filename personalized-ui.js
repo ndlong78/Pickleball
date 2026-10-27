@@ -54,8 +54,9 @@ function addExercise(container,exercise,i){
  container.append(box);
 }
 let current=null;
-function render(plan){
+function render(plan,explicit=false){
  current=plan;const area=$("pcPlan");area.replaceChildren();
+ if(plan&&explicit){try{localStorage.setItem("pickleup_selected_plan_v31",JSON.stringify({source:"basic",id:plan.id}))}catch(_){}}
  area.dataset.planId=plan?.id||"";
  document.dispatchEvent(new CustomEvent("pickleup:plan-selected",{detail:{plan}}));
  if(!plan){area.append(element("p","Chưa có kế hoạch. Hãy nhập điểm và chọn Tạo giáo án 60 phút.","pc-muted"));$("pcCompletion").hidden=true;return}
@@ -79,7 +80,7 @@ function renderHistory(){
  if(!arr.length){list.append(element("p","Chưa có giáo án được lưu.","pc-muted"));return}
  arr.slice(-6).reverse().forEach(p=>{
   const btn=element("button",(p.completedAt?"✓ ":"○ ")+new Date(p.createdAt).toLocaleDateString("vi-VN")+" · "+p.exercises.map(e=>core.names[e.skill]).join(", "),"pc-history-item");
-  btn.type="button";btn.addEventListener("click",()=>{render(p);$("pcPlan").scrollIntoView({behavior:"smooth",block:"start"})});list.append(btn)
+  btn.type="button";btn.addEventListener("click",()=>{render(p,true);$("pcPlan").scrollIntoView({behavior:"smooth",block:"start"})});list.append(btn)
  });
 }
 function generate(){
@@ -88,7 +89,7 @@ function generate(){
   const plan=core.createPlan(scores,plans,level,new Date().toISOString());
   const next=plans.concat(plan).slice(-100);
   localStorage.setItem(storageKey,JSON.stringify(next));
-  render(plan);renderHistory();
+  render(plan,true);renderHistory();
   setStatus("Đã tạo và lưu giáo án với ba ưu tiên: "+plan.exercises.map(e=>e.skillName).join(", ")+". Tạo lần kế tiếp để luân phiên bài tập.");
   document.dispatchEvent(new Event("pickleup:personal-plan-updated"));
  }catch(err){setStatus("Không thể tạo giáo án: "+err.message)}
@@ -114,7 +115,7 @@ function complete(){
   }
   $("pc-"+updated.checkpoint.skill).value=String(score);
   $("pcSource").textContent="Đã cập nhật điểm "+core.names[updated.checkpoint.skill]+" sau buổi tập. Kế hoạch tiếp theo sẽ sử dụng điểm mới khi bạn chọn Tạo giáo án.";
-  render(updated);renderHistory();
+  render(updated,true);renderHistory();
   const d=score-updated.checkpoint.baseline;
   setStatus("Đã lưu kết quả: "+score+"/20 ("+(d>=0?"+":"")+d+" so với đầu vào)."+logWarning);
   document.dispatchEvent(new Event("pickleup:personal-plan-updated"));
