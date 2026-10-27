@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const names=window.PICKLEUP_PERSONAL_CORE?.names||{serve:"Giao bóng",return:"Trả giao bóng",dink:"Dinking",volley:"Volley",position:"Di chuyển",strategy:"Chiến thuật"};
 function el(tag,text,cls){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x}
 function rows(){return api.read(localStorage)}
-function title(exId){const p=window.PICKLEUP_PERSONAL_CORE?.library||{};const skill=exId.split("-")[0];return p[skill]?.find(e=>e.id===exId)?.name||exId}
+function title(exId){if(exId.startsWith("ADV-PU-"))return (window.PICKLEUP_ADVANCED_CURRICULUM||[]).find(e=>"ADV-"+e.id===exId)?.title||exId;const p=window.PICKLEUP_PERSONAL_CORE?.library||{};const skill=exId.split("-")[0];return p[skill]?.find(e=>e.id===exId)?.name||exId}
 function render(){
  const data=rows(),skill=$("thSkill").value,drill=$("thDrill"),old=drill.value;
  $("thTotal").textContent=data.length+" lần tập đã lưu";
