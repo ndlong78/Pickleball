@@ -80,7 +80,7 @@ function renderHistory(){
  if(!arr.length){list.append(element("p","Chưa có giáo án được lưu.","pc-muted"));return}
  arr.slice(-6).reverse().forEach(p=>{
   const btn=element("button",(p.completedAt?"✓ ":"○ ")+new Date(p.createdAt).toLocaleDateString("vi-VN")+" · "+p.exercises.map(e=>core.names[e.skill]).join(", "),"pc-history-item");
-  btn.type="button";btn.addEventListener("click",()=>{render(p,true);$("pcPlan").scrollIntoView({behavior:"smooth",block:"start"})});list.append(btn)
+  btn.type="button";btn.addEventListener("click",()=>{render(p,true);window.PICKLEUP_ROUTER?.openSection("personalCoach")||$("pcPlan").scrollIntoView({behavior:"smooth",block:"start"})});list.append(btn)
  });
 }
 function generate(){
