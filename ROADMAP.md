@@ -24,6 +24,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.1 beta | Personal Coach 3.0–4.0, đồng hồ, sơ đồ, điểm sau tập và lịch sử kế hoạch | Đã cập nhật mã nguồn; cần QA trên sân/thiết bị |
 | V3.2 beta | Phản hồi sau trận → báo cáo tiến bộ cùng bài → gợi ý giáo án theo lựa chọn người tập | Đã cập nhật mã nguồn; chờ kiểm thử trình duyệt và thực địa |
 | V3.3 beta | Ghi điều kiện tập, so sánh tương đương và theo dõi tình huống đánh đôi | Đã cập nhật mã nguồn; cần nghiệm thu thiết bị và sư phạm |
+| V3.4 beta | Phân loại bảy trang, tách module, router tĩnh tương thích PWA | Đã triển khai mã nguồn; còn nghiệm thu UX và CI |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -252,3 +253,24 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Không suy ra DUPR hay quan hệ nhân quả từ chênh lệch điểm.
 
 **Sau V3.3:** Dùng phản hồi trên sân để chuẩn hóa bài kiểm tra và cải thiện chiến thuật đánh đôi trước khi mở giáo án 4.0–5.0.
+
+## V3.4 beta – Tách trang & module theo chức năng
+
+**Đã triển khai**
+- [x] Phân loại nội dung từ website một trang thành bảy trang: Tổng quan, HLV cá nhân, Trên sân, Học viện, Tiến bộ, Thi đấu, Dữ liệu.
+- [x] URL trang `?page=`, liên kết tới section `#id`, hỗ trợ liên kết cũ và Back/Forward.
+- [x] Giữ menu bốn mục cố định trên PC/iPad/iPhone và bổ sung điều hướng đủ bảy trang.
+- [x] Tách JavaScript lớn khỏi `index.html` thành bốn module nghiệp vụ, giảm mã nhúng và giữ nguyên chức năng.
+- [x] Bổ sung router/catalog/style cho trang, giữ DOM module đã mount để không reset timer khi đổi trang.
+- [x] Các nút chuyển HLV ↔ sân ↔ lưu điểm và chiến thuật → HLV dùng đúng route.
+- [x] Nhật ký trận đứng trước báo cáo chiến thuật; điều khiển xóa điểm mẫu đưa sang Dữ liệu.
+- [x] Cập nhật PWA precache, kiểm thử unit và Playwright.
+- [x] Tài liệu kỹ thuật [ARCHITECTURE.md](ARCHITECTURE.md).
+
+**Chưa nghiệm thu**
+- [ ] Kiểm thử CI/browser thực tế trên iPhone/iPad/PC (URL sâu, Back, offline, PWA update).
+- [ ] Đo tốc độ tải trang từng page để quyết định lazy-load các module nặng ở phiên bản kế tiếp.
+- [ ] Kiểm thử chuyển luồng giữa HLV, timer, kết quả và sao lưu trên nhiều thiết bị.
+- [ ] Chưa có server-side routing; dùng query routing phù hợp GitHub Pages, không chia thành nhiều bản HTML độc lập.
+
+**Ưu tiên V3.5:** kiểm thử giao diện thực tế và cải thiện performance/lazy loading trước khi tăng giáo trình 4.0–5.0.
