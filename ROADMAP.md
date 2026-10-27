@@ -36,7 +36,8 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [x] Không đổi key lưu điểm cũ: pickleup_scores, pickleup_academy_v2, pickleup_assessment_v1.
 - [ ] Kiểm thử trực tiếp bằng trình duyệt và màn hình nhỏ.
 - [ ] Huấn luyện viên rà soát bài tập, đặc biệt tính đúng luật và tiến độ giữa cấp độ.
-- [ ] Thiết kế sơ đồ riêng cho từng loại drill; sơ đồ chung chưa định vị chính xác mọi tình huống.
+- [x] Sơ đồ theo sáu nhóm kỹ năng (minh họa cơ bản, chưa là bản vẽ vị trí chính xác cho từng drill).
+- [ ] Kiểm thử và hiệu chỉnh hình minh họa theo từng bài cụ thể, phù hợp đúng luật.
 - [ ] Kiểm thử sao lưu/khôi phục trên ít nhất hai trình duyệt.
 
 ## Kiến trúc hiện tại
