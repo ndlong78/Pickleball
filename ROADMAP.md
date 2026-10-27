@@ -21,6 +21,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.5 beta | Chế độ trên sân: đồng hồ theo 6 phần, sơ đồ cho 24 drill, điều khiển và tiếp tục sau tải lại | Đã đưa mã nguồn; cần kiểm thử trình duyệt/thiết bị |
 | V2.6 beta | Mobile-first: kết quả nhiều lần/cùng drill, biểu đồ so sánh cùng cấp độ và giữ màn hình sáng nếu hỗ trợ | Đã cập nhật mã nguồn; chờ kiểm thử thiết bị |
 | V3.0 beta | 44 giáo án 3.0–4.0, kiểm tra kỹ năng chuyên sâu, nhật ký trận đấu | Đã đưa mã nguồn; cần kiểm thử thiết bị và HLV duyệt |
+| V3.1 beta | Personal Coach 3.0–4.0, đồng hồ, sơ đồ, điểm sau tập và lịch sử kế hoạch | Đã cập nhật mã nguồn; cần QA trên sân/thiết bị |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -185,7 +186,28 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Chạy workflow và kiểm thử thực tế theo iOS Safari, Android Chrome, desktop.
 - [ ] Huấn luyện viên đối chiếu từng bài với luật hiện hành, mức vận động và khả năng tiến bộ thực tế.
 - [ ] Xác thực ngưỡng 13/15 của kiểm tra chuyên sâu bằng dữ liệu tập thật; tuyệt đối không sử dụng làm rating DUPR.
-- [ ] Đồng bộ Personalized Coach và đồng hồ tự động cho 3.0–4.0; hiện giáo án nâng cao dùng Học viện, Personal Coach duy trì 1.0–3.0.
+- [x] V3.1 đã tích hợp Personal Coach 3.0–4.0 với đồng hồ; hiện cần QA thực tế và kiểm chứng bài tập.
 - [ ] Nhật ký trận hiện lưu tỷ số một trận, chưa phân tích điểm số theo rally hoặc vị trí.
 
 **Kế tiếp:** V3.1 kiểm thử sư phạm, cải thiện biểu đồ chiến thuật và mở Personalized Coach riêng cho 3.0–4.0; V4.0 sau khi nghiệm thu mới mở 4.0–5.0.
+
+## V3.1 beta – Cá nhân hóa huấn luyện nâng cao
+
+**Đã triển khai**
+- [x] Bộ tạo kế hoạch nâng cao theo sáu kết quả thực hành: third-shot, reset, movement, counter volley, doubles và quyết định cú đánh.
+- [x] Ưu tiên ba kỹ năng có điểm thấp nhất, chọn ba bài từ đúng nhóm 3.0–3.5 hoặc 3.5–4.0, tránh lặp bài mới tập khi còn lựa chọn.
+- [x] Kế hoạch 60 phút: khởi động 10, ba drill 12/12/15, kiểm tra 6 và thả lỏng 5 phút.
+- [x] Form nạp điểm V3.0 hoặc nhập điểm thủ công; có lịch sử giáo án và kết quả sau tập.
+- [x] Tích hợp cùng đồng hồ hiện hữu, sơ đồ sân chiến thuật và form ghi kết quả ngay trong chế độ tập.
+- [x] Nhật ký nhiều lần tập hỗ trợ mã `ADV-PU-037` đến `ADV-PU-080`; so sánh theo cùng bài, cấp độ và loại bài kiểm tra.
+- [x] Lưu riêng tại `pickleup_advanced_plans_v31`; chọn giáo án tại `pickleup_selected_plan_v31` và không thay khóa lưu điểm V2.
+- [x] Tích hợp xuất/nhập JSON, PWA offline, test kỹ năng và kiểm thử luồng nâng cao trên iPhone/iPad/PC.
+- [x] Giữ nguyên thanh menu bốn mục cố định trên mọi thiết bị.
+
+**Giới hạn**
+- [ ] Chạy xác nhận CI WebKit/Chromium và kiểm thử thủ công trên iPhone/iPad/PWA cài màn hình chính.
+- [ ] Huấn luyện viên kiểm chứng độ khó, thiết bị cần thiết, lỗi phổ biến và kỹ thuật đúng luật trên 44 buổi nâng cao.
+- [ ] Mỗi bài đang ghi 20 tình huống; muốn dùng tiến bộ chính xác cần chuẩn hóa độ khó và đối tác cấp bóng.
+- [ ] Chưa có đồng bộ tài khoản hoặc phân tích video. Rating 3.0–4.0 là nhóm giáo án nội bộ, không phải DUPR.
+
+**Đề xuất kế tiếp:** V3.2 nghiệm thu mobile + trải nghiệm thực địa và báo cáo kỹ năng sau trận, sau đó mới mở V4.0.
