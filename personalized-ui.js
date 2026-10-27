@@ -17,7 +17,7 @@ function latestInputs(){
  if(stage)return {scores:{...stage.values},level:stage.level,source:"Bài kiểm tra chuyển cấp V2.3 gần nhất ("+new Date(stage.date).toLocaleDateString("vi-VN")+")"};
  const source=read("pickleup_academy_v2",{}),legacy=read("pickleup_scores",{}),lessons=window.PICKLEUP_CURRICULUM||[],out={},dateBySkill={};
  for(const [id,record] of Object.entries(source||{})){
-  const lesson=lessons.find(s=>s.id===id);if(!lesson||!record||!valid(record.score))continue;
+  const lesson=lessons.find(s=>s.id===id);if(!lesson||lesson.advanced||!record||!valid(record.score))continue;
   const date=String(record.date||"");
   if(date>=String(dateBySkill[lesson.skill]||"")){out[lesson.skill]=record.score;dateBySkill[lesson.skill]=date}
  }
