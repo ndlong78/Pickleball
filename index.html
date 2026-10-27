@@ -7,13 +7,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="PickleUp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap" media="print" onload="this.media='all'">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="description" content="Lộ trình tập Pickleball 60 phút mỗi tuần, dành cho người mới bắt đầu.">
   <title>PickleUp · Huấn luyện Pickleball</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+    /* Font loaded without blocking critical CSS; system font fallback is immediate. */
     :root{--bg:#f6f7f2;--ink:#142d30;--muted:#6b7b79;--green:#b8ef49;--green2:#eaffc9;--line:#dfe6df;--white:#fff;--radius:20px}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);line-height:1.55}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #94c936;outline-offset:3px}
     .shell{max-width:1210px;padding:0 26px;margin:auto}.topbar{background:#10292a;color:white}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{font-weight:800;font-size:24px;letter-spacing:-1.2px}.brand b{color:var(--green)}.navright{display:flex;align-items:center;gap:12px}.navlabel{font-size:12px;color:#c7d3ce}.pill{border:1px solid #536764;border-radius:100px;padding:8px 13px;font-size:12px;font-weight:600;white-space:nowrap}.dot{display:inline-block;width:8px;height:8px;background:var(--green);border-radius:50%;margin-right:6px}
@@ -58,8 +61,8 @@
 </style>
 <link rel="stylesheet" href="./responsive.css">
 <link rel="stylesheet" href="./advanced.css">
-<link rel="stylesheet" href="./tactical-insights.css">
-<link rel="stylesheet" href="./training-evaluation.css">
+
+
 <link rel="stylesheet" href="./modules/page-layout.css">
 <script>document.documentElement.classList.add("pickleup-routing")</script>
 </head>
@@ -70,6 +73,7 @@
 <main class="shell">
 <div class="page-header" aria-label="Trang hiện tại">
  <div class="kicker" id="pageKicker">PICKLEUP</div>
+ <p id="pageLoadStatus" class="page-load-status" role="status" aria-live="polite" hidden></p>
  <h1 id="pageHeading">🏠 Tổng quan</h1>
  <p id="pageDescription">Bắt đầu tập luyện và theo dõi hành trình pickleball.</p>
 </div>
@@ -289,34 +293,10 @@
  <a href="#academy"><span class="dock-icon" aria-hidden="true">📚</span><span>Giáo án</span></a>
 </nav>
 <footer class="footer"><div class="shell footflex"><span>© 2026 PickleUp · Website luyện tập Pickleball</span><span>Hoạt động trực tiếp trên trình duyệt · Không cần tài khoản</span></div></footer>
-<script src="./modules/weekly-practice.js"></script>
-<script src="./modules/assessments-and-backup.js"></script>
-<script src="./curriculum.js"></script>
-<script src="./advanced-curriculum.js"></script>
-<script src="./advanced-diagrams.js"></script>
-<script src="./advanced-readiness.js" defer></script>
-<script src="./match-journal.js" defer></script>
-<script src="./court-diagrams.js"></script>
-<script src="./dashboard.js" defer></script>
-<script src="./stage-assessment.js" defer></script>
-<script src="./personalized-core.js"></script>
-<script src="./practice-conditions.js"></script>
-<script src="./training-log-core.js"></script>
-<script src="./personalized-ui.js"></script>
-<script src="./practice-clock.js"></script>
-<script src="./practice-diagrams.js"></script>
-<script src="./practice-runner.js"></script>
-<script src="./advanced-coach-core.js"></script>
-<script src="./tactical-insights-core.js"></script>
-<script src="./advanced-coach-ui.js"></script>
-<script src="./tactical-insights-ui.js"></script>
-<script src="./training-history-ui.js"></script>
-<script src="./training-evaluation-core.js"></script>
-<script src="./training-evaluation-ui.js"></script>
-<script src="./mobile-ui.js" defer></script>
 <script src="./modules/page-catalog.js"></script>
+<script src="./modules/page-loader.js"></script>
 <script src="./modules/page-router.js"></script>
-<script src="./modules/academy-page.js"></script>
+<script src="./mobile-ui.js" defer></script>
 <script src="./modules/pwa-client.js"></script>
 </body>
 </html>
