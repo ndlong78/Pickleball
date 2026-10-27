@@ -30,3 +30,19 @@
  .advanced-check-panel,.advanced-match-panel{padding:16px}
  .advanced-check-inputs .stage-check{min-height:56px}
 }
+
+/* V3.1 Advanced Personal Coach and mobile-safe active plan controls. */
+#acCoachComplete[hidden]{display:none!important}
+#acCoachPlan{scroll-margin-top:18px}
+#acCoachRun{min-height:48px;margin:8px 0 12px;max-width:100%}
+#acCoachRun:disabled{opacity:.55;cursor:not-allowed}
+#acCoachHistory .pc-history-item[aria-current=true]{border-color:#729d49;background:#e4f4d1;font-weight:700}
+#acCoachPlan .pc-drill h4{overflow-wrap:anywhere}
+#acCoachComplete .pc-actions input{width:90px;min-height:48px}
+#acCoachComplete .pc-actions button{min-height:48px}
+@media(max-width:749px){
+ #acCoachRun{width:100%}
+ #acCoachPlan h3{font-size:18px}
+ #acCoachComplete .pc-actions{grid-template-columns:minmax(0,1fr)}
+ #acCoachComplete .pc-actions input{width:100%;font-size:16px}
+}
