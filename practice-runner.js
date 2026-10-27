@@ -122,14 +122,14 @@ document.addEventListener("DOMContentLoaded",()=>{
  const selected=$("pcPlan")?.dataset.planId;
  const plans=read(plansKey,[]);
  if(selected&&Array.isArray(plans))loadPlan(plans.find(p=>p.id===selected)||null);else render();
- $("pcOpenRun").addEventListener("click",()=>{$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
+ $("pcOpenRun").addEventListener("click",()=>{window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
  $("pcAttemptSave").addEventListener("click",saveAttempt);
  $("pcWakeToggle").addEventListener("change",toggleWake);
  $("pcRunStart").addEventListener("click",startPause);
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
  $("pcRunReset").addEventListener("click",reset);
- $("pcRunScore").addEventListener("click",()=>{if(plan?.version==="3.1"){$("acCoachComplete").scrollIntoView({behavior:"smooth",block:"center"});$("acCoachResult").focus()}else{$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()}});
+ $("pcRunScore").addEventListener("click",()=>{if(plan?.version==="3.1"){window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("acCoachComplete").scrollIntoView({behavior:"smooth",block:"center"});$("acCoachResult").focus()}else{window.PICKLEUP_ROUTER?.openSection("personalCoach")||$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()}});
  // Wall-clock deadlines recover from mobile background throttling without incorrectly skipping stages.
  setInterval(pulse,350);
  document.addEventListener("visibilitychange",()=>{
