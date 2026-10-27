@@ -78,6 +78,9 @@ for(const screen of devices){
    await expect(page.locator("#pcRunGuide")).toContainText("Reset");
    await expect(page.locator("#pcRunDiagram svg")).toBeVisible();
    await page.locator("#pcAttemptHits").fill("13");
+   await page.locator("#pcAttemptFeed").selectOption("partner");
+   await page.locator("#pcAttemptPace").selectOption("moderate");
+   await page.locator("#pcAttemptTarget").selectOption("standard");
    await page.locator("#pcAttemptSave").click();
    await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
    await page.locator("#acCoachResult").fill("14");
@@ -105,6 +108,9 @@ for(const screen of devices){
    await page.locator("#pcRunNext").click();
    await expect(page.locator("#pcAttemptArea")).toBeVisible();
    await page.locator("#pcAttemptHits").fill("11");
+   await page.locator("#pcAttemptFeed").selectOption("partner");
+   await page.locator("#pcAttemptPace").selectOption("moderate");
+   await page.locator("#pcAttemptTarget").selectOption("standard");
    await page.locator("#pcAttemptSave").click();
    await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
    await page.locator("#thRefresh").click();
