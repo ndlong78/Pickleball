@@ -15,7 +15,7 @@ function phaseInfo(index){
  if(index===0||index===5)return {name:step.title,minutes:step.minutes,info:step.description,skill:null,exercise:null};
  if(index>=1&&index<=3){const e=plan.exercises[index-1];return {name:step.title+" · "+e.skillName,minutes:step.minutes,info:e.instructions,skill:e.skill,exercise:e}}
  const c=plan.checkpoint;
- return {name:step.title+" · "+(window.PICKLEUP_PERSONAL_CORE?.names[c.skill]||c.skill),minutes:6,info:"Thực hiện 20 lượt kiểm tra kỹ năng ưu tiên số một. Mốc trước tập "+c.baseline+"/20, mục tiêu tham khảo "+c.target+"/20. Chỉ tính lượt hợp lệ đúng mục tiêu.",skill:c.skill,exercise:plan.exercises[0]};
+ return {name:step.title+" · "+(window.PICKLEUP_ADVANCED_COACH?.names[c.skill]||window.PICKLEUP_PERSONAL_CORE?.names[c.skill]||c.skill),minutes:6,info:"Thực hiện 20 lượt kiểm tra kỹ năng ưu tiên số một. Mốc trước tập "+c.baseline+"/20, mục tiêu tham khảo "+c.target+"/20. Chỉ tính lượt hợp lệ đúng mục tiêu.",skill:c.skill,exercise:plan.exercises[0]};
 }
 function loadPlan(p){
  if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;renderedDrillKey=null;render();return}
@@ -49,7 +49,7 @@ function render(){
    const setup=document.createElement("p");setup.textContent="Bố trí: "+info.exercise.setup;guide.append(setup);
    const measure=document.createElement("p");measure.textContent="Đánh giá: "+info.exercise.measure;guide.append(measure);
    const caution=document.createElement("p");caution.textContent="Tránh: "+info.exercise.mistake;guide.append(caution);
-   if(typeof draw==="function")draw(diagram,info.exercise);
+   if(info.exercise.advanced&&window.PICKLEUP_ADVANCED_COURT){diagram.innerHTML=window.PICKLEUP_ADVANCED_COURT(info.exercise)}else if(typeof draw==="function")draw(diagram,info.exercise);
   }
  }
  const items=$("pcRunSegments");items.replaceChildren();
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
  $("pcRunReset").addEventListener("click",reset);
- $("pcRunScore").addEventListener("click",()=>{$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()});
+ $("pcRunScore").addEventListener("click",()=>{if(plan?.version==="3.1"){$("acCoachComplete").scrollIntoView({behavior:"smooth",block:"center"});$("acCoachResult").focus()}else{$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()}});
  // Wall-clock deadlines recover from mobile background throttling without incorrectly skipping stages.
  setInterval(pulse,350);
  document.addEventListener("visibilitychange",()=>{
