@@ -29,3 +29,12 @@ Trước khi xóa dữ liệu trình duyệt hay chuyển điện thoại, chọ
 - V3+: giáo án chiến thuật, nhật ký trận đấu, hỗ trợ HLV và công cụ phân tích.
 
 **Lưu ý:** Điểm tự đánh giá trong ứng dụng không phải DUPR hay chứng nhận trình độ thi đấu.
+
+## Bản thử nghiệm V2.0: Học viện 36 tuần
+
+- Mở mục **Học viện PickleUp V2** để lọc theo cấp độ 1.0–2.0, 2.0–2.5, 2.5–3.0.
+- Mỗi giáo án gồm 10 phút khởi động, 3 bài tập (12 + 12 + 15 phút), 6 phút kiểm tra và 5 phút thả lỏng.
+- Điểm từng buổi lưu tại `pickleup_academy_v2`, xuất nhập cùng dữ liệu cũ trong bản sao lưu JSON.
+- `curriculum.js` là mô-đun dữ liệu sinh 36 giáo án. Các phương án drill hiện là nội dung mẫu có cấu trúc và cần kiểm tra thực địa/biên tập sâu trước khi xem như giáo trình hoàn thiện.
+- `sw.js` đưa mô-đun giáo án vào bộ nhớ offline. Để thấy bản mới, tải lại trang khi có mạng.
+- Xếp hạng trên website là nhóm trình độ tham khảo, không phải DUPR hay chứng nhận.
