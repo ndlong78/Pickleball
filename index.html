@@ -238,22 +238,6 @@
  <div class="advanced-links"><a href="#pcOnCourt">Ghi một lần tập</a><a href="#matchJournal">Ghi tình huống đánh đôi</a></div>
 </div>
 </section>
-<section class="section" id="tacticalReport" data-pickleup-page="matches">
- <div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Phân tích chiến thuật</div><h2>Hiệu quả tập luyện & bài học sau trận</h2>
- <p class="sub">Gộp phản hồi sau trận với lịch sử tập nâng cao, nhưng không đánh đồng ý kiến định tính với điểm kiểm tra.</p></div>
- <button type="button" id="tacticalRefresh" class="linkbtn">Làm mới báo cáo</button></div>
- <div class="card tactical-panel">
-  <div class="advanced-field tactical-level"><label for="tacticalLevel">Chọn cấp độ để so sánh bài tập</label>
-  <select id="tacticalLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select></div>
-  <div id="tacticalStats" class="tactical-stats"></div>
-  <div class="tactical-grid">
-   <div><h3>Trọng tâm sau trận</h3><div id="tacticalSignals"></div><div id="tacticalRecommendation" class="tactical-recommendation"></div></div>
-   <div><h3>Tiến bộ cùng bài tập</h3><div id="tacticalComparisons"></div></div>
-  </div>
-  <p id="tacticalNotice" class="sub"></p>
-  <div class="advanced-links"><a href="#trainingEvaluation">Xem so sánh đủ điều kiện V3.3</a></div>
- </div>
-</section>
 <section class="section" id="matchJournal" data-pickleup-page="matches">
 <div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Nhật ký thi đấu</div><h2>Ghi nhận trận đấu và bài học</h2><p class="sub">Lưu tỷ số và một kỹ năng trọng tâm sau trận để biết những gì cần luyện tiếp. Không cần lưu tên đối thủ.</p></div></div>
 <div class="advanced-links"><a href="#tacticalReport">Xem báo cáo chiến thuật V3.2</a><a href="#advancedCoach">Tạo giáo án từ bài học sau trận</a></div>
@@ -279,9 +263,25 @@
 </div>
 </div>
 </section>
+<section class="section" id="tacticalReport" data-pickleup-page="matches">
+ <div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Phân tích chiến thuật</div><h2>Hiệu quả tập luyện & bài học sau trận</h2>
+ <p class="sub">Gộp phản hồi sau trận với lịch sử tập nâng cao, nhưng không đánh đồng ý kiến định tính với điểm kiểm tra.</p></div>
+ <button type="button" id="tacticalRefresh" class="linkbtn">Làm mới báo cáo</button></div>
+ <div class="card tactical-panel">
+  <div class="advanced-field tactical-level"><label for="tacticalLevel">Chọn cấp độ để so sánh bài tập</label>
+  <select id="tacticalLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select></div>
+  <div id="tacticalStats" class="tactical-stats"></div>
+  <div class="tactical-grid">
+   <div><h3>Trọng tâm sau trận</h3><div id="tacticalSignals"></div><div id="tacticalRecommendation" class="tactical-recommendation"></div></div>
+   <div><h3>Tiến bộ cùng bài tập</h3><div id="tacticalComparisons"></div></div>
+  </div>
+  <p id="tacticalNotice" class="sub"></p>
+  <div class="advanced-links"><a href="#trainingEvaluation">Xem so sánh đủ điều kiện V3.3</a></div>
+ </div>
+</section>
 <section class="section" id="levelRoadmap" data-pickleup-page="academy"><div class="sectionHead"><div><div class="kicker">Hành trình dài hạn</div><h2>Từ mới bắt đầu đến 5.0</h2><p class="sub">Mỗi cấp độ mở rộng kỹ thuật và chiến thuật. Đây là lộ trình tham khảo, không phải chứng nhận xếp hạng.</p></div></div><div class="roadmap" id="levelCards"></div></section>
 <section class="section" id="selfAssessment" data-pickleup-page="coach"><div class="sectionHead"><div><div class="kicker">Đánh giá đầu vào</div><h2>Khám phá điểm xuất phát</h2><p class="sub">Chọn mức độ bạn thực hiện ổn định được trong trận đấu, không phải cú đánh tốt nhất từng làm.</p></div></div><div class="card selftest" id="assessmentFields"></div><div class="card" style="padding:20px;margin-top:12px"><div class="backupactions"><button id="assessBtn" type="button">Đánh giá và lưu</button></div><p id="assessResult" class="outcome" role="status"></p></div></section>
-<section class="section" id="stageAssessment" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">PickleUp V2.3</div><h2>Kiểm tra chuyển cấp</h2><p class="sub">Bộ bài kiểm tra nội bộ sáu kỹ năng, không phải điểm rating thi đấu. Hãy thực hiện cùng bạn tập hoặc huấn luyện viên.</p></div></div><div class="card" style="padding:22px"><label for="stageSelect"><b>Nhóm giáo án hiện tại</b></label><select class="timerselect" id="stageSelect" style="margin:10px 0 16px"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option></select><p class="sub" id="stageTarget"></p><div id="stageChecklist" class="stage-list"></div><button class="primary" id="stageSubmit" type="button" style="margin-top:15px">Đánh giá và lưu kết quả</button><p id="stageResult" class="outcome" role="status" aria-live="polite"></p><h3>Lịch sử kiểm tra gần đây</h3><div id="stageHistory"></div></div></section><section class="section" id="backup" data-pickleup-page="settings"><div class="sectionHead"><div><div class="kicker">Dữ liệu của bạn</div><h2>Sao lưu & khôi phục</h2><p class="sub">Lưu điểm tập và đánh giá vào tệp JSON để chuyển thiết bị; không cần tài khoản.</p></div></div><div class="backupactions"><button id="backupAll" type="button">Tải bản sao lưu đầy đủ</button><label for="restoreFile">Khôi phục từ tệp JSON<input id="restoreFile" type="file" accept=".json,application/json"></label></div><p class="sub" id="backupStatus" role="status"></p></section><section class="section" id="activityHistory" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">Nhật ký cá nhân</div><h2>Thành tích luyện tập</h2><div class="sub">Xem lại kết quả để nhận biết sự tiến bộ.</div></div><button class="linkbtn" id="clearHistory">Xoá dữ liệu đã lưu</button></div><div class="card history"><div id="historyList" class="historyList"></div></div></section>
+<section class="section" id="stageAssessment" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">PickleUp V2.3</div><h2>Kiểm tra chuyển cấp</h2><p class="sub">Bộ bài kiểm tra nội bộ sáu kỹ năng, không phải điểm rating thi đấu. Hãy thực hiện cùng bạn tập hoặc huấn luyện viên.</p></div></div><div class="card" style="padding:22px"><label for="stageSelect"><b>Nhóm giáo án hiện tại</b></label><select class="timerselect" id="stageSelect" style="margin:10px 0 16px"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option></select><p class="sub" id="stageTarget"></p><div id="stageChecklist" class="stage-list"></div><button class="primary" id="stageSubmit" type="button" style="margin-top:15px">Đánh giá và lưu kết quả</button><p id="stageResult" class="outcome" role="status" aria-live="polite"></p><h3>Lịch sử kiểm tra gần đây</h3><div id="stageHistory"></div></div></section><section class="section" id="backup" data-pickleup-page="settings"><div class="sectionHead"><div><div class="kicker">Dữ liệu của bạn</div><h2>Sao lưu & khôi phục</h2><p class="sub">Lưu điểm tập và đánh giá vào tệp JSON để chuyển thiết bị; không cần tài khoản.</p></div></div><div class="backupactions"><button id="backupAll" type="button">Tải bản sao lưu đầy đủ</button><label for="restoreFile">Khôi phục từ tệp JSON<input id="restoreFile" type="file" accept=".json,application/json"></label></div><p class="sub" id="backupStatus" role="status"></p><div class="card" style="margin-top:16px"><h3>Dọn dữ liệu buổi tập mẫu</h3><p class="sub">Chỉ xóa điểm sáu tuần luyện tập mẫu; không xóa kết quả Học viện, Personal Coach hay nhật ký trận đấu.</p><button id="clearHistory" type="button" class="linkbtn">Xóa điểm 6 tuần mẫu</button></div></section><section class="section" id="activityHistory" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">Nhật ký cá nhân</div><h2>Thành tích luyện tập</h2><div class="sub">Xem lại kết quả để nhận biết sự tiến bộ.</div></div></div><div class="card history"><div id="historyList" class="historyList"></div></div></section>
 </main><nav id="pickleupMobileDock" class="mobile-dock" aria-label="Điều hướng nhanh PickleUp">
  <a href="#personalCoach"><span class="dock-icon" aria-hidden="true">🎯</span><span>HLV cá nhân</span></a>
  <a href="#pcOnCourt"><span class="dock-icon" aria-hidden="true">⏱</span><span>Trên sân</span></a>
