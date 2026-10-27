@@ -40,3 +40,19 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 
 /* Keep the four-item universal menu highlighted in route-based mode. */
 .mobile-dock a[aria-current="page"]{background:#305143;color:#c9fa74}
+
+/* Visible loading feedback while only this page's JavaScript is being fetched. */
+.page-load-status{display:inline-flex;align-items:center;gap:9px;margin:10px 0 2px;padding:9px 12px;
+ border:1px solid #cfe0c5;border-radius:10px;background:#edf6e9;font-size:12px;color:#365441;line-height:1.5}
+.page-load-status[hidden]{display:none!important}
+.page-load-status:before{content:"";display:inline-block;width:12px;height:12px;border:2px solid #b2d0a4;
+ border-top-color:#2e623e;border-radius:50%;animation:pu-loading 850ms linear infinite}
+@keyframes pu-loading{to{transform:rotate(360deg)}}
+.performance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.performance-item{min-width:0;border:1px solid #d9e7d1;background:#f1f8eb;border-radius:12px;padding:13px}
+.performance-item strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.performance-item span{display:block;margin:6px 0;font-size:22px;font-weight:800;color:#254c35}
+.performance-item small{font-size:11px;color:#647a69;line-height:1.55}
+@media(max-width:1023px){.performance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:549px){.performance-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.page-load-status:before{animation:none}}
