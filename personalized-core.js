@@ -17,9 +17,10 @@ function createPlan(scores,oldPlans=[],level="1.0–2.0",createdAt=new Date().to
  if(!levels.includes(level))throw Error("Nhóm giáo án không hợp lệ.");
  const history=Array.isArray(oldPlans)?oldPlans:[];
  const priorities=tieOrder.slice().sort((a,b)=>scores[a]-scores[b]||tieOrder.indexOf(a)-tieOrder.indexOf(b)).slice(0,3);
+ const levelAdjust={"1.0–2.0":"Thực hiện chậm, ưu tiên kỹ thuật đúng và độ ổn định.","2.0–2.5":"Thêm một bước chân điều chỉnh trước cú đánh, vẫn giữ tốc độ vừa.","2.5–3.0":"Nhờ bạn tập thay đổi điểm rơi hoặc tín hiệu để luyện quyết định trong pha bóng."}[level];
  const exercises=priorities.map((skill,i)=>{
    const item=chooseExercise(skill,history);
-   return {...item,minutes:[12,12,15][i],baseline:scores[skill],target:Math.min(20,scores[skill]+(scores[skill]<=10?4:scores[skill]<=14?3:2)),skillName:names[skill]};
+   return {...item,instructions:item.instructions+" Điều chỉnh cấp độ: "+levelAdjust,minutes:[12,12,15][i],baseline:scores[skill],target:Math.min(20,scores[skill]+(scores[skill]<=10?4:scores[skill]<=14?3:2)),skillName:names[skill]};
  });
  return {id:"PU24-"+createdAt.replace(/[^0-9]/g,"").slice(0,17)+"-"+(history.length+1),version:"2.4",createdAt,level,scores:{...scores},exercises,minutes:{warmup:10,drills:[12,12,15],assessment:6,cooldown:5},checkpoint:{skill:priorities[0],baseline:scores[priorities[0]],target:exercises[0].target,attempts:20},completedAt:null,checkScore:null};
 }
