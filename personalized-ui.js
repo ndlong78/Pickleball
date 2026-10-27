@@ -56,6 +56,8 @@ function addExercise(container,exercise,i){
 let current=null;
 function render(plan){
  current=plan;const area=$("pcPlan");area.replaceChildren();
+ area.dataset.planId=plan?.id||"";
+ document.dispatchEvent(new CustomEvent("pickleup:plan-selected",{detail:{plan}}));
  if(!plan){area.append(element("p","Chưa có kế hoạch. Hãy nhập điểm và chọn Tạo giáo án 60 phút.","pc-muted"));$("pcCompletion").hidden=true;return}
  area.append(element("h3","Kế hoạch "+new Date(plan.createdAt).toLocaleDateString("vi-VN")+" · "+plan.level));
  area.append(element("p","Ba kỹ năng ưu tiên: "+plan.exercises.map(e=>e.skillName+" ("+e.baseline+"/20)").join(" · "),"pc-muted"));
