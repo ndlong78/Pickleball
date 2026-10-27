@@ -28,6 +28,15 @@ test.describe("PickleUp V3.5 lazy page loading",()=>{
   const again=await page.evaluate(()=>window.PICKLEUP_PAGE_LOADER.readMetrics().filter(m=>m.page==="academy"));
   expect(again).toHaveLength(1);
  });
+ test("court and doubles input fields initialize when visited directly",async({page})=>{
+  await page.goto("/?page=court");
+  await expect(page.locator("#pcAttemptFeed option")).toHaveCount(4);
+  await expect(page.locator("#pcAttemptPace option")).toHaveCount(4);
+  await expect(page.locator("#pcAttemptTarget option")).toHaveCount(4);
+  await page.goto("/?page=matches");
+  await expect(page.locator("#matchDoublesIssue option")).toHaveCount(6);
+  await expect(page.locator("#matchFocus option")).toHaveCount(11);
+ });
  test("data page displays recorded local module timing and has no external analytics",async({page})=>{
   await page.goto("/?page=home");
   await expect(page.locator("#weekList .week").first()).toBeVisible();
