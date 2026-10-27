@@ -36,7 +36,7 @@ function draw(){
  }else next.append(el("p","Chưa đủ ghi nhận để nhận diện tình huống phối hợp đánh đôi thường gặp."));
  $("evalDisclaimer").textContent="Đây là báo cáo mô tả, không chứng minh bài tập gây ra tiến bộ. Ngay khi ba điều kiện trùng nhau, người cấp bóng, thể trạng và mức độ khó thực tế vẫn có thể thay đổi.";
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("evalLevel"))return;
  const controls={feed:"pcAttemptFeed",pace:"pcAttemptPace",target:"pcAttemptTarget"};
  for(const [key,id] of Object.entries(controls)){
