@@ -5,7 +5,7 @@
 const FOCUS={
  "third-drop":"third","third-choice":"third","serve-return":"third",
  "transition-reset":"reset","advanced-reset":"reset","defense-attack":"reset",
- "doubles-coverage":"doubles","doubles-switch":"doubles",
+ "doubles-coverage":"movement","doubles-switch":"doubles",
  "counter-volley":"counter","kitchen-pressure":"decision","tactical-choice":"decision"
 };
 const METRICS=["third","reset","movement","counter","doubles","decision"];
