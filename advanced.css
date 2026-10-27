@@ -1,0 +1,32 @@
+/* PickleUp V3 advanced classroom, readiness and match journal. */
+.advanced-links{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 18px}
+.advanced-links a{display:inline-flex;min-height:44px;align-items:center;justify-content:center;
+ border:1px solid #a8ca9d;border-radius:12px;text-decoration:none;color:#244d35;background:#eaf5de;
+ font-size:12px;font-weight:700;padding:10px 15px}
+.advanced-links a:hover{background:#daf0c7}
+.advanced-check-panel,.advanced-match-panel{padding:22px}
+.advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.advanced-field{min-width:0}
+.advanced-field>label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:#36594a}
+.advanced-field input,.advanced-field select,.advanced-field textarea{
+ width:100%;background:white;color:#142d30;border:1px solid #b5d0ae;border-radius:11px;
+ min-height:44px;padding:10px 12px;font-size:16px;line-height:1.45;
+}
+.advanced-field textarea{min-height:88px;resize:vertical}
+.advanced-check-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
+.advanced-check-inputs .stage-check{min-width:0}
+.advanced-check-inputs .stage-check span{overflow-wrap:anywhere}
+.advanced-check-inputs .stage-check input{max-width:90px;flex:0 0 90px}
+.advanced-match-panel>p,.advanced-check-panel>p{line-height:1.7}
+.match-record{border-bottom:1px solid #e2ebde;padding:12px 0}
+.match-record:last-child{border:0}
+.match-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.match-head strong{font-size:14px}.match-head span{font-size:12px;color:#6b7c72}
+.advanced-helper{padding:12px 14px;border-radius:10px;background:#f0f7e9;font-size:12px;line-height:1.7;color:#456b51}
+.advanced-check-panel .primary,.advanced-match-panel .primary{min-height:48px}
+@media(max-width:749px){
+ .advanced-links{display:grid;grid-template-columns:minmax(0,1fr)}
+ .advanced-grid,.advanced-check-inputs{grid-template-columns:minmax(0,1fr)}
+ .advanced-check-panel,.advanced-match-panel{padding:16px}
+ .advanced-check-inputs .stage-check{min-height:56px}
+}
