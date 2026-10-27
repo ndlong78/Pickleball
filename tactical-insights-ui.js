@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  if(!$("tacticalLevel"))return;
  $("tacticalLevel").addEventListener("change",report);
  $("tacticalRefresh").addEventListener("click",report);
- $("acCoachLevel")?.addEventListener("change",report);
+ $("acCoachLevel")?.addEventListener("change",()=>{if($("tacticalLevel"))$("tacticalLevel").value=$("acCoachLevel").value;report()});
  document.addEventListener("pickleup:match-saved",report);
  document.addEventListener("pickleup:training-log-updated",report);
  window.addEventListener("storage",event=>{if([core.MATCH_KEY,core.ATTEMPT_KEY].includes(event.key))report()});
