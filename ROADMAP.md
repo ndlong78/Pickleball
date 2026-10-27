@@ -22,6 +22,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.6 beta | Mobile-first: kết quả nhiều lần/cùng drill, biểu đồ so sánh cùng cấp độ và giữ màn hình sáng nếu hỗ trợ | Đã cập nhật mã nguồn; chờ kiểm thử thiết bị |
 | V3.0 beta | 44 giáo án 3.0–4.0, kiểm tra kỹ năng chuyên sâu, nhật ký trận đấu | Đã đưa mã nguồn; cần kiểm thử thiết bị và HLV duyệt |
 | V3.1 beta | Personal Coach 3.0–4.0, đồng hồ, sơ đồ, điểm sau tập và lịch sử kế hoạch | Đã cập nhật mã nguồn; cần QA trên sân/thiết bị |
+| V3.2 beta | Phản hồi sau trận → báo cáo tiến bộ cùng bài → gợi ý giáo án theo lựa chọn người tập | Đã cập nhật mã nguồn; chờ kiểm thử trình duyệt và thực địa |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
