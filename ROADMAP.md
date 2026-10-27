@@ -25,6 +25,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.2 beta | Phản hồi sau trận → báo cáo tiến bộ cùng bài → gợi ý giáo án theo lựa chọn người tập | Đã cập nhật mã nguồn; chờ kiểm thử trình duyệt và thực địa |
 | V3.3 beta | Ghi điều kiện tập, so sánh tương đương và theo dõi tình huống đánh đôi | Đã cập nhật mã nguồn; cần nghiệm thu thiết bị và sư phạm |
 | V3.4 beta | Phân loại bảy trang, tách module, router tĩnh tương thích PWA | Đã triển khai mã nguồn; còn nghiệm thu UX và CI |
+| V3.5 beta | Tải JS/CSS theo trang, PWA cache lõi, đo tốc độ tại thiết bị | Đã triển khai; chờ nghiệm thu browser và đo tốc độ |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -274,3 +275,19 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Chưa có server-side routing; dùng query routing phù hợp GitHub Pages, không chia thành nhiều bản HTML độc lập.
 
 **Ưu tiên V3.5:** kiểm thử giao diện thực tế và cải thiện performance/lazy loading trước khi tăng giáo trình 4.0–5.0.
+
+## V3.5 Beta – Page Loading Performance
+
+- [x] Không tải đồng loạt JS của cả 7 trang từ `index.html`; bộ khởi động chỉ còn 5 script.
+- [x] Dynamic lazy-loading của từng trang với kiểm soát thứ tự phụ thuộc và tái sử dụng module.
+- [x] Khởi tạo an toàn khi JS được tải sau `DOMContentLoaded`.
+- [x] Chỉ yêu cầu `tactical-insights.css` và `training-evaluation.css` ở các trang sử dụng.
+- [x] Hoãn font tải ngoài mà vẫn có font hệ thống dự phòng.
+- [x] SW precache 14 tài nguyên lõi; cache script/style của trang sau khi đã truy cập.
+- [x] Thêm bảng đo thời gian nạp module cho từng trang trong Dữ liệu, chỉ đo trên thiết bị.
+- [x] Mở rộng test Node và Playwright để phát hiện tải trùng/lỗi luồng đa trang.
+- [ ] Xác nhận GitHub Actions, WebKit/Chromium và kết quả iPhone/iPad thực.
+- [ ] Đo Lighthouse/LCP/CLS/INP khi online và sau cache; so sánh với V3.4.
+- [ ] Tối ưu tiếp HTML/DOM và kết hợp/giảm tệp nhỏ dựa trên số liệu thực tế.
+
+**Thỏa hiệp offline:** trang chưa được mở online có thể chưa đủ module để hoạt động offline. Chi tiết trong [PERFORMANCE.md](PERFORMANCE.md).
