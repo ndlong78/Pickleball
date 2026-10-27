@@ -12,6 +12,7 @@ function init(){
  });
  window.addEventListener("hashchange",updateFromHash);
  updateFromHash();
+ if(!location.hash)mark("personalCoach");
  const selectors='input:not([type=checkbox]):not([type=range]), textarea, select, [contenteditable="true"]';
  document.addEventListener("focusin",event=>{
   if(event.target.closest?.(selectors))document.body.classList.add("mobile-keyboard-open");
