@@ -4,7 +4,8 @@ const devices=[
  {name:"iPhone",width:390,height:844},
  {name:"iPhone Plus",width:430,height:932},
  {name:"iPad portrait",width:820,height:1180},
- {name:"iPad landscape",width:1180,height:820}
+ {name:"iPad landscape",width:1180,height:820},
+ {name:"Desktop PC",width:1440,height:900}
 ];
 for(const screen of devices){
  test.describe(screen.name,()=>{
@@ -23,8 +24,32 @@ for(const screen of devices){
    }));
    expect(overflow.document,JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.viewport+2);
    const dock=page.locator("#pickleupMobileDock");
-   if(screen.width<1024)await expect(dock).toBeVisible();
-   else await expect(dock).toBeHidden();
+   await expect(dock).toBeVisible();
+   expect(await dock.evaluate(node=>getComputedStyle(node).position)).toBe("fixed");
+   expect(await dock.locator("a").count()).toBe(4);
+   const start=await dock.boundingBox();
+   expect(start).not.toBeNull();
+   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+   await page.waitForTimeout(200);
+   const end=await dock.boundingBox();
+   expect(end).not.toBeNull();
+   expect(Math.abs(start.y-end.y)).toBeLessThanOrEqual(2);
+   expect(end.y+end.height).toBeLessThanOrEqual(screen.height+2);
+   expect(end.y).toBeGreaterThanOrEqual(-2);
+  });
+  test("persistent menu links navigate to all four sections",async({page})=>{
+   await page.goto("/");
+   const links=[
+    {href:"#personalCoach",target:"personalCoach"},
+    {href:"#pcOnCourt",target:"pcOnCourt"},
+    {href:"#trainingHistory",target:"trainingHistory"},
+    {href:"#academy",target:"academy"}
+   ];
+   for(const link of links){
+    await page.locator('#pickleupMobileDock a[href="'+link.href+'"]').click();
+    await expect(page.locator("#"+link.target)).toBeInViewport();
+    await expect(page.locator('#pickleupMobileDock a[href="'+link.href+'"]')).toHaveAttribute("aria-current","location");
+   }
   });
   test("personal coach and on-court timer can be used without clipped controls",async({page})=>{
    await page.goto("/");
