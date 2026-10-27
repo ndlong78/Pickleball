@@ -18,6 +18,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V2.2 beta | Dashboard 6 kỹ năng, tỷ lệ hoàn thành, kết quả từng tuần và ưu tiên luyện tập | Đã đưa mã nguồn; cần kiểm thử giao diện |
 | V2.3 beta | Kiểm tra 6 kỹ năng, lưu lịch sử, đánh giá chuyển nhóm giáo án nội bộ | Đã đưa mã nguồn; cần kiểm thử và hiệu chỉnh ngưỡng |
 | V2.4 beta | Tạo giáo án cá nhân từ 6 điểm, 24 drill, ưu tiên 3 kỹ năng, lịch sử và đo tiến bộ | Mã nguồn đã triển khai; cần kiểm thử trên thiết bị |
+| V2.5 beta | Chế độ trên sân: đồng hồ theo 6 phần, sơ đồ cho 24 drill, điều khiển và tiếp tục sau tải lại | Đã đưa mã nguồn; cần kiểm thử trình duyệt/thiết bị |
 | V3.0 | 3.0–4.0: chiến thuật, reset, third shot, nhật ký trận | Kế hoạch |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
@@ -90,3 +91,26 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Đồng bộ chọn bài tập với mô-đun đếm giờ và hướng dẫn hình sân, hiện bài được hiển thị dạng giáo án văn bản.
 
 **Nguyên tắc:** Giáo án được chọn bởi bộ quy tắc xác định, chưa sử dụng mô hình AI. Không suy ra cấp độ DUPR, không tự chuyển rating và không đảm bảo đạt 5.0 theo số tuần.
+
+## V2.5 beta – Chế độ tập trên sân
+
+**Phạm vi đã thực hiện**
+- [x] Đồng hồ theo sáu phần của giáo án cá nhân hóa (10, 12, 12, 15, 6, 5 phút = 60 phút).
+- [x] Điều khiển bắt đầu/tạm dừng, phần trước/tiếp theo, đặt lại. Chuyển phần bằng thao tác người chơi; không tự báo đã hoàn thành bài nếu mới hết giờ.
+- [x] Hẹn giờ dựa trên mốc thời gian để hạn chế sai lệch khi tab bị throttling hoặc trình duyệt tải lại.
+- [x] Lưu trạng thái tạm trên thiết bị với khóa `pickleup_practice_state_v25`, chỉ khôi phục khi chọn đúng kế hoạch. Dữ liệu kết quả và giáo án V2.4 vẫn dùng khóa cũ.
+- [x] Mô-đun sơ đồ vector cho 24 bài tập ở sáu nhóm kỹ năng, trình bày vị trí xuất phát, hướng di chuyển/hướng bóng và vùng minh họa.
+- [x] Chuyển nhanh từ Personal Coach sang chế độ tập, và từ phần kiểm tra sang ô ghi kết quả cuối buổi.
+- [x] Cache các mô-đun mới trong PWA để sử dụng sau khi đã tải phiên bản khi có mạng.
+- [x] Thêm bộ test Node cho countdown engine (`tests/practice-clock.test.js`).
+
+**Chưa nghiệm thu chính thức**
+- [ ] Kiểm thử hiển thị và điều khiển thực tế trên iPhone Safari, Chrome Android và máy tính; kiểm thử khóa màn hình, âm báo, tab nền.
+- [ ] Kiểm tra thủ công với người chơi trên sân để hiệu chỉnh 24 sơ đồ (sơ đồ chỉ minh họa, không đo chính xác kích thước/điểm rơi).
+- [ ] Kiểm thử end-to-end đầy đủ việc lưu kết quả, offline, khôi phục dữ liệu và cập nhật bản PWA mới.
+- [ ] Kích hoạt giữ sáng màn hình hoặc âm báo đáng tin cậy chỉ sau khi kiểm thử thiết bị; hiện timer không phát thông báo ngoài ứng dụng.
+- [ ] Chưa tự động phân tích video, chưa xếp hạng thi đấu chính thức.
+
+**Bước kế tiếp**
+- V2.6 đề xuất: nâng trải nghiệm di động, tự động ghi lịch sử nhiều lần tập, biểu đồ tiến bộ thực theo cùng độ khó, tổng hợp phản hồi người chơi.
+- V3.0: mở rộng giáo trình và bài kiểm tra chuyên sâu lên 3.0–4.0 khi V2.1–2.5 đã được kiểm chứng.
