@@ -85,7 +85,7 @@ function showHistory(){
   const label=(plan.completedAt?"✓ ":"○ ")+new Date(plan.createdAt).toLocaleDateString("vi-VN")+" · "+plan.level+" · "+plan.exercises.map(e=>e.skillName).join(", ");
   const button=node("button",label,"pc-history-item");button.type="button";
   if(selected?.source==="advanced"&&selected.id===plan.id)button.setAttribute("aria-current","true");
-  button.addEventListener("click",()=>{select(plan,true);showHistory();$("acCoachPlan").scrollIntoView({behavior:"smooth",block:"start"})});
+  button.addEventListener("click",()=>{select(plan,true);showHistory();window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("acCoachPlan").scrollIntoView({behavior:"smooth",block:"start"})});
   container.append(button);
  });
 }
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("acCoachRun").addEventListener("click",()=>{
   const selected=read(selectionKey,null);
   if(!current||selected?.source!=="advanced"||selected.id!==current.id){status("Vui lòng chọn hoặc tạo giáo án nâng cao trước.");return}
-  $("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"});
+  window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"});
  });
  $("acCoachSave").addEventListener("click",complete);
  const selected=read(selectionKey,null),plans=history(),saved=selected?.source==="advanced"?plans.find(p=>p.id===selected.id):null;
