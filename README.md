@@ -46,3 +46,7 @@ Trước khi xóa dữ liệu trình duyệt hay chuyển điện thoại, chọ
 ## V2.2 beta
 
 Dashboard gồm số buổi đã ghi nhận/36, tỷ lệ đúng trung bình, sáu biểu đồ kỹ năng, kết quả theo tuần và gợi ý kỹ năng ưu tiên. Dữ liệu lưu cục bộ trên trình duyệt. Dashboard không suy ra DUPR; kết quả ghi lại gần nhất cho mỗi bài, chưa là lịch sử nhiều lần tập. Mã nguồn: [dashboard.js](dashboard.js).
+
+## V2.3 beta – Kiểm tra chuyển cấp
+
+Trong mục **Kiểm tra chuyển cấp**, chọn nhóm giáo án và nhập số lần đạt trong 20 lượt cho sáu kỹ năng. Hệ thống lưu lịch sử gần nhất, gợi ý kỹ năng cần bổ sung và kết quả tự đánh giá nội bộ. Ngưỡng 11/14/16 trên 20 chỉ là mốc thử nghiệm, không dùng suy ra rating chính thức. Dữ liệu được bao gồm trong bản sao lưu JSON.
