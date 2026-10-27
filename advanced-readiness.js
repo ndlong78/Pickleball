@@ -45,7 +45,7 @@ function assess(){
   showHistory();
  }catch(err){$("advancedCheckResult").textContent="Chưa lưu: "+err.message}
 }
-document.addEventListener("DOMContentLoaded",()=>{
+(window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  if(!$("advancedCheckInputs"))return;
  generateFields();$("advancedCheckSave").addEventListener("click",assess);
  $("advancedLevel").addEventListener("change",()=>{const gate=levels[$("advancedLevel").value];$("advancedCheckTarget").textContent="Mốc nội bộ: trung bình ≥"+gate.average+"/20 và từng mục ≥"+gate.min+"/20. Chỉ là gợi ý chương trình tập."});
