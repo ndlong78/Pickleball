@@ -1,0 +1,42 @@
+<!-- PickleUp V3.7 · matches · static trusted page markup -->
+<section class="section" id="matchJournal" data-pickleup-page="matches">
+<div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Nhật ký thi đấu</div><h2>Ghi nhận trận đấu và bài học</h2><p class="sub">Lưu tỷ số và một kỹ năng trọng tâm sau trận để biết những gì cần luyện tiếp. Không cần lưu tên đối thủ.</p></div></div>
+<div class="advanced-links"><a href="#tacticalReport">Xem báo cáo chiến thuật V3.2</a><a href="#advancedCoach">Tạo giáo án từ bài học sau trận</a></div>
+<div class="advanced-grid">
+<div class="card advanced-match-panel">
+ <h3>Ghi một trận đã chơi</h3>
+ <div class="advanced-grid">
+  <div class="advanced-field"><label for="matchMode">Hình thức</label><select id="matchMode"><option value="doubles">Đánh đôi</option><option value="singles">Đánh đơn</option></select></div>
+  <div class="advanced-field"><label for="matchFocus">Trọng tâm cần cải thiện</label><select id="matchFocus"></select></div>
+  <div class="advanced-field"><label for="matchOurs">Điểm đội mình</label><input id="matchOurs" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="11"></div>
+  <div class="advanced-field"><label for="matchTheirs">Điểm đối phương</label><input id="matchTheirs" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="9"></div>
+ </div>
+ <div class="advanced-field" id="matchDoublesField" style="margin:14px 0"><label for="matchDoublesIssue">Tình huống phối hợp đánh đôi (tùy chọn)</label>
+<select id="matchDoublesIssue"><option value="">Chưa phân loại</option></select></div>
+<div class="advanced-field" style="margin:14px 0"><label for="matchNotes">Điều rút ra sau trận (không bắt buộc)</label><textarea id="matchNotes" maxlength="280" placeholder="Ví dụ: cú drop thường cao khi bị trả sâu"></textarea></div>
+ <button type="button" id="matchSave" class="primary">Lưu nhật ký trận đấu</button>
+ <p id="matchStatus" class="outcome" role="status" aria-live="polite"></p>
+</div>
+<div class="card advanced-match-panel">
+ <h3>Các trận gần đây</h3>
+ <p id="matchSummary" class="advanced-helper"></p>
+ <div id="matchHistory"></div>
+</div>
+</div>
+</section>
+<section class="section" id="tacticalReport" data-pickleup-page="matches">
+ <div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Phân tích chiến thuật</div><h2>Hiệu quả tập luyện & bài học sau trận</h2>
+ <p class="sub">Gộp phản hồi sau trận với lịch sử tập nâng cao, nhưng không đánh đồng ý kiến định tính với điểm kiểm tra.</p></div>
+ <button type="button" id="tacticalRefresh" class="linkbtn">Làm mới báo cáo</button></div>
+ <div class="card tactical-panel">
+  <div class="advanced-field tactical-level"><label for="tacticalLevel">Chọn cấp độ để so sánh bài tập</label>
+  <select id="tacticalLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select></div>
+  <div id="tacticalStats" class="tactical-stats"></div>
+  <div class="tactical-grid">
+   <div><h3>Trọng tâm sau trận</h3><div id="tacticalSignals"></div><div id="tacticalRecommendation" class="tactical-recommendation"></div></div>
+   <div><h3>Tiến bộ cùng bài tập</h3><div id="tacticalComparisons"></div></div>
+  </div>
+  <p id="tacticalNotice" class="sub"></p>
+  <div class="advanced-links"><a href="#trainingEvaluation">Xem so sánh đủ điều kiện V3.3</a></div>
+ </div>
+</section>
