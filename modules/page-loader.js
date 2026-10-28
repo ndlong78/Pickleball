@@ -19,6 +19,43 @@ const PAGE_STYLES={
  progress:["advanced.css","training-evaluation.css"],
  matches:["advanced.css","tactical-insights.css"]
 };
+const FRAGMENTS={coach:"pages/coach.html",court:"pages/court.html",academy:"pages/academy.html",progress:"pages/progress.html",matches:"pages/matches.html",settings:"pages/settings.html"};
+const fragmentPromises=new Map();
+const mountedFragments=new Set();
+function ensureMarkup(page){
+ const file=FRAGMENTS[page];
+ if(!file)return Promise.resolve({file:null,bytes:0,sections:0,cached:true});
+ if(mountedFragments.has(page))return Promise.resolve({file,bytes:0,sections:0,cached:true});
+ if(fragmentPromises.has(page))return fragmentPromises.get(page);
+ const promise=(async()=>{
+  const mount=document.getElementById("mount-"+page);
+  if(!mount)throw Error("Thiếu vùng chứa giao diện: "+page);
+  const response=await fetch(assetUrl(file));
+  if(!response.ok)throw Error("Không tải được giao diện "+page+" (HTTP "+response.status+")");
+  const content=await response.text();
+  const template=document.createElement("template");
+  template.innerHTML=content;
+  const list=template.content.querySelectorAll("section[data-pickleup-page]");
+  const expected=(root.PICKLEUP_PAGES||[]).find(x=>x.id===page)?.sections||[];
+  const dynamic=expected.filter(id=>!document.getElementById(id));
+  if(list.length!==dynamic.length||dynamic.some(id=>!template.content.querySelector('section[id="'+id+'"][data-pickleup-page="'+page+'"]')))
+   throw Error("Giao diện "+page+" không khớp danh mục module.");
+  // Static same-origin fragments contain markup only; never execute scripts.
+  if(template.content.querySelector("script"))throw Error("Trang module không được chứa script.");
+  mount.replaceChildren(template.content);
+  const current=root.PICKLEUP_ROUTER?.getPage()===page;
+  for(const element of mount.querySelectorAll("[data-pickleup-page]")){
+   if(current)element.setAttribute("data-page-current","");
+   else element.removeAttribute("data-page-current");
+  }
+  mountedFragments.add(page);
+  const detail={page,file,bytes:content.length,sections:list.length,cached:false};
+  document.dispatchEvent(new CustomEvent("pickleup:fragment-ready",{detail}));
+  return detail;
+ })().catch(err=>{fragmentPromises.delete(page);throw err});
+ fragmentPromises.set(page,promise);
+ return promise;
+}
 const version=root.PICKLEUP_BUILD||"";
 function assetUrl(file){return "./"+file+(version?"?v="+encodeURIComponent(version):"")}
 const loadedScripts=new Set();
@@ -79,10 +116,11 @@ function ensure(page){
  const promise=pipeline.then(async()=>{
   if(root.PICKLEUP_ROUTER?.getPage()===page)loading(true,"Đang mở "+((root.PICKLEUP_PAGES||[]).find(x=>x.id===page)?.title||"trang")+"…");
   const css=styles.map(loadStyle);
+  const fragment=await ensureMarkup(page);
   let scripts=0;
   for(const file of files)if(await loadScript(file))scripts++;
   await Promise.all(css);
-  const info={page,ms:Math.round(performance.now()-start),scripts,styles:styles.length,at:new Date().toISOString()};
+  const info={page,ms:Math.round(performance.now()-start),scripts,styles:styles.length,htmlBytes:fragment.bytes,htmlSections:fragment.sections,at:new Date().toISOString()};
   timings.set(page,info);
   document.dispatchEvent(new CustomEvent("pickleup:page-ready",{detail:info}));
   if(root.PICKLEUP_ROUTER?.getPage()===page)loading(false);
@@ -100,5 +138,5 @@ function ensure(page){
 function readMetrics(){return [...timings.values()].map(x=>({...x}))}
 function isLoaded(file){return loadedScripts.has(file)}
 root.PICKLEUP_READY=ready;
-root.PICKLEUP_PAGE_LOADER={ensure,PAGE_FILES,PAGE_STYLES,readMetrics,isLoaded};
+root.PICKLEUP_PAGE_LOADER={ensure,ensureMarkup,PAGE_FILES,PAGE_STYLES,FRAGMENTS,readMetrics,isLoaded,hasMarkup:page=>mountedFragments.has(page)};
 })(window);
