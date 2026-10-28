@@ -87,3 +87,10 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .academy-focus-controls{display:flex;gap:10px;flex-wrap:wrap}
 .academy-focus-controls button,.academy-focus #academyFocusToggle{min-height:48px;flex:1}
 @media(max-width:600px){.academy-focus-controls{display:grid;grid-template-columns:1fr 1fr}.academy-focus-controls #academyFocusDone{grid-column:1/-1;grid-row:1}}
+
+/* V4.2 timed focus mode */
+.academy-timer{padding:14px 0;margin:14px 0;border-top:1px solid #c7d9cb;border-bottom:1px solid #c7d9cb;text-align:center}
+.academy-timer strong{font-size:clamp(2.6rem,8vw,4.5rem);line-height:1.1;font-variant-numeric:tabular-nums;display:block}
+.academy-timer-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.academy-timer-controls button{min-height:48px;min-width:120px}
+@media(max-width:600px){.academy-timer-controls button{flex:1}}
