@@ -406,3 +406,13 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Thêm kiểm thử đề xuất theo dữ liệu và tình huống chưa có dữ liệu.
 - [x] Version `4.3.0-beta.1` và cache PWA riêng, đồng bộ kiểm thử phiên bản.
 - [ ] Xác nhận CI trên commit mới; chưa nghiệm thu iPhone/iPad vật lý.
+
+## V4.4 Beta – Lịch sử và xu hướng kết quả Học viện
+
+- [x] Lưu tối đa 500 lượt kiểm tra Học viện trong `pickleup_academy_history_v44` (không ghi đè điểm mới nhất V4.3).
+- [x] Tính trung bình tối đa 3 lượt gần nhất theo cùng kỹ năng và cùng cấp độ, hiển thị biến động điểm khi có từ 2 lượt.
+- [x] Không giả định lịch sử cho điểm cũ chỉ có một bản ghi; vẫn gợi ý từ dữ liệu V4.3 trước đây.
+- [x] Sao lưu và khôi phục trường `academyHistory` với kiểm tra dữ liệu, giữ tương thích file backup cũ.
+- [x] Unit tests cho giới hạn dữ liệu, trường hợp giảm/tăng điểm và phân loại cấp độ; Playwright 390px/820px/1440px.
+- [x] Chạy unit tests trước khi cài browser, hủy các CI cũ bị phiên bản mới thay thế.
+- [ ] Đạt CI của commit cuối cùng và kiểm thử PWA thực tế trên thiết bị.
