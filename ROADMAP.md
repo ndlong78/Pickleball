@@ -426,6 +426,7 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Liên kết về Học viện và tiếp tục đúng giáo án được đề xuất.
 - [x] Giữ nguyên localStorage V4.4 và xử lý một điểm V4.3 cũ mà không giả định xu hướng.
 - [x] Node.js 24 unit tests + Playwright Chromium/WebKit ở 390/820/1440 px.
-- [ ] Xác nhận CI của commit V4.5 cuối và nghiệm thu PWA trên thiết bị thật.
+- [x] CI commit V4.5 cuối: [GitHub Actions #40668170539](https://github.com/ndlong78/Pickleball/actions/runs/40668170539) — success (Node.js 24, Unit, Chromium, WebKit).
+- [ ] Nghiệm thu PWA trên iPhone/iPad vật lý và thử offline.
 
 **Giới hạn:** Điểm từ bài khác nhau không phản ánh trực tiếp tiến bộ kỹ năng; nhận định chiều hướng chỉ từ cùng bài kiểm tra, tốt nhất thực hiện trong điều kiện tương tự.
