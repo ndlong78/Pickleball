@@ -62,3 +62,16 @@ Mô hình dữ liệu, HTML và route bảy trang của V3.4 **không thay đổ
 - Trang Trên sân và Thi đấu tự tạo các lựa chọn input, không cần mở trang Tiến bộ trước.
 
 Xem [PERFORMANCE.md](PERFORMANCE.md) để biết mức tối ưu và các giới hạn offline.
+
+
+## V3.7 – On-demand HTML fragments
+
+V3.7 giữ nguyên các URL `?page=`, nhưng tách 12 khu vực chuyên biệt sang:
+`pages/coach.html`, `pages/court.html`, `pages/academy.html`,
+`pages/progress.html`, `pages/matches.html`, `pages/settings.html`.
+
+`index.html` còn vùng chứa `#mount-coach`, `#mount-court`, `#mount-academy`, `#mount-progress`, `#mount-matches`, `#mount-settings`. `modules/page-loader.js` kiểm tra fragment theo danh sách `PICKLEUP_PAGES`, gắn DOM trước khi tải UI JS, tránh duplicate fetch. Khi mở trang khác, DOM đã khởi tạo chỉ bị ẩn chứ không bị xóa. Bộ định tuyến chờ HTML/JS sẵn sàng trước khi cuộn đến deep link.
+
+Các khối nhỏ dùng chung cần thiết cho `weekly-practice.js` và `assessments-and-backup.js` vẫn nằm ở trang gốc, nhằm giữ tương thích logic cũ mà không đổi `localStorage`. Không nên chuyển các khối này sang fragment nếu chưa tách module dùng chung.
+
+Mỗi fragment là HTML tĩnh cùng nguồn, không chứa `<script>`. Người dùng phải mở trang chuyên môn một lần khi online trước khi dùng offline.
