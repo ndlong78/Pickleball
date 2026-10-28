@@ -17,6 +17,8 @@ const PAGE_STYLES={
  court:["training-evaluation.css"],
  progress:["training-evaluation.css"]
 };
+const version=root.PICKLEUP_BUILD||"";
+function assetUrl(file){return "./"+file+(version?"?v="+encodeURIComponent(version):"")}
 const loadedScripts=new Set();
 const loadedStyles=new Set();
 const promises=new Map();
@@ -31,7 +33,7 @@ function loadStyle(file){
  loadedStyles.add(file);
  return new Promise((resolve,reject)=>{
   const link=document.createElement("link");
-  link.rel="stylesheet";link.href="./"+file;
+  link.rel="stylesheet";link.href=assetUrl(file);
   link.addEventListener("load",resolve,{once:true});
   link.addEventListener("error",()=>{loadedStyles.delete(file);reject(new Error("CSS không tải được: "+file))},{once:true});
   document.head.appendChild(link);
@@ -41,7 +43,7 @@ function loadScript(file){
  if(loadedScripts.has(file))return Promise.resolve(false);
  return new Promise((resolve,reject)=>{
   const el=document.createElement("script");
-  el.src="./"+file;
+  el.src=assetUrl(file);
   el.async=false;
   el.addEventListener("load",()=>{loadedScripts.add(file);resolve(true)},{once:true});
   el.addEventListener("error",()=>{el.remove();reject(new Error("Module không tải được: "+file))},{once:true});
@@ -55,7 +57,7 @@ function prefetch(files){
   if(loadedScripts.has(file))continue;
   if(document.querySelector('link[data-pu-preload="'+file+'"]'))continue;
   const link=document.createElement("link");
-  link.rel="preload";link.as="script";link.href="./"+file;
+  link.rel="preload";link.as="script";link.href=assetUrl(file);
   link.dataset.puPreload=file;
   document.head.appendChild(link);
  }
