@@ -32,10 +32,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: "22"
+          node-version: "24"
+          package-manager-cache: false
+      - name: Verify Node.js 24
+        run: |
+          node --version
+          npm --version
+          node -e 'if (process.versions.node.split(".")[0] !== "24") process.exit(1)'
       - name: Install test runner
         run: npm install --no-audit --no-fund
       - name: Install browsers
@@ -46,7 +52,7 @@ jobs:
         run: npm run test:responsive
       - name: Upload V3.8 browser benchmark
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pickleup-v38-browser-benchmark
           path: test-results/v38-browser-benchmark.json
@@ -54,7 +60,7 @@ jobs:
           retention-days: 14
       - name: Upload failure report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pickleup-responsive-report
           path: |
