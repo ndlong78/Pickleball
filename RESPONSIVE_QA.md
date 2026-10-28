@@ -69,3 +69,5 @@ Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác 
 - [ ] Chạy Playwright/CI với Chromium và WebKit; ghi nhận lỗi browser nếu có.
 - [ ] Thử trên iPhone/iPad: trang tải đầu, chuyển trang, tắt/bật mạng và cập nhật PWA từ 3.5.
 - [ ] Trên Safari không hỗ trợ một chỉ số, hiển thị '—' thay vì coi là 0.
+
+- [x] Kiểm thử unit đảm bảo `advanced.css` không bị tải trên trang Tổng quan, nhưng chỉ nạp một lần khi chuyển giữa HLV và Thi đấu.
