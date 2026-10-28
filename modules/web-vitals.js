@@ -99,8 +99,8 @@ function reportResourceSummary(){
  return {requests:own.length,transferBytes:own.reduce((n,r)=>n+(finite(r.transferSize)||0),0),
   decodedBytes:own.reduce((n,r)=>n+(finite(r.decodedBodySize)||0),0)};
 }
-root.addEventListener?.("visibilitychange",()=>{
- visible=!root.document?.hidden;
+root.document?.addEventListener?.("visibilitychange",()=>{
+ visible=!root.document.hidden;
  if(!visible)notify();
 });
 root.PICKLEUP_METRICS={trackRoute,collect,subscribe,reportResourceSummary};
