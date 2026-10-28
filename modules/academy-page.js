@@ -28,6 +28,36 @@ function visitLesson(id){
 const stepsKey='pickleup_academy_steps_v41';
 let stepRecords={};
 try{const v=JSON.parse(localStorage.getItem(stepsKey)||'{}');if(v&&typeof v==='object'&&!Array.isArray(v))stepRecords=v}catch(_){}
+const focusKey='pickleup_academy_focus_v42';
+let focusPositions={};try{const saved=JSON.parse(localStorage.getItem(focusKey)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))focusPositions=saved}catch(_){}
+let focusEnabled=false;
+function lessonSteps(x){return [{title:'Khởi động · 10 phút',description:'Di chuyển nhẹ, làm nóng khớp và làm quen bóng.'},...x.drills.map((d,i)=>({title:'Bài '+(i+1)+' · '+d.name+' · '+d.minutes+' phút',description:d.instruction})),{title:'Kiểm tra · 6 phút',description:x.assessment.instruction},{title:'Thả lỏng · 5 phút',description:'Đi bộ nhẹ, giãn cơ thoải mái và bổ sung nước.'}]}
+function currentFocusIndex(x){const i=focusPositions[x.id];return Number.isInteger(i)?Math.max(0,Math.min(5,i)):0}
+function showFocus(x){
+ const panel=document.getElementById('academyFocusPanel'),button=document.getElementById('academyFocusToggle');
+ panel.hidden=!focusEnabled;button.setAttribute('aria-pressed',String(focusEnabled));button.textContent=focusEnabled?'Thoát tập trung':'Bật tập trung';
+ if(!x)return;
+ const steps=lessonSteps(x),i=currentFocusIndex(x),step=steps[i],done=(stepRecords[x.id]||[]).includes(i);
+ document.getElementById('academyFocusPosition').textContent='Bước '+(i+1)+'/6';
+ document.getElementById('academyFocusTitle').textContent=step.title;
+ document.getElementById('academyFocusGuide').textContent=step.description;
+ document.getElementById('academyFocusStatus').textContent=focusEnabled?'Đang tập bước '+(i+1)+'/6 · '+(done?'Đã đánh dấu':'Chưa đánh dấu'):'Mỗi lần tập trung vào một bước.';
+ document.getElementById('academyFocusPrev').disabled=i===0;
+ document.getElementById('academyFocusNext').disabled=i===5;
+ document.getElementById('academyFocusDone').textContent=done?'Bỏ đánh dấu':'Đánh dấu đã tập';
+}
+function moveFocus(delta){const x=get();if(!x)return;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
+document.getElementById('academyFocusToggle').addEventListener('click',()=>{focusEnabled=!focusEnabled;showFocus(get())});
+document.getElementById('academyFocusPrev').addEventListener('click',()=>moveFocus(-1));
+document.getElementById('academyFocusNext').addEventListener('click',()=>moveFocus(1));
+document.getElementById('academyFocusDone').addEventListener('click',()=>{
+ const x=get();if(!x)return;
+ const i=currentFocusIndex(x),done=new Set(Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[]);
+ if(done.has(i))done.delete(i);else done.add(i);
+ stepRecords[x.id]=[...done].sort((a,b)=>a-b);
+ try{localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ drawSteps(x);
+});
 function drawSteps(x){
  const list=document.getElementById('academyStepList'),hint=document.getElementById('academyStepsStatus');
  const steps=[{title:'Khởi động · 10 phút',description:'Di chuyển nhẹ, làm nóng khớp và làm quen bóng.'},...x.drills.map((d,i)=>({title:'Bài '+(i+1)+' · '+d.name+' · '+d.minutes+' phút',description:d.instruction})),{title:'Kiểm tra · 6 phút',description:x.assessment.instruction},{title:'Thả lỏng · 5 phút',description:'Đi bộ nhẹ, giãn cơ thoải mái và bổ sung nước.'}];
@@ -42,6 +72,7 @@ function drawSteps(x){
  });
  list.replaceChildren(fragment);
  hint.textContent='Đã thực hiện '+finished.size+'/'+steps.length+' bước · Không thay thế điểm kiểm tra 20 lượt.';
+ showFocus(x);
 }
 document.getElementById('academyStepList').addEventListener('change',event=>{
  const input=event.target;if(!input.matches('input[data-step]'))return;
