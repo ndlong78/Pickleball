@@ -15,7 +15,7 @@
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="description" content="Lộ trình tập Pickleball 60 phút mỗi tuần, dành cho người mới bắt đầu.">
   <title>PickleUp · Huấn luyện Pickleball</title>
-  <script>window.PICKLEUP_BUILD="3.6.0"</script>
+  <script>window.PICKLEUP_BUILD="3.7.0"</script>
   <style>
     /* Font loaded without blocking critical CSS; system font fallback is immediate. */
     :root{--bg:#f6f7f2;--ink:#142d30;--muted:#6b7b79;--green:#b8ef49;--green2:#eaffc9;--line:#dfe6df;--white:#fff;--radius:20px}
@@ -60,11 +60,11 @@
 .th-row span{overflow-wrap:anywhere}.th-row strong{white-space:nowrap}
 @media(max-width:750px){.th-filters{grid-template-columns:1fr}.th-panel{padding:16px}.pc-run-buttons button{min-height:50px;font-size:13px}.pc-run-clock{position:sticky;top:0;background:#fff;z-index:3;padding:10px 0;border-bottom:1px solid #e4eae0}.pc-run-card{scroll-margin-top:12px}.pc-attempt input{min-height:48px}}
 </style>
-<link rel="stylesheet" href="./responsive.css?v=3.6.0">
+<link rel="stylesheet" href="./responsive.css?v=3.7.0">
 
 
 
-<link rel="stylesheet" href="./modules/page-layout.css?v=3.6.0">
+<link rel="stylesheet" href="./modules/page-layout.css?v=3.7.0">
 <script>document.documentElement.classList.add("pickleup-routing")</script>
 </head>
 <body>
@@ -98,211 +98,17 @@
 <div id="homeStats" class="stats" data-pickleup-page="home"><div class="stat"><strong>06</strong><span>Nhóm kỹ năng luân phiên</span></div><div class="stat"><strong>60'</strong><span>Thời lượng mỗi buổi</span></div><div class="stat"><strong id="completedCount">0/6</strong><span>Tuần đã ghi nhận</span></div><div class="stat"><strong id="bestRate">—</strong><span>Kết quả gần nhất</span></div></div>
 <section class="section" id="homeWeeks" data-pickleup-page="home"><div class="sectionHead"><div><div class="kicker">Lộ trình của bạn</div><h2>Chọn tuần luyện tập</h2><div class="sub">Bắt đầu từ thứ Bảy, 31/10/2026 · Một kỹ năng trọng tâm mỗi tuần</div></div></div><div class="weeks" id="weekList"></div></section>
 <section class="section" id="practice" data-pickleup-page="court"><div class="sectionHead"><div><div class="kicker">Giáo án thực hành</div><h2>Buổi tập 60 phút</h2><div class="sub">Khởi động → 3 bài tập → kiểm tra → thả lỏng</div></div></div><div class="mainGrid"><article class="card"><div class="sessionHead"><div><div class="kicker" id="weekMeta">TUẦN 01</div><h3 id="sessionTitle"></h3><div class="goal" id="sessionGoal"></div></div><span class="tag">3 bài tập thực tế</span></div><div class="timeline" id="timeline"></div></article><aside class="side"><section class="card"><h3>⏱ Đồng hồ tập luyện</h3><select class="timerselect" id="timerPreset" aria-label="Chọn thời gian tập"><option value="600">Khởi động · 10 phút</option><option value="720">Bài tập 1 · 12 phút</option><option value="720">Bài tập 2 · 12 phút</option><option value="900">Bài tập 3 · 15 phút</option><option value="360">Kiểm tra · 6 phút</option><option value="300">Thả lỏng · 5 phút</option></select><div class="clock" id="clock" role="timer" aria-live="off">10:00</div><div class="timerbuttons"><button id="playTimer">Bắt đầu</button><button id="resetTimer">Đặt lại</button></div><div class="hint" style="margin-top:12px">Đồng hồ chạy khi trang đang mở. Có âm báo nhẹ khi hết giờ.</div></section><section class="card"><h3>⚠ Lỗi cần tránh</h3><ul class="noteList" id="mistakes"></ul></section><section class="card"><h3>🎯 Đánh giá tiến bộ</h3><p class="sub" id="testPrompt"></p><div class="scorelabel"><span>Số lần đạt / 20</span><strong><span id="scoreValue">14</span>/20</strong></div><input class="scoreinput" type="range" id="score" min="0" max="20" value="14" aria-label="Số lần thực hiện thành công"><div class="bar"><div id="barfill" class="barfill"></div></div><div id="feedback" class="feedback"></div><button class="primary save" id="saveScore">Lưu kết quả tuần này</button><div class="hint" style="margin-top:10px">Điểm được lưu trên chính trình duyệt này.</div></section></aside></div></section>
-<section class="section" id="personalCoach" data-pickleup-page="coach">
- <div class="sectionHead"><div><div class="kicker">PickleUp V2.4 · Personal Coach 1.0–3.0</div><h2>Giáo án cá nhân hóa 60 phút</h2><p class="sub">Dựa vào sáu điểm kỹ năng, hệ thống chọn ba ưu tiên, luân phiên bài tập và ghi nhận tiến bộ. Hoạt động offline, không cần tài khoản.</p></div></div>
- <div class="advanced-links"><a href="#advancedCoach">Chuyển sang HLV nâng cao 3.0–4.0</a></div>
-<div class="pc-grid">
-  <div class="card pc-panel">
-   <h3>1. Kết quả đầu vào</h3>
-   <p class="sub" id="pcSource" role="status"></p>
-   <label for="pcLevel" class="pc-field-label">Nhóm giáo án</label>
-   <select id="pcLevel" class="timerselect"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option></select>
-   <div id="pcInputs" class="pc-inputs"></div>
-   <div class="pc-actions"><button type="button" id="pcLoad" class="pc-alt">Nạp điểm đã lưu</button><button type="button" id="pcGenerate" class="primary">Tạo giáo án 60 phút</button><button type="button" id="pcOpenRun" class="pc-alt">Vào chế độ tập trên sân</button></div>
-   <p class="sub" id="pcStatus" role="status" aria-live="polite"></p>
-   <p class="hint">Chỉ dùng kết quả trên trình duyệt này hoặc điểm bạn nhập. Không tự lấy dữ liệu từ cuộc trò chuyện ChatGPT. Mốc mục tiêu là gợi ý để tập, không phải rating DUPR.</p>
-  </div>
-  <div class="card pc-panel">
-   <h3>2. Nhật ký giáo án</h3>
-   <div class="pc-stats"><div><strong id="pcCount">0 kế hoạch</strong><span>Đã tạo</span></div><div><strong id="pcDone">0 hoàn thành</strong><span>Đã kiểm tra</span></div></div>
-   <div id="pcHistory" class="pc-history"></div>
-   <p class="hint">Mỗi kỹ năng có các bài tập luân phiên; sau khi dùng hết, bài ít được tập gần đây sẽ xuất hiện lại.</p>
-  </div>
- </div>
- <article class="card pc-panel" id="pcPlan" aria-live="polite"></article>
- <div class="card pc-panel" id="pcCompletion" hidden>
-  <h3>3. Ghi kết quả sau buổi tập</h3>
-  <label class="pc-field-label" for="pcPostScore" id="pcPostScoreLabel">Kết quả sau tập</label>
-  <div class="pc-actions"><input type="number" inputmode="numeric" id="pcPostScore" min="0" max="20" step="1" placeholder="0–20" aria-label="Số lần đúng trong 20 lần kiểm tra"><button type="button" class="primary" id="pcComplete">Lưu kết quả buổi tập</button></div>
-  <p id="pcLastOutcome" class="sub"></p>
- </div>
-</section>
-<section class="section" id="advancedCoach" data-pickleup-page="coach">
- <div class="sectionHead"><div><div class="kicker">PickleUp V3.1 · Advanced Personal Coach</div><h2>Huấn luyện cá nhân 3.0–4.0</h2><p class="sub">Tự tạo buổi tập chiến thuật 60 phút từ sáu kết quả kiểm tra nâng cao, chọn ba kỹ năng yếu nhất rồi luân phiên giáo án đã học.</p></div></div>
- <div class="advanced-links"><a href="#advancedReadiness">Làm bài kiểm tra nâng cao</a><a href="#pcOnCourt">Đồng hồ tập trên sân</a><a href="#trainingHistory">Biểu đồ luyện tập</a><a href="#tacticalReport">Phân tích chiến thuật V3.2</a></div>
- <div class="pc-grid">
-  <div class="card pc-panel">
-   <h3>1. Kết quả chiến thuật</h3>
-   <p class="sub" id="acCoachSource" role="status"></p>
-   <label class="pc-field-label" for="acCoachLevel">Chọn nhóm giáo án</label>
-   <select class="timerselect" id="acCoachLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select>
-   <div class="pc-inputs" id="acCoachInputs"></div>
-   <div class="advanced-field" style="margin:14px 0">
-     <label for="acCoachMatchFocus">Tùy chọn: ưu tiên theo nhật ký trận đấu</label>
-     <select id="acCoachMatchFocus"><option value="">Không áp dụng — chọn theo điểm kỹ năng</option></select>
-     <p id="acCoachMatchSuggestion" class="sub">Chưa có dữ liệu trận đấu.</p>
-     <p id="acCoachFocusStatus" class="sub" role="status" aria-live="polite">Chỉ áp dụng khi bạn chủ động chọn kỹ năng.</p>
-   </div>
-   <div class="pc-actions"><button type="button" class="pc-alt" id="acCoachImport">Nạp điểm nâng cao</button><button type="button" class="primary" id="acCoachCreate">Tạo buổi tập 60 phút</button></div>
-   <p class="sub" id="acCoachStatus" role="status" aria-live="polite"></p>
-   <p class="hint">Nếu chưa có kết quả V3.0, hãy thực hiện bài kiểm tra nâng cao hoặc nhập đủ sáu điểm 0–20. Mốc đạt chỉ là tiêu chí luyện tập, không chứng nhận 3.5–4.0.</p>
-  </div>
-  <div class="card pc-panel">
-   <h3>2. Kế hoạch đã tạo</h3>
-   <div class="pc-stats"><div><strong id="acCoachCount">0 giáo án</strong><span>Đã tạo</span></div><div><strong id="acCoachFinished">0 đã tập</strong><span>Đã kiểm tra</span></div></div>
-   <div id="acCoachHistory" class="pc-history"></div>
-   <button type="button" class="primary" id="acCoachRun" disabled>Vào chế độ tập trên sân</button>
-   <p class="hint">Khi chọn giáo án ở lịch sử, đồng hồ sẽ nạp đúng bài đó. Dữ liệu V2 và V3.0 vẫn được lưu riêng.</p>
-  </div>
- </div>
- <article class="card pc-panel" id="acCoachPlan" aria-live="polite"></article>
- <div class="card pc-panel" id="acCoachComplete" hidden>
-  <h3>3. Kiểm tra sau buổi tập</h3>
-  <label class="pc-field-label" for="acCoachResult" id="acCoachResultLabel">Kết quả 20 tình huống kiểm tra</label>
-  <div class="pc-actions"><input type="number" inputmode="numeric" min="0" max="20" step="1" id="acCoachResult" placeholder="0–20"><button type="button" class="primary" id="acCoachSave">Lưu kết quả buổi tập</button></div>
-  <p class="hint">Sau khi lưu, lần tạo giáo án tiếp theo có thể dùng điểm thực tế mới để xác định lại kỹ năng ưu tiên.</p>
- </div>
-</section>
-<section class="section" id="pcOnCourt" data-pickleup-page="court">
-<div class="sectionHead"><div><div class="kicker">PickleUp V3.1 · Tập trực tiếp</div><h2>Chế độ tập luyện trên sân</h2><p class="sub">Đồng hồ 6 phần, hướng dẫn và sơ đồ tự đổi theo giáo án từ HLV cơ bản (1.0–3.0) hoặc HLV nâng cao (3.0–4.0).</p></div></div>
-<div class="card pc-run-empty" id="pcRunEmpty">Hãy tạo hoặc chọn một giáo án trong HLV cá nhân hoặc HLV nâng cao, sau đó mở chế độ tập trên sân.</div>
-<div class="pc-run-layout" id="pcRunPlayer" hidden>
- <div class="pc-run-card">
-  <div class="kicker" id="pcRunStep"></div>
-  <h3 id="pcRunTitle" style="margin:8px 0">Khởi động</h3>
-  <div class="pc-run-clock" role="timer" aria-live="off" id="pcRunClock">10:00</div>
-  <div class="pc-run-buttons"><button type="button" id="pcRunStart">Bắt đầu</button><button type="button" id="pcRunReset">Đặt lại</button><button type="button" id="pcRunPrev">← Phần trước</button><button type="button" id="pcRunNext">Phần tiếp theo →</button></div>
-  <div class="pc-run-progress"><div id="pcRunProgress"></div></div>
-  <div id="pcRunSegments" class="pc-run-segments"></div>
-  <label class="pc-wake"><input type="checkbox" id="pcWakeToggle"> Giữ màn hình sáng khi tập (nếu thiết bị hỗ trợ)</label>
-  <p id="pcRunMessage" class="pc-run-message" role="status" aria-live="polite"></p>
-  <button type="button" id="pcRunScore" class="primary" hidden>Nhập kết quả sau tập</button>
-  <p class="pc-run-help">Đồng hồ dùng mốc thời gian thực để hạn chế sai lệch khi màn hình tạm ngưng. Hết một phần sẽ dừng và chờ bạn chuyển phần; không tự xác nhận hoàn thành giáo án.</p>
- </div>
- <div class="pc-run-card">
-  <div id="pcRunGuide" class="pc-run-guide"></div>
-  <div class="pc-run-diagram" id="pcRunDiagram"></div>
-  <div class="pc-attempt" id="pcAttemptArea" hidden>
-   <h4 id="pcAttemptName">Lưu kết quả bài tập</h4>
-   <p id="pcAttemptHint" class="sub">Ghi sau 20 lần thử.</p>
-   <label for="pcAttemptHits">Số lần thực hiện đúng /20</label>
-   <input id="pcAttemptHits" type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="0–20">
-   <div class="pc-conditions">
-    <label for="pcAttemptFeed">Cách cấp bóng<select id="pcAttemptFeed"><option value="">Chọn cách cấp bóng</option></select></label>
-    <label for="pcAttemptPace">Tốc độ bài tập<select id="pcAttemptPace"><option value="">Chọn tốc độ</option></select></label>
-    <label for="pcAttemptTarget">Vùng mục tiêu<select id="pcAttemptTarget"><option value="">Chọn độ rộng mục tiêu</option></select></label>
-   </div>
-   <label for="pcAttemptNote">Ghi chú ngắn (không bắt buộc)</label>
-   <input id="pcAttemptNote" type="text" maxlength="240" placeholder="Ví dụ: giữ bóng thấp hơn">
-   <button type="button" class="primary" id="pcAttemptSave">Lưu một lần tập</button>
-  </div>
- </div>
-</div>
-</section>
-<section class="section" id="trainingHistory" data-pickleup-page="progress">
-<div class="sectionHead"><div><div class="kicker">PickleUp V2.6 · Training Insights</div><h2>Lịch sử luyện tập nhiều lần</h2><p class="sub">So sánh các lần tập của cùng bài, cùng cấp độ và cùng kiểu kiểm tra. Không cộng gộp bài dễ với bài khó.</p></div><button type="button" id="thRefresh" class="linkbtn">Làm mới</button></div>
-<div class="card th-panel">
- <div class="th-summary"><strong id="thTotal">0 lần tập đã lưu</strong><span id="thSkillsCount">0/6 kỹ năng có dữ liệu</span></div>
- <div class="th-filters">
-  <label for="thSkill">Kỹ năng <select id="thSkill"><option value="all">Tất cả kỹ năng</option></select></label>
-  <label for="thDrill">Bài tập / độ khó <select id="thDrill"><option value="">Chọn bài tập</option></select></label>
- </div>
- <p id="thComparison" class="th-insight" role="status">Chưa có dữ liệu.</p>
- <div id="thTrend"></div>
- <h3>Nhật ký lần tập</h3><div id="thEntries"></div>
- <p class="sub">Mỗi lần ghi nhận dùng 20 lượt thử. Biến động có thể đến từ đối thủ, cách cấp bóng hoặc thể trạng; không tương đương xếp hạng thi đấu.</p>
-</div>
-</section>
-<section class="section" id="dashboard" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">Thống kê PickleUp V3.0</div><h2>Dashboard tiến bộ</h2><p class="sub">Theo dõi kết quả 80 giáo án và lọc theo từng cấp độ để tránh so sánh trực tiếp các bài có độ khó khác nhau.</p></div><button type="button" id="dbRefresh" class="linkbtn">Cập nhật số liệu</button></div><label for="dbLevel" class="sub" style="display:block;margin:10px 0;font-weight:700">Cấp độ thống kê <select id="dbLevel" class="timerselect" style="max-width:300px;display:block;margin-top:7px"><option value="all">Toàn bộ 1.0–4.0</option><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option><option>3.0–3.5</option><option>3.5–4.0</option></select></label><div class="db-summary"><div class="db-tile"><strong id="dbCompleted">0/80</strong><span class="sub">Giáo án đã ghi nhận</span></div><div class="db-tile"><strong id="dbAverage">—</strong><span class="sub">Tỷ lệ chính xác trung bình</span></div><div class="db-tile"><strong>6</strong><span class="sub">Nhóm kỹ năng</span></div></div><div class="db-bar" aria-label="Tiến độ hoàn thành 36 giáo án"><div class="db-fill" id="dbProgress" style="width:0"></div></div><p class="sub" id="dbLast"></p><div class="db-grid"><article class="card db-panel"><h3>Sáu nhóm kỹ năng</h3><div id="dbSkills"></div></article><article class="card db-panel"><h3>Kết quả theo tuần</h3><div id="dbTrend"></div></article></div><div class="db-note" style="margin-top:14px"><strong>Gợi ý tập luyện</strong><div id="dbRecommendation"></div></div><p class="sub">Đây là thống kê từ bài kiểm tra cá nhân, không phải xếp hạng DUPR hoặc chứng nhận trình độ. Mỗi tuần chỉ lưu kết quả mới nhất.</p></section><section class="section" id="academy" data-pickleup-page="academy"><div class="sectionHead"><div><div class="kicker">Học viện PickleUp V3.0</div><h2>80 buổi tập từ 1.0 đến 4.0</h2><p class="sub">44 giáo án chiến thuật mới ở hai nhóm 3.0–3.5 và 3.5–4.0, bên cạnh 36 buổi cơ bản. Mỗi giáo án có ba bài thực hành và bài kiểm tra tham khảo.</p></div></div><div class="card" style="padding:20px"><div class="backupactions"><label for="academyLevel">Cấp độ <select id="academyLevel"><option value="all">Tất cả</option><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option><option>3.0–3.5</option><option>3.5–4.0</option></select></label><label for="academyWeek">Tuần tập <select id="academyWeek" aria-label="Chọn giáo án"></select></label></div><p class="sub">Chọn giáo án 3.0–4.0 trực tiếp trong Học viện hoặc mở <a href="#advancedCoach">HLV nâng cao V3.1</a> để tự tạo buổi tập cá nhân hóa có đồng hồ trên sân.</p><div class="advanced-links"><a href="#advancedReadiness">Kiểm tra nâng cao</a><a href="#matchJournal">Nhật ký trận đấu</a></div><div id="academyDetail" class="timeline" aria-live="polite"></div><div class="backupactions" style="align-items:center"><label for="academyScore">Số lần đạt / 20 <input type="number" min="0" max="20" value="12" id="academyScore" style="display:block;max-width:110px;border:1px solid #b4cab1;border-radius:8px;padding:8px"></label><button type="button" id="academySave">Lưu kết quả bài này</button></div><p id="academyStatus" class="outcome" role="status"></p></div></section><section class="section" id="advancedReadiness" data-pickleup-page="coach">
-<div class="sectionHead"><div><div class="kicker">PickleUp V3.0 · Kiểm tra kỹ năng nâng cao</div><h2>Đánh giá khả năng áp dụng chiến thuật</h2><p class="sub">Sáu kỹ năng chuyên sâu được kiểm tra riêng, không trộn với bài kiểm tra cơ bản V2.3. Điểm kiểm tra chỉ phục vụ lựa chọn chương trình tập.</p></div></div>
-<div class="card advanced-check-panel">
- <div class="advanced-field"><label for="advancedLevel">Nhóm đang luyện tập</label><select id="advancedLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select></div>
- <p id="advancedCheckTarget" class="advanced-helper"></p>
- <div class="advanced-check-inputs" id="advancedCheckInputs"></div>
- <button type="button" id="advancedCheckSave" class="primary">Đánh giá và lưu kết quả</button>
- <p id="advancedCheckResult" class="outcome" role="status" aria-live="polite"></p>
- <h3>Lịch sử kiểm tra gần đây</h3><div id="advancedCheckHistory"></div>
- <p class="sub">Ngưỡng nội bộ chỉ để định hướng bài tập; không chứng nhận DUPR hoặc khả năng thi đấu cấp 4.0.</p>
-</div>
-</section>
-<section class="section" id="trainingEvaluation" data-pickleup-page="progress">
-<div class="sectionHead"><div><div class="kicker">PickleUp V3.3 · Đánh giá thực tế</div><h2>Tiến bộ trong điều kiện tương đương</h2>
-<p class="sub">Phân tích riêng các lượt tập có đủ thông tin về cách cấp bóng, tốc độ và vùng mục tiêu; tổng hợp những vấn đề thường gặp khi đánh đôi.</p></div>
-<button type="button" class="linkbtn" id="evalRefresh">Cập nhật</button></div>
-<div class="card eval-panel">
- <div class="advanced-field"><label for="evalLevel">Nhóm trình độ</label>
- <select id="evalLevel"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option><option selected>3.0–3.5</option><option>3.5–4.0</option></select></div>
- <p id="evalTotals" class="eval-hint" role="status" aria-live="polite"></p>
- <p id="evalUnknown" class="sub"></p>
- <div class="eval-grid">
-  <div><h3>Những bài đã tập lại cùng điều kiện</h3><div id="evalComparison"></div></div>
-  <div><h3>Phối hợp đánh đôi</h3><p id="evalDoublesSummary" class="sub"></p>
-    <div id="evalDoubles"></div><div id="evalSuggestion" class="eval-hint"></div></div>
- </div>
- <p id="evalDisclaimer" class="sub"></p>
- <div class="advanced-links"><a href="#pcOnCourt">Ghi một lần tập</a><a href="#matchJournal">Ghi tình huống đánh đôi</a></div>
-</div>
-</section>
-<section class="section" id="matchJournal" data-pickleup-page="matches">
-<div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Nhật ký thi đấu</div><h2>Ghi nhận trận đấu và bài học</h2><p class="sub">Lưu tỷ số và một kỹ năng trọng tâm sau trận để biết những gì cần luyện tiếp. Không cần lưu tên đối thủ.</p></div></div>
-<div class="advanced-links"><a href="#tacticalReport">Xem báo cáo chiến thuật V3.2</a><a href="#advancedCoach">Tạo giáo án từ bài học sau trận</a></div>
-<div class="advanced-grid">
-<div class="card advanced-match-panel">
- <h3>Ghi một trận đã chơi</h3>
- <div class="advanced-grid">
-  <div class="advanced-field"><label for="matchMode">Hình thức</label><select id="matchMode"><option value="doubles">Đánh đôi</option><option value="singles">Đánh đơn</option></select></div>
-  <div class="advanced-field"><label for="matchFocus">Trọng tâm cần cải thiện</label><select id="matchFocus"></select></div>
-  <div class="advanced-field"><label for="matchOurs">Điểm đội mình</label><input id="matchOurs" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="11"></div>
-  <div class="advanced-field"><label for="matchTheirs">Điểm đối phương</label><input id="matchTheirs" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="9"></div>
- </div>
- <div class="advanced-field" id="matchDoublesField" style="margin:14px 0"><label for="matchDoublesIssue">Tình huống phối hợp đánh đôi (tùy chọn)</label>
-<select id="matchDoublesIssue"><option value="">Chưa phân loại</option></select></div>
-<div class="advanced-field" style="margin:14px 0"><label for="matchNotes">Điều rút ra sau trận (không bắt buộc)</label><textarea id="matchNotes" maxlength="280" placeholder="Ví dụ: cú drop thường cao khi bị trả sâu"></textarea></div>
- <button type="button" id="matchSave" class="primary">Lưu nhật ký trận đấu</button>
- <p id="matchStatus" class="outcome" role="status" aria-live="polite"></p>
-</div>
-<div class="card advanced-match-panel">
- <h3>Các trận gần đây</h3>
- <p id="matchSummary" class="advanced-helper"></p>
- <div id="matchHistory"></div>
-</div>
-</div>
-</section>
-<section class="section" id="tacticalReport" data-pickleup-page="matches">
- <div class="sectionHead"><div><div class="kicker">PickleUp V3.2 · Phân tích chiến thuật</div><h2>Hiệu quả tập luyện & bài học sau trận</h2>
- <p class="sub">Gộp phản hồi sau trận với lịch sử tập nâng cao, nhưng không đánh đồng ý kiến định tính với điểm kiểm tra.</p></div>
- <button type="button" id="tacticalRefresh" class="linkbtn">Làm mới báo cáo</button></div>
- <div class="card tactical-panel">
-  <div class="advanced-field tactical-level"><label for="tacticalLevel">Chọn cấp độ để so sánh bài tập</label>
-  <select id="tacticalLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select></div>
-  <div id="tacticalStats" class="tactical-stats"></div>
-  <div class="tactical-grid">
-   <div><h3>Trọng tâm sau trận</h3><div id="tacticalSignals"></div><div id="tacticalRecommendation" class="tactical-recommendation"></div></div>
-   <div><h3>Tiến bộ cùng bài tập</h3><div id="tacticalComparisons"></div></div>
-  </div>
-  <p id="tacticalNotice" class="sub"></p>
-  <div class="advanced-links"><a href="#trainingEvaluation">Xem so sánh đủ điều kiện V3.3</a></div>
- </div>
-</section>
+<div id="mount-coach" class="page-mount" data-pickleup-page="coach" aria-label="Nội dung coach"></div>
+
+<div id="mount-court" class="page-mount" data-pickleup-page="court" aria-label="Nội dung court"></div>
+<div id="mount-progress" class="page-mount" data-pickleup-page="progress" aria-label="Nội dung progress"></div>
+<div id="mount-academy" class="page-mount" data-pickleup-page="academy" aria-label="Nội dung academy"></div>
+
+<div id="mount-matches" class="page-mount" data-pickleup-page="matches" aria-label="Nội dung matches"></div>
+
 <section class="section" id="levelRoadmap" data-pickleup-page="academy"><div class="sectionHead"><div><div class="kicker">Hành trình dài hạn</div><h2>Từ mới bắt đầu đến 5.0</h2><p class="sub">Mỗi cấp độ mở rộng kỹ thuật và chiến thuật. Đây là lộ trình tham khảo, không phải chứng nhận xếp hạng.</p></div></div><div class="roadmap" id="levelCards"></div></section>
 <section class="section" id="selfAssessment" data-pickleup-page="coach"><div class="sectionHead"><div><div class="kicker">Đánh giá đầu vào</div><h2>Khám phá điểm xuất phát</h2><p class="sub">Chọn mức độ bạn thực hiện ổn định được trong trận đấu, không phải cú đánh tốt nhất từng làm.</p></div></div><div class="card selftest" id="assessmentFields"></div><div class="card" style="padding:20px;margin-top:12px"><div class="backupactions"><button id="assessBtn" type="button">Đánh giá và lưu</button></div><p id="assessResult" class="outcome" role="status"></p></div></section>
-<section class="section" id="stageAssessment" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">PickleUp V2.3</div><h2>Kiểm tra chuyển cấp</h2><p class="sub">Bộ bài kiểm tra nội bộ sáu kỹ năng, không phải điểm rating thi đấu. Hãy thực hiện cùng bạn tập hoặc huấn luyện viên.</p></div></div><div class="card" style="padding:22px"><label for="stageSelect"><b>Nhóm giáo án hiện tại</b></label><select class="timerselect" id="stageSelect" style="margin:10px 0 16px"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option></select><p class="sub" id="stageTarget"></p><div id="stageChecklist" class="stage-list"></div><button class="primary" id="stageSubmit" type="button" style="margin-top:15px">Đánh giá và lưu kết quả</button><p id="stageResult" class="outcome" role="status" aria-live="polite"></p><h3>Lịch sử kiểm tra gần đây</h3><div id="stageHistory"></div></div></section><section class="section" id="backup" data-pickleup-page="settings"><div class="sectionHead"><div><div class="kicker">Dữ liệu của bạn</div><h2>Sao lưu & khôi phục</h2><p class="sub">Lưu điểm tập và đánh giá vào tệp JSON để chuyển thiết bị; không cần tài khoản.</p></div></div><div class="backupactions"><button id="backupAll" type="button">Tải bản sao lưu đầy đủ</button><label for="restoreFile">Khôi phục từ tệp JSON<input id="restoreFile" type="file" accept=".json,application/json"></label></div><p class="sub" id="backupStatus" role="status"></p><div class="card" style="margin-top:16px"><h3>Dọn dữ liệu buổi tập mẫu</h3><p class="sub">Chỉ xóa điểm sáu tuần luyện tập mẫu; không xóa kết quả Học viện, Personal Coach hay nhật ký trận đấu.</p><button id="clearHistory" type="button" class="linkbtn">Xóa điểm 6 tuần mẫu</button></div></section><section class="section" id="performanceDiagnostics" data-pickleup-page="settings">
-<div class="sectionHead"><div><div class="kicker">PickleUp V3.5 · Hiệu năng</div>
-<h2>Tốc độ tải từng trang</h2>
-<p class="sub">Đo thời gian nạp module trên chính trình duyệt này; không gửi thông tin lên máy chủ. Thời gian thay đổi theo mạng và cache.</p></div>
-<button type="button" id="pagePerformanceRefresh" class="linkbtn">Làm mới</button></div>
-<div class="card" style="padding:20px">
-<h3>Hiển thị trang đầu · Web Vitals</h3>
-<p class="sub">FCP/LCP/CLS đo lần tải tài liệu ban đầu; INP là ước tính độ trễ tương tác trong phiên. Chỉ hiện khi trình duyệt hỗ trợ.</p>
-<div id="pageVitals" class="performance-grid"></div>
-<h3 style="margin-top:22px">Thời gian chuyển trang trong ứng dụng</h3>
-<div id="pageRouteMetrics" class="performance-grid"></div>
-<h3 style="margin-top:22px">Tải module theo trang</h3>
-<div id="pagePerformance" role="status">Đang đọc dữ liệu tải trang…</div>
-<p id="pageResourceStats" class="sub" style="margin-top:10px"></p>
-<p class="sub" style="margin-top:12px">Số đo tính từ lúc yêu cầu mở trang đến khi tải xong các module cần thiết. Lần đầu và những lần mở lại có thể khác nhau; không phải điểm Lighthouse hay Core Web Vitals.</p>
-</div>
-</section>
+<section class="section" id="backup" data-pickleup-page="settings"><div class="sectionHead"><div><div class="kicker">Dữ liệu của bạn</div><h2>Sao lưu & khôi phục</h2><p class="sub">Lưu điểm tập và đánh giá vào tệp JSON để chuyển thiết bị; không cần tài khoản.</p></div></div><div class="backupactions"><button id="backupAll" type="button">Tải bản sao lưu đầy đủ</button><label for="restoreFile">Khôi phục từ tệp JSON<input id="restoreFile" type="file" accept=".json,application/json"></label></div><p class="sub" id="backupStatus" role="status"></p><div class="card" style="margin-top:16px"><h3>Dọn dữ liệu buổi tập mẫu</h3><p class="sub">Chỉ xóa điểm sáu tuần luyện tập mẫu; không xóa kết quả Học viện, Personal Coach hay nhật ký trận đấu.</p><button id="clearHistory" type="button" class="linkbtn">Xóa điểm 6 tuần mẫu</button></div></section><div id="mount-settings" class="page-mount" data-pickleup-page="settings" aria-label="Nội dung settings"></div>
 <section class="section" id="activityHistory" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">Nhật ký cá nhân</div><h2>Thành tích luyện tập</h2><div class="sub">Xem lại kết quả để nhận biết sự tiến bộ.</div></div></div><div class="card history"><div id="historyList" class="historyList"></div></div></section>
 </main><nav id="pickleupMobileDock" class="mobile-dock" aria-label="Điều hướng nhanh PickleUp">
  <a href="#personalCoach"><span class="dock-icon" aria-hidden="true">🎯</span><span>HLV cá nhân</span></a>
@@ -311,11 +117,11 @@
  <a href="#academy"><span class="dock-icon" aria-hidden="true">📚</span><span>Giáo án</span></a>
 </nav>
 <footer class="footer"><div class="shell footflex"><span>© 2026 PickleUp · Website luyện tập Pickleball</span><span>Hoạt động trực tiếp trên trình duyệt · Không cần tài khoản</span></div></footer>
-<script src="./modules/page-catalog.js?v=3.6.0"></script>
-<script src="./modules/page-loader.js?v=3.6.0"></script>
-<script src="./modules/web-vitals.js?v=3.6.0"></script>
-<script src="./modules/page-router.js?v=3.6.0"></script>
-<script src="./mobile-ui.js?v=3.6.0" defer></script>
-<script src="./modules/pwa-client.js?v=3.6.0"></script>
+<script src="./modules/page-catalog.js?v=3.7.0"></script>
+<script src="./modules/page-loader.js?v=3.7.0"></script>
+<script src="./modules/web-vitals.js?v=3.7.0"></script>
+<script src="./modules/page-router.js?v=3.7.0"></script>
+<script src="./mobile-ui.js?v=3.7.0" defer></script>
+<script src="./modules/pwa-client.js?v=3.7.0"></script>
 </body>
 </html>
