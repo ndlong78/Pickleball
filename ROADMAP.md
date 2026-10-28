@@ -398,3 +398,11 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] [Release notes](RELEASE_V4.2.0.md).
 - [ ] Xác nhận CI của chính commit Stable cuối cùng.
 - [ ] Nghiệm thu thực tế iPhone/iPad PWA offline.
+
+## V4.3 Beta – Gợi ý luyện tập theo điểm thực tế
+
+- [x] Gợi ý kỹ năng điểm thấp nhất dựa trên kết quả Học viện đã lưu, hoặc bài khởi đầu khi chưa có điểm.
+- [x] Mở giáo án đề xuất ngay trên Học viện, không thay đổi dữ liệu điểm.
+- [x] Thêm kiểm thử đề xuất theo dữ liệu và tình huống chưa có dữ liệu.
+- [x] Version `4.3.0-beta.1` và cache PWA riêng, đồng bộ kiểm thử phiên bản.
+- [ ] Xác nhận CI trên commit mới; chưa nghiệm thu iPhone/iPad vật lý.
