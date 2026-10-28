@@ -13,6 +13,7 @@ for(const size of [
    for(const [key,value] of Object.entries(points))await page.locator("#pc-"+key).fill(String(value));
    await page.locator("#pcGenerate").click();
    await page.locator("#pcOpenRun").click();
+   await expect(page.locator("#pcRunPlayer")).toBeVisible();
    await page.locator("#pcRunNext").click();
    await page.locator("#pcAttemptHits").fill("10");
    await page.locator("#pcAttemptSave").click();
