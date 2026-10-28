@@ -27,6 +27,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.4 beta | Phân loại bảy trang, tách module, router tĩnh tương thích PWA | Đã triển khai mã nguồn; còn nghiệm thu UX và CI |
 | V3.5 beta | Tải JS/CSS theo trang, PWA cache lõi, đo tốc độ tại thiết bị | Đã triển khai; chờ nghiệm thu browser và đo tốc độ |
 | V3.6 beta | Web Vitals cục bộ, đo route và versioned assets chống cache cũ | Đã đưa mã nguồn; cần benchmark và QA iOS |
+| V3.7 beta | Tách HTML theo trang, giảm DOM khởi động, cache fragments | Đã triển khai mã nguồn; còn CI và kiểm thử thiết bị thật |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -306,3 +307,19 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Tối ưu HTML/DOM và request mạng tiếp theo dựa trên báo cáo, không phỏng đoán.
 
 - [x] Bổ sung tối ưu thực tế: bỏ `advanced.css` khỏi đường tải trang Tổng quan; chuyên trang mới tải khi cần, không nạp trùng.
+
+
+## V3.7 Beta – Lazy HTML fragments & DOM reduction
+
+- [x] Tách 12 khối giao diện chuyên môn ra khỏi `index.html` thành sáu mảnh HTML độc lập theo trang.
+- [x] Giảm HTML khởi động ~42% về số ký tự; không nhầm với mức tăng hiệu năng thực tế.
+- [x] Tải và kiểm tra fragment trước khi chạy JavaScript UI, không khởi tạo trùng.
+- [x] Duy trì DOM/state khi Back/Forward và chuyển trang; cuộn đến deep link sau khi fragment có mặt.
+- [x] Giữ module dùng chung và menu cố định bốn mục trên PC/iPad/iPhone.
+- [x] Cache fragment theo lượt truy cập online; cập nhật phiên bản tài nguyên `3.7.0`.
+- [x] Kiểm tra unique ID và mapping trang; bổ sung test Node/Playwright cho thiết bị responsive.
+- [ ] Xác minh GitHub Actions/Chromium/WebKit chạy thành công.
+- [ ] Kiểm thử offline/cache migration PWA V3.6 → V3.7 và dữ liệu cũ trên iPhone/iPad thật.
+- [ ] Đo Lighthouse/TTFB/LCP/CLS/INP và thời gian route trước/sau để có số liệu hiệu năng thực.
+
+**Ưu tiên V3.8:** tối ưu module DOM có chi phí dựng lớn dựa vào số liệu đo thật, kiểm tra tiếp sao lưu và cập nhật PWA.
