@@ -4,6 +4,7 @@ for(const width of [390,820,1440]){
   test.use({viewport:{width,height:900}});
   test("shows repeated score series, stage filters, suggestions and opens Academy",async({page})=>{
    await page.goto("/?page=academy");
+   await expect(page.locator("#academyWeek option")).toHaveCount(80);
    const id=await page.locator("#academyWeek").inputValue();
    for(const value of [6,9,12]){
     await page.locator("#academyScore").fill(String(value));
