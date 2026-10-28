@@ -23,8 +23,8 @@ for(const width of [390,820,1440]){
    await expect(page.locator("#wgRecommendation")).toContainText("giảm ít nhất 3");
    await expect(page.locator("#wgOpen")).toContainText("tuần 1");
    await page.reload();
-   await expect(page.locator("#wgDays")).toHaveValue("2");
    await expect(page.locator("#wgChart .wg-bar-item")).toHaveCount(8);
+   await expect(page.locator("#wgDays")).toHaveValue("2");
   });
  });
 }
