@@ -389,3 +389,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Tối ưu nút chạm cho điện thoại, máy tính bảng và PC; bổ sung bài test responsive V4.2.
 - [x] Phiên bản `4.2.0-beta.1`, service worker cache riêng `pickleup-shell-v4-2-focus`.
 - [ ] Xác nhận CI trên commit đóng gói cuối cùng và kiểm thử thực tế trên điện thoại.
+
+## V4.2 Stable – Phát hành
+
+- [x] Node.js 24 CI beta xanh: #40653222296.
+- [x] Đồng hồ từng bước, tạm dừng khi ẩn trang, chuyển bước có xác nhận thủ công.
+- [x] Chốt package v4.2.0, tách PWA cache stable và cập nhật hồi quy.
+- [x] [Release notes](RELEASE_V4.2.0.md).
+- [ ] Xác nhận CI của chính commit Stable cuối cùng.
+- [ ] Nghiệm thu thực tế iPhone/iPad PWA offline.
