@@ -100,3 +100,11 @@ Thay đổi chính: **12 khối giao diện nặng được chuyển từ `index
 **Kiểm thử được thêm:** `tests/page-fragments.test.js` kiểm tra ID duy nhất và đúng nguồn; `tests/page-loader.test.js` kiểm tra thứ tự hydrate → chạy JS và tái sử dụng file; `tests/page-fragments.spec.cjs` mô phỏng iPhone, iPad dọc/ngang, PC với luồng deep link/Back/giữ trạng thái. CI cần chạy để xác nhận trên Chromium/WebKit.
 
 **Bước kế tiếp:** chạy Lighthouse trên thiết bị thực, đo trước/sau với cold/warm cache rồi quyết định có nên tách tiếp CSS/điều khiển dữ liệu dùng chung. Không so sánh số liệu chỉ từ mô phỏng với người dùng thật.
+
+## V3.8 Beta – Benchmark theo thiết bị & hiệu suất dựng giao diện
+
+- Bộ `tests/v38-benchmark.spec.cjs` đo thời gian tải module và chuyển trang cho bốn profile: iPhone 390×844, iPad 820×1180, iPad ngang 1180×820 và PC 1440×900. Chạy trong Chromium/WebKit **giả lập kích thước**, không phải đo máy Apple thật. Dữ liệu ghi vào `test-results/v38-browser-benchmark.json` khi chạy CI và được upload thành artifact.
+- Học viện `modules/academy-page.js` cache tập `<option>` cho cấp độ đã xem và bỏ qua việc dựng lại nội dung bài nếu không đổi ID. Tránh thay HTML không cần thiết khi lọc/chọn lại cùng bài.
+- `dashboard.js` gom các phần tử kỹ năng và cột biểu đồ qua `DocumentFragment` rồi cập nhật DOM theo lô.
+- PWA dùng cache `pickleup-shell-v3-8-upgrade`, URL tài nguyên `?v=3.8.0`, giữ dữ liệu `localStorage`. Kiểm thử `tests/v38-pwa-upgrade.spec.cjs` mô phỏng dọn cache v3.6/v3.7 khi kích hoạt worker và thử mở Học viện offline sau khi cache.
+- **Chưa có phép đo tốc độ trên iPhone/iPad thật** và chưa có báo cáo CI được xác nhận đạt. Không công bố mức tăng tốc % chỉ từ thay đổi mã nguồn.
