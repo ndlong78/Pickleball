@@ -23,7 +23,7 @@ for(const screen of [
    await page.locator('#pageNavigation a[data-route="coach"]').click();
    await expect(page.locator("#pc-serve")).toHaveValue("12");
    expect(await page.evaluate(()=>window.__coachSection===document.getElementById("personalCoach"))).toBe(true);
-   const resourceCount=await page.evaluate(()=>performance.getEntriesByType("resource").filter(x=>x.name.includes("/pages/coach.html?v=4.1.0")).length);
+   const resourceCount=await page.evaluate(()=>performance.getEntriesByType("resource").filter(x=>x.name.includes("/pages/coach.html?v=4.2.0")).length);
    expect(resourceCount).toBe(1);
    await expect(page.locator("#pickleupMobileDock")).toBeVisible();
   });
