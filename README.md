@@ -237,3 +237,9 @@ Từ V3.7, trang mở đầu đã giảm khoảng 42% số ký tự HTML nguồn
 - V3.7 không đổi bất kỳ khóa `localStorage` nào; không cần xóa dữ liệu, cài lại PWA hay nhập điểm lại.
 
 Kiểm thử mới: `tests/page-fragments.test.js` và `tests/page-fragments.spec.cjs`. Xem [PERFORMANCE.md](PERFORMANCE.md) để biết kết quả kiểm tra cấu trúc, giới hạn và kế hoạch đo tốc độ trên iPhone/iPad thực tế.
+
+## PickleUp V3.8 Beta
+
+V3.8 bổ sung benchmark bốn profile trình duyệt (iPhone/iPad/PC giả lập), tối ưu DOM Học viện và Dashboard, cùng kiểm thử nâng cấp PWA từ các cache cũ. Kết quả benchmark sẽ được lưu thành JSON trong GitHub Actions nếu workflow chạy thành công. Đây không phải phép đo thiết bị vật lý; cần nghiệm thu riêng trên iOS Safari.
+
+Tải lại PickleUp khi có Internet để nhận tài nguyên phiên bản 3.8.0. Dữ liệu luyện tập vẫn được lưu tại trình duyệt như trước, không cần xóa cache bằng tay hoặc gỡ ứng dụng.
