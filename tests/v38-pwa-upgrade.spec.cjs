@@ -22,7 +22,7 @@ test("V4.2 Stable upgrades legacy PWA cache without erasing local training data"
  expect(result.record.hits).toBe(13);
  expect(result.keys).not.toContain("pickleup-shell-v3-6-vitals-versioned");
  expect(result.keys).not.toContain("pickleup-shell-v3-7-fragments");
- expect(result.keys).toContain("pickleup-shell-v4-2-stable");
+ expect(result.keys).toContain("pickleup-shell-v4-3-beta");
 });
 test("V4.2 Stable caches a visited advanced page for later offline reuse",async({page,context})=>{
  await page.goto("/?page=home");
@@ -32,7 +32,7 @@ test("V4.2 Stable caches a visited advanced page for later offline reuse",async(
  await page.locator('#pageNavigation a[data-route="academy"]').click();
  await expect(page.locator("#academyWeek option")).toHaveCount(80);
  const cached=await page.evaluate(async()=>{
-  const c=await caches.open("pickleup-shell-v4-2-stable");
+  const c=await caches.open("pickleup-shell-v4-3-beta");
   const keys=await c.keys();
   return keys.map(x=>new URL(x.url).pathname);
  });
