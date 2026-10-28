@@ -2,7 +2,7 @@
 const test=require("node:test"),assert=require("node:assert/strict");
 const vm=require("node:vm"),fs=require("node:fs"),path=require("node:path");
 const loaderSource=fs.readFileSync(path.join(__dirname,"../modules/page-loader.js"),"utf8");
-function mock(){
+function mock(version=""){
  const scripts=[],styles=[],listeners=new Map(),preloads=new Set();
  const status={hidden:true,textContent:""};
  const document={
@@ -19,7 +19,7 @@ function mock(){
   dispatchEvent(event){listeners.get(event.type)?.forEach(fn=>fn(event))},
   addEventListener(type,fn){if(!listeners.has(type))listeners.set(type,[]);listeners.get(type).push(fn)}
  };
- const window={PICKLEUP_PAGES:[{id:"home",title:"Tổng quan"},{id:"progress",title:"Tiến bộ"}],PICKLEUP_ROUTER:{getPage:()=>"home"}};
+ const window={PICKLEUP_BUILD:version,PICKLEUP_PAGES:[{id:"home",title:"Tổng quan"},{id:"progress",title:"Tiến bộ"}],PICKLEUP_ROUTER:{getPage:()=>"home"}};
  const context={window,document,performance:{now:()=>Date.now()},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail}},console,Promise,Date,Map,Set,Error};
  vm.runInNewContext(loaderSource,context);
  return {window,scripts,styles,status,preloads};
@@ -57,4 +57,14 @@ test("every page defines a nonempty lazy dependency list",()=>{
   assert.ok(files.length>0,id);
   assert.equal(new Set(files).size,files.length,id);
  }
+});
+
+test("a new app build uses versioned URLs without changing module identities",async()=>{
+ const app=mock("3.6.0"),loader=app.window.PICKLEUP_PAGE_LOADER;
+ await loader.ensure("home");
+ assert.deepEqual(app.scripts,["./modules/weekly-practice.js?v=3.6.0"]);
+ assert.equal(loader.isLoaded("modules/weekly-practice.js"),true);
+ await loader.ensure("matches");
+ assert.ok(app.scripts.some(x=>x==="./match-journal.js?v=3.6.0"));
+ assert.equal(new Set(app.scripts).size,app.scripts.length);
 });
