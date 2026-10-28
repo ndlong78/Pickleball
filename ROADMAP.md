@@ -362,3 +362,12 @@ Từ GitHub Actions run 40638439251: bước Node unit test đã đạt; Chromiu
 ## Xác nhận CI Node.js 24 – 28/10/2026
 
 Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/actions/runs/40643096905) ở commit `d28ce9a5e8d` đã **SUCCESS**: xác nhận Node.js 24, cài browser, JavaScript unit test và Playwright responsive đều thành công. Các commit tiếp theo chỉ thay đổi tài liệu cấu hình phát hành; chưa có phép đo iPhone/iPad vật lý. Phiên bản package `3.9.0`, service worker `pickleup-shell-v3-9-stable`.
+
+## V4.0 Beta – Trải nghiệm học tập có tính liên tục
+
+- Học viện ghi nhớ bài học được chọn gần nhất bằng `pickleup_academy_last_lesson_v4` (localStorage), tự khôi phục khi quay lại hoặc tải lại trang.
+- Thanh tiến độ hiển thị số giáo án đã có kết quả hợp lệ (điểm 0–20) trên tổng 80 bài; không tự nhận là đã thành thạo hoặc đã hoàn thành kỹ thuật.
+- Nút **Tiếp tục bài gần nhất** và **Bài chưa hoàn thành tiếp theo** dùng dữ liệu Học viện hiện có, không làm mất hoặc di chuyển dữ liệu điểm cũ.
+- Giao diện responsive có nút mục tiêu chạm ít nhất 44px; Playwright có test trải nghiệm Học viện ở 390/820/1440px.
+- PWA shell và asset lên `4.0.0-beta.1`, tách cache khỏi V3.9 Stable.
+- Trạng thái: Beta; cần kiểm tra CI trên commit mới và nghiệm thu iPhone/iPad thật trước khi gọi Stable.
