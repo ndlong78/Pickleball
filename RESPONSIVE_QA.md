@@ -80,3 +80,11 @@ Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác 
 - [ ] Xác nhận kết quả thực thi Chromium/WebKit trong CI.
 - [ ] Kiểm tra Safari iOS: bàn phím đang mở khi đổi trang, cuộn đến anchor sâu, giao diện menu dưới không bị che.
 - [ ] Kiểm tra offline: cache các trang cần dùng khi có Internet, sau đó tắt mạng và mở lại PWA.
+
+## V3.8 QA
+
+- [x] Test benchmark viewport 390×844, 820×1180, 1180×820 và 1440×900 trên Chromium/WebKit; báo cáo là giả lập.
+- [x] Test tạo cache đời cũ, kích hoạt worker V3.8, xác minh dọn cache và giữ localStorage.
+- [x] Test offline cho trang Học viện đã mở khi có mạng.
+- [ ] Chạy xác minh CI và kiểm tra nâng cấp bản đã cài lên màn hình chính của iPhone/iPad.
+- [ ] Đo thời gian thực và cảm nhận thao tác ở sân pickleball.
