@@ -131,6 +131,11 @@ function complete(){
  }
  fill();$("pcLoad").addEventListener("click",()=>{fill();setStatus("Đã nạp kết quả có sẵn; bạn có thể sửa từng điểm trước khi tạo giáo án.")});
  $("pcGenerate").addEventListener("click",generate);
+ // This button lives on Coach, whereas the Court module is lazy-loaded.
+ // Bind navigation here so the very first click opens Court.
+ $("pcOpenRun")?.addEventListener("click",()=>{
+  window.PICKLEUP_ROUTER?.openSection("pcOnCourt");
+ });
  $("pcComplete").addEventListener("click",complete);
  const saved=history();render(saved[saved.length-1]||null);renderHistory();
  window.addEventListener("storage",event=>{if([storageKey,"pickleup_stage_checks_v23","pickleup_academy_v2"].includes(event.key))renderHistory()});
