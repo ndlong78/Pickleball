@@ -43,7 +43,9 @@ function render(page){
   else a.removeAttribute("aria-current");
  }
  document.title=p.title+" | PickleUp";
- root.PICKLEUP_PAGE_LOADER?.ensure(p.id).catch(()=>{});
+ const loaded=root.PICKLEUP_PAGE_LOADER?.ensure(p.id)||Promise.resolve();
+ root.PICKLEUP_METRICS?.trackRoute(p.id,loaded);
+ loaded.catch(()=>{});
  document.dispatchEvent(new CustomEvent("pickleup:route-change",{detail:{page:p.id}}));
 }
 function scrollToSection(section){
