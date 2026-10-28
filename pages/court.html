@@ -1,0 +1,37 @@
+<!-- PickleUp V3.7 · court · static trusted page markup -->
+<section class="section" id="pcOnCourt" data-pickleup-page="court">
+<div class="sectionHead"><div><div class="kicker">PickleUp V3.1 · Tập trực tiếp</div><h2>Chế độ tập luyện trên sân</h2><p class="sub">Đồng hồ 6 phần, hướng dẫn và sơ đồ tự đổi theo giáo án từ HLV cơ bản (1.0–3.0) hoặc HLV nâng cao (3.0–4.0).</p></div></div>
+<div class="card pc-run-empty" id="pcRunEmpty">Hãy tạo hoặc chọn một giáo án trong HLV cá nhân hoặc HLV nâng cao, sau đó mở chế độ tập trên sân.</div>
+<div class="pc-run-layout" id="pcRunPlayer" hidden>
+ <div class="pc-run-card">
+  <div class="kicker" id="pcRunStep"></div>
+  <h3 id="pcRunTitle" style="margin:8px 0">Khởi động</h3>
+  <div class="pc-run-clock" role="timer" aria-live="off" id="pcRunClock">10:00</div>
+  <div class="pc-run-buttons"><button type="button" id="pcRunStart">Bắt đầu</button><button type="button" id="pcRunReset">Đặt lại</button><button type="button" id="pcRunPrev">← Phần trước</button><button type="button" id="pcRunNext">Phần tiếp theo →</button></div>
+  <div class="pc-run-progress"><div id="pcRunProgress"></div></div>
+  <div id="pcRunSegments" class="pc-run-segments"></div>
+  <label class="pc-wake"><input type="checkbox" id="pcWakeToggle"> Giữ màn hình sáng khi tập (nếu thiết bị hỗ trợ)</label>
+  <p id="pcRunMessage" class="pc-run-message" role="status" aria-live="polite"></p>
+  <button type="button" id="pcRunScore" class="primary" hidden>Nhập kết quả sau tập</button>
+  <p class="pc-run-help">Đồng hồ dùng mốc thời gian thực để hạn chế sai lệch khi màn hình tạm ngưng. Hết một phần sẽ dừng và chờ bạn chuyển phần; không tự xác nhận hoàn thành giáo án.</p>
+ </div>
+ <div class="pc-run-card">
+  <div id="pcRunGuide" class="pc-run-guide"></div>
+  <div class="pc-run-diagram" id="pcRunDiagram"></div>
+  <div class="pc-attempt" id="pcAttemptArea" hidden>
+   <h4 id="pcAttemptName">Lưu kết quả bài tập</h4>
+   <p id="pcAttemptHint" class="sub">Ghi sau 20 lần thử.</p>
+   <label for="pcAttemptHits">Số lần thực hiện đúng /20</label>
+   <input id="pcAttemptHits" type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="0–20">
+   <div class="pc-conditions">
+    <label for="pcAttemptFeed">Cách cấp bóng<select id="pcAttemptFeed"><option value="">Chọn cách cấp bóng</option></select></label>
+    <label for="pcAttemptPace">Tốc độ bài tập<select id="pcAttemptPace"><option value="">Chọn tốc độ</option></select></label>
+    <label for="pcAttemptTarget">Vùng mục tiêu<select id="pcAttemptTarget"><option value="">Chọn độ rộng mục tiêu</option></select></label>
+   </div>
+   <label for="pcAttemptNote">Ghi chú ngắn (không bắt buộc)</label>
+   <input id="pcAttemptNote" type="text" maxlength="240" placeholder="Ví dụ: giữ bóng thấp hơn">
+   <button type="button" class="primary" id="pcAttemptSave">Lưu một lần tập</button>
+  </div>
+ </div>
+</div>
+</section>
