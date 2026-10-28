@@ -1,10 +1,10 @@
 /* PickleUp V3.5 — small offline shell + on-demand cache for visited pages.
    Page-specific JS/CSS is cached only when the user opens that page. */
-const CACHE="pickleup-shell-v3-7-fragments";
+const CACHE="pickleup-shell-v3-8-upgrade";
 const SHELL=[
- "./","./index.html","./responsive.css?v=3.7.0",
- "./modules/page-layout.css?v=3.7.0","./modules/page-catalog.js?v=3.7.0","./modules/page-loader.js?v=3.7.0",
- "./modules/web-vitals.js?v=3.7.0","./modules/page-router.js?v=3.7.0","./mobile-ui.js?v=3.7.0","./modules/pwa-client.js?v=3.7.0",
+ "./","./index.html","./responsive.css?v=3.8.0",
+ "./modules/page-layout.css?v=3.8.0","./modules/page-catalog.js?v=3.8.0","./modules/page-loader.js?v=3.8.0",
+ "./modules/web-vitals.js?v=3.8.0","./modules/page-router.js?v=3.8.0","./mobile-ui.js?v=3.8.0","./modules/pwa-client.js?v=3.8.0",
  "./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png"
 ];
 self.addEventListener("install",event=>{
@@ -13,6 +13,7 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith("pickleup-")&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
+self.addEventListener("message",event=>{if(event.data?.type==="PICKLEUP_SKIP_WAITING")self.skipWaiting()});
 self.addEventListener("fetch",event=>{
  const req=event.request,url=new URL(req.url);
  if(req.method!=="GET"||url.origin!==self.location.origin)return;
