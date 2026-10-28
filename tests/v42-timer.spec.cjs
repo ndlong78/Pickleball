@@ -11,6 +11,10 @@ for(const width of [390,820,1440]){
    await expect(page.locator("#academyFocusPosition")).toHaveText("Bước 1/6");
    await page.locator("#academyTimerStart").click();
    await expect(page.locator("#academyTimerStart")).toHaveText("Bắt đầu");
+   await page.locator("#academyTimerStart").click();
+   await page.locator("#academyFocusToggle").click();
+   await page.locator("#academyFocusToggle").click();
+   await expect(page.locator("#academyTimerStart")).toHaveText("Bắt đầu");
    await page.locator("#academyFocusNext").click();
    await expect(page.locator("#academyFocusPosition")).toHaveText("Bước 2/6");
    await page.locator("#academyTimerReset").click();
