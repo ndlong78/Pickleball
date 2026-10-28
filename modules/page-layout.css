@@ -100,3 +100,6 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .academy-recommend #academyRecommendLesson{margin:12px 0 2px;font-weight:650;line-height:1.5}
 .academy-recommend button{min-height:44px}
 @media(max-width:600px){.academy-recommend button{width:100%}}
+
+/* V4.4: plainly labeled history-based trend, no misleading ranking badge. */
+#academyTrendText{margin:10px 0 0;padding-top:10px;border-top:1px solid #d5e5d1;line-height:1.55}
