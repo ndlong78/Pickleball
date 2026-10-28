@@ -13,8 +13,8 @@ for(const width of [390,820,1440]){
     const b=new Date(a);b.setDate(a.getDate()-1);
     const rows=[
      {id:"PU-001",skill:"serve",level:"1.0–2.0",score:18,date:b.toISOString()},
-     {id:"PU-001",skill:"serve",level:"1.0–2.0",score:10,date:a.toISOString()},
-     {id:"PU-001",skill:"serve",level:"1.0–2.0",score:11,date:a.toISOString()}
+     {id:"PU-001",skill:"serve",level:"1.0–2.0",score:14,date:a.toISOString()},
+     {id:"PU-001",skill:"serve",level:"1.0–2.0",score:10,date:a.toISOString()}
     ];
     localStorage.setItem("pickleup_academy_history_v44",JSON.stringify(rows));
    });
