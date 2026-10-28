@@ -25,9 +25,12 @@ test("V3.8 upgrades legacy PWA cache without erasing local training data",async(
  expect(result.keys).toContain("pickleup-shell-v3-8-upgrade");
 });
 test("V3.8 caches a visited advanced page for later offline reuse",async({page,context})=>{
- await page.goto("/?page=academy");
+ await page.goto("/?page=home");
+ await page.evaluate(async()=>{await navigator.serviceWorker.ready});
+ await page.reload(); // ensure the active service worker controls the document
+ await expect.poll(async()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+ await page.locator('#pageNavigation a[data-route="academy"]').click();
  await expect(page.locator("#academyWeek option")).toHaveCount(80);
- await page.evaluate(async()=>{await navigator.serviceWorker.ready;await navigator.serviceWorker.controller?.postMessage({type:"PICKLEUP_SKIP_WAITING"})});
  const cached=await page.evaluate(async()=>{
   const c=await caches.open("pickleup-shell-v3-8-upgrade");
   const keys=await c.keys();
