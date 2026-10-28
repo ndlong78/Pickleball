@@ -60,7 +60,8 @@ document.getElementById('academyNext').addEventListener('click',()=>{
  if(next)visitLesson(next.id);
 });
 document.getElementById('academySave').addEventListener('click',()=>{const x=get(),v=Number(score.value);if(!x||!Number.isInteger(v)||v<0||v>20){status.textContent='Hãy nhập số nguyên từ 0 đến 20.';return}records[x.id]={score:v,date:new Date().toISOString(),skill:x.skill,level:x.level};lastDrawnId=null;try{localStorage.setItem('pickleup_academy_v2',JSON.stringify(records));document.dispatchEvent(new Event('pickleup:score-saved'));refreshLearning();status.textContent='Đã lưu '+v+'/20 · '+(v>=x.assessment.target?'Đạt mục tiêu tuần này.':'Tiếp tục luyện kỹ thuật tuần này.')}catch(e){status.textContent='Không lưu được; hãy kiểm tra quyền lưu trữ trình duyệt.'}});
+const initialLesson=resumedId;
 choose();
-if(resumedId&&data.some(x=>x.id===resumedId))visitLesson(resumedId);
+if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson);
 refreshLearning();
 })();
