@@ -243,3 +243,7 @@ Kiểm thử mới: `tests/page-fragments.test.js` và `tests/page-fragments.spe
 V3.8 bổ sung benchmark bốn profile trình duyệt (iPhone/iPad/PC giả lập), tối ưu DOM Học viện và Dashboard, cùng kiểm thử nâng cấp PWA từ các cache cũ. Kết quả benchmark sẽ được lưu thành JSON trong GitHub Actions nếu workflow chạy thành công. Đây không phải phép đo thiết bị vật lý; cần nghiệm thu riêng trên iOS Safari.
 
 Tải lại PickleUp khi có Internet để nhận tài nguyên phiên bản 3.8.0. Dữ liệu luyện tập vẫn được lưu tại trình duyệt như trước, không cần xóa cache bằng tay hoặc gỡ ứng dụng.
+
+## V3.9 Beta – CI và PWA ổn định
+
+Kiểm tra GitHub Actions V3.8 cho thấy 54/55 unit tests đạt, một test chờ hai khung hình quá cứng nên bị thất bại trong CI. V3.9 sửa test theo trạng thái thực tế và điều chỉnh service worker để không tự ghi đè asset có phiên bản khi đã cache. Mã tài nguyên chuyển sang 3.9.0, điểm tập, lịch sử và dữ liệu trên thiết bị vẫn giữ nguyên. Xem [GitHub Actions](https://github.com/ndlong78/Pickleball/actions) để kiểm tra kết quả chạy; kiểm thử trên iPhone/iPad vật lý vẫn cần nghiệm thu.
