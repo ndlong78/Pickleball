@@ -56,3 +56,12 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 @media(max-width:1023px){.performance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:549px){.performance-grid{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){.page-load-status:before{animation:none}}
+
+/* V4.0 learning journey: usable on touch phones, tablets and desktop. */
+.academy-learning-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:16px 0;padding:16px;border:1px solid #c7dcc2;border-radius:14px;background:#f2f8ef}
+.academy-learning-bar strong{display:block;color:#16382a}
+.academy-learning-bar .sub{margin:4px 0}
+.academy-learning-actions{display:flex;flex-wrap:wrap;gap:10px}
+.academy-learning-actions button{min-height:44px;white-space:normal}
+.academy-learning-actions button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:600px){.academy-learning-actions,.academy-learning-actions button{width:100%}}
