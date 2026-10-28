@@ -71,3 +71,12 @@ Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác 
 - [ ] Trên Safari không hỗ trợ một chỉ số, hiển thị '—' thay vì coi là 0.
 
 - [x] Kiểm thử unit đảm bảo `advanced.css` không bị tải trên trang Tổng quan, nhưng chỉ nạp một lần khi chuyển giữa HLV và Thi đấu.
+
+
+## V3.7 – Quy trình nghiệm thu các trang HTML động
+
+- [x] Bổ sung kiểm thử Node xác nhận mỗi `id` thuộc đúng một nguồn HTML, không trùng nhau.
+- [x] Thêm Playwright iPhone 390px, iPad 820/1180px, PC 1440px: Home chưa hydrate Coach; mở Coach → Court → Coach vẫn giữ trường nhập, URL deep link và Back hoạt động.
+- [ ] Xác nhận kết quả thực thi Chromium/WebKit trong CI.
+- [ ] Kiểm tra Safari iOS: bàn phím đang mở khi đổi trang, cuộn đến anchor sâu, giao diện menu dưới không bị che.
+- [ ] Kiểm tra offline: cache các trang cần dùng khi có Internet, sau đó tắt mạng và mở lại PWA.
