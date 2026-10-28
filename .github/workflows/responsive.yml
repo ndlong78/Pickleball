@@ -5,6 +5,7 @@ on:
     paths:
       - "index.html"
       - "modules/**"
+      - "pages/**"
       - "sw.js"
       - "advanced-*.js"
       - "advanced.css"
