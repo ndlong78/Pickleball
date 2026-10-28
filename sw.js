@@ -1,10 +1,10 @@
 /* PickleUp V3.5 — small offline shell + on-demand cache for visited pages.
    Page-specific JS/CSS is cached only when the user opens that page. */
-const CACHE="pickleup-shell-v4-2-stable";
+const CACHE="pickleup-shell-v4-3-beta";
 const SHELL=[
- "./","./index.html","./responsive.css?v=4.2.0",
- "./modules/page-layout.css?v=4.2.0","./modules/page-catalog.js?v=4.2.0","./modules/page-loader.js?v=4.2.0",
- "./modules/web-vitals.js?v=4.2.0","./modules/page-router.js?v=4.2.0","./mobile-ui.js?v=4.2.0","./modules/pwa-client.js?v=4.2.0",
+ "./","./index.html","./responsive.css?v=4.3.0",
+ "./modules/page-layout.css?v=4.3.0","./modules/page-catalog.js?v=4.3.0","./modules/page-loader.js?v=4.3.0",
+ "./modules/web-vitals.js?v=4.3.0","./modules/page-router.js?v=4.3.0","./mobile-ui.js?v=4.3.0","./modules/pwa-client.js?v=4.3.0",
  "./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png"
 ];
 self.addEventListener("install",event=>{
