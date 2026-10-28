@@ -76,3 +76,9 @@ V3.4 đã có 7 trang điều hướng trong một `index.html`, nhưng vẫn t�
 - [ ] Đo thời gian cold/warm load trước–sau V3.6; chưa có bằng chứng để công bố % nhanh hơn.
 - [ ] Kiểm tra cập nhật PWA từ V3.5 sang V3.6, dùng offline sau khi đã tải module khi online.
 - [ ] Khi có số liệu, cân nhắc tách phần DOM/HTML chuyên biệt theo trang hoặc nhóm CSS lớn, tránh tối ưu quá mức khi chưa đo.
+
+### Điều chỉnh thêm ở V3.6
+
+- `advanced.css` không còn được tải trên trang Tổng quan; stylesheet chỉ yêu cầu khi mở HLV cá nhân, Học viện, Tiến bộ hoặc Thi đấu. Nó được tái sử dụng giữa những trang chuyên môn.
+- Vẫn giữ CSS cơ bản và menu cố định để trang đầu không mất cấu trúc khi offline.
+- V3.6 có sáu boot script (thêm công cụ đo Web Vitals); không được diễn giải là giảm số script so với V3.5. Lợi ích là đo đúng hơn và không tải stylesheet nâng cao trên trang Tổng quan.
