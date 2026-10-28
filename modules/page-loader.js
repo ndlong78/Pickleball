@@ -58,6 +58,10 @@ function ensureMarkup(page){
 }
 const version=root.PICKLEUP_BUILD||"";
 function assetUrl(file){return "./"+file+(version?"?v="+encodeURIComponent(version):"")}
+let pendingSelectedPlan=null;
+document.addEventListener("pickleup:plan-selected",event=>{
+ pendingSelectedPlan=event.detail?.plan||null;
+});
 const loadedScripts=new Set();
 const loadedStyles=new Set();
 const promises=new Map();
@@ -120,6 +124,10 @@ function ensure(page){
   let scripts=0;
   for(const file of files)if(await loadScript(file))scripts++;
   await Promise.all(css);
+  // Coach may dispatch plan-selected before the on-court module exists.
+  // Replay the latest selection after its event listener is installed.
+  if(page==="court"&&pendingSelectedPlan)
+   document.dispatchEvent(new CustomEvent("pickleup:plan-selected",{detail:{plan:pendingSelectedPlan}}));
   const info={page,ms:Math.round(performance.now()-start),scripts,styles:styles.length,htmlBytes:fragment.bytes,htmlSections:fragment.sections,at:new Date().toISOString()};
   timings.set(page,info);
   document.dispatchEvent(new CustomEvent("pickleup:page-ready",{detail:info}));
