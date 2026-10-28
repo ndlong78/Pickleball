@@ -108,3 +108,11 @@ Thay đổi chính: **12 khối giao diện nặng được chuyển từ `index
 - `dashboard.js` gom các phần tử kỹ năng và cột biểu đồ qua `DocumentFragment` rồi cập nhật DOM theo lô.
 - PWA dùng cache `pickleup-shell-v3-8-upgrade`, URL tài nguyên `?v=3.8.0`, giữ dữ liệu `localStorage`. Kiểm thử `tests/v38-pwa-upgrade.spec.cjs` mô phỏng dọn cache v3.6/v3.7 khi kích hoạt worker và thử mở Học viện offline sau khi cache.
 - **Chưa có phép đo tốc độ trên iPhone/iPad thật** và chưa có báo cáo CI được xác nhận đạt. Không công bố mức tăng tốc % chỉ từ thay đổi mã nguồn.
+
+## V3.9 – Độ tin cậy phép đo và ổn định cache
+
+Bản V3.8 có CI lỗi tại `tests/web-vitals.test.js` (54/55 unit test đạt). Đây là lỗi chờ trạng thái hoàn thành phép đo route không đủ ổn định khi chạy trên GitHub Actions, không phải số đo tốc độ thiết bị. V3.9 đổi sang chờ điều kiện có deadline.
+
+Asset trong PWA tiếp tục dùng URL có version `3.9.0`. Service worker dùng cache-first cố định cho URL asset: khi đã cache không revalidate rồi ghi đè âm thầm cùng URL; khi nâng phiên bản, cache shell mới dùng đường dẫn mới. Trang đã được mở online sẽ dùng offline từ cache; dữ liệu localStorage không bị xóa.
+
+Số liệu benchmark chỉ được báo cáo sau khi Chromium/WebKit/CI hoàn tất, không suy diễn tỷ lệ tăng tốc từ số file hoặc dung lượng nguồn.
