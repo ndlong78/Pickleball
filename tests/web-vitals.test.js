@@ -34,7 +34,7 @@ test("tracks route timing and module completion, without claiming LCP for SPA ro
  const m=create();
  const promise=Promise.resolve({scripts:3});
  m.window.PICKLEUP_METRICS.trackRoute("academy",promise);
- await new Promise(resolve=>setImmediate(()=>setImmediate(resolve)));
+ await new Promise((resolve,reject)=>{const deadline=Date.now()+1500;function check(){if(m.window.PICKLEUP_METRICS.collect().routes[0]?.completed)return resolve();if(Date.now()>deadline)return reject(new Error("Route paint was not completed"));setImmediate(check)}check()});
  const r=m.window.PICKLEUP_METRICS.collect().routes[0];
  assert.equal(r.page,"academy");
  assert.equal(r.newScripts,3);
