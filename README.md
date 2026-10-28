@@ -251,3 +251,9 @@ Kiểm tra GitHub Actions V3.8 cho thấy 54/55 unit tests đạt, một test ch
 ## PickleUp V3.9.0 Stable
 
 Bản phát hành chính thức đánh dấu bằng version `3.9.0`. [Xem ghi chú phát hành](RELEASE_V3.9.0.md), [CI](https://github.com/ndlong78/Pickleball/actions) và [website](https://ndlong78.github.io/Pickleball/). Dữ liệu luyện tập trên trình duyệt không thay đổi; các trang cần dùng offline phải được mở một lần khi có mạng.
+
+## Node.js 24 (CI và phát triển)
+
+PickleUp sử dụng Node.js 24 cho bộ kiểm thử và công cụ phát triển. Workflow `.github/workflows/responsive.yml` dùng `actions/checkout@v5`, `actions/setup-node@v5` và `actions/upload-artifact@v6` (runtime Node 24) thay cho các action nền Node 20 cũ. Thêm kiểm tra phiên bản Node 24 trực tiếp trên CI. `package.json` quy định `engines.node` là `>=24 <25` và `.nvmrc` chứa `24`. Khi phát triển cục bộ có thể chạy `nvm use`, `npm install`, `npm run test:unit` và `npm run test:responsive`.
+
+Việc nâng Node ở CI **không thay đổi JavaScript chạy trực tiếp trên trình duyệt** hoặc dữ liệu PWA. Chỉ xem nâng cấp thành công sau khi CI của commit mới đạt.
