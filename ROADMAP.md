@@ -350,3 +350,11 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 ## Kiểm tra CI V3.9 – 28/10/2026
 
 Từ GitHub Actions run 40638439251: bước Node unit test đã đạt; Chromium/WebKit responsive còn lỗi. Các lỗi đã xác định gồm (1) kế hoạch được chọn ở HLV trước khi module Trên sân tải xong nên player không nhận kế hoạch; đã sửa bộ tải bằng cách phát lại sự kiện `pickleup:plan-selected` sau khi module Court sẵn sàng; (2) test page-fragments còn kiểm tra URL HTML phiên bản 3.7.0 dù runtime là 3.9.0; đã đồng bộ; (3) test lưu lượt tập chưa kiểm tra player sẵn sàng trước khi thao tác. CI mới được kích hoạt và phải chờ kết quả từ GitHub trước khi đánh dấu hoàn thành. Không xem 98 bài browser đã qua là toàn bộ suite đạt.
+
+## V3.9 Stable – Đóng gói phát hành
+
+- [x] CI trước phát hành trên commit `ea862e9f4`: unit và Chromium/WebKit responsive đều thành công.
+- [x] Version `3.9.0`, sửa cache-first cố định cho tài nguyên phiên bản, thêm regression test SW.
+- [x] Release notes và hướng dẫn nâng cấp.
+- [ ] Xác nhận CI xanh sau toàn bộ các commit đóng gói bản Stable.
+- [ ] Nghiệm thu PWA trên thiết bị iPhone/iPad vật lý.
