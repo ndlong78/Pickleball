@@ -41,7 +41,7 @@ test.describe("PickleUp V3.5 lazy page loading",()=>{
   await page.goto("/?page=home");
   await expect(page.locator("#weekList .week").first()).toBeVisible();
   const scripts=await page.locator("script[src]").evaluateAll(nodes=>nodes.map(x=>x.getAttribute("src")));
-  expect(scripts.some(x=>x.includes("web-vitals.js?v=4.4.0"))).toBe(true);
+  expect(scripts.some(x=>x.includes("web-vitals.js?v=4.5.0"))).toBe(true);
   expect(await page.evaluate(()=>typeof window.PICKLEUP_METRICS?.collect)).toBe("function");
   await page.locator('#pageNavigation a[data-route="academy"]').click();
   await expect(page.locator("#academyWeek option")).toHaveCount(80);
