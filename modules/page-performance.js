@@ -43,7 +43,7 @@ function display(){
   box.replaceChildren(
    metric("FCP",number(first.fcp)," ms","Thời gian xuất hiện nội dung đầu tiên"),
    metric("LCP",number(first.lcp)," ms","Phần tử nội dung lớn nhất của lần mở ứng dụng"),
-   metric("CLS",number(first.cls,3),"","Mức dịch chuyển bố cục, không tính khi tương tác"),
+   metric("CLS",first.observerSupport["layout-shift"]?number(first.cls,3):null,"","Dịch chuyển bố cục trong phiên, không tính thay đổi ngay sau tương tác"),
    metric("INP ước tính",number(first.inpEstimate)," ms","Độ trễ tương tác quan sát được, không phải điểm INP chứng nhận")
   );
  }
