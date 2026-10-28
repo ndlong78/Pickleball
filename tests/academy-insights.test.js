@@ -27,7 +27,7 @@ test("unmatched levels and unrelated skills never enter the series",()=>{
  const history=[entry("PU-001",12,1),entry("PU-003",1,2),entry("PU-004",2,3)];
  const x=core.analyze(lessons,{},history,"1.0–2.0","serve");
  assert.equal(x.count,1);assert.equal(x.delta,null);
- assert.match(x.status,/Chưa đủ/);
+ assert.match(x.status,/chưa đủ/i);
 });
 test("legacy latest score is included once unless that lesson already has history",()=>{
  const history=[entry("PU-001",4,1),entry("PU-001",7,2)];
