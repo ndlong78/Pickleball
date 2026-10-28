@@ -371,3 +371,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - Giao diện responsive có nút mục tiêu chạm ít nhất 44px; Playwright có test trải nghiệm Học viện ở 390/820/1440px.
 - PWA shell và asset lên `4.0.0-beta.1`, tách cache khỏi V3.9 Stable.
 - Trạng thái: Beta; cần kiểm tra CI trên commit mới và nghiệm thu iPhone/iPad thật trước khi gọi Stable.
+
+## V4.1 Beta – Thực hành theo từng bước
+
+- [x] Mỗi giáo án Học viện có checklist sáu bước: khởi động, ba bài tập, kiểm tra, thả lỏng.
+- [x] Tiến độ checklist lưu trong `pickleup_academy_steps_v41`, độc lập với điểm `/20` tại `pickleup_academy_v2`.
+- [x] Hỗ trợ bỏ đánh dấu và làm lại checklist của riêng giáo án hiện tại mà không xóa điểm.
+- [x] Thêm kiểm thử Playwright cho 390px, 820px và 1440px; kiểm tra lưu, khôi phục và reset.
+- [x] Version `4.1.0-beta.1`, cache PWA riêng.
+- [ ] Xác nhận CI V4.1 trên commit mới và nghiệm thu thiết bị thật.
