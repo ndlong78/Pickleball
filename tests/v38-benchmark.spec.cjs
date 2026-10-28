@@ -9,7 +9,7 @@ const profiles=[
 const routes=["home","coach","court","academy","progress","matches","settings"];
 const results=[];
 for(const profile of profiles){
- test.describe("V3.8 benchmark "+profile.name,()=>{
+ test.describe("V3.9 benchmark "+profile.name,()=>{
   test.use({viewport:{width:profile.width,height:profile.height},isMobile:profile.isMobile,hasTouch:profile.hasTouch});
   test("cold load and route transition samples",async({page})=>{
    const failed=[];
