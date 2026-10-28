@@ -20,7 +20,8 @@ for(const width of [390,820,1440]){
 }
 test("V4.4 does not invent trend for preexisting V4.3 single-score data",async({page})=>{
  await page.goto("/?page=academy");
- const id=await page.locator("#academyWeek").inputValue();
+ await expect(page.locator("#academyWeek option")).toHaveCount(80);
+   const id=await page.locator("#academyWeek").inputValue();
  await page.evaluate(id=>localStorage.setItem("pickleup_academy_v2",JSON.stringify({[id]:{score:5,date:new Date().toISOString()}})),id);
  await page.reload();
  await expect(page.locator("#academyRecommendReason")).toContainText("5/20");
