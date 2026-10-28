@@ -11,12 +11,12 @@ function setup(){
  return{callbacks,stores,get network(){return network}};
 }
 test("stable PWA defines a release-specific cache",()=>{
- assert.match(source,/pickleup-shell-v4-4-beta/);
- assert.match(source,/v=4\.4\.0/);
+ assert.match(source,/pickleup-shell-v4-5-beta/);
+ assert.match(source,/v=4\.5\.0/);
 });
 test("cached static assets are not fetched or overwritten in the background",async()=>{
  const env=setup();
- const url="https://example.org/modules/page-router.js?v=4.4.0";
+ const url="https://example.org/modules/page-router.js?v=4.5.0";
  const cached={ok:true,sentinel:"cached"},req={method:"GET",url,mode:"same-origin"};
  env.stores.set(url,cached);
  let response;
@@ -26,7 +26,7 @@ test("cached static assets are not fetched or overwritten in the background",asy
 });
 test("uncached same-origin assets are fetched once and cached",async()=>{
  const env=setup();let response;
- const url="https://example.org/pages/court.html?v=4.4.0";
+ const url="https://example.org/pages/court.html?v=4.5.0";
  env.callbacks.get("fetch")({request:{method:"GET",url,mode:"same-origin"},respondWith(p){response=p}});
  assert.equal((await response).ok,true);
  assert.equal(env.network,1);
