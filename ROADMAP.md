@@ -304,3 +304,5 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Nghiệm thu thực tế WebKit/Chromium, iPhone/iPad và kiểm tra nâng cấp PWA.
 - [ ] Đo Lighthouse/Core Web Vitals để có baseline thực tế trước khi công bố cải thiện tốc độ.
 - [ ] Tối ưu HTML/DOM và request mạng tiếp theo dựa trên báo cáo, không phỏng đoán.
+
+- [x] Bổ sung tối ưu thực tế: bỏ `advanced.css` khỏi đường tải trang Tổng quan; chuyên trang mới tải khi cần, không nạp trùng.
