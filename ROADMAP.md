@@ -430,3 +430,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [ ] Nghiệm thu PWA trên iPhone/iPad vật lý và thử offline.
 
 **Giới hạn:** Điểm từ bài khác nhau không phản ánh trực tiếp tiến bộ kỹ năng; nhận định chiều hướng chỉ từ cùng bài kiểm tra, tốt nhất thực hiện trong điều kiện tương tự.
+
+## V4.5 Stable — Skill Insights (28/10/2026)
+
+- [x] Bộ lọc cấp độ / kỹ năng / giáo án riêng; biểu đồ chỉ hiển thị lượt của cùng một giáo án, tránh gây ngộ nhận khi xem các bài khác độ khó.
+- [x] Số lượt tổng hợp theo kỹ năng, trung bình theo giáo án, biến động tối đa 6 lần gần nhất cùng bài; giữ một kết quả legacy duy nhất nếu chưa có lịch sử mới.
+- [x] Phản hồi theo dữ liệu thực tế, điều hướng luyện lại bài và giao diện responsive.
+- [x] Tăng coverage unit + Playwright cho bộ lọc bài, trộn bài, dữ liệu cũ; Node.js 24 và CI pull request.
+- [ ] Xác minh CI của nhánh stable và kiểm thử PWA thực tế trên iPhone/iPad ở chế độ offline.
+- [ ] Huấn luyện viên xác nhận điều kiện kiểm tra 20 lượt tương đương giữa các phiên tập.

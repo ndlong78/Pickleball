@@ -11,7 +11,7 @@ function setup(){
  return{callbacks,stores,get network(){return network}};
 }
 test("stable PWA defines a release-specific cache",()=>{
- assert.match(source,/pickleup-shell-v4-5-beta/);
+ assert.match(source,/pickleup-shell-v4-5-stable/);
  assert.match(source,/v=4\.5\.0/);
 });
 test("cached static assets are not fetched or overwritten in the background",async()=>{

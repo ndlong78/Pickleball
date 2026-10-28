@@ -1,6 +1,6 @@
 /* PickleUp V3.5 — small offline shell + on-demand cache for visited pages.
    Page-specific JS/CSS is cached only when the user opens that page. */
-const CACHE="pickleup-shell-v4-5-beta";
+const CACHE="pickleup-shell-v4-5-stable";
 const SHELL=[
  "./","./index.html","./responsive.css?v=4.5.0",
  "./modules/page-layout.css?v=4.5.0","./modules/page-catalog.js?v=4.5.0","./modules/page-loader.js?v=4.5.0",
