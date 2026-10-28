@@ -223,3 +223,5 @@ Tại trang **Dữ liệu → Tốc độ tải từng trang**, PickleUp đo FCP
 Phiên bản **3.6.0** sử dụng URL asset có số phiên bản (`?v=3.6.0`) để giảm tình trạng script cũ trong cache PWA. Người dùng chỉ cần tải lại khi có mạng; không xóa dữ liệu Safari/PWA. Các trang chưa mở online vẫn có thể thiếu module offline.
 
 Bộ kiểm thử mới: `npm run test:unit` gồm `tests/web-vitals.test.js`; giao diện đo route được kiểm tra trong `tests/page-performance.spec.cjs`. Xem [PERFORMANCE.md](PERFORMANCE.md) và [ROADMAP.md](ROADMAP.md) để biết giới hạn đã xác minh và bước đo thiết bị thật.
+
+Ở V3.6, stylesheet nâng cao (`advanced.css`) cũng được tải theo trang; màn hình Tổng quan không tải stylesheet này. Chỉ số FCP/LCP không được gán cho mỗi lần chuyển route, mà hiển thị riêng với thời gian chuyển trang nội bộ.
