@@ -79,3 +79,11 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .academy-step>span>span{line-height:1.5}
 .academy-step:has(input:checked){background:#eef8ec}
 @media(max-width:600px){.academy-steps-head button{width:100%}}
+
+/* V4.2 single-step focus: legible court-side controls. */
+.academy-focus{margin:16px 0;padding:18px;border:2px solid #b9d7bf}
+.academy-focus h4{font-size:clamp(1.1rem,2.5vw,1.45rem);margin:12px 0}
+.academy-focus #academyFocusGuide{font-size:1.05rem;line-height:1.65}
+.academy-focus-controls{display:flex;gap:10px;flex-wrap:wrap}
+.academy-focus-controls button,.academy-focus #academyFocusToggle{min-height:48px;flex:1}
+@media(max-width:600px){.academy-focus-controls{display:grid;grid-template-columns:1fr 1fr}.academy-focus-controls #academyFocusDone{grid-column:1/-1;grid-row:1}}
