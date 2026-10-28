@@ -65,3 +65,17 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .academy-learning-actions button{min-height:44px;white-space:normal}
 .academy-learning-actions button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:600px){.academy-learning-actions,.academy-learning-actions button{width:100%}}
+
+/* V4.1: individual drill checklists, optimized for one-handed mobile usage. */
+.academy-steps{margin:16px 0;padding:16px}
+.academy-steps-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.academy-steps-head h3{margin:0 0 6px}
+.academy-steps-head button{min-height:44px}
+.academy-step-list{display:grid;gap:10px;margin-top:14px}
+.academy-step{display:flex;align-items:flex-start;gap:12px;border:1px solid #d3e0d2;border-radius:12px;padding:12px;cursor:pointer}
+.academy-step input{flex:0 0 22px;width:22px;height:22px;margin:2px 0 0;accent-color:#236b4e}
+.academy-step>span{display:grid;gap:4px;min-width:0}
+.academy-step strong{line-height:1.4}
+.academy-step>span>span{line-height:1.5}
+.academy-step:has(input:checked){background:#eef8ec}
+@media(max-width:600px){.academy-steps-head button{width:100%}}
