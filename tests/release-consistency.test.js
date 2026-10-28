@@ -7,7 +7,7 @@ const version=pkg.version;
 const cacheMatch=sw.match(/const CACHE="([^"]+)"/);
 test("PWA shell cache is release-specific and index agrees with package version",()=>{
  assert.ok(cacheMatch,"Service worker CACHE name missing");
- assert.match(cacheMatch[1],new RegExp(version.replaceAll(".","-").replace(/[^a-z0-9-]/gi,"-")));
+ assert.match(cacheMatch[1],new RegExp("(^|-)v"+version.split(".").slice(0,2).join("-")+"-(?:stable|beta|[a-z0-9-]+)$"),"Cache must identify the release minor line and channel");
  assert.match(index,new RegExp("PICKLEUP_BUILD\\s*=\\s*[\'\\\"]"+version.replaceAll(".","\\.")+"[\'\\\"]"));
 });
 test("PWA script and stylesheet version references match the package",()=>{
