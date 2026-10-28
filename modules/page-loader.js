@@ -49,7 +49,7 @@ function ensureMarkup(page){
    else element.removeAttribute("data-page-current");
   }
   mountedFragments.add(page);
-  const detail={page,file,bytes:content.length,sections:list.length,cached:false};
+  const detail={page,file,bytes:typeof Blob==="function"?new Blob([content]).size:content.length,sections:list.length,cached:false};
   document.dispatchEvent(new CustomEvent("pickleup:fragment-ready",{detail}));
   return detail;
  })().catch(err=>{fragmentPromises.delete(page);throw err});
