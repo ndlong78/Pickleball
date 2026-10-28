@@ -44,6 +44,14 @@ jobs:
         run: npm run test:unit
       - name: Run iPhone and iPad viewport smoke tests
         run: npm run test:responsive
+      - name: Upload V3.8 browser benchmark
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pickleup-v38-browser-benchmark
+          path: test-results/v38-browser-benchmark.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Upload failure report
         if: failure()
         uses: actions/upload-artifact@v4
