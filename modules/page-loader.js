@@ -5,12 +5,12 @@
 "use strict";
 const PAGE_FILES={
  home:["modules/weekly-practice.js"],
- coach:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/assessments-and-backup.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
+ coach:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/weekly-goals-core.js","modules/assessments-and-backup.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
  court:["modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","personalized-core.js","practice-conditions.js","training-log-core.js","practice-clock.js","practice-diagrams.js","advanced-diagrams.js","advanced-coach-core.js","practice-runner.js"],
- academy:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/assessments-and-backup.js","modules/academy-page.js"],
- progress:["modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","modules/academy-insights-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","modules/academy-insights-ui.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
+ academy:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/assessments-and-backup.js","modules/academy-page.js"],
+ progress:["modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","modules/academy-insights-core.js","modules/weekly-goals-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","modules/academy-insights-ui.js","modules/weekly-goals-ui.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
  matches:["curriculum.js","advanced-curriculum.js","practice-conditions.js","advanced-coach-core.js","tactical-insights-core.js","match-journal.js","tactical-insights-ui.js"],
- settings:["modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/assessments-and-backup.js","modules/page-performance.js"]
+ settings:["modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/weekly-goals-core.js","modules/assessments-and-backup.js","modules/page-performance.js"]
 };
 const PAGE_STYLES={
  coach:["advanced.css"],

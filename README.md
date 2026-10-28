@@ -270,3 +270,7 @@ Việc nâng Node ở CI **không thay đổi JavaScript chạy trực tiếp tr
 ## V4.5 Stable — Tiến bộ theo kỹ năng
 
 Ở trang **Tiến bộ → Tiến bộ theo từng kỹ năng**, chọn cấp độ, kỹ năng và **giáo án** để xem tối đa 12 lần kiểm tra gần nhất của chính giáo án đó. Số lượt tổng hợp phản ánh kỹ năng trong cấp độ đang chọn, nhưng trung bình, biểu đồ và biến động chỉ tính theo bài đã chọn; biến động dùng tối đa 6 lượt gần nhất cùng bài. Không xem biến động điểm như DUPR hay xác nhận lên cấp. Dữ liệu V4.4 và trước đó tiếp tục được đọc ở localStorage và có thể sao lưu từ mục Dữ liệu.
+
+## V4.6.0 — Mục tiêu tuần và nhịp tập 8 tuần
+
+Trang **Tiến bộ → Mục tiêu và nhịp tập 8 tuần** cho phép đặt 1–5 ngày/tuần và chọn cấp độ để được gợi ý giáo án. Mỗi ngày có ít nhất một kết quả Học viện hoặc nhật ký bài tập hợp lệ được tính một lần, kể cả lưu nhiều lượt trong cùng ngày. Biểu đồ 8 tuần dùng lịch Thứ Hai–Chủ nhật theo ngày địa phương; không kết luận người chơi đã hoàn thành buổi tập 60 phút. Lịch sử Học viện V4.4 có ưu tiên hơn một điểm latest cũ để không đếm trùng. Dữ liệu V4.6 được thêm tùy chọn vào file sao lưu V1, tệp cũ vẫn khôi phục được. Gợi ý ưu tiên bài cùng giáo án có điểm giảm từ 3/20, bài dưới mục tiêu riêng của bài, hoặc bài chưa thử. Các kết luận chỉ mang tính hỗ trợ tập luyện, không phải DUPR.
