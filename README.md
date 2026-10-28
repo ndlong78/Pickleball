@@ -225,3 +225,15 @@ Phiên bản **3.6.0** sử dụng URL asset có số phiên bản (`?v=3.6.0`) 
 Bộ kiểm thử mới: `npm run test:unit` gồm `tests/web-vitals.test.js`; giao diện đo route được kiểm tra trong `tests/page-performance.spec.cjs`. Xem [PERFORMANCE.md](PERFORMANCE.md) và [ROADMAP.md](ROADMAP.md) để biết giới hạn đã xác minh và bước đo thiết bị thật.
 
 Ở V3.6, stylesheet nâng cao (`advanced.css`) cũng được tải theo trang; màn hình Tổng quan không tải stylesheet này. Chỉ số FCP/LCP không được gán cho mỗi lần chuyển route, mà hiển thị riêng với thời gian chuyển trang nội bộ.
+
+
+## V3.7 Beta – Giao diện tải theo trang
+
+Từ V3.7, trang mở đầu đã giảm khoảng 42% số ký tự HTML nguồn (47,3 nghìn → 27,3 nghìn) vì giao diện của HLV, sân, học viện, tiến bộ, thi đấu và báo cáo được đặt ở `pages/*.html`.
+
+- Thanh menu dưới và bảy URL `?page=` vẫn dùng như cũ.
+- Lần đầu mở một trang chuyên môn, ứng dụng tải mảnh HTML của trang đó trước khi khởi tạo module JavaScript. Chuyển đi rồi quay lại sẽ dùng lại DOM, giữ giá trị trường nhập và trạng thái đồng hồ.
+- Nếu cần dùng offline ở sân, hãy mở **Trên sân** khi có Internet để cache cả HTML và mã chương trình.
+- V3.7 không đổi bất kỳ khóa `localStorage` nào; không cần xóa dữ liệu, cài lại PWA hay nhập điểm lại.
+
+Kiểm thử mới: `tests/page-fragments.test.js` và `tests/page-fragments.spec.cjs`. Xem [PERFORMANCE.md](PERFORMANCE.md) để biết kết quả kiểm tra cấu trúc, giới hạn và kế hoạch đo tốc độ trên iPhone/iPad thực tế.
