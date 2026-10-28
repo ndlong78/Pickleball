@@ -12,7 +12,7 @@ function setup(){
 }
 test("stable PWA defines a release-specific cache",()=>{
  assert.match(source,/pickleup-shell-v4-1-guided/);
- assert.match(source,/v=4\.0\.0/);
+ assert.match(source,/v=4\.1\.0/);
 });
 test("cached static assets are not fetched or overwritten in the background",async()=>{
  const env=setup();
