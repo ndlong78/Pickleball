@@ -416,3 +416,16 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Unit tests cho giới hạn dữ liệu, trường hợp giảm/tăng điểm và phân loại cấp độ; Playwright 390px/820px/1440px.
 - [x] Chạy unit tests trước khi cài browser, hủy các CI cũ bị phiên bản mới thay thế.
 - [ ] Đạt CI của commit cuối cùng và kiểm thử PWA thực tế trên thiết bị.
+
+## V4.5 Beta – Skill Insights trên trang Tiến bộ
+
+- [x] Biểu đồ tối đa 12 lượt theo từng kỹ năng và cấp độ (không trộn độ khó cấp độ).
+- [x] Chỉ tính biến động xu hướng từ các lượt kiểm tra lặp lại **cùng giáo án**, tối đa 6 lượt để tránh so sánh các bài khác nhau.
+- [x] Bộ lọc cấp độ và kỹ năng, tóm tắt số lượt, điểm trung bình và chiều hướng thay đổi.
+- [x] Gợi ý điều chỉnh thực hành với dữ liệu ít, giảm điểm, ổn định hoặc cải thiện.
+- [x] Liên kết về Học viện và tiếp tục đúng giáo án được đề xuất.
+- [x] Giữ nguyên localStorage V4.4 và xử lý một điểm V4.3 cũ mà không giả định xu hướng.
+- [x] Node.js 24 unit tests + Playwright Chromium/WebKit ở 390/820/1440 px.
+- [ ] Xác nhận CI của commit V4.5 cuối và nghiệm thu PWA trên thiết bị thật.
+
+**Giới hạn:** Điểm từ bài khác nhau không phản ánh trực tiếp tiến bộ kỹ năng; nhận định chiều hướng chỉ từ cùng bài kiểm tra, tốt nhất thực hiện trong điều kiện tương tự.
