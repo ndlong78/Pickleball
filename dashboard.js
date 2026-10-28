@@ -19,7 +19,7 @@ function draw(){
  const data=entries().filter(x=>activeLevel==="all"||x.s.level===activeLevel),total=activeLevel==="all"?sessions.length:sessions.filter(x=>x.level===activeLevel).length,count=data.length,mean=count?Math.round(data.reduce((n,x)=>n+x.r.score,0)/count*5):null;
  $("dbCompleted").textContent=count+"/"+total;$("dbAverage").textContent=mean===null?"—":mean+"%";
  $("dbProgress").style.width=(total?count/total*100:0)+"%";
- const skills=$("dbSkills");skills.replaceChildren();
+ const skills=$("dbSkills"),skillFragment=document.createDocumentFragment();
  const sums={};
  keys.forEach(k=>sums[k]=data.filter(x=>x.s.skill===k));
  let weakest=null,weakScore=101;
@@ -27,9 +27,10 @@ function draw(){
   const a=sums[k],avg=a.length?Math.round(a.reduce((n,x)=>n+x.r.score,0)/a.length*5):null;
   const line=node("div","db-skill");const heading=node("div","db-skill-head");
   heading.append(node("span","",names[k]),node("strong","",avg===null?"Chưa có dữ liệu":avg+"% · "+a.length+" buổi"));
-  const bar=node("div","db-bar");const fill=node("div","db-fill");fill.style.width=(avg??0)+"%";bar.append(fill);line.append(heading,bar);skills.append(line);
+  const bar=node("div","db-bar");const fill=node("div","db-fill");fill.style.width=(avg??0)+"%";bar.append(fill);line.append(heading,bar);skillFragment.append(line);
   if(avg!==null&&avg<weakScore){weakScore=avg;weakest=k}
  });
+ skills.replaceChildren(skillFragment);
  const note=$("dbRecommendation");
  if(!count){note.textContent="Chưa có dữ liệu luyện tập. Hãy hoàn thành bài kiểm tra cuối buổi và lưu kết quả trong Học viện."; }
  else{const candidates=sessions.filter(s=>s.skill===weakest&&(activeLevel==="all"||s.level===activeLevel)&&!data.some(x=>x.s.id===s.id));const target=candidates[0];note.textContent="Kỹ năng có tỷ lệ đạt mục tiêu thấp nhất trong dữ liệu hiện tại: "+names[weakest]+". "+(target?"Gợi ý bài tiếp theo: tuần "+target.week+" – "+target.title+".":"Bạn đã ghi nhận tất cả các bài thuộc kỹ năng này.")+" Các bài ở cấp độ khác nhau không có độ khó tương đương; nên chọn một cấp độ để so sánh.";}
@@ -37,7 +38,9 @@ function draw(){
  if(!count){trend.append(node("p","sub","Lưu kết quả ít nhất một buổi để xem lịch sử tiến bộ."));}
  else{
   const scroll=node("div","db-trend-scroll");const chart=node("div","db-chart");
-  data.forEach(x=>{const col=node("div","db-column");const val=node("strong","",x.r.score*5+"%");const bar=node("div","db-vbar");bar.style.height=Math.max(2,x.r.score*5)+"%";bar.title="Tuần "+x.s.week+": "+x.r.score+"/20";const label=node("span","","T"+x.s.week);col.append(val,bar,label);chart.append(col)});
+  const fragment=document.createDocumentFragment();
+  data.forEach(x=>{const col=node("div","db-column");const val=node("strong","",x.r.score*5+"%");const bar=node("div","db-vbar");bar.style.height=Math.max(2,x.r.score*5)+"%";bar.title="Tuần "+x.s.week+": "+x.r.score+"/20";const label=node("span","","T"+x.s.week);col.append(val,bar,label);fragment.append(col)});
+  chart.append(fragment);
   scroll.append(chart);trend.append(scroll);
   const legend=node("p","sub","Mỗi cột là kết quả gần nhất đã lưu của một tuần giáo án; không phải biểu đồ nhiều lần tập trong cùng một tuần.");trend.append(legend);
  }
