@@ -1,5 +1,5 @@
 const {test,expect}=require("@playwright/test");
-test("V3.8 upgrades legacy PWA cache without erasing local training data",async({page})=>{
+test("V3.9 upgrades legacy PWA cache without erasing local training data",async({page})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{
   localStorage.setItem("pickleup_v38_migration_probe",JSON.stringify({hits:13,date:"2026-10-28"}));
@@ -22,9 +22,9 @@ test("V3.8 upgrades legacy PWA cache without erasing local training data",async(
  expect(result.record.hits).toBe(13);
  expect(result.keys).not.toContain("pickleup-shell-v3-6-vitals-versioned");
  expect(result.keys).not.toContain("pickleup-shell-v3-7-fragments");
- expect(result.keys).toContain("pickleup-shell-v3-8-upgrade");
+ expect(result.keys).toContain("pickleup-shell-v3-9-stable");
 });
-test("V3.8 caches a visited advanced page for later offline reuse",async({page,context})=>{
+test("V3.9 caches a visited advanced page for later offline reuse",async({page,context})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
  await page.reload(); // ensure the active service worker controls the document
@@ -32,7 +32,7 @@ test("V3.8 caches a visited advanced page for later offline reuse",async({page,c
  await page.locator('#pageNavigation a[data-route="academy"]').click();
  await expect(page.locator("#academyWeek option")).toHaveCount(80);
  const cached=await page.evaluate(async()=>{
-  const c=await caches.open("pickleup-shell-v3-8-upgrade");
+  const c=await caches.open("pickleup-shell-v3-9-stable");
   const keys=await c.keys();
   return keys.map(x=>new URL(x.url).pathname);
  });
