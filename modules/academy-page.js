@@ -31,6 +31,31 @@ try{const v=JSON.parse(localStorage.getItem(stepsKey)||'{}');if(v&&typeof v==='o
 const focusKey='pickleup_academy_focus_v42';
 let focusPositions={};try{const saved=JSON.parse(localStorage.getItem(focusKey)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))focusPositions=saved}catch(_){}
 let focusEnabled=false;
+let focusTimer=null,timerInterval=null;
+function stageSeconds(x){const i=currentFocusIndex(x);return (i===0?10:i===4?6:i===5?5:Math.max(1,Number(x.drills[i-1]?.minutes)||10))*60}
+function formatClock(n){const sec=Math.max(0,Math.ceil(n));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+function stopTick(){if(timerInterval!==null){clearInterval(timerInterval);timerInterval=null}}
+function pauseTimer(){if(!focusTimer)return;focusTimer.remaining=remainingSeconds();focusTimer.endsAt=null;stopTick()}
+function remainingSeconds(){return focusTimer?.endsAt===null?focusTimer.remaining:Math.max(0,Math.ceil((focusTimer.endsAt-Date.now())/1000))}
+function timerView(){
+ const x=get();if(!x)return;
+ const remaining=focusTimer?remainingSeconds():stageSeconds(x);
+ if(focusTimer&&remaining===0&&focusTimer.endsAt!==null){focusTimer.remaining=0;focusTimer.endsAt=null;stopTick()}
+ document.getElementById('academyTimerClock').textContent=formatClock(remaining);
+ document.getElementById('academyTimerStart').textContent=focusTimer?.endsAt!==null&&focusTimer?'Tạm dừng':remaining===0?'Đã hết giờ':'Bắt đầu';
+ document.getElementById('academyTimerStart').disabled=remaining===0;
+ document.getElementById('academyTimerStatus').textContent=remaining===0?'Đã hết thời gian. Xác nhận hoàn thành hoặc chuyển bước khi sẵn sàng.':focusTimer?.endsAt!==null&&focusTimer?'Đang đếm ngược':'Đồng hồ đang dừng.';
+}
+function resetTimer(){stopTick();const x=get();focusTimer=x?{lessonId:x.id,remaining:stageSeconds(x),endsAt:null}:null;timerView()}
+document.getElementById('academyTimerStart').addEventListener('click',()=>{
+ const x=get();if(!x)return;
+ if(!focusTimer)resetTimer();
+ if(focusTimer.endsAt!==null)pauseTimer();
+ else if(focusTimer.remaining>0){focusTimer.endsAt=Date.now()+focusTimer.remaining*1000;timerInterval=setInterval(timerView,250)}
+ timerView();
+});
+document.getElementById('academyTimerReset').addEventListener('click',resetTimer);
+
 function lessonSteps(x){return [{title:'Khởi động · 10 phút',description:'Di chuyển nhẹ, làm nóng khớp và làm quen bóng.'},...x.drills.map((d,i)=>({title:'Bài '+(i+1)+' · '+d.name+' · '+d.minutes+' phút',description:d.instruction})),{title:'Kiểm tra · 6 phút',description:x.assessment.instruction},{title:'Thả lỏng · 5 phút',description:'Đi bộ nhẹ, giãn cơ thoải mái và bổ sung nước.'}]}
 function currentFocusIndex(x){const i=focusPositions[x.id];return Number.isInteger(i)?Math.max(0,Math.min(5,i)):0}
 function showFocus(x){
@@ -45,8 +70,9 @@ function showFocus(x){
  document.getElementById('academyFocusPrev').disabled=i===0;
  document.getElementById('academyFocusNext').disabled=i===5;
  document.getElementById('academyFocusDone').textContent=done?'Bỏ đánh dấu':'Đánh dấu đã tập';
+ timerView();
 }
-function moveFocus(delta){const x=get();if(!x)return;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
+function moveFocus(delta){const x=get();if(!x)return;stopTick();focusTimer=null;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
 document.getElementById('academyFocusToggle').addEventListener('click',()=>{focusEnabled=!focusEnabled;showFocus(get())});
 document.getElementById('academyFocusPrev').addEventListener('click',()=>moveFocus(-1));
 document.getElementById('academyFocusNext').addEventListener('click',()=>moveFocus(1));
@@ -108,6 +134,7 @@ function choose(){
 }
 let lastDrawnId=null;
 function show(){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
+if(focusTimer&&focusTimer.lessonId!==x.id){stopTick();focusTimer=null}
 resumedId=x.id;
 try{localStorage.setItem(selectionKey,x.id)}catch(_){}
 refreshLearning();
