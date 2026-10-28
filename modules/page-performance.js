@@ -30,7 +30,7 @@ function display(){
    const card=make("div",undefined,"performance-item");
    card.append(make("strong",names[item.page]||item.page));
    card.append(make("span",item.ms+" ms"));
-   card.append(make("small",item.scripts+" module tải thêm · "+item.styles+" stylesheet"));
+   card.append(make("small",item.scripts+" module tải thêm · "+item.styles+" stylesheet · "+(item.htmlBytes?Math.round(item.htmlBytes/1024*10)/10+" KB HTML mới":"HTML có sẵn/cache")));
    list.append(card);
   }
   target.append(list);
