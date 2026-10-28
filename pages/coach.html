@@ -1,0 +1,78 @@
+<!-- PickleUp V3.7 · coach · static trusted page markup -->
+<section class="section" id="personalCoach" data-pickleup-page="coach">
+ <div class="sectionHead"><div><div class="kicker">PickleUp V2.4 · Personal Coach 1.0–3.0</div><h2>Giáo án cá nhân hóa 60 phút</h2><p class="sub">Dựa vào sáu điểm kỹ năng, hệ thống chọn ba ưu tiên, luân phiên bài tập và ghi nhận tiến bộ. Hoạt động offline, không cần tài khoản.</p></div></div>
+ <div class="advanced-links"><a href="#advancedCoach">Chuyển sang HLV nâng cao 3.0–4.0</a></div>
+<div class="pc-grid">
+  <div class="card pc-panel">
+   <h3>1. Kết quả đầu vào</h3>
+   <p class="sub" id="pcSource" role="status"></p>
+   <label for="pcLevel" class="pc-field-label">Nhóm giáo án</label>
+   <select id="pcLevel" class="timerselect"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option></select>
+   <div id="pcInputs" class="pc-inputs"></div>
+   <div class="pc-actions"><button type="button" id="pcLoad" class="pc-alt">Nạp điểm đã lưu</button><button type="button" id="pcGenerate" class="primary">Tạo giáo án 60 phút</button><button type="button" id="pcOpenRun" class="pc-alt">Vào chế độ tập trên sân</button></div>
+   <p class="sub" id="pcStatus" role="status" aria-live="polite"></p>
+   <p class="hint">Chỉ dùng kết quả trên trình duyệt này hoặc điểm bạn nhập. Không tự lấy dữ liệu từ cuộc trò chuyện ChatGPT. Mốc mục tiêu là gợi ý để tập, không phải rating DUPR.</p>
+  </div>
+  <div class="card pc-panel">
+   <h3>2. Nhật ký giáo án</h3>
+   <div class="pc-stats"><div><strong id="pcCount">0 kế hoạch</strong><span>Đã tạo</span></div><div><strong id="pcDone">0 hoàn thành</strong><span>Đã kiểm tra</span></div></div>
+   <div id="pcHistory" class="pc-history"></div>
+   <p class="hint">Mỗi kỹ năng có các bài tập luân phiên; sau khi dùng hết, bài ít được tập gần đây sẽ xuất hiện lại.</p>
+  </div>
+ </div>
+ <article class="card pc-panel" id="pcPlan" aria-live="polite"></article>
+ <div class="card pc-panel" id="pcCompletion" hidden>
+  <h3>3. Ghi kết quả sau buổi tập</h3>
+  <label class="pc-field-label" for="pcPostScore" id="pcPostScoreLabel">Kết quả sau tập</label>
+  <div class="pc-actions"><input type="number" inputmode="numeric" id="pcPostScore" min="0" max="20" step="1" placeholder="0–20" aria-label="Số lần đúng trong 20 lần kiểm tra"><button type="button" class="primary" id="pcComplete">Lưu kết quả buổi tập</button></div>
+  <p id="pcLastOutcome" class="sub"></p>
+ </div>
+</section>
+<section class="section" id="advancedCoach" data-pickleup-page="coach">
+ <div class="sectionHead"><div><div class="kicker">PickleUp V3.1 · Advanced Personal Coach</div><h2>Huấn luyện cá nhân 3.0–4.0</h2><p class="sub">Tự tạo buổi tập chiến thuật 60 phút từ sáu kết quả kiểm tra nâng cao, chọn ba kỹ năng yếu nhất rồi luân phiên giáo án đã học.</p></div></div>
+ <div class="advanced-links"><a href="#advancedReadiness">Làm bài kiểm tra nâng cao</a><a href="#pcOnCourt">Đồng hồ tập trên sân</a><a href="#trainingHistory">Biểu đồ luyện tập</a><a href="#tacticalReport">Phân tích chiến thuật V3.2</a></div>
+ <div class="pc-grid">
+  <div class="card pc-panel">
+   <h3>1. Kết quả chiến thuật</h3>
+   <p class="sub" id="acCoachSource" role="status"></p>
+   <label class="pc-field-label" for="acCoachLevel">Chọn nhóm giáo án</label>
+   <select class="timerselect" id="acCoachLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select>
+   <div class="pc-inputs" id="acCoachInputs"></div>
+   <div class="advanced-field" style="margin:14px 0">
+     <label for="acCoachMatchFocus">Tùy chọn: ưu tiên theo nhật ký trận đấu</label>
+     <select id="acCoachMatchFocus"><option value="">Không áp dụng — chọn theo điểm kỹ năng</option></select>
+     <p id="acCoachMatchSuggestion" class="sub">Chưa có dữ liệu trận đấu.</p>
+     <p id="acCoachFocusStatus" class="sub" role="status" aria-live="polite">Chỉ áp dụng khi bạn chủ động chọn kỹ năng.</p>
+   </div>
+   <div class="pc-actions"><button type="button" class="pc-alt" id="acCoachImport">Nạp điểm nâng cao</button><button type="button" class="primary" id="acCoachCreate">Tạo buổi tập 60 phút</button></div>
+   <p class="sub" id="acCoachStatus" role="status" aria-live="polite"></p>
+   <p class="hint">Nếu chưa có kết quả V3.0, hãy thực hiện bài kiểm tra nâng cao hoặc nhập đủ sáu điểm 0–20. Mốc đạt chỉ là tiêu chí luyện tập, không chứng nhận 3.5–4.0.</p>
+  </div>
+  <div class="card pc-panel">
+   <h3>2. Kế hoạch đã tạo</h3>
+   <div class="pc-stats"><div><strong id="acCoachCount">0 giáo án</strong><span>Đã tạo</span></div><div><strong id="acCoachFinished">0 đã tập</strong><span>Đã kiểm tra</span></div></div>
+   <div id="acCoachHistory" class="pc-history"></div>
+   <button type="button" class="primary" id="acCoachRun" disabled>Vào chế độ tập trên sân</button>
+   <p class="hint">Khi chọn giáo án ở lịch sử, đồng hồ sẽ nạp đúng bài đó. Dữ liệu V2 và V3.0 vẫn được lưu riêng.</p>
+  </div>
+ </div>
+ <article class="card pc-panel" id="acCoachPlan" aria-live="polite"></article>
+ <div class="card pc-panel" id="acCoachComplete" hidden>
+  <h3>3. Kiểm tra sau buổi tập</h3>
+  <label class="pc-field-label" for="acCoachResult" id="acCoachResultLabel">Kết quả 20 tình huống kiểm tra</label>
+  <div class="pc-actions"><input type="number" inputmode="numeric" min="0" max="20" step="1" id="acCoachResult" placeholder="0–20"><button type="button" class="primary" id="acCoachSave">Lưu kết quả buổi tập</button></div>
+  <p class="hint">Sau khi lưu, lần tạo giáo án tiếp theo có thể dùng điểm thực tế mới để xác định lại kỹ năng ưu tiên.</p>
+ </div>
+</section>
+<section class="section" id="advancedReadiness" data-pickleup-page="coach">
+<div class="sectionHead"><div><div class="kicker">PickleUp V3.0 · Kiểm tra kỹ năng nâng cao</div><h2>Đánh giá khả năng áp dụng chiến thuật</h2><p class="sub">Sáu kỹ năng chuyên sâu được kiểm tra riêng, không trộn với bài kiểm tra cơ bản V2.3. Điểm kiểm tra chỉ phục vụ lựa chọn chương trình tập.</p></div></div>
+<div class="card advanced-check-panel">
+ <div class="advanced-field"><label for="advancedLevel">Nhóm đang luyện tập</label><select id="advancedLevel"><option>3.0–3.5</option><option>3.5–4.0</option></select></div>
+ <p id="advancedCheckTarget" class="advanced-helper"></p>
+ <div class="advanced-check-inputs" id="advancedCheckInputs"></div>
+ <button type="button" id="advancedCheckSave" class="primary">Đánh giá và lưu kết quả</button>
+ <p id="advancedCheckResult" class="outcome" role="status" aria-live="polite"></p>
+ <h3>Lịch sử kiểm tra gần đây</h3><div id="advancedCheckHistory"></div>
+ <p class="sub">Ngưỡng nội bộ chỉ để định hướng bài tập; không chứng nhận DUPR hoặc khả năng thi đấu cấp 4.0.</p>
+</div>
+</section>
