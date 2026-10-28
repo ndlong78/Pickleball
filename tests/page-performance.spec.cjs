@@ -37,6 +37,20 @@ test.describe("PickleUp V3.5 lazy page loading",()=>{
   await expect(page.locator("#matchDoublesIssue option")).toHaveCount(6);
   await expect(page.locator("#matchFocus option")).toHaveCount(11);
  });
+ test("V3.6 measures page paints and requests versioned assets",async({page})=>{
+  await page.goto("/?page=home");
+  await expect(page.locator("#weekList .week").first()).toBeVisible();
+  const scripts=await page.locator("script[src]").evaluateAll(nodes=>nodes.map(x=>x.getAttribute("src")));
+  expect(scripts.some(x=>x.includes("web-vitals.js?v=3.6.0"))).toBe(true);
+  expect(await page.evaluate(()=>typeof window.PICKLEUP_METRICS?.collect)).toBe("function");
+  await page.locator('#pageNavigation a[data-route="academy"]').click();
+  await expect(page.locator("#academyWeek option")).toHaveCount(80);
+  await page.locator('#pageNavigation a[data-route="settings"]').click();
+  await expect(page.locator("#pageVitals .performance-item")).toHaveCount(4);
+  await expect(page.locator("#pageRouteMetrics")).toContainText("Học viện");
+  const metrics=await page.evaluate(()=>window.PICKLEUP_METRICS.collect());
+  expect(metrics.routes.some(x=>x.page==="academy"&&x.completed)).toBe(true);
+ });
  test("data page displays recorded local module timing and has no external analytics",async({page})=>{
   await page.goto("/?page=home");
   await expect(page.locator("#weekList .week").first()).toBeVisible();
