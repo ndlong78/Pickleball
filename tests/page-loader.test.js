@@ -72,24 +72,24 @@ function mock(version=""){
  return {window,scripts,styles,fetches,nodes,mounts,status};
 }
 test("Home starts with one module and no HTML fragments",async()=>{
- const x=mock("3.9.0"),l=x.window.PICKLEUP_PAGE_LOADER;
+ const x=mock("4.0.0"),l=x.window.PICKLEUP_PAGE_LOADER;
  const info=await l.ensure("home");
  assert.equal(info.scripts,1);assert.equal(info.htmlSections,0);
  assert.equal(x.fetches.length,0);
- assert.deepEqual(x.scripts,["./modules/weekly-practice.js?v=3.9.0"]);
+ assert.deepEqual(x.scripts,["./modules/weekly-practice.js?v=4.0.0"]);
  assert.equal(l.hasMarkup("coach"),false);
  assert.equal(x.styles.length,0);
 });
 test("direct Coach route hydrates its three sections before scripts",async()=>{
- const x=mock("3.9.0"),l=x.window.PICKLEUP_PAGE_LOADER;
+ const x=mock("4.0.0"),l=x.window.PICKLEUP_PAGE_LOADER;
  const info=await l.ensure("coach");
  assert.equal(info.htmlSections,3);
- assert.deepEqual(x.fetches,["./pages/coach.html?v=3.9.0"]);
+ assert.deepEqual(x.fetches,["./pages/coach.html?v=4.0.0"]);
  for(const name of ["personalCoach","advancedCoach","advancedReadiness"])assert.ok(x.nodes.has(name));
- assert.ok(x.styles.includes("./advanced.css?v=3.9.0"));
+ assert.ok(x.styles.includes("./advanced.css?v=4.0.0"));
 });
 test("navigation reuses markup and shared JS/CSS",async()=>{
- const x=mock("3.9.0"),l=x.window.PICKLEUP_PAGE_LOADER;
+ const x=mock("4.0.0"),l=x.window.PICKLEUP_PAGE_LOADER;
  await l.ensure("academy");await l.ensure("coach");
  await l.ensure("academy");await l.ensure("progress");
  assert.equal(x.fetches.filter(v=>v.includes("academy.html")).length,1);
@@ -99,7 +99,7 @@ test("navigation reuses markup and shared JS/CSS",async()=>{
  assert.equal(l.hasMarkup("matches"),false);
 });
 test("Court and Matches independently hydrate their forms",async()=>{
- const x=mock("3.9.0"),l=x.window.PICKLEUP_PAGE_LOADER;
+ const x=mock("4.0.0"),l=x.window.PICKLEUP_PAGE_LOADER;
  await l.ensure("court");
  assert.ok(x.nodes.has("pcOnCourt"));assert.equal(x.nodes.has("matchJournal"),false);
  await l.ensure("matches");
