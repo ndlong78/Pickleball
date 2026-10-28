@@ -334,3 +334,15 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Xác nhận toàn bộ GitHub Actions chạy thành công trong Chromium/WebKit; sửa nếu phát hiện lỗi.
 - [ ] Chạy benchmark thiết bị vật lý iPhone/iPad/PC và lưu số liệu trước–sau.
 - [ ] Dùng kết quả thực tế để quyết định bước tối ưu tiếp theo (DOM, CSS, hydration).
+
+## V3.9 Beta – Khắc phục CI và ổn định PWA
+
+- [x] Đọc log GitHub Actions V3.8, xác nhận 54/55 unit tests đạt; lỗi duy nhất đến từ phép chờ 2 khung hình không xác định trong test Web Vitals.
+- [x] Đổi test Web Vitals sang chờ điều kiện hoàn thành có deadline thay vì đợi số lượt event-loop cố định.
+- [x] Giữ tài nguyên JS/CSS phiên bản cố định trong cache, không ghi đè ngầm bằng byte của release khác.
+- [x] Nâng tên cache, URL tài nguyên và version package lên 3.9.0.
+- [x] Đồng bộ các kiểm thử PWA/browser với phiên bản mới.
+- [ ] Xác nhận CI V3.9 hoàn tất; sửa các lỗi browser nếu kết quả phát sinh.
+- [ ] Chạy nghiệm thu trên iPhone/iPad thật, kiểm tra offline sau cập nhật, theo dõi Core Web Vitals.
+
+**Trạng thái:** mã nguồn đã cập nhật, các workflow mới đang được GitHub Actions xử lý. Không công bố tốc độ cải thiện khi chưa có benchmark thành công.
