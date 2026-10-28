@@ -26,6 +26,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.3 beta | Ghi điều kiện tập, so sánh tương đương và theo dõi tình huống đánh đôi | Đã cập nhật mã nguồn; cần nghiệm thu thiết bị và sư phạm |
 | V3.4 beta | Phân loại bảy trang, tách module, router tĩnh tương thích PWA | Đã triển khai mã nguồn; còn nghiệm thu UX và CI |
 | V3.5 beta | Tải JS/CSS theo trang, PWA cache lõi, đo tốc độ tại thiết bị | Đã triển khai; chờ nghiệm thu browser và đo tốc độ |
+| V3.6 beta | Web Vitals cục bộ, đo route và versioned assets chống cache cũ | Đã đưa mã nguồn; cần benchmark và QA iOS |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -291,3 +292,15 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Tối ưu tiếp HTML/DOM và kết hợp/giảm tệp nhỏ dựa trên số liệu thực tế.
 
 **Thỏa hiệp offline:** trang chưa được mở online có thể chưa đủ module để hoạt động offline. Chi tiết trong [PERFORMANCE.md](PERFORMANCE.md).
+
+## V3.6 beta – Đo tốc độ hiển thị và bảo đảm asset mới
+
+- [x] Dùng PerformanceObserver cho FCP/LCP/CLS/interaction latency ước tính (khi trình duyệt hỗ trợ).
+- [x] Đo thời gian route SPA tới khung hình sau khi module hoàn tất, tách khỏi số liệu lần mở trang đầu.
+- [x] Nâng trang Dữ liệu thành dashboard hiệu năng cục bộ; không gửi telemetry.
+- [x] Gắn version query `v=3.6.0` cho boot JS/CSS và các module tải theo trang.
+- [x] Cập nhật cache PWA V3.6 để giảm nguy cơ script/CSS cũ sau deploy.
+- [x] Bổ sung kiểm thử Node `tests/web-vitals.test.js` và browser route metrics.
+- [ ] Nghiệm thu thực tế WebKit/Chromium, iPhone/iPad và kiểm tra nâng cấp PWA.
+- [ ] Đo Lighthouse/Core Web Vitals để có baseline thực tế trước khi công bố cải thiện tốc độ.
+- [ ] Tối ưu HTML/DOM và request mạng tiếp theo dựa trên báo cáo, không phỏng đoán.
