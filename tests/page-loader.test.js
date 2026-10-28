@@ -68,3 +68,14 @@ test("a new app build uses versioned URLs without changing module identities",as
  assert.ok(app.scripts.some(x=>x==="./match-journal.js?v=3.6.0"));
  assert.equal(new Set(app.scripts).size,app.scripts.length);
 });
+
+test("advanced styles are absent from Home and shared across specialist pages",async()=>{
+ const app=mock("3.6.0"),loader=app.window.PICKLEUP_PAGE_LOADER;
+ await loader.ensure("home");
+ assert.deepEqual(app.styles,[]);
+ await loader.ensure("coach");
+ assert.ok(app.styles.includes("./advanced.css?v=3.6.0"));
+ await loader.ensure("matches");
+ assert.equal(app.styles.filter(s=>s==="./advanced.css?v=3.6.0").length,1);
+ assert.ok(app.styles.includes("./tactical-insights.css?v=3.6.0"));
+});
