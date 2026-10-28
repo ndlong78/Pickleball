@@ -41,6 +41,7 @@ function visitLesson(id){
  weeks.value=id;
  show();
 }
+document.addEventListener('pickleup:academy-request-lesson',event=>{const id=event.detail?.id;if(data.some(x=>x.id===id))visitLesson(id)});
 const stepsKey='pickleup_academy_steps_v41';
 let stepRecords={};
 try{const v=JSON.parse(localStorage.getItem(stepsKey)||'{}');if(v&&typeof v==='object'&&!Array.isArray(v))stepRecords=v}catch(_){}
