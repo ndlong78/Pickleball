@@ -2,6 +2,9 @@
 const data=window.PICKLEUP_CURRICULUM||[];
 const level=document.getElementById('academyLevel'),weeks=document.getElementById('academyWeek'),detail=document.getElementById('academyDetail'),score=document.getElementById('academyScore'),status=document.getElementById('academyStatus');
 let records={};try{records=JSON.parse(localStorage.getItem('pickleup_academy_v2')||'{}')}catch(e){}
+const trends=window.PICKLEUP_ACADEMY_TRENDS;
+const historyKey='pickleup_academy_history_v44';
+let history=[];try{history=trends.readHistory(localStorage.getItem(historyKey))}catch(_){}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function get(){return data.find(x=>x.id===weeks.value)}
 const selectionKey='pickleup_academy_last_lesson_v4';
@@ -19,16 +22,13 @@ function refreshLearning(){
  updateRecommendation();
 }
 function recommendedLesson(){
- const scored=data.filter(x=>Number.isInteger(records[x.id]?.score)&&records[x.id].score>=0&&records[x.id].score<=20);
- if(!scored.length)return {lesson:data[0],reason:'Chưa có điểm kiểm tra. Bắt đầu với giáo án đầu tiên để xây dựng mốc tiến bộ.'};
- const ranked=scored.slice().sort((a,b)=>(records[a.id].score/20)-(records[b.id].score/20));
- const weakest=ranked[0];
- const candidate=data.find(x=>x.skill===weakest.skill&&!completedIds().has(x.id))||weakest;
- return {lesson:candidate,reason:'Điểm thấp nhất đã ghi: '+weakest.skillName+' '+records[weakest.id].score+'/20. Gợi ý luyện kỹ năng này trước; điểm chỉ là tham khảo.'};
+ const scope=level.value==='all'?(get()?.level||'all'):level.value;
+ return trends.recommend(data,records,history,scope);
 }
 function updateRecommendation(){
  const result=recommendedLesson();
  document.getElementById('academyRecommendReason').textContent=result.reason;
+ document.getElementById('academyTrendText').textContent=result.trend;
  document.getElementById('academyRecommendLesson').textContent=result.lesson?'Tuần '+result.lesson.week+' · '+result.lesson.title:'Chưa có giáo án.';
  document.getElementById('academyRecommendOpen').disabled=!result.lesson;
 }
@@ -168,7 +168,25 @@ document.getElementById('academyNext').addEventListener('click',()=>{
  const next=data.find(x=>!complete.has(x.id));
  if(next)visitLesson(next.id);
 });
-document.getElementById('academySave').addEventListener('click',()=>{const x=get(),v=Number(score.value);if(!x||!Number.isInteger(v)||v<0||v>20){status.textContent='Hãy nhập số nguyên từ 0 đến 20.';return}records[x.id]={score:v,date:new Date().toISOString(),skill:x.skill,level:x.level};lastDrawnId=null;try{localStorage.setItem('pickleup_academy_v2',JSON.stringify(records));document.dispatchEvent(new Event('pickleup:score-saved'));refreshLearning();status.textContent='Đã lưu '+v+'/20 · '+(v>=x.assessment.target?'Đạt mục tiêu tuần này.':'Tiếp tục luyện kỹ thuật tuần này.')}catch(e){status.textContent='Không lưu được; hãy kiểm tra quyền lưu trữ trình duyệt.'}});
+document.getElementById('academySave').addEventListener('click',()=>{
+ const x=get(),v=Number(score.value);
+ if(!x||score.value.trim()===''||!Number.isInteger(v)||v<0||v>20){status.textContent='Hãy nhập số nguyên từ 0 đến 20.';return}
+ const date=new Date().toISOString(),nextRecord={score:v,date,skill:x.skill,level:x.level};
+ try{
+  localStorage.setItem('pickleup_academy_v2',JSON.stringify({...records,[x.id]:nextRecord}));
+ }catch(_){status.textContent='Không lưu được điểm; hãy kiểm tra quyền lưu trữ trình duyệt.';return}
+ records[x.id]=nextRecord;
+ let historySaved=true;
+ try{
+  const next=trends.append(history,x,v,date);
+  localStorage.setItem(historyKey,JSON.stringify(next));
+  history=next;
+ }catch(_){historySaved=false}
+ lastDrawnId=null;
+ document.dispatchEvent(new Event('pickleup:score-saved'));
+ refreshLearning();
+ status.textContent='Đã lưu '+v+'/20 · '+(v>=x.assessment.target?'Đạt mục tiêu tuần này.':'Tiếp tục luyện kỹ thuật tuần này.')+(historySaved?'':' Điểm đã lưu, nhưng lịch sử lần tập chưa lưu được.');
+});
 const initialLesson=resumedId;
 choose();
 if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson);
