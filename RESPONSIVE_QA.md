@@ -61,3 +61,11 @@ Mã nguồn responsive và bài test đã thêm vào repository; chưa có xác 
 - [ ] Chạy pipeline WebKit/Chromium và sửa mọi lỗi nếu có.
 - [ ] Kiểm tra riêng iPhone SE 320px khi bàn phím nhập liệu mở; iPad xoay ngang/dọc; offline sau cập nhật service worker.
 - [ ] Chụp/đánh giá thủ công tiêu chí không cuộn ngang, không bị menu che nút.
+
+## V3.6 – Web Vitals, cache phiên bản và iOS Safari
+
+- [x] Có bộ kiểm thử cấu trúc JS cho PerformanceObserver, route timing và cache URL phiên bản.
+- [x] Có smoke test mở Tổng quan → Học viện → Dữ liệu, kiểm tra thẻ đo hiệu năng.
+- [ ] Chạy Playwright/CI với Chromium và WebKit; ghi nhận lỗi browser nếu có.
+- [ ] Thử trên iPhone/iPad: trang tải đầu, chuyển trang, tắt/bật mạng và cập nhật PWA từ 3.5.
+- [ ] Trên Safari không hỗ trợ một chỉ số, hiển thị '—' thay vì coi là 0.
