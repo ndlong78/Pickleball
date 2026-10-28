@@ -16,7 +16,23 @@ function refreshLearning(){
  resume.textContent=last?'Bài gần nhất: Tuần '+last.week+' · '+last.title:'Bạn chưa chọn bài học trước đó.';
  resumeButton.disabled=!last;
  next.disabled=complete.size>=total;
+ updateRecommendation();
 }
+function recommendedLesson(){
+ const scored=data.filter(x=>Number.isInteger(records[x.id]?.score)&&records[x.id].score>=0&&records[x.id].score<=20);
+ if(!scored.length)return {lesson:data[0],reason:'Chưa có điểm kiểm tra. Bắt đầu với giáo án đầu tiên để xây dựng mốc tiến bộ.'};
+ const ranked=scored.slice().sort((a,b)=>(records[a.id].score/20)-(records[b.id].score/20));
+ const weakest=ranked[0];
+ const candidate=data.find(x=>x.skill===weakest.skill&&!completedIds().has(x.id))||weakest;
+ return {lesson:candidate,reason:'Điểm thấp nhất đã ghi: '+weakest.skillName+' '+records[weakest.id].score+'/20. Gợi ý luyện kỹ năng này trước; điểm chỉ là tham khảo.'};
+}
+function updateRecommendation(){
+ const result=recommendedLesson();
+ document.getElementById('academyRecommendReason').textContent=result.reason;
+ document.getElementById('academyRecommendLesson').textContent=result.lesson?'Tuần '+result.lesson.week+' · '+result.lesson.title:'Chưa có giáo án.';
+ document.getElementById('academyRecommendOpen').disabled=!result.lesson;
+}
+document.getElementById('academyRecommendOpen').addEventListener('click',()=>{const x=recommendedLesson().lesson;if(x)visitLesson(x.id)});
 function visitLesson(id){
  const lesson=data.find(x=>x.id===id);
  if(!lesson)return;
