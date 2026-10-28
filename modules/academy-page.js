@@ -73,7 +73,8 @@ function showFocus(x){
  timerView();
 }
 function moveFocus(delta){const x=get();if(!x)return;stopTick();focusTimer=null;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
-document.getElementById('academyFocusToggle').addEventListener('click',()=>{focusEnabled=!focusEnabled;showFocus(get())});
+document.getElementById('academyFocusToggle').addEventListener('click',()=>{if(focusEnabled)pauseTimer();focusEnabled=!focusEnabled;showFocus(get())});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&focusTimer?.endsAt!==null){pauseTimer();timerView()}});
 document.getElementById('academyFocusPrev').addEventListener('click',()=>moveFocus(-1));
 document.getElementById('academyFocusNext').addEventListener('click',()=>moveFocus(1));
 document.getElementById('academyFocusDone').addEventListener('click',()=>{
