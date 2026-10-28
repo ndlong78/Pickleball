@@ -47,6 +47,7 @@ function render(page){
  root.PICKLEUP_METRICS?.trackRoute(p.id,loaded);
  loaded.catch(()=>{});
  document.dispatchEvent(new CustomEvent("pickleup:route-change",{detail:{page:p.id}}));
+ return loaded;
 }
 function scrollToSection(section){
  if(!section){root.scrollTo({top:0,behavior:"auto"});return}
@@ -62,8 +63,8 @@ function openPage(page,section=null,replace=false){
  const method=replace?"replaceState":"pushState";
  const path=root.location.pathname+root.location.search+root.location.hash;
  if(next!==path)root.history[method]({pickleupPage:page},"",next);
- render(page);
- root.requestAnimationFrame(()=>scrollToSection(section));
+ const ready=render(page);
+ Promise.resolve(ready).then(()=>{if(current===page)root.requestAnimationFrame(()=>scrollToSection(section))}).catch(()=>{});
 }
 function openSection(section){
  const page=sections.get(section);
@@ -88,13 +89,13 @@ function restore(){
  const url=new URL(root.location.href);
  // Canonicalize old #section bookmarks into the new shareable page URL.
  if(url.searchParams.get(pageParam)!==route.page)root.history.replaceState({pickleupPage:route.page},"",hrefFor(route.page,route.section));
- render(route.page);
- root.requestAnimationFrame(()=>scrollToSection(route.section));
+ const ready=render(route.page);
+ Promise.resolve(ready).then(()=>{if(current===route.page)root.requestAnimationFrame(()=>scrollToSection(route.section))}).catch(()=>{});
 }
 function init(){
  if(initialized)return;initialized=true;
  if(!pages.length)return;
- const missing=pages.flatMap(p=>p.sections.filter(id=>!document.getElementById(id)));
+ const missing=pages.flatMap(p=>p.sections.filter(id=>!document.getElementById(id)&&!document.getElementById("mount-"+p.id)));
  if(missing.length)root.console?.warn?.("PickleUp: page sections not present:",missing);
  document.addEventListener("click",onClick,true);
  root.addEventListener("popstate",restore);
