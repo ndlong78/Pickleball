@@ -128,3 +128,15 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .ai-filters-extra select{min-height:46px;width:100%;max-width:100%;padding:8px;border:1px solid #b8cab9;border-radius:9px;background:#fff;color:#17382f}
 #aiChartSummary{margin:12px 0 0;line-height:1.6}
 .ai-plot{min-width:max-content}
+
+/* V4.6: compact and accessible weekly goal panel. */
+.wg-panel{padding:18px}.wg-controls{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+.wg-controls label{display:grid;gap:7px;font-weight:650;font-size:.9rem}
+.wg-controls select{width:100%;min-height:46px;padding:9px;border:1px solid #bbcebe;border-radius:9px;background:white;color:#17382f}
+.wg-controls button{min-height:46px}.wg-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.wg-kpis>div{display:grid;gap:6px;padding:14px;background:#f2f7f0;border-radius:12px}.wg-kpis strong{font-size:clamp(1.15rem,3vw,1.6rem);font-variant-numeric:tabular-nums}.wg-kpis span{font-size:.78rem;color:#516d61}
+.wg-chart{overflow-x:auto;max-width:100%;padding:12px 0}.wg-bars{display:flex;align-items:flex-end;gap:12px;list-style:none;min-width:max-content;height:194px;margin:0;padding:0 4px 0;border-bottom:1px solid #c7d9cb}
+.wg-bar-item{height:100%;width:80px;display:flex;align-items:center;justify-content:flex-end;flex-direction:column;gap:5px}.wg-bar-item strong{font-size:.85rem}.wg-bar{width:48px;max-height:130px;background:#47916f;border-radius:7px 7px 0 0;flex-shrink:0}.wg-bar-item span{font-size:.73rem;white-space:nowrap}
+.wg-next{border-top:1px solid #d5e4d8;margin-top:16px;padding-top:12px}.wg-next h3{margin:5px 0}.wg-next a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}.wg-next a[hidden]{display:none}
+@media(max-width:720px){.wg-panel{padding:13px}.wg-controls{grid-template-columns:1fr 1fr}.wg-controls button{grid-column:1/-1}.wg-kpis>div{padding:10px}.wg-kpis span{font-size:.7rem}}
+@media(max-width:420px){.wg-controls{grid-template-columns:1fr}.wg-controls button{grid-column:auto}.wg-kpis{gap:6px}.wg-kpis strong{font-size:1.04rem}}

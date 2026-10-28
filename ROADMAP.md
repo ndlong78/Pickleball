@@ -439,3 +439,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Tăng coverage unit + Playwright cho bộ lọc bài, trộn bài, dữ liệu cũ; Node.js 24 và CI pull request.
 - [ ] Xác minh CI của nhánh stable và kiểm thử PWA thực tế trên iPhone/iPad ở chế độ offline.
 - [ ] Huấn luyện viên xác nhận điều kiện kiểm tra 20 lượt tương đương giữa các phiên tập.
+
+## V4.6.0 — Weekly Goals & Progress (28/10/2026)
+
+- [x] Mục tiêu tùy chỉnh 1–5 ngày/tuần, cấp độ huấn luyện; lưu trên thiết bị.
+- [x] Biểu đồ số ngày có ghi kết quả trong 8 tuần, gộp trùng ngày; lọc lượt có ngày tương lai bất thường.
+- [x] Gợi ý bài theo mức giảm trong cùng bài, mục tiêu của bài, hoặc chưa có dữ liệu; không suy diễn rating.
+- [x] Giữ nguyên dữ liệu V4.5 và tích hợp backup/restore tương thích ngược (optional weeklyGoal).
+- [x] Unit & Playwright test bổ sung, Node.js 24, PWA version 4.6.
+- [ ] Kiểm thử PWA offline và tương tác trên thiết bị iPhone/iPad thực, xác nhận bài tập với HLV.
