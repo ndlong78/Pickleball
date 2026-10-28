@@ -26,6 +26,8 @@ on:
       - "package.json"
       - "playwright.config.cjs"
       - ".github/workflows/responsive.yml"
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 concurrency:
   group: responsive-${{ github.ref }}

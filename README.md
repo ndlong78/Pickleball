@@ -266,3 +266,7 @@ Việc nâng Node ở CI **không thay đổi JavaScript chạy trực tiếp tr
 - Giao diện responsive có nút mục tiêu chạm ít nhất 44px; Playwright có test trải nghiệm Học viện ở 390/820/1440px.
 - PWA shell và asset lên `4.0.0-beta.1`, tách cache khỏi V3.9 Stable.
 - Trạng thái: Beta; cần kiểm tra CI trên commit mới và nghiệm thu iPhone/iPad thật trước khi gọi Stable.
+
+## V4.5 Stable — Tiến bộ theo kỹ năng
+
+Ở trang **Tiến bộ → Tiến bộ theo từng kỹ năng**, chọn cấp độ, kỹ năng và **giáo án** để xem tối đa 12 lần kiểm tra gần nhất của chính giáo án đó. Số lượt tổng hợp phản ánh kỹ năng trong cấp độ đang chọn, nhưng trung bình, biểu đồ và biến động chỉ tính theo bài đã chọn; biến động dùng tối đa 6 lượt gần nhất cùng bài. Không xem biến động điểm như DUPR hay xác nhận lên cấp. Dữ liệu V4.4 và trước đó tiếp tục được đọc ở localStorage và có thể sao lưu từ mục Dữ liệu.

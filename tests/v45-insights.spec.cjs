@@ -48,3 +48,32 @@ test("V4.5 never mixes scores from different levels",async({page})=>{
  await page.locator("#aiSkill").selectOption("serve");
  await expect(page.locator("#aiAverage")).toHaveText("1.0/20");
 });
+
+test("V4.5 lesson selector does not compare scores from different lessons",async({page})=>{
+ await page.goto("/?page=progress");
+ await expect(page.locator("#aiSkill option")).not.toHaveCount(0);
+ const ids=await page.evaluate(()=>{
+  const items=window.PICKLEUP_CURRICULUM.filter(x=>x.skill==="serve"&&x.level==="1.0–2.0");
+  if(items.length<2)throw Error("Need two serve lessons");
+  const date=new Date().toISOString();
+  const attempts=[
+   {id:items[0].id,skill:"serve",level:"1.0–2.0",score:8,date},
+   {id:items[1].id,skill:"serve",level:"1.0–2.0",score:19,date},
+   {id:items[0].id,skill:"serve",level:"1.0–2.0",score:12,date}
+  ];
+  localStorage.setItem("pickleup_academy_history_v44",JSON.stringify(attempts));
+  return items.map(x=>x.id);
+ });
+ await page.locator("#aiRefresh").click();
+ await page.locator("#aiLevel").selectOption("1.0–2.0");
+ await page.locator("#aiSkill").selectOption("serve");
+ await expect(page.locator("#aiCount")).toHaveText("3");
+ await page.locator("#aiLesson").selectOption(ids[0]);
+ await expect(page.locator("#aiChart .ai-column")).toHaveCount(2);
+ await expect(page.locator("#aiDelta")).toHaveText("+4 điểm");
+ await page.locator("#aiLesson").selectOption(ids[1]);
+ await expect(page.locator("#aiChart .ai-column")).toHaveCount(1);
+ await expect(page.locator("#aiAverage")).toHaveText("19.0/20");
+ await expect(page.locator("#aiDelta")).toHaveText("Chưa đủ dữ liệu");
+ await expect(page.locator("#aiChartSummary")).toContainText("1 lượt");
+});

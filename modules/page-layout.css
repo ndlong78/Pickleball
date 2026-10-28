@@ -121,3 +121,10 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .ai-recommend{margin-top:14px;background:#f4f8f3;border-radius:12px;padding:14px;line-height:1.6}
 .ai-recommend p{margin:9px 0}.ai-recommend a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
 @media(max-width:600px){.ai-panel{padding:13px}.ai-filters{grid-template-columns:1fr}.ai-metrics{gap:6px}.ai-metrics>div{padding:9px}.ai-metrics strong{font-size:1rem}.ai-metrics span{font-size:.72rem}}
+
+/* V4.5 Stable: clearly separate stage/skill filters from same-lesson comparison. */
+.ai-filters-extra{margin-top:12px}
+.ai-filters-extra label{display:grid;gap:6px;font-weight:650}
+.ai-filters-extra select{min-height:46px;width:100%;max-width:100%;padding:8px;border:1px solid #b8cab9;border-radius:9px;background:#fff;color:#17382f}
+#aiChartSummary{margin:12px 0 0;line-height:1.6}
+.ai-plot{min-width:max-content}
