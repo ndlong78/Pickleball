@@ -1,10 +1,10 @@
 /* PickleUp V3.5 — small offline shell + on-demand cache for visited pages.
    Page-specific JS/CSS is cached only when the user opens that page. */
-const CACHE="pickleup-shell-v3-8-upgrade";
+const CACHE="pickleup-shell-v3-9-stable";
 const SHELL=[
- "./","./index.html","./responsive.css?v=3.8.0",
- "./modules/page-layout.css?v=3.8.0","./modules/page-catalog.js?v=3.8.0","./modules/page-loader.js?v=3.8.0",
- "./modules/web-vitals.js?v=3.8.0","./modules/page-router.js?v=3.8.0","./mobile-ui.js?v=3.8.0","./modules/pwa-client.js?v=3.8.0",
+ "./","./index.html","./responsive.css?v=3.9.0",
+ "./modules/page-layout.css?v=3.9.0","./modules/page-catalog.js?v=3.9.0","./modules/page-loader.js?v=3.9.0",
+ "./modules/web-vitals.js?v=3.9.0","./modules/page-router.js?v=3.9.0","./mobile-ui.js?v=3.9.0","./modules/pwa-client.js?v=3.9.0",
  "./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png"
 ];
 self.addEventListener("install",event=>{
@@ -29,7 +29,7 @@ self.addEventListener("fetch",event=>{
   );
   return;
  }
- // Cache-first makes returning to a page instant; revalidate assets in background.
+ // Versioned assets are immutable for this release. Never overwrite a cached build\n // with new deployment bytes under the same URL: that could mix UI and JS versions.
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);
   const hit=await cache.match(req);
