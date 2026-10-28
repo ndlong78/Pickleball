@@ -27,6 +27,9 @@ on:
       - "playwright.config.cjs"
       - ".github/workflows/responsive.yml"
   workflow_dispatch:
+concurrency:
+  group: responsive-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   responsive:
     runs-on: ubuntu-latest
@@ -44,10 +47,10 @@ jobs:
           node -e 'if (process.versions.node.split(".")[0] !== "24") process.exit(1)'
       - name: Install test runner
         run: npm install --no-audit --no-fund
-      - name: Install browsers
-        run: npx playwright install --with-deps chromium webkit
       - name: Run JavaScript unit tests
         run: npm run test:unit
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium webkit
       - name: Run iPhone and iPad viewport smoke tests
         run: npm run test:responsive
       - name: Upload V3.8 browser benchmark
