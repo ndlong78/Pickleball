@@ -257,3 +257,12 @@ Bản phát hành chính thức đánh dấu bằng version `3.9.0`. [Xem ghi ch
 PickleUp sử dụng Node.js 24 cho bộ kiểm thử và công cụ phát triển. Workflow `.github/workflows/responsive.yml` dùng `actions/checkout@v5`, `actions/setup-node@v5` và `actions/upload-artifact@v6` (runtime Node 24) thay cho các action nền Node 20 cũ. Thêm kiểm tra phiên bản Node 24 trực tiếp trên CI. `package.json` quy định `engines.node` là `>=24 <25` và `.nvmrc` chứa `24`. Khi phát triển cục bộ có thể chạy `nvm use`, `npm install`, `npm run test:unit` và `npm run test:responsive`.
 
 Việc nâng Node ở CI **không thay đổi JavaScript chạy trực tiếp trên trình duyệt** hoặc dữ liệu PWA. Chỉ xem nâng cấp thành công sau khi CI của commit mới đạt.
+
+## V4.0 Beta – Trải nghiệm học tập có tính liên tục
+
+- Học viện ghi nhớ bài học được chọn gần nhất bằng `pickleup_academy_last_lesson_v4` (localStorage), tự khôi phục khi quay lại hoặc tải lại trang.
+- Thanh tiến độ hiển thị số giáo án đã có kết quả hợp lệ (điểm 0–20) trên tổng 80 bài; không tự nhận là đã thành thạo hoặc đã hoàn thành kỹ thuật.
+- Nút **Tiếp tục bài gần nhất** và **Bài chưa hoàn thành tiếp theo** dùng dữ liệu Học viện hiện có, không làm mất hoặc di chuyển dữ liệu điểm cũ.
+- Giao diện responsive có nút mục tiêu chạm ít nhất 44px; Playwright có test trải nghiệm Học viện ở 390/820/1440px.
+- PWA shell và asset lên `4.0.0-beta.1`, tách cache khỏi V3.9 Stable.
+- Trạng thái: Beta; cần kiểm tra CI trên commit mới và nghiệm thu iPhone/iPad thật trước khi gọi Stable.
