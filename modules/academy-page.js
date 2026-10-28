@@ -25,6 +25,39 @@ function visitLesson(id){
  weeks.value=id;
  show();
 }
+const stepsKey='pickleup_academy_steps_v41';
+let stepRecords={};
+try{const v=JSON.parse(localStorage.getItem(stepsKey)||'{}');if(v&&typeof v==='object'&&!Array.isArray(v))stepRecords=v}catch(_){}
+function drawSteps(x){
+ const list=document.getElementById('academyStepList'),hint=document.getElementById('academyStepsStatus');
+ const steps=[{title:'Khởi động · 10 phút',description:'Di chuyển nhẹ, làm nóng khớp và làm quen bóng.'},...x.drills.map((d,i)=>({title:'Bài '+(i+1)+' · '+d.name+' · '+d.minutes+' phút',description:d.instruction})),{title:'Kiểm tra · 6 phút',description:x.assessment.instruction},{title:'Thả lỏng · 5 phút',description:'Đi bộ nhẹ, giãn cơ thoải mái và bổ sung nước.'}];
+ const stored=Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[];
+ const finished=new Set(stored.filter(n=>Number.isInteger(n)&&n>=0&&n<steps.length));
+ const fragment=document.createDocumentFragment();
+ steps.forEach((step,i)=>{
+  const label=document.createElement('label');label.className='academy-step';
+  const input=document.createElement('input');input.type='checkbox';input.checked=finished.has(i);input.dataset.step=String(i);
+  const copy=document.createElement('span'),title=document.createElement('strong'),desc=document.createElement('span');
+  title.textContent=step.title;desc.textContent=step.description;copy.append(title,desc);label.append(input,copy);fragment.append(label);
+ });
+ list.replaceChildren(fragment);
+ hint.textContent='Đã thực hiện '+finished.size+'/'+steps.length+' bước · Không thay thế điểm kiểm tra 20 lượt.';
+}
+document.getElementById('academyStepList').addEventListener('change',event=>{
+ const input=event.target;if(!input.matches('input[data-step]'))return;
+ const x=get();if(!x)return;
+ const done=new Set(Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[]);
+ const index=Number(input.dataset.step);
+ if(input.checked)done.add(index);else done.delete(index);
+ stepRecords[x.id]=[...done].sort((a,b)=>a-b);
+ try{localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ drawSteps(x);
+});
+document.getElementById('academyResetSteps').addEventListener('click',()=>{
+ const x=get();if(!x)return;
+ delete stepRecords[x.id];try{localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ drawSteps(x);
+});
 let selectedLevel=null;
 const cachedOptions=new Map();
 function choose(){
@@ -47,6 +80,7 @@ function show(){const x=get();if(!x){detail.textContent='Chưa tải được gi
 resumedId=x.id;
 try{localStorage.setItem(selectionKey,x.id)}catch(_){}
 refreshLearning();
+drawSteps(x);
 if(lastDrawnId===x.id){score.value=records[x.id]?.score??x.assessment.target;return}
 lastDrawnId=x.id;
 const court=x.advanced?(window.PICKLEUP_ADVANCED_COURT?window.PICKLEUP_ADVANCED_COURT(x):''):(window.PICKLEUP_COURT?window.PICKLEUP_COURT(x):'');
