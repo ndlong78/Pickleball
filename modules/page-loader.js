@@ -13,9 +13,11 @@ const PAGE_FILES={
  settings:["modules/weekly-practice.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/assessments-and-backup.js","modules/page-performance.js"]
 };
 const PAGE_STYLES={
- matches:["tactical-insights.css"],
+ coach:["advanced.css"],
  court:["training-evaluation.css"],
- progress:["training-evaluation.css"]
+ academy:["advanced.css"],
+ progress:["advanced.css","training-evaluation.css"],
+ matches:["advanced.css","tactical-insights.css"]
 };
 const version=root.PICKLEUP_BUILD||"";
 function assetUrl(file){return "./"+file+(version?"?v="+encodeURIComponent(version):"")}
