@@ -82,3 +82,21 @@ V3.4 đã có 7 trang điều hướng trong một `index.html`, nhưng vẫn t�
 - `advanced.css` không còn được tải trên trang Tổng quan; stylesheet chỉ yêu cầu khi mở HLV cá nhân, Học viện, Tiến bộ hoặc Thi đấu. Nó được tái sử dụng giữa những trang chuyên môn.
 - Vẫn giữ CSS cơ bản và menu cố định để trang đầu không mất cấu trúc khi offline.
 - V3.6 có sáu boot script (thêm công cụ đo Web Vitals); không được diễn giải là giảm số script so với V3.5. Lợi ích là đo đúng hơn và không tải stylesheet nâng cao trên trang Tổng quan.
+
+
+## V3.7 beta – Tách DOM/HTML theo trang
+
+Thay đổi chính: **12 khối giao diện nặng được chuyển từ `index.html` sang sáu file HTML** tại `pages/coach.html`, `court.html`, `academy.html`, `progress.html`, `matches.html` và `settings.html`.
+
+- `index.html` giảm từ khoảng **47,3 nghìn xuống 27,3 nghìn ký tự mã nguồn** (giảm khoảng **42%**), so trên nguồn ngay trước và sau khi tách. Đây là độ dài HTML nguồn, **không phải thời gian tải, điểm Lighthouse hay phần trăm tốc độ tăng**.
+- Trang **Tổng quan** hiển thị trực tiếp từ `index.html` và không cần tải mảnh HTML của trang khác.
+- `modules/page-loader.js` thêm `ensureMarkup(page)`: tải fragment tương ứng trước khi thực thi JS UI, kiểm tra ID theo `page-catalog.js` và gắn vào `#mount-<page>`. Một fragment chỉ được tải/khởi tạo một lần trong mỗi lần mở ứng dụng.
+- Trang HLV, sân, học viện, tiến bộ, thi đấu và dữ liệu chỉ nạp HTML khi được truy cập; Back/Forward và liên kết sâu `#section` chờ fragment sẵn sàng.
+- Các section nhỏ dùng chung (sáu tuần mẫu, đánh giá cơ bản, điểm mẫu, sao lưu và lộ trình) vẫn ở HTML gốc để tránh phá vỡ các module legacy dùng chung DOM.
+- DOM của các trang đã mở **được giữ lại** khi chuyển sang trang khác; không xóa trường nhập, không reset timer. Menu bốn mục vẫn cố định trên PC/iPad/iPhone.
+- File HTML fragment có URL `?v=3.7.0`, được service worker lưu sau lần sử dụng online. Trang chưa truy cập khi đang có mạng có thể chưa hoạt động offline.
+- Trang Dữ liệu hiển thị kích thước HTML mới được lấy và thời gian tải module. Kết quả đo là dữ liệu của thiết bị, không gửi lên máy chủ.
+
+**Kiểm thử được thêm:** `tests/page-fragments.test.js` kiểm tra ID duy nhất và đúng nguồn; `tests/page-loader.test.js` kiểm tra thứ tự hydrate → chạy JS và tái sử dụng file; `tests/page-fragments.spec.cjs` mô phỏng iPhone, iPad dọc/ngang, PC với luồng deep link/Back/giữ trạng thái. CI cần chạy để xác nhận trên Chromium/WebKit.
+
+**Bước kế tiếp:** chạy Lighthouse trên thiết bị thực, đo trước/sau với cold/warm cache rồi quyết định có nên tách tiếp CSS/điều khiển dữ liệu dùng chung. Không so sánh số liệu chỉ từ mô phỏng với người dùng thật.
