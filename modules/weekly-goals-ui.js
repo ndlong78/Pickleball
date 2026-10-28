@@ -43,7 +43,7 @@ byId("wgSave").addEventListener("click",()=>{
  try{
   core.saveSettings(localStorage,{days:Number(days.value),level:level.value});
   byId("wgStatus").textContent="Đã lưu mục tiêu trên thiết bị này.";
-  redraw();
+  redraw();document.dispatchEvent(new Event("pickleup:weekly-goal-saved"));
  }catch(_){byId("wgStatus").textContent="Không lưu được. Kiểm tra quyền lưu trữ và chọn 1–5 ngày mỗi tuần."}
 });
 byId("wgOpen").addEventListener("click",()=>{

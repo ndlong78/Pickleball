@@ -140,3 +140,13 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .wg-next{border-top:1px solid #d5e4d8;margin-top:16px;padding-top:12px}.wg-next h3{margin:5px 0}.wg-next a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}.wg-next a[hidden]{display:none}
 @media(max-width:720px){.wg-panel{padding:13px}.wg-controls{grid-template-columns:1fr 1fr}.wg-controls button{grid-column:1/-1}.wg-kpis>div{padding:10px}.wg-kpis span{font-size:.7rem}}
 @media(max-width:420px){.wg-controls{grid-template-columns:1fr}.wg-controls button{grid-column:auto}.wg-kpis{gap:6px}.wg-kpis strong{font-size:1.04rem}}
+
+/* PickleUp V4.7: weekly planner, usable on iPhone / iPad / desktop. */
+.wp-panel{padding:20px}.wp-settings{display:grid;grid-template-columns:minmax(180px,1fr) minmax(210px,1fr) auto;gap:14px;align-items:end}
+.wp-settings label:not(.wp-toggle){display:grid;gap:8px;font-weight:650;font-size:13px}.wp-settings select{min-height:44px;border:1px solid #c4d8c7;border-radius:10px;padding:8px;background:#fff;color:#17382f}
+.wp-settings button{min-height:44px}.wp-toggle{min-height:44px;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:650}.wp-toggle input{width:18px;height:18px;accent-color:#498e58}
+.wp-summary{font-weight:700;line-height:1.7}.wp-days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.wp-day{border:1px solid #cee0cf;background:#f7fbf4;border-radius:14px;padding:16px;min-width:0}.wp-day h3{font-size:15px;margin:0 0 10px}.wp-day p{line-height:1.65;font-size:12px}.wp-rest{background:#f4f6f4;border-style:dashed}
+.wp-duration{display:block;margin:9px 0;color:#234e3e}.wp-reason{color:#294b3e}.wp-blocks{background:#e9f4e5;border-radius:9px;padding:9px}.wp-day a{display:inline-flex;align-items:center;min-height:44px;color:#225a3c;font-weight:700;font-size:13px;text-decoration:underline}.wp-recorded{display:inline-block;font-size:11px;color:#22643b;background:#e0f3e1;border-radius:16px;padding:5px 9px}
+@media(max-width:780px){.wp-settings{grid-template-columns:1fr 1fr}.wp-settings button{grid-column:1/-1}.wp-days{grid-template-columns:1fr}}
+@media(max-width:460px){.wp-panel{padding:14px}.wp-settings{grid-template-columns:1fr}.wp-settings button{grid-column:auto}.wp-day{padding:13px}}
