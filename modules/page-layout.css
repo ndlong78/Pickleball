@@ -103,3 +103,21 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 
 /* V4.4: plainly labeled history-based trend, no misleading ranking badge. */
 #academyTrendText{margin:10px 0 0;padding-top:10px;border-top:1px solid #d5e5d1;line-height:1.55}
+
+/* V4.5 — readable touch-friendly skill history dashboard. */
+.ai-panel{padding:18px}.ai-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ai-filters label{display:flex;flex-direction:column;gap:6px;font-weight:650}
+.ai-filters select{min-height:46px;max-width:100%;width:100%;padding:8px;border:1px solid #b8cab9;border-radius:9px;background:#fff;color:#17382f}
+.ai-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.ai-metrics>div{display:flex;flex-direction:column;gap:5px;padding:13px;background:#f2f6f0;border-radius:10px;min-width:0}
+.ai-metrics strong{font-size:clamp(1rem,2.5vw,1.45rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ai-metrics span{font-size:.8rem;color:#47675c}
+.ai-chart-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;padding:12px 3px;border-bottom:1px solid #d2e0d0}
+.ai-plot{list-style:none;display:flex;align-items:end;gap:12px;min-width:max-content;height:210px;padding:10px 2px 0;margin:0}
+.ai-column{width:65px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px}
+.ai-column-value{font-size:.78rem;font-variant-numeric:tabular-nums}
+.ai-column-bar{width:36px;min-height:2px;background:#367d63;border-radius:7px 7px 0 0;max-height:155px;flex-shrink:0}
+.ai-column-label{font-size:.76rem;color:#355449}
+.ai-recommend{margin-top:14px;background:#f4f8f3;border-radius:12px;padding:14px;line-height:1.6}
+.ai-recommend p{margin:9px 0}.ai-recommend a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+@media(max-width:600px){.ai-panel{padding:13px}.ai-filters{grid-template-columns:1fr}.ai-metrics{gap:6px}.ai-metrics>div{padding:9px}.ai-metrics strong{font-size:1rem}.ai-metrics span{font-size:.72rem}}
