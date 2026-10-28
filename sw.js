@@ -29,15 +29,18 @@ self.addEventListener("fetch",event=>{
   );
   return;
  }
- // Versioned assets are immutable for this release. Never overwrite a cached build\n // with new deployment bytes under the same URL: that could mix UI and JS versions.
+ // Static same-origin assets are cached once per release. Versioned URLs
+ // prevent mixed releases, and visited feature pages remain available offline.
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);
-  const hit=await cache.match(req);
-  const refresh=fetch(req).then(response=>{
-   if(response.ok) return cache.put(req,response.clone()).then(()=>response);
+  const cached=await cache.match(req);
+  if(cached)return cached;
+  try{
+   const response=await fetch(req);
+   if(response.ok)await cache.put(req,response.clone());
    return response;
-  });
-  if(hit){event.waitUntil(refresh.catch(()=>{}));return hit}
-  try{return await refresh}catch(_){return Response.error()}
+  }catch(_){
+   return Response.error();
+  }
  })());
 });
