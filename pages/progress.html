@@ -27,6 +27,17 @@
  <div class="wg-next"><h3>Đề xuất bài tập tiếp theo</h3><p id="wgRecommendation" class="sub">Đang đọc lịch sử…</p><a href="?page=academy" id="wgOpen">Mở giáo án</a></div>
  <p class="sub">Biểu đồ là số ngày có dữ liệu đã lưu, không xác minh thời lượng tập, thể lực hay mức độ kỹ năng. Không tự chuyển cấp độ hoặc xếp hạng DUPR. Mục tiêu phù hợp hơn khi duy trì đều và dành thời gian phục hồi.</p>
 </div></section>
+<section class="section" id="weeklyPlanner" data-pickleup-page="progress" aria-labelledby="wpHeading">
+<div class="sectionHead"><div><div class="kicker">PickleUp V4.7 · Smart Weekly Plan</div><h2 id="wpHeading">Lịch tập đề xuất trong tuần</h2><p class="sub">Dựa trên mục tiêu V4.6 và kết quả của từng giáo án. Có ngày hồi phục, không tự đánh dấu buổi tập hoàn thành.</p></div><button type="button" id="wpRefresh" class="linkbtn">Làm mới</button></div>
+<div class="card wp-panel">
+<div class="wp-settings"><label for="wpMinutes">Thời lượng dự kiến mỗi ngày tập<select id="wpMinutes"><option value="20">20 phút</option><option value="30">30 phút</option><option value="45">45 phút</option><option value="60">60 phút</option></select></label>
+<label class="wp-toggle" for="wpGentle"><input id="wpGentle" type="checkbox"><span>Tuần nhẹ hơn (giới hạn 30 phút mỗi ngày)</span></label>
+<button id="wpSave" type="button" class="primary">Lưu lịch tập</button></div>
+<p id="wpStatus" class="sub" role="status" aria-live="polite"></p>
+<p id="wpSummary" class="wp-summary" role="status">Đang tạo lịch…</p><p id="wpCaution" class="sub"></p>
+<div id="wpDays" class="wp-days" aria-label="Lịch tập từ thứ Hai đến Chủ nhật"></div>
+<p class="sub">Gợi ý dựa trên kết quả luyện tập cá nhân, không phải chẩn đoán thể lực. Bài 20–45 phút là phiên tập rút gọn, không tương đương giáo án đầy đủ 60 phút; nên so sánh điểm khi cùng điều kiện đánh giá. Nếu đau hoặc mệt kéo dài, hãy nghỉ và tham khảo ý kiến chuyên gia y tế.</p>
+</div></section>
 <section class="section" id="academyInsights" data-pickleup-page="progress" aria-labelledby="aiHeading">
 <div class="sectionHead"><div><div class="kicker">PickleUp V4.5 · Skill Insights</div><h2 id="aiHeading">Tiến bộ theo từng kỹ năng</h2><p class="sub">Lọc cấp độ, kỹ năng và giáo án. Lượt kiểm tra tổng là trong kỹ năng đã chọn; biểu đồ và xu hướng chỉ dựa trên <b>cùng giáo án</b>.</p></div><button type="button" id="aiRefresh" class="linkbtn">Làm mới</button></div>
 <div class="card ai-panel"><div class="ai-filters"><label for="aiLevel">Cấp độ <select id="aiLevel"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option><option>3.0–3.5</option><option>3.5–4.0</option></select></label><label for="aiSkill">Kỹ năng <select id="aiSkill"></select></label></div>

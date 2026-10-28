@@ -448,3 +448,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Giữ nguyên dữ liệu V4.5 và tích hợp backup/restore tương thích ngược (optional weeklyGoal).
 - [x] Unit & Playwright test bổ sung, Node.js 24, PWA version 4.6.
 - [ ] Kiểm thử PWA offline và tương tác trên thiết bị iPhone/iPad thực, xác nhận bài tập với HLV.
+
+## V4.7.0 — Smart Weekly Plan (28/10/2026)
+
+- [x] Phân bổ 1–5 buổi gợi ý trong tuần theo lịch Thứ Hai–Chủ nhật; có ít nhất hai ngày nghỉ với mục tiêu tối đa.
+- [x] Bài ưu tiên theo lịch sử cùng giáo án, xen kỹ năng khi có lựa chọn; xem/tiếp tục bài qua Học viện.
+- [x] Tùy chọn thời lượng 20/30/45/60 phút và tuần nhẹ, tự động tính phần khởi động/kỹ thuật/kiểm tra/thả lỏng.
+- [x] Lưu dữ liệu độc lập V4.7 và sao lưu/khôi phục optional, không ghi đè V4.6.
+- [x] Thêm unit & browser regressions, nâng PWA cache và Node.js 24 CI.
+- [ ] Thử trên sân và kiểm tra PWA thực tế iPhone/iPad (đặc biệt offline và khôi phục).

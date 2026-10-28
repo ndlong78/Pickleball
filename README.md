@@ -274,3 +274,7 @@ Việc nâng Node ở CI **không thay đổi JavaScript chạy trực tiếp tr
 ## V4.6.0 — Mục tiêu tuần và nhịp tập 8 tuần
 
 Trang **Tiến bộ → Mục tiêu và nhịp tập 8 tuần** cho phép đặt 1–5 ngày/tuần và chọn cấp độ để được gợi ý giáo án. Mỗi ngày có ít nhất một kết quả Học viện hoặc nhật ký bài tập hợp lệ được tính một lần, kể cả lưu nhiều lượt trong cùng ngày. Biểu đồ 8 tuần dùng lịch Thứ Hai–Chủ nhật theo ngày địa phương; không kết luận người chơi đã hoàn thành buổi tập 60 phút. Lịch sử Học viện V4.4 có ưu tiên hơn một điểm latest cũ để không đếm trùng. Dữ liệu V4.6 được thêm tùy chọn vào file sao lưu V1, tệp cũ vẫn khôi phục được. Gợi ý ưu tiên bài cùng giáo án có điểm giảm từ 3/20, bài dưới mục tiêu riêng của bài, hoặc bài chưa thử. Các kết luận chỉ mang tính hỗ trợ tập luyện, không phải DUPR.
+
+## PickleUp V4.7.0 — Lịch tập thông minh theo tuần
+
+Mở **Tiến bộ → Lịch tập đề xuất trong tuần**. Ứng dụng chia từ 1–5 ngày tập/tuần theo mục tiêu V4.6, xen ngày hồi phục (tối đa 2 ngày tập liên tiếp). Chọn 20/30/45/60 phút hoặc **Tuần nhẹ hơn** (giới hạn 30 phút), sau đó lưu trên thiết bị. Bài ưu tiên được chọn theo kết quả giảm trong cùng bài, chưa đạt mốc riêng, bài chưa tập, rồi bài cần ôn. Mỗi ngày có liên kết đến giáo án đầy đủ tại Học viện. Dữ liệu đã ghi chỉ hiển thị nhãn tham khảo; không tự gán lịch đề xuất thành buổi đã tập. Bản sao lưu có trường `weeklyPlan` tùy chọn, tương thích tệp cũ. Điểm /20 không phải DUPR, các phiên rút gọn không tương đương tự động với bài kiểm tra đủ 60 phút.
