@@ -20,3 +20,7 @@
 2. Kiểm tra tạo giáo án ở HLV cá nhân → chuyển Trên sân → ghi 20 lượt → xem Tiến bộ.
 3. Mở các trang cần dùng offline ít nhất một lần khi còn kết nối.
 4. Nếu ứng dụng vẫn hiện bản cũ, đóng tab/PWA rồi mở lại khi có mạng; tránh xóa dữ liệu trình duyệt vì dữ liệu luyện tập được lưu cục bộ.
+
+## Xác nhận CI Node.js 24 – 28/10/2026
+
+Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/actions/runs/40643096905) ở commit `d28ce9a5e8d` đã **SUCCESS**: xác nhận Node.js 24, cài browser, JavaScript unit test và Playwright responsive đều thành công. Các commit tiếp theo chỉ thay đổi tài liệu cấu hình phát hành; chưa có phép đo iPhone/iPad vật lý. Phiên bản package `3.9.0`, service worker `pickleup-shell-v3-9-stable`.
