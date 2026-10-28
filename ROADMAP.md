@@ -28,6 +28,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.5 beta | Tải JS/CSS theo trang, PWA cache lõi, đo tốc độ tại thiết bị | Đã triển khai; chờ nghiệm thu browser và đo tốc độ |
 | V3.6 beta | Web Vitals cục bộ, đo route và versioned assets chống cache cũ | Đã đưa mã nguồn; cần benchmark và QA iOS |
 | V3.7 beta | Tách HTML theo trang, giảm DOM khởi động, cache fragments | Đã triển khai mã nguồn; còn CI và kiểm thử thiết bị thật |
+| V3.8 beta | Benchmark profile thiết bị, tối ưu render Học viện/Dashboard, PWA migration | Đã triển khai mã nguồn; chờ kết quả CI và thiết bị thật |
 | V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
 | V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
 
@@ -323,3 +324,13 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Đo Lighthouse/TTFB/LCP/CLS/INP và thời gian route trước/sau để có số liệu hiệu năng thực.
 
 **Ưu tiên V3.8:** tối ưu module DOM có chi phí dựng lớn dựa vào số liệu đo thật, kiểm tra tiếp sao lưu và cập nhật PWA.
+
+## V3.8 Beta – Device profile benchmark, render optimization, PWA migration
+
+- [x] Bộ benchmark tự động cho 4 profile màn hình, nhãn giả lập, có artifact JSON.
+- [x] Giảm dựng lại DOM không cần thiết ở Học viện; dashboard cập nhật biểu đồ theo lô.
+- [x] Nâng phiên bản PWA và bổ sung kiểm thử nâng cấp cache từ V3.6/V3.7.
+- [x] Thêm test/CI cho thời gian tải và offline sử dụng trang đã cache.
+- [ ] Xác nhận toàn bộ GitHub Actions chạy thành công trong Chromium/WebKit; sửa nếu phát hiện lỗi.
+- [ ] Chạy benchmark thiết bị vật lý iPhone/iPad/PC và lưu số liệu trước–sau.
+- [ ] Dùng kết quả thực tế để quyết định bước tối ưu tiếp theo (DOM, CSS, hydration).
