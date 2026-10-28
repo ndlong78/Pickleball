@@ -380,3 +380,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Thêm kiểm thử Playwright cho 390px, 820px và 1440px; kiểm tra lưu, khôi phục và reset.
 - [x] Version `4.1.0-beta.1`, cache PWA riêng.
 - [ ] Xác nhận CI V4.1 trên commit mới và nghiệm thu thiết bị thật.
+
+## V4.2 Beta – Chế độ luyện tập tập trung
+
+- [x] Học viện: bật/tắt chế độ hiển thị một bước tại một thời điểm, đọc hướng dẫn và chuyển bước trước/sau.
+- [x] Ghi nhớ bước hiện tại theo từng giáo án với `pickleup_academy_focus_v42`.
+- [x] Đánh dấu hoàn thành từ chế độ tập trung đồng bộ checklist V4.1 mà không sửa điểm đánh giá `/20`.
+- [x] Tối ưu nút chạm cho điện thoại, máy tính bảng và PC; bổ sung bài test responsive V4.2.
+- [x] Phiên bản `4.2.0-beta.1`, service worker cache riêng `pickleup-shell-v4-2-focus`.
+- [ ] Xác nhận CI trên commit đóng gói cuối cùng và kiểm thử thực tế trên điện thoại.
