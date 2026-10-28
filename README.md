@@ -215,3 +215,11 @@ Các tối ưu đi kèm: stylesheet báo cáo chuyên sâu được tải theo t
 **Quan trọng với chế độ offline:** Hãy mở trang cần sử dụng ít nhất một lần khi có Internet để module được lưu vào cache. Không xóa dữ liệu Safari/PWA; các điểm tập và lịch sử cũ giữ nguyên.
 
 Kiểm thử: `npm run test:unit` gồm `page-loader.test.js`, `npm run test:responsive` gồm `page-performance.spec.cjs`. Các kiểm tra browser/thiết bị thật và kết quả tốc độ cần được đo riêng trước khi phát hành ổn định. Chi tiết: [PERFORMANCE.md](PERFORMANCE.md).
+
+## V3.6 Beta – Web Vitals & cập nhật tài nguyên an toàn
+
+Tại trang **Dữ liệu → Tốc độ tải từng trang**, PickleUp đo FCP/LCP/CLS khi trình duyệt cho phép; hiển thị độ trễ tương tác **ước tính**, không phải điểm INP chính thức, và thời gian chuyển giữa các trang SPA. Mọi dữ liệu đo chỉ tồn tại trên thiết bị, không gửi ra ngoài.
+
+Phiên bản **3.6.0** sử dụng URL asset có số phiên bản (`?v=3.6.0`) để giảm tình trạng script cũ trong cache PWA. Người dùng chỉ cần tải lại khi có mạng; không xóa dữ liệu Safari/PWA. Các trang chưa mở online vẫn có thể thiếu module offline.
+
+Bộ kiểm thử mới: `npm run test:unit` gồm `tests/web-vitals.test.js`; giao diện đo route được kiểm tra trong `tests/page-performance.spec.cjs`. Xem [PERFORMANCE.md](PERFORMANCE.md) và [ROADMAP.md](ROADMAP.md) để biết giới hạn đã xác minh và bước đo thiết bị thật.
