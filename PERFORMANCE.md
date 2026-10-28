@@ -51,3 +51,28 @@ V3.4 đã có 7 trang điều hướng trong một `index.html`, nhưng vẫn t�
 - [ ] Xem xét tách HTML theo trang hoặc render module theo nhu cầu ở V3.6 để giảm thêm công parse/layout ban đầu.
 
 **Không coi thời gian hiển thị ở mục Dữ liệu là điểm số tốc độ tổng thể:** số này chỉ đo thời gian hoàn tất tải module cho trang, không phải thời gian vẽ hình hay độ trễ phản hồi thao tác.
+
+## V3.6 beta – Web Vitals và điều hướng đo trên thiết bị
+
+- Bổ sung `modules/web-vitals.js` vào boot. Tổng 6 script lõi, so với 29 script tải sẵn trước V3.5.
+- Dùng `PerformanceObserver` với các API được hỗ trợ để thu thập FCP (First Contentful Paint), LCP (Largest Contentful Paint), CLS (Cumulative Layout Shift), độ trễ tương tác *ước tính* (không phải chỉ số INP chính thức) và số long task.
+- FCP/LCP gắn với lần tải tài liệu ban đầu; đo chuyển trang SPA riêng bằng thời gian từ khi mở route đến khung hình sau khi các module đã sẵn sàng. Không gọi giá trị chuyển trang là LCP.
+- Mục **Dữ liệu → Tốc độ tải từng trang** hiển thị Web Vitals, thời gian chuyển route, số module và tóm tắt tài nguyên cùng nguồn. Dữ liệu chỉ lưu trong bộ nhớ phiên, không truyền lên máy chủ.
+- `index.html` dùng `PICKLEUP_BUILD=3.6.0`; JS/CSS lõi và mọi asset tải theo trang nhận hậu tố `?v=3.6.0`. Điều này tránh tái sử dụng URL cache của phiên bản cũ sau khi cập nhật PWA.
+- Service worker có cache mới `pickleup-shell-v3-6-vitals-versioned` và precache lõi theo URL phiên bản; module theo trang chỉ được cache khi truy cập.
+- Không thay đổi các key dữ liệu PickleUp V1–V3.5 và giữ menu 4 mục cố định.
+
+### Đánh giá hiệu năng đúng cách
+
+1. Trên cùng thiết bị, mở website ở mạng ổn định và làm mới bản mới; mở trang **Dữ liệu** để xem số liệu quan sát.
+2. Đo riêng **cold load** (chưa có cache) và **warm load** (đã có cache), không so trực tiếp giữa các thiết bị khác nhau.
+3. Với mỗi trang, xem thời gian tải module và thời gian chuyển route. LCP chỉ được thu cho trang tải ban đầu, không phải từng route SPA.
+4. Dùng Lighthouse hoặc Chrome DevTools để đánh giá trực tiếp LCP/CLS/INP trên iPhone, iPad, PC khi có điều kiện; không suy diễn điểm từ dữ liệu mô phỏng.
+
+### Chưa nghiệm thu
+
+- [ ] Chạy thành công toàn bộ suite Node/Chromium/WebKit trên GitHub Actions.
+- [ ] Kiểm tra số liệu PerformanceObserver trên Safari iOS, đặc biệt metric không hỗ trợ phải hiển thị dấu gạch ngang.
+- [ ] Đo thời gian cold/warm load trước–sau V3.6; chưa có bằng chứng để công bố % nhanh hơn.
+- [ ] Kiểm tra cập nhật PWA từ V3.5 sang V3.6, dùng offline sau khi đã tải module khi online.
+- [ ] Khi có số liệu, cân nhắc tách phần DOM/HTML chuyên biệt theo trang hoặc nhóm CSS lớn, tránh tối ưu quá mức khi chưa đo.
