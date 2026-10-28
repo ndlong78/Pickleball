@@ -94,3 +94,9 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .academy-timer-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .academy-timer-controls button{min-height:48px;min-width:120px}
 @media(max-width:600px){.academy-timer-controls button{flex:1}}
+
+/* V4.3 recommendation panel */
+.academy-recommend{margin:16px 0;padding:16px;border:1px solid #c7dcc2;background:#f3f8f1}
+.academy-recommend #academyRecommendLesson{margin:12px 0 2px;font-weight:650;line-height:1.5}
+.academy-recommend button{min-height:44px}
+@media(max-width:600px){.academy-recommend button{width:100%}}
