@@ -17,7 +17,7 @@ test("uses defaults for old users and does not manufacture a completed step",()=
 });
 test("existing stage-check evidence is optional and validated",()=>{
  assert.equal(core.build(base).next.code,"assess");
- assert.equal(core.build({...base,stageChecks:[{date:"bad",...stage}]}).hasAssessment,true);
+ assert.equal(core.build({...base,stageChecks:[{...stage,date:"bad"}]}).hasAssessment,false);
  assert.equal(core.build({...base,stageChecks:[stage]}).next.code,"practice");
  const invalid={...stage,values:{serve:200}};
  assert.equal(core.build({...base,stageChecks:[invalid]}).hasAssessment,false);
@@ -29,7 +29,7 @@ test("selected in-level lesson resumes; other-level choice never mismatched",()=
 });
 test("assessment scores and academy results cannot complete a session",()=>{
  const score={score:20,date:"2026-10-29T09:00:00Z"};
- const x=core.build({...base,stageChecks:[stage],records:{"PU-001":score},history:[{id:"PU-001",level:"1.0–2.0",skill:"serve",score:20,date:score.date}]});
+ const x=core.build({...base,stageChecks:[stage],selectedLessonId:"PU-001",records:{"PU-001":score},history:[{id:"PU-001",level:"1.0–2.0",skill:"serve",score:20,date:score.date}]});
  assert.equal(x.doneThisWeek,0);assert.equal(x.todayEntry,null);assert.equal(x.lessonScoreRecorded,true);
 });
 test("only explicit manual check-in transitions next step; no duplicate session credit",()=>{

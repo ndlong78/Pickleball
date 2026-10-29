@@ -108,7 +108,7 @@ test("Court and Matches independently hydrate their forms",async()=>{
 });
 test("manifest has eight pages with seven on-demand HTML files",()=>{
  const l=mock().window.PICKLEUP_PAGE_LOADER;
- assert.deepEqual(Object.keys(l.PAGE_FILES),["home","coach","court","academy","progress","matches","settings"]);
+ assert.deepEqual(Object.keys(l.PAGE_FILES),["home","journey","coach","court","academy","progress","matches","settings"]);
  assert.equal(Object.keys(l.FRAGMENTS).length,7);
  for(const files of Object.values(l.PAGE_FILES))assert.equal(new Set(files).size,files.length);
 });
