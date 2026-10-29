@@ -41,7 +41,7 @@ end $$;
 revoke all on function pickleup_private.entity_spec(text), pickleup_private.payload_ok(jsonb,jsonb) from public, anon, authenticated;
 grant execute on function pickleup_private.entity_spec(text), pickleup_private.payload_ok(jsonb,jsonb) to pickleup_api;
 
-create function public.apply_operation(
+create function pickleup_private.apply_operation(
  p_operation_id uuid, p_kind text, p_entity_key text, p_action text,
  p_expected_revision text, p_payload jsonb default '{}'::jsonb, p_protocol_version integer default 1
 ) returns jsonb language plpgsql security definer set search_path = '' as $$
@@ -153,7 +153,7 @@ begin
  return result;
 end $$;
 
-create function public.pull_changes(p_after_revision text default '0', p_limit integer default 100,
+create function pickleup_private.pull_changes(p_after_revision text default '0', p_limit integer default 100,
  p_high_water text default null, p_epoch uuid default null, p_protocol_version integer default 1)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare uid uuid:=pickleup_private.caller_uid(); head bigint; high_water bigint; after_rev bigint; epoch uuid; rows jsonb; next_rev bigint;
@@ -197,23 +197,27 @@ end $$;
 
 -- Ownership gives these functions only a NOLOGIN/non-BYPASSRLS role's rights.
 -- CREATE is needed solely for ALTER OWNER, then revoked.
-grant create on schema public to pickleup_api;
+grant create on schema public, pickleup_private to pickleup_api;
 -- PG16+ CREATEROLE creators have ADMIN but not necessarily SET membership.
 -- Only the migration actor gets temporary SET, never authenticated/anon.
 do $$ begin
  execute format('grant pickleup_api to %I with inherit false, set true', current_user);
 end $$;
-alter function public.apply_operation(uuid,text,text,text,text,jsonb,integer) owner to pickleup_api;
-alter function public.pull_changes(text,integer,text,uuid,integer) owner to pickleup_api;
+alter function pickleup_private.apply_operation(uuid,text,text,text,text,jsonb,integer) owner to pickleup_api;
+alter function pickleup_private.pull_changes(text,integer,text,uuid,integer) owner to pickleup_api;
 -- ACL changes must execute as the new function owner: Supabase postgres is
 -- not a superuser and this membership deliberately has INHERIT FALSE.
-set local role pickleup_api;
-revoke all on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) from public, anon, authenticated;
-grant execute on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) to authenticated;
+set role pickleup_api;
+revoke all on function pickleup_private.apply_operation(uuid,text,text,text,text,jsonb,integer), pickleup_private.pull_changes(text,integer,text,uuid,integer) from public, anon, authenticated;
+grant execute on function pickleup_private.apply_operation(uuid,text,text,text,text,jsonb,integer), pickleup_private.pull_changes(text,integer,text,uuid,integer) to authenticated;
+-- Publish only after owner/grants are correct. No RPC is exposed with the
+-- migration actor's default EXECUTE privileges during the ownership transition.
+alter function pickleup_private.apply_operation(uuid,text,text,text,text,jsonb,integer) set schema public;
+alter function pickleup_private.pull_changes(text,integer,text,uuid,integer) set schema public;
 reset role;
 do $$ begin
  execute format('grant pickleup_api to %I with inherit false, set false', current_user);
 end $$;
-revoke create on schema public from pickleup_api;
+revoke create on schema public, pickleup_private from pickleup_api;
 
 notify pgrst, 'reload schema';
