@@ -43,6 +43,27 @@
 <div id="wpDays" class="wp-days" aria-label="Lịch tập từ thứ Hai đến Chủ nhật"></div>
 <p class="sub">Gợi ý dựa trên kết quả luyện tập cá nhân, không phải chẩn đoán thể lực. Bài 20–45 phút là phiên tập rút gọn, không tương đương giáo án đầy đủ 60 phút; nên so sánh điểm khi cùng điều kiện đánh giá. Nếu đau hoặc mệt kéo dài, hãy nghỉ và tham khảo ý kiến chuyên gia y tế.</p>
 </div></section>
+<section class="section" id="weeklyReality" data-pickleup-page="progress" aria-labelledby="prHeading">
+<div class="sectionHead"><div><div class="kicker">PickleUp V4.9 · Plan vs Actual</div><h2 id="prHeading">Kế hoạch và thực tế</h2>
+<p class="sub">Dựa trên những ngày bạn đã tự xác nhận tập luyện, không tự cộng lượt ghi điểm vào buổi đã tập.</p></div>
+<button type="button" class="linkbtn" id="prRefresh">Cập nhật</button></div>
+<div class="card pr-panel">
+<div class="pr-kpis">
+<div><strong id="prDone">0/3</strong><span>Ngày xác nhận / mục tiêu tuần</span></div>
+<div><strong id="prOnPlan">0/0</strong><span>Ngày xác nhận đúng lịch đã đến</span></div>
+<div><strong id="prOffPlan">0</strong><span>Ngày đã tập ngoài lịch</span></div>
+<div><strong id="prMinutes">0 phút</strong><span>Thời gian thực tế đã ghi</span></div></div>
+<label class="pr-progress-label" for="prProgress">Số ngày xác nhận so với mục tiêu hiện tại</label>
+<progress id="prProgress" value="0" max="3">0/3</progress>
+<p class="sub" id="prSummary" role="status" aria-live="polite">Chưa có dữ liệu xác nhận.</p>
+<h3>Xu hướng 8 tuần từ nhật ký thực tế</h3>
+<div id="prWeeks" role="region" aria-label="Lịch sử ngày xác nhận tập luyện trong 8 tuần" tabindex="0"></div>
+<p id="prEvidence" class="sub"></p>
+<h3>Gợi ý điều chỉnh an toàn</h3>
+<p id="prAdvice" class="pr-advice" role="status"></p>
+<a href="?page=progress#weeklyGoals" class="pr-edit">Thay đổi mục tiêu tuần</a>
+<p class="sub">Ngày chưa ghi nhận không có nghĩa là bạn đã bỏ tập. Lịch tập trước đây không được lưu theo từng tuần, nên so sánh lịch sử chỉ dùng mục tiêu hiện tại làm mốc tham khảo. Gợi ý không tự thay đổi mục tiêu hoặc yêu cầu tập bù.</p>
+</div></section>
 <section class="section" id="academyInsights" data-pickleup-page="progress" aria-labelledby="aiHeading">
 <div class="sectionHead"><div><div class="kicker">PickleUp V4.5 · Skill Insights</div><h2 id="aiHeading">Tiến bộ theo từng kỹ năng</h2><p class="sub">Lọc cấp độ, kỹ năng và giáo án. Lượt kiểm tra tổng là trong kỹ năng đã chọn; biểu đồ và xu hướng chỉ dựa trên <b>cùng giáo án</b>.</p></div><button type="button" id="aiRefresh" class="linkbtn">Làm mới</button></div>
 <div class="card ai-panel"><div class="ai-filters"><label for="aiLevel">Cấp độ <select id="aiLevel"><option>1.0–2.0</option><option>2.0–2.5</option><option>2.5–3.0</option><option>3.0–3.5</option><option>3.5–4.0</option></select></label><label for="aiSkill">Kỹ năng <select id="aiSkill"></select></label></div>

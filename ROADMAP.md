@@ -466,3 +466,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Backup/restore mở rộng tùy chọn có validation; giữ nguyên dữ liệu V4.6/V4.7.
 - [x] `AGENTS.md` hướng dẫn Codex tuân thủ kiến trúc, Node 24 CI và kiểm soát phát hành.
 - [ ] Kiểm thử thực địa và PWA cài trên iPhone/iPad thật; không suy từ automation.
+
+## V4.9.0 — Plan vs actual, 8-week manual check-in trends (29/10/2026)
+
+- [x] Số ngày xác nhận tập / mục tiêu tuần, khớp với lịch đã đến, ngoài lịch và số phút thực tế.
+- [x] Biểu đồ 8 tuần chỉ dùng trạng thái V4.8 do người dùng xác nhận; ngày chưa ghi nhận không tự coi là bỏ tập.
+- [x] Gợi ý điều chỉnh không tự thay đổi dữ liệu, tối thiểu 3 trong 4 tuần hoàn tất có xác nhận.
+- [x] Gắn nhãn đối chiếu lịch sử với mục tiêu *hiện tại*, không tuyên bố có lịch mục tiêu từng tuần của quá khứ.
+- [x] Thêm logic test và browser test responsive, đồng bộ PWA cache 4.9.0.
+- [ ] QA trên iPhone/iPad thật và kiểm tra PWA đã cài qua nhiều lần nâng cấp.

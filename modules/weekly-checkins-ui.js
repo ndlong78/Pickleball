@@ -40,7 +40,7 @@ cards.addEventListener("click",event=>{
  const minutes=status==="done"?Number(card.querySelector(".wc-label input")?.value):null;
  try{
   const next=c.change(load(),day,status,minutes,card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null);
-  c.save(localStorage,next);
+  c.save(localStorage,next);document.dispatchEvent(new Event("pickleup:week-checkins-updated"));
   $("wcStatus").textContent=status==="clear"?"Đã xóa ghi nhận ngày "+day+".":"Đã lưu ghi nhận ngày "+day+".";
   draw();
  }catch(e){$("wcStatus").textContent=e.message||"Không thể lưu dữ liệu."}
