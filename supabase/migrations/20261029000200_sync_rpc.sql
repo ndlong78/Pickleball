@@ -200,10 +200,14 @@ end $$;
 grant create on schema public to pickleup_api;
 -- PG16+ CREATEROLE creators have ADMIN but not necessarily SET membership.
 -- Only the migration actor gets temporary SET, never authenticated/anon.
-grant pickleup_api to current_user with inherit false, set true;
+do $$ begin
+ execute format('grant pickleup_api to %I with inherit false, set true', current_user);
+end $$;
 alter function public.apply_operation(uuid,text,text,text,text,jsonb,integer) owner to pickleup_api;
 alter function public.pull_changes(text,integer,text,uuid,integer) owner to pickleup_api;
-grant pickleup_api to current_user with inherit false, set false;
+do $$ begin
+ execute format('grant pickleup_api to %I with inherit false, set false', current_user);
+end $$;
 revoke create on schema public from pickleup_api;
 revoke all on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) from public, anon;
 grant execute on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) to authenticated;
