@@ -1,0 +1,61 @@
+name: Backend checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - 'scripts/**'
+      - 'modules/data/**'
+      - 'tests/data-*'
+      - 'tests/sync-*'
+      - 'package.json'
+      - '.github/workflows/backend-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    name: backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Official images on Docker Hub; no cloud project or credentials.
+      SUPABASE_INTERNAL_IMAGE_REGISTRY: docker.io
+    steps:
+      - uses: actions/checkout@v5
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.54.11
+      - name: Start isolated local PostgreSQL, Auth and REST
+        run: |
+          # Capture local server startup errors before CLI cleanup removes a failed container.
+          (
+            until docker inspect supabase_db_pickleup-v6 >/dev/null 2>&1; do sleep 1; done
+            exec docker logs --follow supabase_db_pickleup-v6
+          ) > "$RUNNER_TEMP/pickleup-db-startup.log" 2>&1 &
+          db_log_pid=$!
+          trap 'kill "$db_log_pid" 2>/dev/null || true' EXIT
+          if ! supabase start -x studio,mailpit,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta > /dev/null; then
+            tail -150 "$RUNNER_TEMP/pickleup-db-startup.log"
+            exit 1
+          fi
+      - name: Upgrade schema-only fixture without losing rows or sync bootstrap
+        run: |
+          supabase db reset --local --version 20261029000100
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/upgrade_seed.sql
+          supabase migration up --local
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/upgrade_verify.sql
+      - name: Verify migration reset from empty local DB
+        run: supabase db reset --local
+      - name: pgTAP schema, ownership, constraints and sync tests
+        run: supabase test db
+      - name: Real REST and concurrent transaction tests
+        run: python3 scripts/test_backend.py
+      - name: Clean up local containers
+        if: always()
+        run: supabase stop --no-backup

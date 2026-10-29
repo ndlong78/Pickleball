@@ -29,6 +29,8 @@
 
 ## 2. Data contracts & bảo toàn dữ liệu (không thay đổi tùy tiện)
 
+**PR1a backend local:** [BACKEND_PR1A](BACKEND_PR1A.md) là hợp đồng RPC hiện thực: không direct client DML, definer role hẹp chịu FORCE RLS, CAS/receipts và per-user commit counter. SQL/tests không thay UI/localStorage/PWA. Backend workflow mới bổ sung cho CI hiện hữu; chưa cloud deploy hay Auth UI. Khi thiết kế và SQL khác chi tiết, dùng tài liệu này để phân biệt phần đã hiện thực và phần chờ PR1b–PR6.
+
 | LocalStorage key | Ý nghĩa | Cảnh báo |
 |---|---|---|
 | `pickleup_weekly_goal_v46` | Số ngày/tuần và cấp độ **hiện tại** | Không tự nhận đây là mục tiêu đã lưu của mọi tuần quá khứ |

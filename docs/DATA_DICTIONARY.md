@@ -1,6 +1,6 @@
 # PickleUp V6 — data dictionary và legacy inventory
 
-Đề xuất PR0, chưa phải SQL đang chạy. Baseline `8f99fcb329cbac89b92413929dcdd113fd87790e`, V5.1.0. [Kiến trúc](ARCHITECTURE_V6_DATABASE.md) quyết định quyền ghi/CAS; [runbook](MIGRATION_RUNBOOK.md) quyết định import/rollback.
+Thiết kế PR0; schema/RLS/RPC local của PR1a được mô tả tại [BACKEND_PR1A](BACKEND_PR1A.md), chưa deploy cloud hoặc đổi storage ứng dụng. Baseline legacy `8f99fcb329cbac89b92413929dcdd113fd87790e`, V5.1.0. [Kiến trúc](ARCHITECTURE_V6_DATABASE.md) quyết định quyền ghi/CAS; [runbook](MIGRATION_RUNBOOK.md) quyết định import/rollback. Protocol1 mở write9 domain; legacy snapshots/import manifests/items chỉ có schema, atomic import để PR3. Caps import batch vẫn là thiết kế.
 
 ## 1. Toàn bộ storage keys hiện có
 

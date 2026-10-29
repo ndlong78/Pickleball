@@ -2,6 +2,8 @@
 
 Ngày 29/10/2026. Chủ repository đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản phù hợp giai đoạn đầu. Đây là quyết định được ghi nhận từ hội thoại sau PR0; **chính sách chưa được triển khai**. PR0 #10 đã được merge ở `40c2ad3789dadfe005e43ef8f45a618010ee8689`; phiên bản ứng dụng vẫn5.1.0.
 
+PR1a hiện thực một phần nền tảng schema/RLS/CAS/RPC trong môi trường local/test, xem [BACKEND_PR1A](BACKEND_PR1A.md). Chưa có dịch vụ cloud, email, backup/retention job, xóa account UI hoặc client sync đang vận hành; các target vận hành dưới đây chưa thành SLA.
+
 ## 1. Phạm vi ủy quyền và chi phí
 
 - Codex được chủ động thiết kế, viết code/tests/migrations, mở các PR theo lộ trình V6 và chọn chi tiết kỹ thuật trong các hợp đồng dữ liệu; không cần hỏi lại các lựa chọn đã được giao. Giữ tám route, guest/offline, check-in thủ công, dữ liệu legacy, RLS và không silent overwrite.

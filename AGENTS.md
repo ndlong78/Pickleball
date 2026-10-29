@@ -47,7 +47,7 @@ Trước khi thiết kế/sửa tính năng, đọc **cả ba** tài liệu có 
 6. Chỉ merge khi release gate bắt buộc đạt; verify `main` CI + Pages của **merge SHA**. Nếu CI sau merge flaky, báo rõ chưa đạt “clean run” dù workflow success.
 7. Mỗi release cập nhật README/ROADMAP/release notes, đồng bộ version/PWA cache đúng quy trình. Không tự ý force-push, xóa dữ liệu, lộ secret hoặc thao tác phá hủy/khó đảo ngược; cần phê duyệt cho thay đổi production có rủi ro.
 
-**CI backend V6 (đề xuất cho PR1a, chưa có ở PR0):** thêm migrations/pgTAP RLS/CAS/idempotency trên Supabase local/DB ephemeral, giữ CI Node24 Chromium/WebKit và gate đúng PR HEAD. Không secrets production, không deploy tự động từ PR, không bỏ suite/flaky để xanh. Chi tiết job/acceptance ở migration runbook. Yêu cầu “không tự merge” của nhiệm vụ hiện hành luôn ưu tiên quy trình merge tổng quát ở trên.
+**CI backend V6 (PR1a):** `.github/workflows/backend-checks.yml` bổ sung migrations/pgTAP và REST/concurrency tests trên Supabase local/DB ephemeral; hợp đồng và lệnh tại [`docs/BACKEND_PR1A.md`](docs/BACKEND_PR1A.md). Giữ CI Node24 Chromium/WebKit và gate đúng PR HEAD. Không secrets production, không deploy tự động từ PR, không bỏ suite/flaky để xanh. Phân biệt fallback PostgreSQL/PostgREST + Auth fixture với Supabase local đầy đủ, không gọi fixture là kiểm chứng Auth UI. Yêu cầu “không tự merge” của nhiệm vụ hiện hành luôn ưu tiên quy trình merge tổng quát ở trên.
 
 ## 5. Tự chủ có kiểm soát và báo cáo
 
