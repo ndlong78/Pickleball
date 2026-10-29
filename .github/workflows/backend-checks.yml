@@ -32,7 +32,18 @@ jobs:
         with:
           version: 2.54.11
       - name: Start isolated local PostgreSQL, Auth and REST
-        run: supabase start -x studio,mailpit,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta > /dev/null
+        run: |
+          # Capture local server startup errors before CLI cleanup removes a failed container.
+          (
+            until docker inspect supabase_db_pickleup-v6 >/dev/null 2>&1; do sleep 1; done
+            exec docker logs --follow supabase_db_pickleup-v6
+          ) > "$RUNNER_TEMP/pickleup-db-startup.log" 2>&1 &
+          db_log_pid=$!
+          trap 'kill "$db_log_pid" 2>/dev/null || true' EXIT
+          if ! supabase start -x studio,mailpit,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta > /dev/null; then
+            tail -150 "$RUNNER_TEMP/pickleup-db-startup.log"
+            exit 1
+          fi
       - name: Upgrade schema-only fixture without losing rows or sync bootstrap
         run: |
           supabase db reset --local --version 20261029000100
