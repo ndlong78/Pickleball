@@ -1,0 +1,2 @@
+-- Synthetic fixtures are inserted transactionally by tests, never real user data.
+-- Empty seed makes a fresh/reset local DB private and free of user content.

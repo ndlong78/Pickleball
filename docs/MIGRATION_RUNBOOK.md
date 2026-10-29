@@ -10,6 +10,8 @@ Home còn có export `pickleup-ket-qua.json` shape `{app,exportedAt,records:[{we
 
 ## 2. Chuẩn bị môi trường và gates
 
+**Hiện thực PR1a:** xem [BACKEND_PR1A](BACKEND_PR1A.md) để chạy migrations, upgrade fixture, pgTAP và REST/concurrency tests. Backend CI local đã có trong PR1a; các mục cloud/staging/import/restore dưới đây vẫn là gates tương lai. Không dùng fixture Auth standalone thay Supabase Auth thật khi deploy.
+
 1. Owner duyệt provider/region/budget/auth/staging-only; tạo môi trường staging tách project/SMTP/redirect production. Operator giữ quyền production, Codex không cần production credentials.
 2. PR1a thêm `supabase/config.toml`, migrations versioned, seed giả, pgTAP và backend workflow. Review schema/downgrade/backup trước áp dụng. Chỉ reset DB ephemeral cục bộ; staging deploy có approval riêng trong quy trình owner đã cấp, production không dùng `db reset`.
 3. Mọi migration đi expand → backfill/reconcile → switch read → contract ở PR tương lai. Không drop legacy column/key hay sửa SQL migration đã deploy; lỗi dùng forward fix. Pin Supabase CLI/dependency versions và ghi DB schema/protocol compatibility window (ít nhất client pilot trước đó). Server trả upgrade_required cho client không tương thích, giữ pending export được.

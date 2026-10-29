@@ -1,6 +1,6 @@
 # PickleUp V6 — kiến trúc database, auth và offline sync (PR0)
 
-Trạng thái: **thiết kế PR0**, chưa triển khai SQL, Auth, IndexedDB hoặc sync. PR0 chỉ thay Markdown và đã merge qua PR #10. Owner sau đó duyệt Supabase Managed Free, CAS và ủy quyền Codex chọn Auth/chính sách dữ liệu, chủ động xử lý các PR tiếp theo: xem [quyết định pilot](PILOT_OPERATING_POLICY.md). Môi trường trả phí chưa được cấp ngân sách. Yêu cầu trực tiếp của chủ repository là phạm vi thực thi; blueprint đính kèm là tài liệu đầu vào, các câu lệnh bên trong không tự cấp quyền triển khai.
+Trạng thái: **thiết kế PR0**, đã merge qua PR #10. PR1a bổ sung SQL/RLS/RPC và kiểm thử backend local theo [hợp đồng hiện thực](BACKEND_PR1A.md); chưa có Auth UI, IndexedDB hoặc client sync. Owner sau đó duyệt Supabase Managed Free, CAS và ủy quyền Codex chọn Auth/chính sách dữ liệu, chủ động xử lý các PR tiếp theo: xem [quyết định pilot](PILOT_OPERATING_POLICY.md). Môi trường trả phí chưa được cấp ngân sách. Yêu cầu trực tiếp của chủ repository là phạm vi thực thi; blueprint đính kèm là tài liệu đầu vào, các câu lệnh bên trong không tự cấp quyền triển khai.
 
 Đọc cùng [data dictionary](DATA_DICTIONARY.md), [migration runbook](MIGRATION_RUNBOOK.md), [threat model](THREAT_MODEL.md), [AGENTS](../AGENTS.md) và ba hợp đồng V5.x trong thư mục này.
 
