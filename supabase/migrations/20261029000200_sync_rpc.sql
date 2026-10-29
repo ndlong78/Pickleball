@@ -205,11 +205,15 @@ do $$ begin
 end $$;
 alter function public.apply_operation(uuid,text,text,text,text,jsonb,integer) owner to pickleup_api;
 alter function public.pull_changes(text,integer,text,uuid,integer) owner to pickleup_api;
+-- ACL changes must execute as the new function owner: Supabase postgres is
+-- not a superuser and this membership deliberately has INHERIT FALSE.
+set local role pickleup_api;
+revoke all on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) from public, anon, authenticated;
+grant execute on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) to authenticated;
+reset role;
 do $$ begin
  execute format('grant pickleup_api to %I with inherit false, set false', current_user);
 end $$;
 revoke create on schema public from pickleup_api;
-revoke all on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) from public, anon;
-grant execute on function public.apply_operation(uuid,text,text,text,text,jsonb,integer), public.pull_changes(text,integer,text,uuid,integer) to authenticated;
 
 notify pgrst, 'reload schema';

@@ -2,6 +2,11 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions, pg_temp;
 select extensions.no_plan();
+-- Admin test actor temporarily SETs the NOLOGIN role for independent constraint
+-- tests. This GRANT is rolled back; authenticated/anon never become members.
+do $$ begin
+ execute format('grant pickleup_api to %I with inherit false, set true', current_user);
+end $$;
 insert into auth.users(id,email) values
  ('11111111-1111-4111-8111-111111111111','a@pickleup.invalid'),
  ('22222222-2222-4222-8222-222222222222','b@pickleup.invalid');
