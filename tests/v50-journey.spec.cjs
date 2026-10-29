@@ -78,3 +78,23 @@ for(const width of [390,820,1180,1440]){
   });
  });
 }
+
+test("V5.1 confirmed summary survives cached offline reload without new data keys",async({page,context})=>{
+ await page.goto("/?page=journey");
+ await expect(page.locator("#jGoalState")).toContainText("mặc định");
+ await page.locator("#jTodayMinutes").fill("30");
+ await page.locator("#jDone").click();
+ await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
+ await page.evaluate(()=>navigator.serviceWorker.ready);
+ await expect.poll(()=>page.evaluate(async()=>{
+  const files=["pages/journey.html","modules/training-journey-ui.js","modules/training-journey-core.js"];
+  return (await Promise.all(files.map(f=>caches.match(new URL(f+"?v="+window.PICKLEUP_BUILD,location.href).href)))).every(Boolean);
+ })).toBe(true);
+ const before=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()));
+ await context.setOffline(true);
+ try{
+  await page.reload();
+  await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
+  expect(await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()))).toBe(before);
+ }finally{await context.setOffline(false)}
+});
