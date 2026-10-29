@@ -3,6 +3,7 @@
 "use strict";
 const pages=[
  {id:"home",title:"Tổng quan",icon:"🏠",description:"Bắt đầu tập luyện, xem chương trình tuần và đi tới các chức năng chính.",sections:["homeHero","homeShortcuts","homeStats","homeWeeks"]},
+ {id:"journey",title:"Hành trình",icon:"🧭",description:"Từ đánh giá, lập lịch và tập luyện đến xác nhận thực tế, xem tiến bộ và chọn buổi tiếp theo.",sections:["journeyFlow"]},
  {id:"coach",title:"HLV cá nhân",icon:"🎯",description:"Đánh giá kỹ năng và tạo giáo án cá nhân hóa từ cơ bản tới nâng cao.",sections:["selfAssessment","personalCoach","advancedCoach","advancedReadiness"]},
  {id:"court",title:"Trên sân",icon:"⏱",description:"Tập theo giáo án 60 phút, đồng hồ, sơ đồ sân và ghi kết quả.",sections:["pcOnCourt","practice"]},
  {id:"academy",title:"Học viện",icon:"📚",description:"80 giáo án, lộ trình từ 1.0 tới 5.0 và kỹ thuật theo cấp độ.",sections:["academy","levelRoadmap"]},

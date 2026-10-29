@@ -10,7 +10,7 @@ function mock(version=""){
  const scripts=[],styles=[],fetches=[],preloads=new Set(),nodes=new Map();
  const status={hidden:true,textContent:""};
  const mounts=new Map();
- for(const page of ["coach","court","academy","progress","matches","settings"]){
+ for(const page of ["journey","coach","court","academy","progress","matches","settings"]){
   mounts.set(page,{parts:[],replaceChildren(content){
    this.parts=content.sections.map(s=>{const e={setAttribute(){},removeAttribute(){}};nodes.set(s.id,e);return e});
   },querySelectorAll(){return this.parts}});
@@ -106,9 +106,9 @@ test("Court and Matches independently hydrate their forms",async()=>{
  assert.ok(x.nodes.has("matchJournal"));assert.ok(x.nodes.has("tacticalReport"));
  assert.equal(x.fetches.length,2);
 });
-test("manifest has seven pages with six on-demand HTML files",()=>{
+test("manifest has eight pages with seven on-demand HTML files",()=>{
  const l=mock().window.PICKLEUP_PAGE_LOADER;
  assert.deepEqual(Object.keys(l.PAGE_FILES),["home","coach","court","academy","progress","matches","settings"]);
- assert.equal(Object.keys(l.FRAGMENTS).length,6);
+ assert.equal(Object.keys(l.FRAGMENTS).length,7);
  for(const files of Object.values(l.PAGE_FILES))assert.equal(new Set(files).size,files.length);
 });

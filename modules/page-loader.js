@@ -5,6 +5,7 @@
 "use strict";
 const PAGE_FILES={
  home:["modules/weekly-practice.js"],
+ journey:["curriculum.js","modules/academy-trends-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","training-log-core.js","modules/training-journey-core.js","modules/training-journey-ui.js"],
  coach:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
  court:["modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","personalized-core.js","practice-conditions.js","training-log-core.js","practice-clock.js","practice-diagrams.js","advanced-diagrams.js","advanced-coach-core.js","practice-runner.js"],
  academy:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/academy-page.js"],
@@ -19,7 +20,7 @@ const PAGE_STYLES={
  progress:["advanced.css","training-evaluation.css"],
  matches:["advanced.css","tactical-insights.css"]
 };
-const FRAGMENTS={coach:"pages/coach.html",court:"pages/court.html",academy:"pages/academy.html",progress:"pages/progress.html",matches:"pages/matches.html",settings:"pages/settings.html"};
+const FRAGMENTS={journey:"pages/journey.html",coach:"pages/coach.html",court:"pages/court.html",academy:"pages/academy.html",progress:"pages/progress.html",matches:"pages/matches.html",settings:"pages/settings.html"};
 const fragmentPromises=new Map();
 const mountedFragments=new Set();
 function ensureMarkup(page){

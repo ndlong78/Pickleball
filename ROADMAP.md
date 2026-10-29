@@ -475,3 +475,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Gắn nhãn đối chiếu lịch sử với mục tiêu *hiện tại*, không tuyên bố có lịch mục tiêu từng tuần của quá khứ.
 - [x] Thêm logic test và browser test responsive, đồng bộ PWA cache 4.9.0.
 - [ ] QA trên iPhone/iPad thật và kiểm tra PWA đã cài qua nhiều lần nâng cấp.
+
+## V5.0.0 — Unified training journey (29/10/2026)
+
+- [x] Trang Hành trình độc lập, lazy-loaded, điều hướng trên PC, iPad, iPhone, URL sâu.
+- [x] Sáu bước liên kết đánh giá, mục tiêu, Học viện, đồng hồ, xác nhận thực tế và báo cáo.
+- [x] Chọn/tiếp tục giáo án từ dữ liệu đã lưu; phân biệt đồng hồ Học viện với chế độ trên sân có giáo án cá nhân.
+- [x] Xác nhận, bỏ qua, xóa buổi tập ngày hôm nay dùng khóa V4.8; không tự cộng điểm /20 thành buổi đã tập.
+- [x] Bảo toàn lịch sử và backup; nâng PWA 5.0.0, bổ sung Node 24 + WebKit/Chromium tests.
+- [ ] Nghiệm thu offline PWA trên iPhone/iPad thực và kỹ thuật tập luyện ngoài sân.

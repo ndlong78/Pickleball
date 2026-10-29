@@ -4,14 +4,14 @@ const code=fs.readFileSync(path.resolve(__dirname,"../modules/page-router.js"),"
 const catalog=fs.readFileSync(path.resolve(__dirname,"../modules/page-catalog.js"),"utf8");
 function create(urlString){
  const nodes=new Map(),links=[],all=[],listeners=new Map();
- const sectionIds=["homeHero","homeShortcuts","homeStats","homeWeeks","personalCoach","advancedCoach","advancedReadiness","selfAssessment","pcOnCourt","practice","trainingHistory","dashboard","trainingEvaluation","stageAssessment","activityHistory","academy","levelRoadmap","matchJournal","tacticalReport","backup"];
+ const sectionIds=["homeHero","homeShortcuts","homeStats","homeWeeks","journeyFlow","personalCoach","advancedCoach","advancedReadiness","selfAssessment","pcOnCourt","practice","trainingHistory","dashboard","trainingEvaluation","stageAssessment","activityHistory","academy","levelRoadmap","matchJournal","tacticalReport","backup"];
  for(const id of sectionIds){
-  const data=new Map([["data-pickleup-page",id.startsWith("home")?"home":id==="personalCoach"||id==="advancedCoach"||id==="advancedReadiness"||id==="selfAssessment"?"coach":id==="pcOnCourt"||id==="practice"?"court":id==="academy"||id==="levelRoadmap"?"academy":id==="matchJournal"||id==="tacticalReport"?"matches":id==="backup"?"settings":"progress"]]);
+  const data=new Map([["data-pickleup-page",id.startsWith("home")?"home":id==="journeyFlow"?"journey":id==="personalCoach"||id==="advancedCoach"||id==="advancedReadiness"||id==="selfAssessment"?"coach":id==="pcOnCourt"||id==="practice"?"court":id==="academy"||id==="levelRoadmap"?"academy":id==="matchJournal"||id==="tacticalReport"?"matches":id==="backup"?"settings":"progress"]]);
   const el={id,attrs:data,top:0,getAttribute(k){return this.attrs.get(k)||null},setAttribute(k,v){this.attrs.set(k,v)},removeAttribute(k){this.attrs.delete(k)},getBoundingClientRect(){return{top:this.top}}};
   nodes.set(id,el);all.push(el);
  }
  for(const id of ["pageHeading","pageDescription","pageKicker"])nodes.set(id,{textContent:""});
- const pages=["home","coach","court","academy","progress","matches","settings"];
+ const pages=["home","journey","coach","court","academy","progress","matches","settings"];
  for(const id of pages){
   const attr=new Map();
   links.push({dataset:{route:id},getAttribute(){return"?page="+id},setAttribute(k,v){attr.set(k,v)},removeAttribute(k){attr.delete(k)},get current(){return attr.get("aria-current")}});
@@ -54,7 +54,7 @@ test("legacy hash anchors canonicalize to a shareable query page",()=>{
  assert.match(app.win.location.href,/page=matches#matchJournal/);
  assert.ok(app.nodes.get("matchJournal").attrs.has("data-page-current"));
 });
-test("all seven pages resolve a top-level URL",()=>{
+test("all eight pages resolve a top-level URL",()=>{
  for(const page of ["home","coach","court","academy","progress","matches","settings"]){
   const app=create("https://example.org/Pickleball/?page="+page);
   assert.equal(app.win.PICKLEUP_ROUTER.getPage(),page);

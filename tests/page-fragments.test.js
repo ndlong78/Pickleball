@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,"..");
 const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
 global.window=globalThis;require("../modules/page-catalog.js");
 const pages=window.PICKLEUP_PAGES;
-const fragments=["coach","court","academy","progress","matches","settings"];
+const fragments=["journey","coach","court","academy","progress","matches","settings"];
 const ids=source=>[...source.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
 test("initial HTML remains small and contains the fixed bottom navigation",()=>{
  assert.ok(Buffer.byteLength(html,"utf8")<37000,"initial HTML too large");

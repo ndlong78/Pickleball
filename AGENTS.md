@@ -6,7 +6,7 @@ Prioritize (1) correctness and local data safety, (2) mobile-first UX and access
 
 ## Architecture contracts
 - Static HTML/CSS/browser JavaScript; no backend or account service. Do not rewrite the app or add a framework/cloud sync without authorization.
-- `index.html` is the small shell. `modules/page-catalog.js`, `modules/page-router.js`, `modules/page-loader.js` manage seven virtual pages and lazy-loaded `pages/*.html` fragments.
+- `index.html` is the small shell. `modules/page-catalog.js`, `modules/page-router.js`, `modules/page-loader.js` manage eight virtual pages and lazy-loaded `pages/*.html` fragments.
 - Pure business logic belongs in `modules/*-core.js`; DOM and listeners in `modules/*-ui.js`.
 - `sw.js` caches the shell and visited assets by release version. Offline migration must preserve localStorage.
 - `tests/`: Node.js built-in test runner and Chromium/WebKit Playwright. CI uses **Node.js 24**.
