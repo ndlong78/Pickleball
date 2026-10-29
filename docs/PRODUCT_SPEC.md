@@ -31,6 +31,7 @@ Hành trình gồm **sáu bước liên kết**:
 
 1. **Đánh giá:** mở `coach#selfAssessment`. Nếu có bài đánh giá sáu kỹ năng hợp lệ thì hiển thị mốc đã có; nếu thiếu, đề nghị đánh giá nhưng vẫn cho phép học/tập. Không gán cấp độ thi đấu.
 2. **Mục tiêu & lịch tập:** đọc mục tiêu tuần (1–5 ngày, cấp độ hợp lệ), độ dài 20/30/45/60 phút và chế độ nhẹ; hiển thị ngày tập/ngày nghỉ. Lịch là **đề xuất**, không phải attendance. Không tự ghi lại kế hoạch quá khứ khi cấu hình hiện tại thay đổi.
+   Điều khiển mục tiêu tuần chỉ được bật sau khi đọc mục tiêu đã lưu và gắn xử lý lưu; lựa chọn mới phải giữ nguyên sau reload, kể cả khi module tải chậm.
 3. **Bài học:** ưu tiên bài người dùng đã chọn trong Học viện **cùng cấp độ hiện tại**, tiếp đến bài theo lịch tương lai và thuật toán gợi ý; không mở sai cấp độ. Bảo toàn lựa chọn bài gần đây khi quay lại.
 4. **Thực hành:** từ Học viện dùng đồng hồ **theo từng bước Học viện**; nếu muốn dùng đồng hồ **Trên sân**, phải có giáo án cá nhân tương thích đã tạo/chọn, nếu không dẫn đến HLV để tạo. Có hướng dẫn khởi động–kỹ thuật–kiểm tra–thả lỏng, chú ý ngắt nghỉ.
 5. **Check-in thủ công:** người dùng chủ động chọn `done` (nhập phút thực tế từ 5 đến 180), `skipped` hoặc xóa bản ghi của **ngày địa phương hiện tại**. Dữ liệu ghi vào khóa V4.8 hiện có. Mở lesson, chạy timer, lưu điểm /20 **không** tự tạo `done`. Một ngày có một trạng thái hiện hành; sửa trạng thái thì thống kê phải cập nhật.
