@@ -11,9 +11,12 @@ do $$ begin
   raise exception 'pickleup_api must not inherit other roles';
  end if;
 end $$;
-grant usage on schema public, auth, pickleup_private to pickleup_api;
-grant execute on function auth.uid() to pickleup_api;
+grant usage on schema public, pickleup_private to pickleup_api;
 alter default privileges in schema pickleup_private revoke execute on functions from public;
+-- SQL-standard body binds Supabase auth.uid OID at creation. The RPC role
+-- needs no name-lookup grant on the Supabase-managed Auth schema.
+create function pickleup_private.caller_uid() returns uuid
+ language sql stable return auth.uid();
 
 create function pickleup_private.keys_ok(j jsonb, allowed text[], required text[] default '{}')
 returns boolean language sql immutable set search_path = '' as $$

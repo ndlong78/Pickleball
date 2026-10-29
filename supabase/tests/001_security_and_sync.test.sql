@@ -114,6 +114,7 @@ select extensions.ok(not has_table_privilege('pickleup_api','pickleup_private.sy
 select extensions.ok(not has_table_privilege('pickleup_api','pickleup_private.sync_changes','UPDATE,DELETE'),'change log append-only even for RPC role');
 select extensions.ok(not pg_has_role('authenticated','pickleup_api','MEMBER'),'client is not member of definer role');
 select extensions.ok((select p.prosecdef and p.proowner='pickleup_api'::regrole and p.proconfig @> array['search_path=""'] from pg_proc p where p.oid='public.apply_operation(uuid,text,text,text,text,jsonb,integer)'::regprocedure),'writer has narrow owner and empty search_path');
+select extensions.ok((select not prosecdef and prosqlbody is not null from pg_proc where oid='pickleup_private.caller_uid()'::regprocedure),'identity helper binds auth.uid without privileged definer');
 select extensions.ok(not has_function_privilege('anon','public.apply_operation(uuid,text,text,text,text,jsonb,integer)','EXECUTE'),'anon RPC denied');
 select extensions.ok(not has_function_privilege('anon','public.pull_changes(text,integer,text,uuid,integer)','EXECUTE'),'anon pull denied');
 set local role authenticated;
