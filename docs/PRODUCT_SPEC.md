@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Status:** mô tả chức năng hiện có ở `main` V5.0.0 và nguyên tắc phát triển tiếp theo. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+**Status:** mô tả chức năng V5.x, baseline main V5.1.0 tại `8f99fcb` đã merge PR #9 và Pages deploy ngày 29/10/2026; [bằng chứng](ARCHITECTURE_V6_DATABASE.md). V6 database/auth/sync chỉ là đề xuất PR0. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 
@@ -93,4 +93,4 @@ Luôn phân biệt: *đề xuất*, *đã lưu điểm*, *đã xác nhận buổ
 
 Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số phút thực tế, giáo án gắn với bản ghi và số ngày/phút trong tuần so với mục tiêu hiện tại. Bản ghi không có lessonId được ghi rõ chưa có giáo án, không suy đoán từ lựa chọn mới. Đạt mục tiêu tuần, chế độ nhẹ hoặc buổi từ 60 phút ưu tiên hồi phục; có điểm cùng bài hôm nay thì xem kết quả; còn lại chuẩn bị lịch kế tiếp. Tóm tắt giữ qua reload, cập nhật khi sửa và ẩn khi bỏ qua/xóa. Không thêm storage key/schema, không tự xác nhận từ đồng hồ/điểm.
 
-Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. Chưa merge hoặc triển khai production.
+Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. V5.1 đã merge/deploy theo baseline ở đầu tài liệu; QA thiết bị thật chưa được xác minh trong PR0.
