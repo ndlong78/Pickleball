@@ -69,6 +69,11 @@ for(const width of [390,820,1180,1440]){
    await page.locator("#jPostAction").click();
    await expect(page).toHaveURL(/page=progress#weeklyReality/);
    await page.goBack();
+   // Router scrolls in rAF after lazy loading. Finish that navigation before clicking.
+   await page.evaluate(async()=>{
+    await window.PICKLEUP_PAGE_LOADER.ensure("journey");
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   });
    await expect(page.locator("#jPostSession")).toBeVisible();
    await page.locator("#jSkipped").click();
    await expect(page.locator("#jPostSession")).toBeHidden();

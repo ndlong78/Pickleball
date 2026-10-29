@@ -1,5 +1,5 @@
 const {test,expect}=require("@playwright/test");
-test("V5.0 Stable upgrades legacy PWA cache without erasing local training data",async({page})=>{
+test("V5.1 upgrades legacy PWA cache without erasing local training data",async({page})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{
   localStorage.setItem("pickleup_v38_migration_probe",JSON.stringify({hits:13,date:"2026-10-28"}));
@@ -7,6 +7,8 @@ test("V5.0 Stable upgrades legacy PWA cache without erasing local training data"
   await old.put("./legacy-v36-probe",new Response("old"));
   const previous=await caches.open("pickleup-shell-v3-7-fragments");
   await previous.put("./v37-probe",new Response("previous"));
+  const v50=await caches.open("pickleup-shell-v5-0-stable");
+  await v50.put("./v50-probe",new Response("previous journey"));
   const oldRegistration=await navigator.serviceWorker.getRegistration();
   if(oldRegistration)await oldRegistration.unregister();
   // A fresh install exercises install/activate and cache cleanup.
@@ -22,9 +24,10 @@ test("V5.0 Stable upgrades legacy PWA cache without erasing local training data"
  expect(result.record.hits).toBe(13);
  expect(result.keys).not.toContain("pickleup-shell-v3-6-vitals-versioned");
  expect(result.keys).not.toContain("pickleup-shell-v3-7-fragments");
+ expect(result.keys).not.toContain("pickleup-shell-v5-0-stable");
  expect(result.keys).toContain("pickleup-shell-v5-1-stable");
 });
-test("V5.0 Stable caches a visited advanced page for later offline reuse",async({page,context})=>{
+test("V5.1 caches a visited advanced page for later offline reuse",async({page,context})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
  await page.reload(); // ensure the active service worker controls the document
