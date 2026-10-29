@@ -30,6 +30,15 @@ function redraw(){
  $("jProgress").textContent=x.doneThisWeek+"/"+x.target;
  $("jMinutes").textContent=x.minutesThisWeek+" phút";
  $("jNext").textContent=x.next.text;
+ const post=x.postSession;
+ $("jPostSession").hidden=!post;
+ if(post){
+  $("jPostMinutes").textContent=post.minutes+" phút thực tế hôm nay";
+  $("jPostLesson").textContent=post.lesson?"Bài đã ghi nhận: Tuần "+post.lesson.week+" · "+post.lesson.title:"Buổi này chưa ghi nhận giáo án cụ thể.";
+  $("jPostWeek").textContent="Tuần này: "+post.done+"/"+post.target+" ngày xác nhận · "+post.weekMinutes+" phút. So với mục tiêu hiện tại.";
+  $("jPostAdvice").textContent=post.action.text;
+  $("jPostAction").textContent=post.action.label;$("jPostAction").href=post.action.href;
+ }
  state("jAssessState",x.hasAssessment?"Đã có mốc đánh giá":"Chưa có bài kiểm tra kỹ năng đầy đủ","Đánh giá sáu kỹ năng là lựa chọn hỗ trợ cá nhân hóa, không phải điều kiện bắt buộc.");
  state("jGoalState",x.goalConfigured?"Mục tiêu: "+x.goal.days+" ngày/tuần":"Đang dùng mục tiêu mặc định","Cấp độ "+x.goal.level+" · "+(x.goalConfigured?"Bạn đã chọn mục tiêu trên thiết bị.":"Chọn mục tiêu để lưu ưu tiên riêng."));
  state("jLessonState",lesson?"Tuần "+lesson.week+" · "+lesson.title:"Chưa có bài phù hợp",lesson?x.recommendationReason:"Hãy chọn cấp độ khác nếu thư viện chưa có giáo án.");

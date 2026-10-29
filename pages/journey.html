@@ -1,6 +1,6 @@
 <!-- V5.0: unified learning workflow; this fragment is lazy-loaded only on Journey route. -->
 <section class="section" id="journeyFlow" data-pickleup-page="journey" aria-labelledby="jHeading">
-<div class="sectionHead"><div><div class="kicker">PickleUp V5.0 · Guided Journey</div>
+<div class="sectionHead"><div><div class="kicker">PickleUp V5.1 · Guided Journey</div>
 <h2 id="jHeading">Hành trình luyện tập của bạn</h2>
 <p class="sub">Một nơi để đi từ đánh giá → chọn lịch → luyện tập → xác nhận → xem tiến bộ. Dữ liệu giữ trên trình duyệt, không yêu cầu tài khoản.</p></div>
 <button class="linkbtn" id="jRefresh" type="button">Làm mới hành trình</button></div>
@@ -9,6 +9,11 @@
 <div class="j-summary"><div><strong id="jProgress">0/3</strong><span>Ngày xác nhận / mục tiêu tuần</span></div>
 <div><strong id="jMinutes">0 phút</strong><span>Đã ghi nhận trong tuần</span></div></div>
 <div class="j-next"><h3>Gợi ý tiếp theo</h3><p id="jNext" role="status" aria-live="polite">Chưa có dữ liệu.</p></div>
+<div id="jPostSession" class="j-next" hidden aria-labelledby="jPostHeading" role="status" aria-live="polite">
+<h3 id="jPostHeading">Sau buổi tập hôm nay</h3>
+<p id="jPostMinutes"></p><p id="jPostLesson"></p><p id="jPostWeek"></p>
+<p id="jPostAdvice"></p><div class="j-actions"><a class="j-link" id="jPostAction" href="?page=progress#weeklyReality">Xem tiến độ</a></div>
+</div>
 <div class="j-steps">
 <article class="j-step"><div class="j-step-head"><span class="j-num" aria-hidden="true">1</span><h3>Đánh giá kỹ năng</h3></div>
 <div class="j-state" id="jAssessState"></div><a class="j-link" href="?page=coach#selfAssessment">Mở đánh giá kỹ năng</a></article>

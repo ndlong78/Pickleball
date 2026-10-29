@@ -27,12 +27,24 @@ function build({lessons=[],goal=null,planPrefs=null,checkins=null,history=[],rec
  const totalDays=plan.days.filter(d=>d.kind==="practice").length;
  const remaining=plan.days.filter(d=>d.kind==="practice"&&d.date>=date).length;
  let next;
- if(!goalConfigured)next={code:"goal",text:"Chọn số ngày tập và cấp độ để cá nhân hóa lộ trình."};
+ if(todayDone)next={code:"review",text:"Hôm nay đã xác nhận tập. Xem tóm tắt và chọn bước tiếp theo phù hợp."};
+ else if(!goalConfigured)next={code:"goal",text:"Chọn số ngày tập và cấp độ để cá nhân hóa lộ trình."};
  else if(!assessment)next={code:"assess",text:"Bạn có thể đánh giá 6 kỹ năng để tạo mốc khởi đầu; không bắt buộc trước khi tập."};
  else if(!lesson)next={code:"lesson",text:"Chưa tìm được giáo án phù hợp, hãy kiểm tra cấp độ và thư viện Học viện."};
- else if(todayDone)next={code:"review",text:"Hôm nay đã xác nhận tập. Xem kết quả và nghỉ ngơi phù hợp trước buổi kế tiếp."};
  else next={code:"practice",text:"Mở giáo án đã chọn và tập theo khả năng; chỉ ghi đã tập sau khi thực sự hoàn thành buổi của bạn."};
+ // The recorded lesson belongs to the check-in, not the current Academy choice.
+ const completedLesson=todayDone?library.find(x=>x?.id===todayEntry.lessonId):null;
+ const resultToday=todayDone&&!!completedLesson&&(
+  (Array.isArray(history)&&history.some(a=>a?.id===completedLesson.id&&a.level===completedLesson.level&&a.skill===completedLesson.skill&&Number.isInteger(a.score)&&a.score>=0&&a.score<=20&&GOALS.localDay(a.date)===date))||
+  (records&&Number.isInteger(records[completedLesson.id]?.score)&&records[completedLesson.id].score>=0&&records[completedLesson.id].score<=20&&GOALS.localDay(records[completedLesson.id].date)===date));
+ const future=plan.days.find(d=>d.kind==="practice"&&d.date>date&&d.lessonId);
+ const action=current.done>=config.days||prefs.gentle||todayEntry?.minutes>=60
+  ?{code:"rest",label:"Xem nhịp tập và nghỉ ngơi",href:"?page=progress#weeklyReality",text:"Ưu tiên thả lỏng và hồi phục. Nếu đau hoặc mệt, hãy giảm cường độ; không cần tập bù."}
+  :resultToday?{code:"results",label:"Xem kết quả kiểm tra",href:"?page=progress#academyInsights",text:"Bạn có kết quả của bài này hôm nay. Xem lại trong cùng bài và cấp độ; điểm không phải DUPR."}
+  :{code:"prepare",label:"Chuẩn bị buổi kế tiếp",href:"?page=progress#weeklyPlanner",text:future?"Buổi đề xuất kế tiếp: "+future.date+" · "+future.lessonTitle+". Chỉ chuẩn bị khi đã hồi phục.":"Xem lịch và chọn giáo án cho tuần kế tiếp khi đã hồi phục; không cần tập thêm hôm nay."};
+ const postSession=todayDone?{minutes:todayEntry.minutes,lesson:completedLesson||null,done:current.done,target:config.days,weekMinutes:current.minutes,action}:null;
  return {
+  postSession,
   today:date,goal:config,goalConfigured:!!goalConfigured,hasAssessment:!!assessment,
   plan,lesson,lessonScoreRecorded:recordedLesson,selectedPersonalPlan:!!selectedPersonalPlan,
   todayEntry,todayScheduled:todays?.kind==="practice",remainingScheduled:remaining,

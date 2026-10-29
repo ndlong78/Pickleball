@@ -45,3 +45,32 @@ test("court link is only claimed ready for a selected personal plan",()=>{
  assert.equal(core.build(base).links.court,"?page=coach#personalCoach");
  assert.equal(core.build({...base,selectedPersonalPlan:true}).links.court,"?page=court#pcOnCourt");
 });
+
+test("post-session uses the recorded lesson, survives selection changes and has no side effects",()=>{
+ const checks=check.change(check.empty(),check.today(now),"done",35,"PU-001",now);
+ const before=JSON.stringify(checks);
+ const x=core.build({...base,checkins:checks,selectedLessonId:"PU-002"});
+ assert.equal(x.lesson.id,"PU-002");assert.equal(x.postSession.lesson.id,"PU-001");
+ assert.equal(x.postSession.minutes,35);assert.equal(x.postSession.done,1);
+ assert.equal(x.postSession.target,3);assert.equal(x.postSession.action.code,"prepare");
+ assert.equal(x.next.code,"review");assert.equal(JSON.stringify(checks),before);
+ assert.equal(core.build({...base,checkins:check.change(checks,check.today(now),"clear",null,null,now)}).postSession,null);
+ assert.equal(core.build({...base,checkins:check.change(checks,check.today(now),"skipped",null,null,now)}).postSession,null);
+});
+test("recovery takes priority; same-day same-lesson results offer review",()=>{
+ const checks=check.change(check.empty(),check.today(now),"done",35,"PU-001",now);
+ const record={score:12,date:now.toISOString()};
+ const x={...base,checkins:checks,records:{"PU-001":record}};
+ assert.equal(core.build(x).postSession.action.code,"results");
+ assert.equal(core.build({...x,goal:{...goal,days:1}}).postSession.action.code,"rest");
+ assert.equal(core.build({...x,planPrefs:{minutes:30,gentle:true}}).postSession.action.code,"rest");
+ assert.equal(core.build({...base,checkins:checks,records:{"PU-002":record}}).postSession.action.code,"prepare");
+ assert.equal(core.build({...base,records:{"PU-001":record}}).postSession,null);
+});
+test("legacy missing lesson, invalid check-ins and week boundaries stay honest",()=>{
+ const checks=check.change(check.empty(),check.today(now),"done",30,null,now);
+ assert.equal(core.build({...base,checkins:checks}).postSession.lesson,null);
+ assert.equal(core.build({...base,checkins:{broken:true}}).postSession,null);
+ assert.equal(core.build({...base,checkins:checks,now:new Date("2026-11-02T12:00:00Z")}).doneThisWeek,0);
+ assert.equal(core.build({...base,checkins:checks,now:new Date("2026-11-02T12:00:00Z")}).postSession,null);
+});

@@ -292,3 +292,10 @@ Trong **Tiến bộ → Lịch tập đề xuất trong tuần**, mỗi ngày đ
 Trang **Hành trình** (`?page=journey`) là trung tâm sáu bước: (1) đánh giá kỹ năng, (2) chọn mục tiêu & lịch tập, (3) chọn hoặc tiếp tục giáo án Học viện, (4) mở đồng hồ bài học Học viện hoặc giáo án cá nhân trên sân, (5) tự xác nhận số phút tập thực tế, (6) xem tiến bộ và gợi ý bước tiếp theo. Các trang chuyên môn vẫn còn nguyên, truy cập từ menu cố định.
 
 Trạng thái hiển thị dựa trên dữ liệu thật đang có trên thiết bị, không suy đoán đã hoàn thành khi xem bài, chạy đồng hồ hoặc lưu điểm. Có thể chọn giáo án từ Hành trình và tiếp tục trong Học viện qua khóa hiện có `pickleup_academy_last_lesson_v4`. Bước xác nhận ngày hôm nay dùng trực tiếp khóa V4.8 `pickleup_week_checkins_v48`; dữ liệu sao lưu/khôi phục tiếp tục tương thích V4.9. Không thêm tài khoản, backend hoặc di chuyển dữ liệu. Tất cả dữ liệu vẫn lưu cục bộ trong trình duyệt. Nếu chưa có bài đánh giá, bạn vẫn có thể mở giáo án và tập.
+
+
+## V5.1 — Sau buổi tập
+
+Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số phút thực tế, giáo án gắn với bản ghi và số ngày/phút trong tuần so với mục tiêu hiện tại. Bản ghi không có lessonId được ghi rõ chưa có giáo án, không suy đoán từ lựa chọn mới. Đạt mục tiêu tuần, chế độ nhẹ hoặc buổi từ 60 phút ưu tiên hồi phục; có điểm cùng bài hôm nay thì xem kết quả; còn lại chuẩn bị lịch kế tiếp. Tóm tắt giữ qua reload, cập nhật khi sửa và ẩn khi bỏ qua/xóa. Không thêm storage key/schema, không tự xác nhận từ đồng hồ/điểm.
+
+Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. Chưa merge hoặc triển khai production.
