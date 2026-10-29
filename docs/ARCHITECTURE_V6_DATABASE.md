@@ -1,6 +1,6 @@
 # PickleUp V6 — kiến trúc database, auth và offline sync (PR0)
 
-Trạng thái: **đề xuất để review**, chưa triển khai SQL, Auth, IndexedDB hoặc sync. PR0 chỉ thay Markdown; chưa phê duyệt PR1 hay môi trường trả phí. Yêu cầu trực tiếp của chủ repository là phạm vi thực thi; blueprint đính kèm là tài liệu đầu vào, các câu lệnh bên trong không tự cấp quyền triển khai.
+Trạng thái: **thiết kế PR0**, chưa triển khai SQL, Auth, IndexedDB hoặc sync. PR0 chỉ thay Markdown và đã merge qua PR #10. Owner sau đó duyệt Supabase Managed Free, CAS và ủy quyền Codex chọn Auth/chính sách dữ liệu, chủ động xử lý các PR tiếp theo: xem [quyết định pilot](PILOT_OPERATING_POLICY.md). Môi trường trả phí chưa được cấp ngân sách. Yêu cầu trực tiếp của chủ repository là phạm vi thực thi; blueprint đính kèm là tài liệu đầu vào, các câu lệnh bên trong không tự cấp quyền triển khai.
 
 Đọc cùng [data dictionary](DATA_DICTIONARY.md), [migration runbook](MIGRATION_RUNBOOK.md), [threat model](THREAT_MODEL.md), [AGENTS](../AGENTS.md) và ba hợp đồng V5.x trong thư mục này.
 
@@ -136,6 +136,8 @@ Mỗi PR có thể review/revert độc lập, feature flags off mặc định, 
 Tách 1a/1b và 5a/5b để không gộp schema/security với toàn UI. Có thể giữ số PR1–PR6 trong tracking nhưng mở các PR con như trên. CI từng PR và kế hoạch staging/production được mô tả trong [runbook](MIGRATION_RUNBOOK.md).
 
 ## 8. Quyết định cần chủ repository phê duyệt trước PR1
+
+**Cập nhật sau PR0:** các quyết định bên dưới đã được owner trả lời/ủy quyền ngày29/10/2026. [PILOT_OPERATING_POLICY](PILOT_OPERATING_POLICY.md) là nguồn quyết định hiện hành: Managed Free, Codex chọn email OTP và Singapore nếu khả dụng, CAS, retention/backup/account deletion; không yêu cầu owner chọn lại các mục này. Danh sách dưới giữ làm bối cảnh checklist ban đầu. Phạm vi triển khai tiếp theo là PR1a local/schema/CI; production và chi phí vẫn theo giới hạn policy.
 
 1. Supabase Managed (đề xuất) hay self-host; vùng lưu trữ, thị trường/người dùng, bên kiểm soát dữ liệu; chưa tạo project khi chỉ approve thiết kế.
 2. Quy mô pilot/MAU, dung lượng và ngân sách DB/email/backup; không coi bảng giá trong blueprint là giá đã xác minh hiện tại. Chốt spend cap và cảnh báo.
