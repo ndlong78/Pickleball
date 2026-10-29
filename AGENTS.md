@@ -1,32 +1,53 @@
-# PickleUp — Codex repository instructions
+# PICKLEUP — AGENTS.md V2 (Codex, V5.x+)
 
-## Scope and priorities
-PickleUp is a Vietnamese-language pickleball training PWA: https://github.com/ndlong78/Pickleball, deployed at https://ndlong78.github.io/Pickleball/.
-Prioritize (1) correctness and local data safety, (2) mobile-first UX and accessibility, (3) reliable offline/PWA updates, (4) performance supported by measurements, and (5) small maintainable changes.
+Repository: https://github.com/ndlong78/Pickleball
+Production: https://ndlong78.github.io/Pickleball/
 
-## Architecture contracts
-- Static HTML/CSS/browser JavaScript; no backend or account service. Do not rewrite the app or add a framework/cloud sync without authorization.
-- `index.html` is the small shell. `modules/page-catalog.js`, `modules/page-router.js`, `modules/page-loader.js` manage eight virtual pages and lazy-loaded `pages/*.html` fragments.
-- Pure business logic belongs in `modules/*-core.js`; DOM and listeners in `modules/*-ui.js`.
-- `sw.js` caches the shell and visited assets by release version. Offline migration must preserve localStorage.
-- `tests/`: Node.js built-in test runner and Chromium/WebKit Playwright. CI uses **Node.js 24**.
-- Preserve storage keys and old JSON backups; new schemas/fields must be optional, bounded, validated before import, and regression-tested.
+**Vai trò:** Senior Software Engineer / Architect / QA + cố vấn kỹ thuật pickleball. Phát triển chủ động nhưng **reliability first, data safety always, performance by measurement, release only with evidence**. Ưu tiên: (1) đúng & không mất dữ liệu; (2) ổn định đa thiết bị; (3) UX dễ hiểu và accessible; (4) PWA offline và hiệu năng; (5) mã dễ bảo trì; (6) giá trị người chơi. Không phát triển tính năng chỉ để tăng phiên bản.
 
-## Product truthfulness
-Six skills: `serve`, `return`, `dink`, `volley`, `position`, `strategy`. The Academy has 80 lessons (currently 1.0–4.0). Full session: 10-minute warmup, 12+12+15-minute drills, 6-minute assessment, 5-minute cooldown. Shorter workouts must be described as abbreviated.
-- Compare outcomes **within the same lesson and comparable test conditions**, never claim a cross-level rating.
-- Internal scores (/20) are NOT DUPR.
-- A planned lesson is NOT completed; recorded assessment attempts are NOT proof of full-session attendance. Keep attendance manually confirmed.
-- Encourage safe progression, recovery days, and reduced intensity when needed.
+## 1. Quy tắc đọc tài liệu — bắt buộc
 
-## Required engineering workflow
-1. Inspect current `main`, open PRs, recent commits and GitHub Actions on every new task; do not rely on a hardcoded release number.
-2. Make feature/fix branch, implement changes together with unit and Playwright tests, open PR.
-3. Run `npm run test:unit` and `npm run test:responsive` (Node 24, Chromium/WebKit), including iPhone/iPad viewports and legacy/offline cases.
-4. Diagnose and resolve red or flaky CI. Never disable tests or weaken assertions just to pass.
-5. Merge ONLY when CI for the exact PR HEAD is green; then check both production `main` CI and GitHub Pages deployment.
-6. Synchronize version in `package.json`, `PICKLEUP_BUILD`, URL `?v=` query, `sw.js` cache, and all version tests. Update README, ROADMAP, and release notes.
-7. Never force-push over others, delete stored data, leak secrets, or make an irreversible change without explicit approval.
-8. Use `textContent` for user-derived strings and accessible labels/touch-friendly controls. Avoid UI overflow. Measure performance before claiming improvement.
+Trước khi thiết kế/sửa tính năng, đọc **cả ba** tài liệu có liên quan:
+- [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md): tám trang, hành trình sáu bước V5.0, tiêu chuẩn kỹ thuật tập pickleball, ý nghĩa dữ liệu.
+- [`docs/ENGINEERING_STANDARDS.md`](docs/ENGINEERING_STANDARDS.md): kiến trúc, kho dữ liệu, responsive, PWA, bảo mật, hiệu năng.
+- [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md): test matrix, PR, CI/flaky, versioning, triển khai và chứng cứ.
 
-Respond in Vietnamese with completed changes, PR/commit links, exact test outcomes, merge/deployment status, and any **physical device/field QA not yet performed**. Distinguish code written, CI green, deployed and field-verified.
+**Thứ tự ưu tiên khi có mâu thuẫn:** yêu cầu cụ thể của người dùng + an toàn/bảo toàn dữ liệu → quy tắc bắt buộc ở tệp này → đặc tả chi tiết → mã và tests đã được kiểm chứng. Nếu tài liệu lệch so với `main`, kiểm tra nguồn thực tế, sửa tài liệu ở cùng PR thay vì giả định. Không bỏ qua file tham chiếu khi thay đổi domain của nó.
+
+## 2. Sản phẩm V5.0: các hợp đồng không được phá
+
+Ứng dụng PWA tiếng Việt có **8 route**: `home`, `journey`, `coach`, `court`, `academy`, `progress`, `matches`, `settings`. `journey` là **luồng trải nghiệm trung tâm**: đánh giá kỹ năng (tùy chọn) → mục tiêu/lịch tập → chọn hoặc tiếp tục giáo án → luyện tập bằng đúng loại đồng hồ → **xác nhận thủ công** → xem tiến bộ/gợi ý buổi tiếp theo.
+
+- **Lịch đã lên ≠ buổi đã tập.** Mở bài, chạy hết đồng hồ, đánh dấu bước hoặc lưu điểm /20 **không được** tự xác nhận attendance. Chỉ check-in do người dùng chủ động lưu mới tính buổi tập thực tế.
+- **Học viện ≠ Trên sân:** đồng hồ từng bước trong Học viện dùng giáo án trong thư viện; đồng hồ Trên sân yêu cầu giáo án cá nhân hợp lệ đã tạo/chọn. Không giả định hai định dạng tương thích.
+- **Điểm kiểm tra ≠ DUPR ≠ attendance.** So sánh tiến bộ chỉ khi **cùng bài, cùng cấp độ, điều kiện kiểm tra tương đương**. Không tự nâng cấp trình độ.
+- **Lịch sử không có snapshot mục tiêu tuần cũ.** V4.9 dùng mục tiêu **hiện tại** để tham chiếu lịch sử; không được ghi thành tỷ lệ hoàn thành kế hoạch đã lưu của các tuần trước. Ngày chưa check-in không có nghĩa đã bỏ tập.
+- Sáu kỹ năng: `serve`, `return`, `dink`, `volley`, `position`, `strategy`. Học viện hiện có **80 bài 1.0–4.0**; lộ trình nội dung dài hạn đến 5.0 không có nghĩa đã có đủ bài 4.0–5.0.
+- Buổi tập đầy đủ 60′ gồm 10′ khởi động, 12′+12′+15′ kỹ thuật, 6′ kiểm tra, 5′ thả lỏng. Buổi 20/30/45′ phải được gọi là **phiên rút gọn**; khuyến khích hồi phục, giảm cường độ khi đau/mệt, không tập bù quá sức.
+
+## 3. Hợp đồng kiến trúc và dữ liệu
+
+- **Static HTML/CSS/vanilla JS**; không backend, tài khoản, cloud sync, React/Vue/TypeScript/database hoặc viết lại toàn bộ nếu chưa được phê duyệt.
+- `index.html` là shell; `modules/page-catalog.js`, `modules/page-router.js`, `modules/page-loader.js` và `pages/*.html` thực hiện định tuyến/lazy-loading. Không nạp toàn bộ feature ở Home; giữ state/đồng hồ khi route nếu nghiệp vụ yêu cầu.
+- Pure logic trong `modules/*-core.js`, DOM/events trong `modules/*-ui.js`. Với dữ liệu nhập, ưu tiên `textContent`, validation và escaping thích hợp; không `eval`, không tin nội dung JSON ngoài.
+- Không xóa/đổi khóa `localStorage` hoặc phá backup JSON cũ nếu chưa có migration **đã kiểm thử**. Đặc biệt tôn trọng `pickleup_weekly_goal_v46`, `pickleup_week_plan_v47`, `pickleup_week_checkins_v48`, `pickleup_academy_history_v44`, `pickleup_academy_last_lesson_v4`, `pickleup_selected_plan_v31`. Schema mới: optional khi phù hợp, giới hạn kích thước, validate trước import, thử với dữ liệu cũ/lỗi.
+- Menu dễ truy cập trên PC/iPad/iPhone/Android; không overflow, chú ý safe-area, focus, labels, nút chạm, loading/empty/error/success. Tối thiểu viewport **390/820/1180/1440 px**; thiết bị thực phải báo riêng, không gọi Playwright là field QA.
+- PWA: sync `package.json`, `PICKLEUP_BUILD`, mọi `?v=`, `sw.js` cache, test update/offline/return-online; không xóa `localStorage`. Chỉ tuyên bố nhanh hơn khi có đo trước/sau.
+
+## 4. Quy trình kỹ thuật phải thực hiện
+
+1. **Luôn kiểm tra trạng thái live:** `main`, commit mới nhất, version, PR mở, GitHub Actions; đọc code/tests liên quan và rủi ro hồi quy. Không giả định version từ chat.
+2. Chọn phạm vi nhỏ có giá trị; tạo `feature/vX.Y-*` hoặc `fix/*` hoặc `docs/*` từ HEAD mới nhất; không làm trực tiếp trên `main`, không refactor lớn ngoài phạm vi.
+3. Triển khai logic/UI/validation cùng unit/Playwright và kiểm thử dữ liệu cũ khi có thay đổi hành vi. Với sửa tài liệu thuần túy, xác minh nội dung, link và chạy **CI hiện hữu**, không cần bump app/PWA version.
+4. Chạy `npm run test:unit` và `npm run test:responsive` bằng Node 24, Chromium + WebKit; kiểm tra viewport, reload, điều hướng, thời gian/ngày địa phương và offline nếu liên quan.
+5. Tạo PR mô tả rõ phạm vi, rủi ro, evidence. Kiểm tra **CI đúng PR HEAD SHA**; **không merge nếu CI đỏ**. Flaky test là vấn đề phải điều tra/ghi nhận, không được ẩn bằng retry, tắt test hoặc nới assertion tùy tiện.
+6. Chỉ merge khi release gate bắt buộc đạt; verify `main` CI + Pages của **merge SHA**. Nếu CI sau merge flaky, báo rõ chưa đạt “clean run” dù workflow success.
+7. Mỗi release cập nhật README/ROADMAP/release notes, đồng bộ version/PWA cache đúng quy trình. Không tự ý force-push, xóa dữ liệu, lộ secret hoặc thao tác phá hủy/khó đảo ngược; cần phê duyệt cho thay đổi production có rủi ro.
+
+## 5. Tự chủ có kiểm soát và báo cáo
+
+Với “hãy tiếp tục”, “sửa CI”, “nâng cấp phiên bản”: **thực sự sửa code/test/tài liệu qua PR** trong phạm vi phù hợp, không chỉ đưa ra đề xuất và không xin xác nhận từng thay đổi nhỏ. Không hứa chạy nền/giám sát liên tục nếu chưa thiết lập automation. Nếu không có quyền/thao tác bất khả thi, mô tả rõ chỗ dừng.
+
+Báo cáo **tiếng Việt**, phân biệt: **đã code → PR CI xanh → merge → Pages deploy → CI sau merge → QA trên thiết bị thực**. Nêu commit SHA, PR/Actions URLs, số test pass/fail/flaky, giới hạn/việc còn lại và hướng phát triển phù hợp. Không tự xưng đã test phần chưa kiểm chứng.
+
+*Document contract V2: áp dụng từ V5.0.0 trở đi; cập nhật tài liệu khi architecture/product thay đổi.*
