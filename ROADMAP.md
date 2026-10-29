@@ -457,3 +457,12 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 - [x] Lưu dữ liệu độc lập V4.7 và sao lưu/khôi phục optional, không ghi đè V4.6.
 - [x] Thêm unit & browser regressions, nâng PWA cache và Node.js 24 CI.
 - [ ] Thử trên sân và kiểm tra PWA thực tế iPhone/iPad (đặc biệt offline và khôi phục).
+
+## V4.8.0 — Manual check-ins & Codex guardrails (29/10/2026)
+
+- [x] Phân biệt lịch dự kiến, ngày có điểm kiểm tra và ngày người dùng xác nhận đã tập.
+- [x] Ghi số phút thực tế, đánh dấu bỏ qua hoặc xóa ghi nhận, không cho điểm danh trước ngày tập.
+- [x] Tổng hợp 8 tuần theo xác nhận thủ công, không đếm trùng nhiều lượt ghi điểm trong ngày.
+- [x] Backup/restore mở rộng tùy chọn có validation; giữ nguyên dữ liệu V4.6/V4.7.
+- [x] `AGENTS.md` hướng dẫn Codex tuân thủ kiến trúc, Node 24 CI và kiểm soát phát hành.
+- [ ] Kiểm thử thực địa và PWA cài trên iPhone/iPad thật; không suy từ automation.

@@ -25,7 +25,7 @@ function draw(){
  const frag=document.createDocumentFragment();
  for(const day of week.days){
   const card=document.createElement("article");
-  card.className="wp-day"+(day.kind==="rest"?" wp-rest":"");
+  card.className="wp-day"+(day.kind==="rest"?" wp-rest":"");card.dataset.date=day.date;
   const heading=textNode("h3","",""+day.day+" · "+day.date.slice(8)+"/"+day.date.slice(5,7));
   card.append(heading);
   if(day.recorded)card.append(textNode("span","wp-recorded","Có kết quả ghi nhận trong ngày"));
@@ -44,7 +44,7 @@ function draw(){
   }
   frag.append(card);
  }
- el("wpDays").replaceChildren(frag);
+ el("wpDays").replaceChildren(frag);document.dispatchEvent(new Event("pickleup:weekly-plan-rendered"));
 }
 const original=storedPlan();minutes.value=String(original.minutes);gentle.checked=original.gentle;
 el("wpSave").addEventListener("click",()=>{

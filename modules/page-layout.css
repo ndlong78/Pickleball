@@ -150,3 +150,11 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .wp-duration{display:block;margin:9px 0;color:#234e3e}.wp-reason{color:#294b3e}.wp-blocks{background:#e9f4e5;border-radius:9px;padding:9px}.wp-day a{display:inline-flex;align-items:center;min-height:44px;color:#225a3c;font-weight:700;font-size:13px;text-decoration:underline}.wp-recorded{display:inline-block;font-size:11px;color:#22643b;background:#e0f3e1;border-radius:16px;padding:5px 9px}
 @media(max-width:780px){.wp-settings{grid-template-columns:1fr 1fr}.wp-settings button{grid-column:1/-1}.wp-days{grid-template-columns:1fr}}
 @media(max-width:460px){.wp-panel{padding:14px}.wp-settings{grid-template-columns:1fr}.wp-settings button{grid-column:auto}.wp-day{padding:13px}}
+
+/* V4.8: explicit training check-ins, independent of assessment scores. */
+.wc-panel{border:1px solid #d1e4d4;border-radius:14px;padding:14px;margin:16px 0;background:#f7faf6}
+.wc-panel h3{margin:0 0 8px}.wc-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.wc-summary>div{display:grid;gap:6px;padding:12px;background:white;border-radius:10px}.wc-summary strong{font-size:clamp(1rem,2.6vw,1.4rem);font-variant-numeric:tabular-nums}.wc-summary span{font-size:11px;color:#61786b}
+.wc-actions{border-top:1px solid #d1dfd3;margin-top:14px;padding-top:12px}.wc-label{display:grid;gap:5px;font-size:12px;font-weight:600;color:#335c49}.wc-label input{min-height:44px;width:120px;max-width:100%;border:1px solid #b3c5b9;border-radius:9px;padding:8px;color:#153a2c;background:white}
+.wc-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.wc-button{min-height:44px;border-radius:9px;border:1px solid #9bb8a3;background:white;color:#24523e;padding:8px 12px;font-size:12px;font-weight:700}.wc-button:disabled{opacity:.5;cursor:not-allowed}.wc-state{font-size:12px;font-weight:650;margin:10px 0 0}.wc-history summary{min-height:44px;cursor:pointer;font-weight:650;padding:12px 0}.wc-weeks{padding-left:22px;line-height:1.8;font-size:12px}
+@media(max-width:480px){.wc-panel{padding:10px}.wc-summary{gap:5px}.wc-summary>div{padding:9px}.wc-summary span{font-size:10px}.wc-button{flex:1 1 auto}}
