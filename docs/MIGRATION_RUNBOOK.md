@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-Đề xuất PR0. Không chạy các bước provisioning/migration trong PR0. Người vận hành chỉ bắt đầu PR1 sau các quyết định ở [kiến trúc](ARCHITECTURE_V6_DATABASE.md#8-quyết-định-cần-chủ-repository-phê-duyệt-trước-pr1). Đọc [dictionary](DATA_DICTIONARY.md) và [threat model](THREAT_MODEL.md).
+Đề xuất PR0. Không chạy các bước provisioning/migration trong PR0. Các quyết định trước PR1 nay đã được owner duyệt/ủy quyền; dùng [policy pilot hiện hành](PILOT_OPERATING_POLICY.md) cho phạm vi tự chủ, Free tier, Auth và retention. PR1a local/schema/CI không chờ duyệt lại các quyết định đó. Đọc [dictionary](DATA_DICTIONARY.md) và [threat model](THREAT_MODEL.md).
 
 ## 1. Rủi ro restore hiện tại cần thiết kế bù
 
@@ -13,7 +13,7 @@ Home còn có export `pickleup-ket-qua.json` shape `{app,exportedAt,records:[{we
 1. Owner duyệt provider/region/budget/auth/staging-only; tạo môi trường staging tách project/SMTP/redirect production. Operator giữ quyền production, Codex không cần production credentials.
 2. PR1a thêm `supabase/config.toml`, migrations versioned, seed giả, pgTAP và backend workflow. Review schema/downgrade/backup trước áp dụng. Chỉ reset DB ephemeral cục bộ; staging deploy có approval riêng trong quy trình owner đã cấp, production không dùng `db reset`.
 3. Mọi migration đi expand → backfill/reconcile → switch read → contract ở PR tương lai. Không drop legacy column/key hay sửa SQL migration đã deploy; lỗi dùng forward fix. Pin Supabase CLI/dependency versions và ghi DB schema/protocol compatibility window (ít nhất client pilot trước đó). Server trả upgrade_required cho client không tương thích, giữ pending export được.
-4. Restore drill staging từ backup trước pilot; đề xuất RPO24h/RTO4h để owner duyệt, chưa phải SLA đã đạt. Xác minh counts, RLS, auth mapping và cursor epoch; restore DB cũ phải đổi sync epoch để mọi client full-resync, tránh cursor trỏ quá head và receipt bị mất.
+4. Restore drill staging từ backup trước pilot; target theo policy hiện hành là RPO24h/RTO1 ngày làm việc, chưa phải SLA đã đạt. Xác minh counts, RLS, auth mapping và cursor epoch; restore DB cũ phải đổi sync epoch để mọi client full-resync, tránh cursor trỏ quá head và receipt bị mất. Replay account deletion markers trước mở lại server.
 
 ## 3. Thu thập an toàn trên từng thiết bị
 
