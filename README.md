@@ -278,3 +278,7 @@ Trang **Tiến bộ → Mục tiêu và nhịp tập 8 tuần** cho phép đặt
 ## PickleUp V4.7.0 — Lịch tập thông minh theo tuần
 
 Mở **Tiến bộ → Lịch tập đề xuất trong tuần**. Ứng dụng chia từ 1–5 ngày tập/tuần theo mục tiêu V4.6, xen ngày hồi phục (tối đa 2 ngày tập liên tiếp). Chọn 20/30/45/60 phút hoặc **Tuần nhẹ hơn** (giới hạn 30 phút), sau đó lưu trên thiết bị. Bài ưu tiên được chọn theo kết quả giảm trong cùng bài, chưa đạt mốc riêng, bài chưa tập, rồi bài cần ôn. Mỗi ngày có liên kết đến giáo án đầy đủ tại Học viện. Dữ liệu đã ghi chỉ hiển thị nhãn tham khảo; không tự gán lịch đề xuất thành buổi đã tập. Bản sao lưu có trường `weeklyPlan` tùy chọn, tương thích tệp cũ. Điểm /20 không phải DUPR, các phiên rút gọn không tương đương tự động với bài kiểm tra đủ 60 phút.
+
+## PickleUp V4.8.0 — Nhật ký buổi tập thực tế
+
+Trong **Tiến bộ → Lịch tập đề xuất trong tuần**, mỗi ngày đã đến cho phép nhập **số phút thực tế** (5–180), xác nhận **Đã tập**, chọn **Bỏ qua** hoặc **Xóa ghi nhận**. Có thể xác nhận ngày hồi phục nếu thực sự tập ngoài lịch. Một ngày chỉ có một trạng thái; điểm kiểm tra Academy hoặc lịch đã tạo không tự đánh dấu hoàn thành. Chỉ những xác nhận thủ công mới được cộng vào báo cáo 8 tuần. Dữ liệu V4.8 lưu tại khóa `pickleup_week_checkins_v48` và được đưa vào sao lưu JSON với trường `weeklyCheckins` tùy chọn; tệp cũ vẫn khôi phục được. Hướng dẫn lập trình bền vững cho Codex: `AGENTS.md`.
