@@ -282,3 +282,7 @@ Mở **Tiến bộ → Lịch tập đề xuất trong tuần**. Ứng dụng ch
 ## PickleUp V4.8.0 — Nhật ký buổi tập thực tế
 
 Trong **Tiến bộ → Lịch tập đề xuất trong tuần**, mỗi ngày đã đến cho phép nhập **số phút thực tế** (5–180), xác nhận **Đã tập**, chọn **Bỏ qua** hoặc **Xóa ghi nhận**. Có thể xác nhận ngày hồi phục nếu thực sự tập ngoài lịch. Một ngày chỉ có một trạng thái; điểm kiểm tra Academy hoặc lịch đã tạo không tự đánh dấu hoàn thành. Chỉ những xác nhận thủ công mới được cộng vào báo cáo 8 tuần. Dữ liệu V4.8 lưu tại khóa `pickleup_week_checkins_v48` và được đưa vào sao lưu JSON với trường `weeklyCheckins` tùy chọn; tệp cũ vẫn khôi phục được. Hướng dẫn lập trình bền vững cho Codex: `AGENTS.md`.
+
+## PickleUp V4.9.0 — Kế hoạch và thực tế
+
+**Tiến bộ → Kế hoạch và thực tế** đối chiếu lịch tập hiện tại với nhật ký người dùng đã **tự xác nhận** ở V4.8. Bốn số liệu: ngày xác nhận trên mục tiêu, ngày trùng lịch đã đến, ngày tập ngoài lịch và số phút thực tế. Biểu đồ 8 tuần chỉ tính ghi nhận thủ công, không coi ngày không ghi nhận là bỏ tập. Gợi ý thay đổi lịch chỉ xuất hiện sau ít nhất 3 trong 4 tuần đã kết thúc có ghi nhận; không tự giảm/tăng lịch. Do chưa lưu snapshot lịch từng tuần trong V4.7/V4.8, dữ liệu lịch sử chỉ được so với **mục tiêu hiện tại để tham khảo**. Không thay đổi các khóa localStorage, schema backup hoặc dữ liệu cũ. Tính năng hoạt động offline sau khi trang Tiến bộ được tải vào cache PWA.
