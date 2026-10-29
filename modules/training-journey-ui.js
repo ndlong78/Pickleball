@@ -77,4 +77,5 @@ window.addEventListener("storage",e=>{
  if([g.KEY,p.KEY,c.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_academy_last_lesson_v4","pickleup_stage_checks_v23","pickleup_selected_plan_v31"].includes(e.key))redraw();
 });
 redraw();
+for(const id of ["jRefresh","jTodayMinutes","jDone","jSkipped","jClear"])$(id).disabled=false;
 })();

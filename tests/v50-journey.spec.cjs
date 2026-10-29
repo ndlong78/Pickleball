@@ -86,6 +86,9 @@ test("V5.1 confirmed summary survives cached offline reload without new data key
  await page.locator("#jDone").click();
  await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
  await page.evaluate(()=>navigator.serviceWorker.ready);
+ // First navigation may precede SW control; revisit online to cache feature assets.
+ await page.reload();
+ await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
  await expect.poll(()=>page.evaluate(async()=>{
   const files=["pages/journey.html","modules/training-journey-ui.js","modules/training-journey-core.js"];
   return (await Promise.all(files.map(f=>caches.match(new URL(f+"?v="+window.PICKLEUP_BUILD,location.href).href)))).every(Boolean);

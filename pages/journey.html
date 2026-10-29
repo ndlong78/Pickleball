@@ -3,7 +3,7 @@
 <div class="sectionHead"><div><div class="kicker">PickleUp V5.1 · Guided Journey</div>
 <h2 id="jHeading">Hành trình luyện tập của bạn</h2>
 <p class="sub">Một nơi để đi từ đánh giá → chọn lịch → luyện tập → xác nhận → xem tiến bộ. Dữ liệu giữ trên trình duyệt, không yêu cầu tài khoản.</p></div>
-<button class="linkbtn" id="jRefresh" type="button">Làm mới hành trình</button></div>
+<button class="linkbtn" id="jRefresh" disabled type="button">Làm mới hành trình</button></div>
 <div class="card j-panel">
 <p id="jIntro" class="sub" role="status">Đang tải dữ liệu…</p>
 <div class="j-summary"><div><strong id="jProgress">0/3</strong><span>Ngày xác nhận / mục tiêu tuần</span></div>
@@ -29,10 +29,10 @@
 <a class="j-link j-alt" id="jCourtOpen" href="?page=coach#personalCoach">Tạo giáo án cho đồng hồ Trên sân</a></div></article>
 <article class="j-step j-checkin"><div class="j-step-head"><span class="j-num" aria-hidden="true">5</span><h3>Xác nhận buổi tập thực tế</h3></div>
 <div class="j-state" id="jCheckinState"></div><label for="jTodayMinutes">Số phút bạn thực sự tập hôm nay (5–180)</label>
-<input type="number" id="jTodayMinutes" min="5" max="180" step="5" inputmode="numeric" value="30"/>
-<div class="j-actions"><button type="button" class="j-btn" id="jDone">Xác nhận đã tập</button>
-<button type="button" class="j-btn j-secondary" id="jSkipped">Đánh dấu bỏ qua</button>
-<button type="button" class="j-btn j-secondary" id="jClear" hidden>Xóa ghi nhận</button></div>
+<input type="number" id="jTodayMinutes" disabled min="5" max="180" step="5" inputmode="numeric" value="30"/>
+<div class="j-actions"><button type="button" class="j-btn" id="jDone" disabled>Xác nhận đã tập</button>
+<button type="button" class="j-btn j-secondary" id="jSkipped" disabled>Đánh dấu bỏ qua</button>
+<button type="button" class="j-btn j-secondary" id="jClear" disabled hidden>Xóa ghi nhận</button></div>
 <p id="jCheckStatus" class="sub" role="status" aria-live="polite"></p>
 <p class="sub">Không tự xác nhận khi bắt đầu/chạy hết đồng hồ hoặc lưu điểm. Bạn có thể sửa ghi nhận trong Tiến bộ.</p></article>
 <article class="j-step"><div class="j-step-head"><span class="j-num" aria-hidden="true">6</span><h3>Đánh giá tiến bộ và điều chỉnh</h3></div>
