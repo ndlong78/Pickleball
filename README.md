@@ -286,3 +286,9 @@ Trong **Tiến bộ → Lịch tập đề xuất trong tuần**, mỗi ngày đ
 ## PickleUp V4.9.0 — Kế hoạch và thực tế
 
 **Tiến bộ → Kế hoạch và thực tế** đối chiếu lịch tập hiện tại với nhật ký người dùng đã **tự xác nhận** ở V4.8. Bốn số liệu: ngày xác nhận trên mục tiêu, ngày trùng lịch đã đến, ngày tập ngoài lịch và số phút thực tế. Biểu đồ 8 tuần chỉ tính ghi nhận thủ công, không coi ngày không ghi nhận là bỏ tập. Gợi ý thay đổi lịch chỉ xuất hiện sau ít nhất 3 trong 4 tuần đã kết thúc có ghi nhận; không tự giảm/tăng lịch. Do chưa lưu snapshot lịch từng tuần trong V4.7/V4.8, dữ liệu lịch sử chỉ được so với **mục tiêu hiện tại để tham khảo**. Không thay đổi các khóa localStorage, schema backup hoặc dữ liệu cũ. Tính năng hoạt động offline sau khi trang Tiến bộ được tải vào cache PWA.
+
+## PickleUp V5.0.0 — Hành trình luyện tập thống nhất
+
+Trang **Hành trình** (`?page=journey`) là trung tâm sáu bước: (1) đánh giá kỹ năng, (2) chọn mục tiêu & lịch tập, (3) chọn hoặc tiếp tục giáo án Học viện, (4) mở đồng hồ bài học Học viện hoặc giáo án cá nhân trên sân, (5) tự xác nhận số phút tập thực tế, (6) xem tiến bộ và gợi ý bước tiếp theo. Các trang chuyên môn vẫn còn nguyên, truy cập từ menu cố định.
+
+Trạng thái hiển thị dựa trên dữ liệu thật đang có trên thiết bị, không suy đoán đã hoàn thành khi xem bài, chạy đồng hồ hoặc lưu điểm. Có thể chọn giáo án từ Hành trình và tiếp tục trong Học viện qua khóa hiện có `pickleup_academy_last_lesson_v4`. Bước xác nhận ngày hôm nay dùng trực tiếp khóa V4.8 `pickleup_week_checkins_v48`; dữ liệu sao lưu/khôi phục tiếp tục tương thích V4.9. Không thêm tài khoản, backend hoặc di chuyển dữ liệu. Tất cả dữ liệu vẫn lưu cục bộ trong trình duyệt. Nếu chưa có bài đánh giá, bạn vẫn có thể mở giáo án và tập.

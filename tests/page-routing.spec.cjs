@@ -8,9 +8,10 @@ const sizes=[
 for(const size of sizes){
  test.describe("Routed PickleUp pages - "+size.name,()=>{
   test.use({viewport:{width:size.width,height:size.height}});
-  test("opens each of seven functional pages directly without exposing other modules",async({page})=>{
+  test("opens each of eight functional pages directly without exposing other modules",async({page})=>{
    const routes=[
     ["home","homeWeeks"],
+    ["journey","journeyFlow"],
     ["coach","personalCoach"],
     ["court","pcOnCourt"],
     ["academy","academy"],
