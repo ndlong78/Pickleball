@@ -41,3 +41,68 @@ test("V5.0 Academy score cannot confirm a session",async({page})=>{
  await page.locator("#jRefresh").click();
  await expect(page.locator("#jProgress")).toHaveText("0/3");
 });
+
+for(const width of [390,820,1180,1440]){
+ test.describe("V5.1 after-session "+width,()=>{
+  test.use({viewport:{width,height:900}});
+  test("manual confirmation, edit, reload and clear preserve old storage",async({page})=>{
+   await page.goto("/?page=journey");
+   await expect(page.locator("#jGoalState")).toContainText("mặc định");
+   await expect(page.locator("#jPostSession")).toBeHidden();
+   await page.evaluate(()=>localStorage.setItem("pickleup_academy_last_lesson_v4","PU-001"));
+   await page.locator("#jRefresh").click();
+   await page.locator("#jTodayMinutes").fill("35");
+   await page.locator("#jDone").click();
+   await expect(page.locator("#jPostSession")).toBeVisible();
+   await expect(page.locator("#jPostMinutes")).toHaveText("35 phút thực tế hôm nay");
+   await expect(page.locator("#jPostLesson")).toContainText("Tuần 1");
+   await expect(page.locator("#jPostWeek")).toContainText("1/3");
+   await page.evaluate(()=>localStorage.setItem("pickleup_academy_last_lesson_v4","PU-002"));
+   await page.reload();
+   await expect(page.locator("#jPostLesson")).toContainText("Tuần 1");
+   await page.locator("#jTodayMinutes").fill("60");
+   await page.locator("#jDone").click();
+   await expect(page.locator("#jPostMinutes")).toContainText("60 phút");
+   await expect(page.locator("#jPostWeek")).toContainText("1/3");
+   await expect(page.locator("#jPostAction")).toContainText("nghỉ ngơi");
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(3);
+   await page.locator("#jPostAction").click();
+   await expect(page).toHaveURL(/page=progress#weeklyReality/);
+   await page.goBack();
+   // Router scrolls in rAF after lazy loading. Finish that navigation before clicking.
+   await page.evaluate(async()=>{
+    await window.PICKLEUP_PAGE_LOADER.ensure("journey");
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   });
+   await expect(page.locator("#jPostSession")).toBeVisible();
+   await page.locator("#jSkipped").click();
+   await expect(page.locator("#jPostSession")).toBeHidden();
+   await page.locator("#jClear").click();
+   await expect(page.locator("#jProgress")).toHaveText("0/3");
+   expect(await page.evaluate(()=>localStorage.getItem("pickleup_academy_last_lesson_v4"))).toBe("PU-002");
+  });
+ });
+}
+
+test("V5.1 confirmed summary survives cached offline reload without new data keys",async({page,context})=>{
+ await page.goto("/?page=journey");
+ await expect(page.locator("#jGoalState")).toContainText("mặc định");
+ await page.locator("#jTodayMinutes").fill("30");
+ await page.locator("#jDone").click();
+ await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
+ await page.evaluate(()=>navigator.serviceWorker.ready);
+ // First navigation may precede SW control; revisit online to cache feature assets.
+ await page.reload();
+ await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
+ await expect.poll(()=>page.evaluate(async()=>{
+  const files=["pages/journey.html","modules/training-journey-ui.js","modules/training-journey-core.js"];
+  return (await Promise.all(files.map(f=>caches.match(new URL(f+"?v="+window.PICKLEUP_BUILD,location.href).href)))).every(Boolean);
+ })).toBe(true);
+ const before=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()));
+ await context.setOffline(true);
+ try{
+  await page.reload();
+  await expect(page.locator("#jPostMinutes")).toContainText("30 phút");
+  expect(await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()))).toBe(before);
+ }finally{await context.setOffline(false)}
+});
