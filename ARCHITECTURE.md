@@ -1,5 +1,7 @@
 # Kiến trúc PickleUp V3.4 – 7 trang chức năng
 
+> Tài liệu lịch sử V3.x. Baseline main V5.1.0 hiện có **8 route**, bao gồm `journey`; xem `modules/page-catalog.js` và [ENGINEERING_STANDARDS](docs/ENGINEERING_STANDARDS.md). [Kiến trúc V6 database](docs/ARCHITECTURE_V6_DATABASE.md) là đề xuất PR0, chưa triển khai.
+
 ## Mục tiêu
 Chuyển giao diện dài trước V3.4 thành **7 trang (client-side routed pages)** có URL riêng trên GitHub Pages mà vẫn giữ dữ liệu, timer và PWA offline. Đây là điều hướng trong một ứng dụng duy nhất, **không** phải bảy bản HTML sao chép.
 

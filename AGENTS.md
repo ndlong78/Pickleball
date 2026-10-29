@@ -27,10 +27,11 @@ Trước khi thiết kế/sửa tính năng, đọc **cả ba** tài liệu có 
 
 ## 3. Hợp đồng kiến trúc và dữ liệu
 
-- **Static HTML/CSS/vanilla JS**; không backend, tài khoản, cloud sync, React/Vue/TypeScript/database hoặc viết lại toàn bộ nếu chưa được phê duyệt.
+- **Static HTML/CSS/vanilla JS**; không backend, tài khoản, cloud sync, React/Vue/TypeScript/database hoặc viết lại toàn bộ nếu chưa được phê duyệt. **PR0 V6 chỉ cho phép thiết kế tài liệu** về Supabase PostgreSQL/Auth/RLS và IndexedDB; không phải quyền tạo project, dùng secrets hoặc triển khai. Trước PR1 đọc [`docs/ARCHITECTURE_V6_DATABASE.md`](docs/ARCHITECTURE_V6_DATABASE.md), [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md), [`docs/MIGRATION_RUNBOOK.md`](docs/MIGRATION_RUNBOOK.md), [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md); owner phải chốt các quyết định trước PR1 trong kiến trúc. Mỗi PR sau được giao và cấp phạm vi riêng; giữ frontend và tám route.
 - `index.html` là shell; `modules/page-catalog.js`, `modules/page-router.js`, `modules/page-loader.js` và `pages/*.html` thực hiện định tuyến/lazy-loading. Không nạp toàn bộ feature ở Home; giữ state/đồng hồ khi route nếu nghiệp vụ yêu cầu.
 - Pure logic trong `modules/*-core.js`, DOM/events trong `modules/*-ui.js`. Với dữ liệu nhập, ưu tiên `textContent`, validation và escaping thích hợp; không `eval`, không tin nội dung JSON ngoài.
 - Không xóa/đổi khóa `localStorage` hoặc phá backup JSON cũ nếu chưa có migration **đã kiểm thử**. Đặc biệt tôn trọng `pickleup_weekly_goal_v46`, `pickleup_week_plan_v47`, `pickleup_week_checkins_v48`, `pickleup_academy_history_v44`, `pickleup_academy_last_lesson_v4`, `pickleup_selected_plan_v31`. Schema mới: optional khi phù hợp, giới hạn kích thước, validate trước import, thử với dữ liệu cũ/lỗi.
+- Khi V6 được cấp phạm vi triển khai: guest vẫn hoạt động; signup không tự import; raw rescue giữ đủ 18 keys và dữ liệu lỗi, không xóa legacy. Mutable data phải có server CAS/revision và conflict UI, clear sync bằng tombstone; events append có UUID/idempotency. Không last-write-wins âm thầm. Mọi write qua transaction/RPC có RLS/ownership validation; tests A/B/anonymous cả REST/RPC. Namespace cache/outbox theo user, không chuyển pending sang account khác; không cache auth/API hoặc export secrets. Không dùng DB production cho test/reset; staging và production được cấp quyền riêng.
 - Menu dễ truy cập trên PC/iPad/iPhone/Android; không overflow, chú ý safe-area, focus, labels, nút chạm, loading/empty/error/success. Tối thiểu viewport **390/820/1180/1440 px**; thiết bị thực phải báo riêng, không gọi Playwright là field QA.
 - PWA: sync `package.json`, `PICKLEUP_BUILD`, mọi `?v=`, `sw.js` cache, test update/offline/return-online; không xóa `localStorage`. Chỉ tuyên bố nhanh hơn khi có đo trước/sau.
 
@@ -43,6 +44,8 @@ Trước khi thiết kế/sửa tính năng, đọc **cả ba** tài liệu có 
 5. Tạo PR mô tả rõ phạm vi, rủi ro, evidence. Kiểm tra **CI đúng PR HEAD SHA**; **không merge nếu CI đỏ**. Flaky test là vấn đề phải điều tra/ghi nhận, không được ẩn bằng retry, tắt test hoặc nới assertion tùy tiện.
 6. Chỉ merge khi release gate bắt buộc đạt; verify `main` CI + Pages của **merge SHA**. Nếu CI sau merge flaky, báo rõ chưa đạt “clean run” dù workflow success.
 7. Mỗi release cập nhật README/ROADMAP/release notes, đồng bộ version/PWA cache đúng quy trình. Không tự ý force-push, xóa dữ liệu, lộ secret hoặc thao tác phá hủy/khó đảo ngược; cần phê duyệt cho thay đổi production có rủi ro.
+
+**CI backend V6 (đề xuất cho PR1a, chưa có ở PR0):** thêm migrations/pgTAP RLS/CAS/idempotency trên Supabase local/DB ephemeral, giữ CI Node24 Chromium/WebKit và gate đúng PR HEAD. Không secrets production, không deploy tự động từ PR, không bỏ suite/flaky để xanh. Chi tiết job/acceptance ở migration runbook. Yêu cầu “không tự merge” của nhiệm vụ hiện hành luôn ưu tiên quy trình merge tổng quát ở trên.
 
 ## 5. Tự chủ có kiểm soát và báo cáo
 

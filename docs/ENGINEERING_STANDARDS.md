@@ -6,6 +6,8 @@
 
 `PickleUp` là **static client-side PWA**: HTML5, CSS3, vanilla JavaScript, browser `localStorage`, JSON import/export; triển khai GitHub Pages. Không có backend/account/database/cloud sync. Không thêm framework, dịch vụ trả phí, upload người dùng hoặc thay đổi nền tảng trước khi có phân tích migration + phê duyệt.
 
+**Baseline PR0 V6:** main `8f99fcb` là V5.1.0, vẫn đúng kiến trúc trên. [Thiết kế V6](ARCHITECTURE_V6_DATABASE.md), [data dictionary đủ18 keys](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) là đề xuất, không phải tính năng đang chạy hoặc quyền triển khai backend. Chỉ khi được giao PR tiếp theo và chốt quyết định trước PR1 mới thêm Supabase/IndexedDB theo hợp đồng đó; giữ toàn bộ quy tắc sản phẩm, legacy data và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang ở đó thay catalog8 route hiện hành.
+
 | Thành phần | Trách nhiệm |
 |---|---|
 | `index.html` | Application shell, home, navigation, mount points, mã build |

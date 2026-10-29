@@ -2,6 +2,8 @@
 
 **Căn cứ:** [`../AGENTS.md`](../AGENTS.md), [`PRODUCT_SPEC.md`](PRODUCT_SPEC.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md). Quy trình này áp dụng cho feature, bugfix, performance và thay đổi tài liệu. **Đừng tự tuyên bố Stable từ việc code đã viết hoặc workflow có trạng thái xanh nhưng còn flaky.**
 
+**V6:** đọc thêm [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 chỉ Markdown; backend workflow là đề xuất cho PR1a. Các PR triển khai cần thêm RLS/CAS/import/offline/account-switch evidence trên local/staging, không thay gate Node24/browser hiện có. Không reset/test trên production, không tự merge khi user yêu cầu PR-only. Quyền staging không suy thành quyền production.
+
 ## 1. Trước mỗi nhiệm vụ: evidence thực tế
 
 1. Đọc `main` **HEAD SHA**, `package.json` version, PR mở, commit gần nhất, CI/Pages jobs mới nhất. Không đoán phiên bản theo lịch sử hội thoại.
