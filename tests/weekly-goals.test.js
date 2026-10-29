@@ -50,3 +50,30 @@ test("below own lesson target, then new, then review; never blends level",()=>{
  const other=a.recommend(lessons,{},[],"2.0–2.5");
  assert.equal(other.lesson.id,"PU-003");
 });
+
+test("weekly goal UI hydrates before enabling edits and saves the selected value synchronously",()=>{
+ const fs=require("node:fs"),vm=require("node:vm");
+ const markup=fs.readFileSync(require.resolve("../pages/progress.html"),"utf8");
+ const nodes=new Map();
+ const element=()=>({disabled:true,value:"",dataset:{},style:{},handlers:{},
+  addEventListener(name,fn){this.handlers[name]=fn},append(){},setAttribute(){},replaceChildren(){}});
+ for(const match of markup.matchAll(/id="(wg[^"]+)"/g))nodes.set(match[1],element());
+ for(const id of ["wgDays","wgLevel","wgSave","wgRefresh"])
+  assert.match(markup,new RegExp('id="'+id+'"[^>]* disabled'));
+ const values=new Map([[a.KEY,JSON.stringify({days:4,level:"2.0–2.5"})],["legacy","keep"]]);
+ const storage={getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value)};
+ const document={getElementById:id=>nodes.get(id),createElement:element,addEventListener(){},dispatchEvent(){}};
+ vm.runInNewContext(fs.readFileSync(require.resolve("../modules/weekly-goals-ui.js"),"utf8"),{
+  window:{PICKLEUP_WEEKLY_GOALS:a,addEventListener(){}},document,localStorage:storage,Event:class{}
+ });
+ assert.equal(nodes.get("wgDays").value,"4");
+ assert.equal(nodes.get("wgLevel").value,"2.0–2.5");
+ for(const id of ["wgDays","wgLevel","wgSave","wgRefresh"]){
+  assert.equal(nodes.get(id).disabled,false);
+ }
+ nodes.get("wgDays").value="2";
+ nodes.get("wgSave").handlers.click();
+ assert.deepEqual(JSON.parse(values.get(a.KEY)),{days:2,level:"2.0–2.5"});
+ assert.match(nodes.get("wgStatus").textContent,/Đã lưu/);
+ assert.equal(values.get("legacy"),"keep");
+});

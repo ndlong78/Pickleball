@@ -56,4 +56,7 @@ document.addEventListener("pickleup:score-saved",redraw);
 document.addEventListener("pickleup:training-log-updated",redraw);
 window.addEventListener("storage",e=>{if([core.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_training_log_v26"].includes(e.key)){if(e.key===core.KEY){const s=core.readSettings(e.newValue);days.value=String(s.days);level.value=s.level}redraw()}});
 redraw();
+// Markup is mounted before lazy scripts execute. Only allow edits after hydration
+// and handler registration, so initialization cannot overwrite an early selection.
+for(const id of ["wgDays","wgLevel","wgSave","wgRefresh"])byId(id).disabled=false;
 })();
