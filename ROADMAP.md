@@ -495,3 +495,5 @@ Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật.
 PR1b đang triển khai: OTP/session adapter sau PR1a; gate và giới hạn tại [AUTH_PR1B](docs/AUTH_PR1B.md).
 
 PR2 bổ sung persistence local có transaction/CAS/namespace; PR3 preview/import và PR4 sender/pull/conflict còn ở bước sau. Xem [hợp đồng PR2](docs/LOCAL_REPOSITORY_PR2.md).
+
+PR3 chia PR3a rescue/inventory preview chỉ đọc và PR3b domain mapping/quarantine/consent/RPC importer. Xem [phạm vi PR3a](docs/RESCUE_PREVIEW_PR3A.md).

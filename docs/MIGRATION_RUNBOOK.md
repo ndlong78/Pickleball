@@ -80,3 +80,5 @@ Mọi PR kiểm exact HEAD SHA và run logs, ghi pass/fail/flaky, không chỉ b
 - Mất mạng/401: giữ queue, hiển thị retry/login; không gửi lại dưới user khác. Server outage: kill switch local-first, export rescue khi có quota risk.
 - Phát hiện duplicate/cursor miss/cross-user leak: dừng rollout/sync, bảo toàn outbox/snapshots/evidence đã lọc PII; security owner điều tra, thu hồi session nếu cần. Không “sửa” bằng xóa client DB.
 - Gate production: staging restore chứng minh RPO/RTO, kiểm retention/reset epoch, owner security review, privacy/export/delete và support path, clean CI đúng SHA, Pages đúng merge SHA nếu owner merge sau này. PR0 kết thúc ở PR tài liệu, không merge/deploy V6.
+
+PR3a bổ sung raw rescue18 khóa và inventory preview chỉ đọc: xem [RESCUE_PREVIEW_PR3A](RESCUE_PREVIEW_PR3A.md). Các bước domain validation/import consent/RPC bên trên vẫn thuộc PR3b, chưa được thay bằng việc chỉ parse JSON.

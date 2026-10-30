@@ -303,3 +303,5 @@ Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật.
 PR1b: email OTP opt-in (flag off), xem [AUTH_PR1B](docs/AUTH_PR1B.md). Chưa phát hành V5.2.0 hay đồng bộ dữ liệu luyện tập.
 
 PR2: nền [IndexedDB/repository/outbox local](docs/LOCAL_REPOSITORY_PR2.md), chưa nối vào tám route hoặc bật sync.
+
+V5.3.0 / PR3a (chưa phát hành): [cứu hộ legacy18 khóa và xem trước tệp chỉ đọc](docs/RESCUE_PREVIEW_PR3A.md). Chưa importer hoặc sync.

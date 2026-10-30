@@ -4,6 +4,19 @@
 <h2>Tốc độ tải từng trang</h2>
 <p class="sub">Đo thời gian nạp module trên chính trình duyệt này; không gửi thông tin lên máy chủ. Thời gian thay đổi theo mạng và cache.</p></div>
 <button type="button" id="pagePerformanceRefresh" class="linkbtn">Làm mới</button></div>
+<div class="card" id="rescuePanel" style="padding:20px;min-width:0">
+<h3>Cứu hộ dữ liệu cũ · xem trước tệp</h3>
+<p>Giữ nguyên 18 khóa dữ liệu cũ, kể cả JSON lỗi, đồng hồ, checklist và bước tập trung. Tệp chứa dữ liệu riêng tư; hãy giữ ở nơi an toàn ngoài trình duyệt. Không gồm phiên đăng nhập hoặc kho IndexedDB V6.</p>
+<p>Chỉ xem trước trên máy. Chưa có thao tác nhập lên tài khoản, ghi đè hoặc đồng bộ. Số phần tử cấp đầu không phải số buổi tập; chưa kiểm tra từng bản ghi hay đối soát trùng/xung đột.</p>
+<button type="button" data-refresh>Xem dữ liệu trên thiết bị</button>
+<button type="button" data-download disabled>Tải bản cứu hộ raw</button>
+<label style="display:block;margin-top:12px">Xem trước tệp PickleUp (tối đa 32 MiB)
+<input type="file" accept=".json,application/json" style="display:block;max-width:100%"></label>
+<div data-unknown></div><p data-excluded></p>
+<p role="status" aria-live="polite">Chưa đọc dữ liệu.</p>
+<p data-source style="overflow-wrap:anywhere"></p>
+<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Nhóm</th><th scope="col">Trạng thái</th><th scope="col">Phần tử cấp đầu</th><th scope="col">Byte raw</th></tr></thead><tbody></tbody></table>
+</div>
 <div class="card" id="accountPanel" style="padding:20px">
 <h3>Tài khoản · thử nghiệm</h3>
 <p>Dữ liệu tập luyện, lịch sử, mục tiêu, đồng hồ và checklist hiện chỉ nằm trên thiết bị này, dùng chung trong chế độ khách. Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
