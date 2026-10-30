@@ -4,6 +4,7 @@
 const VERSION=1;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const KINDS=new Set(['profiles','user_preferences','personal_plans','academy_attempts','skill_assessments','practice_checkins','training_entries','match_records','user_selections']);
+const EVENTS=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
 const SINGLETONS=new Set(['profiles','user_preferences','user_selections']);
 const STORES={records:['namespace','kind','id'],outbox:['namespace','operationId'],conflicts:['namespace','conflictId'],sync_cursor:['namespace','protocol'],import_receipts:['namespace','fingerprint','adapterVersion'],legacy_snapshots:['installationId','snapshotId'],device_state:['namespace','deviceId','key'],metadata:['namespace','key']};
 class RepositoryError extends Error{constructor(code){super(code);this.name='RepositoryError';this.code=code}}
@@ -78,7 +79,8 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       if(!snapshot||Object.getPrototypeOf(snapshot)!==Object.prototype)fail('invalid_payload');
       const signature=canonical({kind,id,value:snapshot,operationId,expectedLocalRevision,action});
       if(new TextEncoder().encode(signature).length>256*1024)fail('payload_too_large');
-      if(action==='delete'&&canonical(snapshot)!=='{}')fail('invalid_payload');
+      if(action==='restore'&&EVENTS.has(kind))fail('append_only');
+      if(action==='delete'&&canonical(snapshot)!=='{}'&&!(kind==='practice_checkins'&&Object.keys(snapshot).length===1&&typeof snapshot.timezone_at_entry==='string'&&snapshot.timezone_at_entry.length<=80))fail('invalid_payload');
       return transaction(['records','outbox','metadata'],'readwrite',async tx=>{
        const records=tx.objectStore('records'),outbox=tx.objectStore('outbox'),metadata=tx.objectStore('metadata');
        const receiptKey=[namespace,'operation:'+operationId];
@@ -88,7 +90,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if((old?.localRevision||'0')!==expectedLocalRevision)fail('local_conflict');
        if(old?.deleted&&action==='put')fail('explicit_restore_required');
        if(!old?.deleted&&action==='restore')fail('not_deleted');
-       if(old&&['academy_attempts','skill_assessments','training_entries','match_records'].includes(kind)&&action==='put')fail('append_only');
+       if(old&&EVENTS.has(kind)&&action==='put')fail('append_only');
        const localRevision=(BigInt(expectedLocalRevision)+1n).toString();
        const record={namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay:action==='delete'?null:snapshot,deleted:action==='delete',localRevision,tailOperationId:guest?null:operationId};
        if(!guest)await request(outbox.add({namespace,operationId,kind,id,action,payload:snapshot,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));

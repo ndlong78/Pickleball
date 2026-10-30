@@ -1,4 +1,4 @@
-# PR1b — email OTP và phiên (chưa phát hành)
+# PR1b — email OTP và phiên (flag mặc định tắt)
 
 Nền: main baf60b9, PR #12 đã merge; không có PR mở khi bắt đầu. Auth mặc định tắt. Không provision/deploy cloud hoặc mở signup production.
 
@@ -21,3 +21,5 @@ Tất cả dữ liệu luyện tập hiện còn guest/local trên thiết bị,
 `python3 scripts/test_auth.py`: integration không mock GoTrue/Mailpit/Postgres/PostgREST trên Supabase local, chạy sau migration reset. Yêu cầu Supabase CLI2.54.11 trên PATH và Docker; `supabase start` không loại mailpit, sau đó `supabase db reset --local`. Script lấy local keys/OTP/session vào memory, không in chúng. Gửi OTP→Mailpit→verify A/B→apply_operation profile CAS→pull private data→refresh→logout/revoked refresh. Backend CI chạy script này; trạng thái cuối phải kiểm đúng PR HEAD.
 
 Executor local đã thử full Supabase nhưng image PostgreSQL17.6.1.029 giải nén hết disk với VFS. Không gọi JWT fixture PR1a là Auth thật. Chromium/WebKit và integration CI: evidence cụ thể ở PR, không suy từ code. Chưa staging SMTP, thiết bị thật, production, hoặc magic link; không có importer/sync engine.
+
+PR13 đã merge thành5d99168 ngày30/10/2026; backend/responsive và Pages của merge SHA thành công (242 browser tests pass, không flaky). Auth code đã deploy cùng5.2.0, chưa bật đăng nhập staging/production hoặc SMTP thật.

@@ -40,3 +40,9 @@ test('versionchange closes readers and interrupted upgrade preserves committed r
  await new Promise((resolve,reject)=>{const r=indexedDB.open('pickleup-v6',2);r.onupgradeneeded=()=>r.transaction.abort();r.onerror=()=>resolve();r.onsuccess=()=>reject(Error('upgrade unexpectedly committed'))});
  await assert.rejects(a.read('user_preferences','self'),{code:'scope_closed'});const recovered=await open({indexedDB});try{assert.equal((await recovered.scope(A).listOutbox()).length,1)}finally{recovered.close();db.close()}
 });
+test('closing scope while a write is in flight aborts new mutation and preserves earlier pending work',async()=>{
+ const {db,a}=await fixture();try{await a.write(op(id1));const pending=a.write(op(id2,2,'1'));a.close();await assert.rejects(pending);const recovered=db.scope(A);assert.equal((await recovered.read('user_preferences','self')).overlay.target_days,1);assert.equal((await recovered.listOutbox()).length,1)}finally{db.close()}
+});
+test('protocol1 refuses event restore; checkin tombstone retains explicitly supplied timezone',async()=>{
+ const {db,a}=await fixture();try{await assert.rejects(a.write({kind:'academy_attempts',id:id1,operationId:id2,value:{},action:'restore'}),{code:'append_only'});await a.write({kind:'practice_checkins',id:'2026-10-29',operationId:id1,value:{timezone_at_entry:'Asia/Ho_Chi_Minh'},action:'delete'});assert.deepEqual((await a.listOutbox())[0].payload,{timezone_at_entry:'Asia/Ho_Chi_Minh'})}finally{db.close()}
+});
