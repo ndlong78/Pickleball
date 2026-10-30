@@ -33,7 +33,8 @@ test('changed snapshot and invalid file produce safe errors without writes',asyn
  await expect(page.locator('#rescuePanel [role=status]')).toContainText('không phải JSON');expect(await page.evaluate(()=>localStorage.getItem('pickleup_scores'))).toBe('{"changed":true}');
 });
 test('visited settings and rescue remain available after offline reload',async({page,context})=>{
- await page.goto('/Pickleball/?page=settings');await expect(page.locator('#rescuePanel')).toBeVisible();
+ await page.goto('/Pickleball/?page=home');
  await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));localStorage.setItem('pickleup_weekly_goal_v46','{"days":2}')});
+ await page.goto('/Pickleball/?page=settings');await expect(page.locator('#rescuePanel')).toBeVisible();
  await context.setOffline(true);try{await page.reload();await expect(page.locator('#rescuePanel')).toBeVisible();await page.locator('[data-refresh]').click();await expect(page.locator('#rescuePanel tbody tr')).toHaveCount(18);await expect(page.locator('[data-download]')).toBeEnabled()}finally{await context.setOffline(false)}
 });
