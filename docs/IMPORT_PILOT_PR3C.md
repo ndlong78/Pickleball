@@ -51,3 +51,5 @@ Ngoài phạm vi/chưa kiểm: staging SMTP/deliverability, browser UI + real Go
 ## Race khởi tạo Học viện đã ghi nhận trên main
 
 PR15 merge từng có flaky WebKit1440: trend “không đổi” thay vì tăng6. Test mới cố tình trì hoãn academy-page.js xác nhận fragment trước đây cho edit/save trước hydrate (local test fail trước fix). Giữ input/nút save disabled tới sau listeners+initial choose/refreshLearning; test sau fix xác nhận giá trị6 được lưu đúng. Không nới assertion/retry hay tắt suite; không tuyên bố mọi nguyên nhân flaky đã được loại bỏ chỉ từ một clean run.
+
+CI đầu tại d7945cb:279 pass,2 fail (overflow390 trên cả hai engines),1 flaky (WebKit weekly-goal hydration, retry pass). Đã thêm ràng buộc wrap/min-inline-size cho pilot; giữ assertion overflow≤2px và thêm diagnostics chỉ tag/id/width, không nguồn/token. Fixture giữ script nay block Service Worker riêng và xác nhận route đã intercept trước khi assert disabled, tránh SW đáp ứng ngoài network gate; PWA suites vẫn giữ SW. Kết quả exact HEAD sau sửa được ghi trên PR, không xóa lần fail/flaky này khỏi evidence.

@@ -30,7 +30,7 @@ for(const width of [390,820,1180,1440])test('mock Auth/RPC, real mapper and IDB:
  await source(page);await preview(page);await expect(page.locator('[data-import-start]')).toBeDisabled();expect(await page.evaluate(()=>IMPORT_CALLS.filter(c=>c.name==='begin_import').length)).toBe(0);
  await consent(page);await page.locator('[data-import-start]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Phiên nhập đã hoàn tất');
  expect(await page.evaluate(()=>IMPORT_CALLS.map(c=>c.name))).toEqual(['pull_changes','begin_import','import_batch','finish_import','pull_changes']);expect(await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()))).toBe(before);
- expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+ const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,elements:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth).map(e=>({tag:e.tagName,id:e.id,width:Math.round(e.getBoundingClientRect().width)}))}));expect(layout.overflow,JSON.stringify(layout)).toBeLessThanOrEqual(2);
 });
 test('timeout resume reload replays same ID/body from native IDB checkpoint',async({page,context})=>{
  await setup(context,{drop:true});await page.goto('/Pickleball/?page=settings');await source(page);await preview(page);await consent(page);await page.locator('[data-import-start]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Lỗi mạng');
