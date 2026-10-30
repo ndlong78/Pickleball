@@ -9,7 +9,7 @@
     "build:auth": "esbuild node_modules/@supabase/supabase-js/dist/module/index.js --bundle --format=esm --platform=browser --minify --outfile=vendor/supabase.js"
   },
   "devDependencies": {
-    "@playwright/test": "1.55.0",
+    "@playwright/test": "^1.55.0",
     "esbuild": "0.25.10"
   },
   "engines": {

@@ -9,6 +9,7 @@ function createAuthAdapter(client){
  function invalidate(){generation++;for(const c of controllers)c.abort();controllers.clear()}
  function accept(next){
   if(stopped)return;
+  if(state.status!=="restoring"&&!state.error&&next?.user.id===session?.user.id&&next?.access_token===session?.access_token)return;
   invalidate();session=next;
   state={status:next?"authenticated":"guest",user:next?{id:next.user.id,email:next.user.email}:null,error:null};publish();
  }
