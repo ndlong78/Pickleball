@@ -503,3 +503,5 @@ PR3b review backend transaction/import RPC trước; PR3c bổ sung mapping, qua
 PR3c nối mapper/consent + importer pilot mặc định tắt; tiếp theo staging validation/repair workflow trước rollout, PR4 sync domain vẫn riêng. [Hợp đồng PR3c](docs/IMPORT_PILOT_PR3C.md).
 
 PR3d thêm kiểm chứng UI OTP/import trên Chromium/WebKit với GoTrue/Mailpit/RPC local thật, checkpoint reload và account isolation; không bật flags hoặc sync. Xem [evidence và giới hạn](docs/AUTH_IMPORT_BROWSER_PR3D.md).
+
+V5.4.1 / PR3d sửa guarded Auth fetch để HTTP204 logout không làm SDK bỏ qua xóa/broadcast phiên; thêm regression bodyless response và kiểm chứng browser/backend local thật. [Release notes](RELEASE_V5.4.1.md).

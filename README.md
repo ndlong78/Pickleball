@@ -311,3 +311,5 @@ PR3b: [RPC import nguyên tử](docs/ATOMIC_IMPORT_PR3B.md), chưa nối upload/
 V5.4.0 / PR3c (chưa phát hành): [importer pilot có preview/consent/checkpoint](docs/IMPORT_PILOT_PR3C.md), flags vẫn false, không auto-sync hoặc đổi nguồn dữ liệu tám route.
 
 PR3d thêm kiểm chứng UI OTP/import trên Chromium/WebKit với GoTrue/Mailpit/RPC local thật, checkpoint reload và account isolation; không bật flags hoặc sync. Xem [evidence và giới hạn](docs/AUTH_IMPORT_BROWSER_PR3D.md).
+
+V5.4.1 / PR3d sửa guarded Auth fetch để HTTP204 logout không làm SDK bỏ qua xóa/broadcast phiên; thêm regression bodyless response và kiểm chứng browser/backend local thật. [Release notes](RELEASE_V5.4.1.md).

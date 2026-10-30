@@ -15,6 +15,7 @@ test.describe('mock Auth transport, real SDK; no credential artifacts',()=>{
   await context.route('http://127.0.0.1:54321/**',async r=>{
    const path=new URL(r.request().url()).pathname;
    if(r.request().method()==='OPTIONS')return r.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'*'}});
+   if(path.endsWith('/logout'))return r.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*'}});
    let body={};
    if(path.endsWith('/verify'))body={access_token:'fixture-access',refresh_token:'fixture-refresh',token_type:'bearer',expires_in:3600,user};
    if(path.endsWith('/user'))body=user;

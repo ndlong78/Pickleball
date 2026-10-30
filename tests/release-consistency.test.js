@@ -9,7 +9,7 @@ const releaseChannel=version.includes("-")?"beta":"stable";
 const cacheMatch=sw.match(/const CACHE="([^"]+)"/);
 test("PWA shell cache is release-specific and index agrees with package version",()=>{
  assert.ok(cacheMatch,"Service worker CACHE name missing");
- assert.equal(cacheMatch[1],"pickleup-shell-v"+assetVersion.split(".").slice(0,2).join("-")+"-"+releaseChannel,"PWA cache must match version line and release channel");
+ assert.equal(cacheMatch[1],"pickleup-shell-v"+assetVersion.split(".").join("-")+"-"+releaseChannel,"PWA cache must match version line and release channel");
  assert.match(index,new RegExp("PICKLEUP_BUILD\\s*=\\s*[\'\\\"]"+assetVersion.replaceAll(".","\\.")+"[\'\\\"]"));
 });
 test("PWA script and stylesheet version references match the package",()=>{

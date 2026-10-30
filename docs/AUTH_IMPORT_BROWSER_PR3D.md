@@ -2,7 +2,7 @@
 
 Nền `fc3198aba5642c74367553d773759d7b3a8a8573` sau merge #17, app5.4.0. [Responsive sau merge](https://github.com/ndlong78/Pickleball/actions/runs/41075211364):144 unit +282 browser pass, không retry/flaky; [backend](https://github.com/ndlong78/Pickleball/actions/runs/41075211296) và [Pages](https://github.com/ndlong78/Pickleball/actions/runs/41075209476) success cùng SHA. Không có PR mở trùng khi bắt đầu.
 
-PR này khép khoảng trống browser UI + GoTrue thật của PR3c trước khi thêm sync preferences/checkins (PR4). Không chuyển nguồn dữ liệu, thêm sync engine/repair API, bật flags hoặc đổi production. Không thay executable app/assets/storage schema nên giữ version/PWA5.4.0. Auth/import configs được thay **chỉ trong HTTP test host**, không sửa file cấu hình shipped.
+PR này khép khoảng trống browser UI + GoTrue thật của PR3c trước khi thêm sync preferences/checkins (PR4). Không chuyển nguồn dữ liệu, thêm sync engine/repair API, bật flags hoặc đổi production. Integration phát hiện lớp guardedFetch dựng Response204 với body rỗng, gây TypeError sau server logout và ngăn SDK xóa/broadcast phiên. Sửa helper giữ null body cho204/205/304, vẫn loại stale generation; regression mock logout dùng204 thật về semantics HTTP. App/PWA lên5.4.1, cache pickleup-shell-v5-4-1-stable để cập nhật bản vá, schema/storage keys giữ nguyên. Auth/import configs được thay **chỉ trong HTTP test host**, không sửa file cấu hình shipped.
 
 ## Chạy và trust boundary
 
@@ -42,3 +42,5 @@ Môi trường executor không tải được browser chuẩn vì proxy trả403
 Chưa kiểm chứng staging SMTP/deliverability/quota, Managed publishable gateway/HTTPS/redirect policy, JWT hết hạn theo thời gian thực/SDK auto-refresh trong browser, thiết bị thật, eviction/quota/load hoặc repair/amend import manifest. Backend suite vẫn kiểm real refresh/logout; unit kiểm expiry/rate limits/account-switch không thay các gate staging. Không rollout trước policy backup/restore/privacy và staging readiness. PR4 sync cùng conflict UI là bước tiếp theo độc lập; importer repair vẫn cần thiết trước pilot nhận dữ liệu thật.
 
 Hai lần backend CI đầu (feb01e9/701808e) fail ở kỳ vọng lỗi sau commit: Chromium tự retry POST khi fixture đóng socket, rồi finish thành công; test đợi UI lỗi nên timeout. HTTP diagnostics xác nhận begin→batch→batch→finish→pull đều200. Đổi fault fixture thành502 sau commit để kiểm resume qua reload một cách xác định; không thay retry/app/receipt logic hoặc nới assertions. Các lần fail này giữ trong evidence PR.
+
+Lần668a994 đã qua OTP→preview→commit-loss→reload/replay→canonical verify, rồi fail chờ logout lan sang tab A. HTTP logout upstream204; xác nhận native Response không cho ArrayBuffer body ở204. Đây là lỗi runtime adapter đã sửa trong5.4.1, khác hai lần lỗi giả định fault fixture ở trên. Không đổi SDK/signout scope/RLS hoặc nới assertion tab.

@@ -1,6 +1,16 @@
 /* Auth owns sessions; training data remains guest/device-only in PR1b. */
 (function(root){
 "use strict";
+function createGuardedFetch(getGeneration,fetcher=(...args)=>root.fetch(...args)){
+ return async(...args)=>{
+  const stamp=getGeneration(),response=await fetcher(...args),body=await response.arrayBuffer();
+  if(stamp!==getGeneration())throw Error("Session changed");
+  // Fetch forbids a body on 204/205/304, even a zero-byte ArrayBuffer. GoTrue
+  // returns 204 for logout; throwing here prevents SDK storage/broadcast cleanup.
+  const noBody=[204,205,304].includes(response.status);
+  return new Response(noBody?null:body,{status:response.status,statusText:response.statusText,headers:response.headers});
+ };
+}
 function createAuthAdapter(client,{rpcTransport}={}){
  let generation=0,session=null,stopped=false;
  const listeners=new Set(),controllers=new Set();
@@ -69,13 +79,7 @@ async function connect(config){
  if(url.username||url.password||url.search||url.hash||!["","/"].includes(url.pathname))throw Error("Invalid Auth URL");
  const {createClient}=await import("../vendor/supabase.js");
  let adapter;
- const guardedFetch=async (...args)=>{
-  const stamp=adapter?.getGeneration();
-  const response=await fetch(...args);
-  const body=await response.arrayBuffer();
-  if(stamp!==adapter?.getGeneration())throw Error("Session changed");
-  return new Response(body,{status:response.status,statusText:response.statusText,headers:response.headers});
- };
+ const guardedFetch=createGuardedFetch(()=>adapter?.getGeneration());
  adapter=createAuthAdapter(createClient(config.url,config.publishableKey,{global:{fetch:guardedFetch},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:"pickleup_auth_v6"}}),{rpcTransport:async(method,args,token,signal)=>{
   // Pin the token captured for this request. Never let an A request acquire B's
   // token from an async SDK auth lookup after an account switch.
@@ -89,5 +93,5 @@ async function connect(config){
 let shared,sharedConfig;
 function getShared(config){if(!config?.enabled)return Promise.reject(Error("Auth disabled"));const identity=config.url+"|"+config.publishableKey;if(shared&&identity!==sharedConfig)return Promise.reject(Error("Auth configuration changed; reload required"));if(!shared){sharedConfig=identity;shared=connect(config).catch(error=>{shared=null;sharedConfig=null;throw error})}return shared}
 root.PickleUpAuth={createAuthAdapter,connect,getShared};
-if(typeof module!=="undefined")module.exports={createAuthAdapter};
+if(typeof module!=="undefined")module.exports={createAuthAdapter,createGuardedFetch};
 })(typeof window!=="undefined"?window:globalThis);
