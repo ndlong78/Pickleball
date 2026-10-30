@@ -47,6 +47,10 @@ for session,name in [(A,'A'),(B,'B')]:
 assert imports[0]!=imports[1]
 code,result=call('/rest/v1/rpc/get_import_status',{'p_import_id':imports[0]},B['access_token']);assert code==200 and result['code']=='import_not_available'
 
+probe=subprocess.run(['node','scripts/test_import_controller.cjs'],input=json.dumps({'apiURL':base,'key':key,'sessions':[{'user':{'id':session['user']['id']},'access_token':session['access_token']} for session in [A,B]]}),text=True,capture_output=True)
+safe_error=re.search(r'failed: ([A-Za-z0-9_]+)',probe.stderr)
+assert probe.returncode==0, 'JS controller integration failed: '+(safe_error.group(1) if safe_error else 'output_suppressed')
+print('PASS real Auth + JS mapper/controller import A/B, timeout replay and plan references')
 code,refreshed=call('/auth/v1/token?grant_type=refresh_token',{'refresh_token':A['refresh_token']});assert code==200
 code,_=call('/auth/v1/logout?scope=local',{},refreshed['access_token']);assert code in (200,204)
 code,_=call('/auth/v1/token?grant_type=refresh_token',{'refresh_token':refreshed['refresh_token']});assert code>=400

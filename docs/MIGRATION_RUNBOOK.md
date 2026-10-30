@@ -84,3 +84,5 @@ Mọi PR kiểm exact HEAD SHA và run logs, ghi pass/fail/flaky, không chỉ b
 PR3a bổ sung raw rescue18 khóa và inventory preview chỉ đọc: xem [RESCUE_PREVIEW_PR3A](RESCUE_PREVIEW_PR3A.md). Các bước domain validation/import consent/RPC bên trên vẫn thuộc PR3b, chưa được thay bằng việc chỉ parse JSON.
 
 PR3b là backend RPC local/CI riêng; gate domain preview, account consent, quarantine/export và importer UI ở PR3c vẫn bắt buộc trước upload. Hợp đồng [ATOMIC_IMPORT_PR3B](ATOMIC_IMPORT_PR3B.md).
+
+PR3c bổ sung mapper/account-consent/checkpoint pilot theo [IMPORT_PILOT_PR3C](IMPORT_PILOT_PR3C.md), cả Auth/import flags mặc định tắt. Repair manifest/group expansion và rollout thật còn gate, không coi merge backend là đủ bật sync.

@@ -17,9 +17,29 @@
 <p data-source style="overflow-wrap:anywhere"></p>
 <table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Nhóm</th><th scope="col">Trạng thái</th><th scope="col">Phần tử cấp đầu</th><th scope="col">Byte raw</th></tr></thead><tbody></tbody></table>
 </div>
+<div class="card" id="importPilot" style="padding:20px;min-width:0">
+<h3>Nhập dữ liệu vào tài khoản · pilot</h3>
+<p role="status" aria-live="polite">Pilot nhập dữ liệu chưa bật. Bản cứu hộ và dữ liệu trên máy vẫn hoạt động bình thường.</p>
+<div data-import-body hidden>
+<p data-import-account></p>
+<p>Chỉ nhập sau khi bạn chọn tệp, xem preview và xác nhận. Dữ liệu cũ trên thiết bị được giữ nguyên; đây là nhập một lần, chưa phải đồng bộ. Mỗi batch là transaction riêng, dừng giữa chừng có thể đã nhập một phần.</p>
+<label>Tệp PickleUp đã sao lưu (≤32 MiB)<input type="file" disabled accept=".json,application/json" style="display:block;max-width:100%"></label>
+<fieldset data-import-groups><legend>Nhóm muốn nhập (không chọn = giữ trên máy)</legend></fieldset>
+<label>Múi giờ của các ngày check-in (chọn rõ nếu nhập check-in)<input data-import-timezone placeholder="Ví dụ: Asia/Ho_Chi_Minh" style="max-width:100%"></label>
+<button type="button" data-import-preview disabled>Lập preview với tài khoản hiện tại</button>
+<div data-import-summary style="overflow-wrap:anywhere"></div>
+<div data-import-rows></div>
+<p><label><input type="checkbox" data-import-rescue> Tôi đã giữ tệp gốc/bản cứu hộ ở nơi an toàn ngoài trình duyệt.</label></p>
+<p><label><input type="checkbox" data-import-quarantine> Tôi đồng ý giữ nguyên các mục lỗi trong tệp gốc/quarantine, chỉ nhập các mục đã kiểm tra.</label></p>
+<p><label><input type="checkbox" data-import-consent> Tôi xác nhận các nhóm, quyết định đối soát và tài khoản nhận theo preview này.</label></p>
+<button type="button" data-import-start disabled>Nhập / tiếp tục phiên đã duyệt</button>
+<button type="button" data-import-report disabled>Tải báo cáo và dữ liệu quarantine</button>
+<button type="button" data-import-stop disabled>Dừng · giữ checkpoint</button>
+</div>
+</div>
 <div class="card" id="accountPanel" style="padding:20px">
 <h3>Tài khoản · thử nghiệm</h3>
-<p>Dữ liệu tập luyện, lịch sử, mục tiêu, đồng hồ và checklist hiện chỉ nằm trên thiết bị này, dùng chung trong chế độ khách. Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
+<p>Các trang luyện tập đang đọc dữ liệu cũ trên thiết bị, dùng chung trong chế độ khách. Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Chỉ pilot nhập riêng, khi được bật và bạn xác nhận, mới gửi các mục đã duyệt; các trang chưa tự chuyển sang dữ liệu tài khoản. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
 <p role="status" aria-live="polite">Chế độ khách</p>
 <form hidden>
 <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>

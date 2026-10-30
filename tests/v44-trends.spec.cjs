@@ -27,3 +27,17 @@ test("V4.4 does not invent trend for preexisting V4.3 single-score data",async({
  await expect(page.locator("#academyRecommendReason")).toContainText("5/20");
  await expect(page.locator("#academyTrendText")).toContainText("chưa thể tính xu hướng");
 });
+test.describe('network-gated hydration',()=>{
+ test.use({serviceWorkers:'block'});
+test('Academy score stays disabled until delayed feature hydration completes',async({page})=>{
+ let intercepted=false,release;const gate=new Promise(resolve=>release=resolve);
+ await page.route('**/modules/academy-page.js*',async route=>{intercepted=true;await gate;await route.continue()});
+ const navigation=page.goto('/?page=academy');
+ try{await expect.poll(()=>intercepted).toBe(true);await expect(page.locator('#academyScore')).toBeVisible();await expect(page.locator('#academyScore')).toBeDisabled();await expect(page.locator('#academySave')).toBeDisabled()}finally{release()}
+ await navigation;
+ await expect(page.locator('#academyScore')).toBeEnabled();
+ await page.locator('#academyScore').fill('6');await page.locator('#academySave').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('pickleup_academy_history_v44'))[0].score)).toBe(6);
+});
+
+});

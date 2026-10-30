@@ -49,3 +49,6 @@ test('protocol1 refuses event restore; checkin tombstone retains explicitly supp
 test('sparse arrays cannot collide with empty arrays in operation receipts',async()=>{
  const {db,a}=await fixture();try{await assert.rejects(a.write({...op(id1),value:{example:new Array(1)}}),{code:'invalid_payload'});assert.equal((await a.listOutbox()).length,0)}finally{db.close()}
 });
+test('import checkpoint CAS is namespaced and excludes credentials from storage',async()=>{
+ const {db,a,b}=await fixture();const fp='a'.repeat(64);try{const rev=await a.saveImportCheckpoint(fp,'legacy-1',{owner:A,phase:'prepared'});assert.equal(rev,'1');assert.equal(await b.getImportCheckpoint(fp,'legacy-1'),undefined);await assert.rejects(a.saveImportCheckpoint(fp,'legacy-1',{phase:'other'}),{code:'local_conflict'});assert.throws(()=>a.saveImportCheckpoint(fp,'legacy-1',{access_token:'fixture'}),{code:'credentials_forbidden'});assert.equal((await a.getImportCheckpoint(fp,'legacy-1')).value.phase,'prepared')}finally{db.close()}
+});

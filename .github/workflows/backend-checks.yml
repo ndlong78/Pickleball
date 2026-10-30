@@ -28,6 +28,12 @@ jobs:
       SUPABASE_INTERNAL_IMAGE_REGISTRY: docker.io
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Install JS integration dependencies
+        run: npm ci --no-audit --no-fund
       - uses: supabase/setup-cli@v1
         with:
           version: 2.54.11

@@ -234,3 +234,9 @@ button[aria-label="Cài ứng dụng PickleUp"]{
  html{scroll-behavior:auto}
  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* Import consent includes long account IDs and native fieldset/file controls. */
+#importPilot{overflow-wrap:anywhere}
+#importPilot fieldset{min-inline-size:0;max-inline-size:100%}
+#importPilot legend{max-inline-size:100%;white-space:normal}
+#importPilot button,#importPilot input,#importPilot select{max-inline-size:100%}

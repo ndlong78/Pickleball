@@ -43,6 +43,8 @@ test("V4.6 settings exports and restores optional weeklyGoal",async({page})=>{
 });
 
 // Hold the UI script rather than sleeping: reproduce the fragment/script race.
+test.describe('network-gated hydration',()=>{
+ test.use({serviceWorkers:'block'});
 test("weekly goal controls wait for hydration and preserve legacy storage",async({page})=>{
  await page.addInitScript(()=>{
   if(!localStorage.getItem("pickleup_weekly_goal_v46")){
@@ -50,13 +52,14 @@ test("weekly goal controls wait for hydration and preserve legacy storage",async
    localStorage.setItem("pickleup_academy_v2",JSON.stringify({legacy:"untouched"}));
   }
  });
- let release;
+ let intercepted=false,release;
  const gate=new Promise(resolve=>{release=resolve});
  await page.route("**/modules/weekly-goals-ui.js*",async route=>{
-  await gate;await route.continue();
+  intercepted=true;await gate;await route.continue();
  });
  try{
   await page.goto("/?page=progress",{waitUntil:"domcontentloaded"});
+  await expect.poll(()=>intercepted).toBe(true);
   await expect(page.locator("#wgDays")).toBeVisible();
   for(const id of ["wgDays","wgLevel","wgSave","wgRefresh"])
    await expect(page.locator("#"+id)).toBeDisabled();
@@ -73,4 +76,6 @@ test("weekly goal controls wait for hydration and preserve legacy storage",async
  await expect(page.locator("#wgDays")).toHaveValue("2");
  await expect(page.locator("#wgLevel")).toHaveValue("2.0–2.5");
  expect(await page.evaluate(()=>localStorage.getItem("pickleup_academy_v2"))).toBe('{"legacy":"untouched"}');
+});
+
 });
