@@ -192,4 +192,8 @@ const initialLesson=resumedId;
 choose();
 if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson);
 refreshLearning();
+// The fragment can become visible before this lazy-loaded script arrives.
+// Enable score editing only after initial values and save listeners are ready.
+score.disabled=false;
+document.getElementById('academySave').disabled=false;
 })();

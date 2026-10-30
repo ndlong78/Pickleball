@@ -1,7 +1,7 @@
 /* Auth owns sessions; training data remains guest/device-only in PR1b. */
 (function(root){
 "use strict";
-function createAuthAdapter(client){
+function createAuthAdapter(client,{rpcTransport}={}){
  let generation=0,session=null,stopped=false;
  const listeners=new Set(),controllers=new Set();
  let state={status:"restoring",user:null,error:null};
@@ -42,18 +42,31 @@ function createAuthAdapter(client){
    return data;
   }catch(_){return {status:stamp!==generation?"stale":"network_error"}}finally{controllers.delete(controller)}
  }
+ async function importRpc(owner,method,args){
+  if(!['pull_changes','begin_import','import_batch','finish_import','get_import_status'].includes(method))return {status:"invalid"};
+  const stamp=generation,pinned=session;
+  if(!pinned||owner!==pinned.user.id)return {status:"auth_required"};
+  if(pinned.expires_at*1000<=Date.now())return {status:"auth_required"};
+  const body=structuredClone(args),controller=new AbortController();controllers.add(controller);
+  try{
+   if(!rpcTransport)return {status:"unavailable"};
+   const result=await rpcTransport(method,body,pinned.access_token,controller.signal);
+   return stamp===generation&&session?.user.id===owner?result:{status:"stale"};
+  }catch(_){return {status:stamp===generation?"network_error":"stale"}}finally{controllers.delete(controller)}
+ }
  function message(error){
   if(!error)return null;
   if(error.status===429||error.code==="over_email_send_rate_limit")return "Gửi quá nhiều mã. Vui lòng chờ rồi thử lại.";
   if(error.code==="otp_expired"||error.status===403)return "Mã sai hoặc đã hết hạn. Kiểm tra mã hoặc yêu cầu mã mới.";
   return "Không thực hiện được. Kiểm tra kết nối hoặc thử lại sau.";
  }
- return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
+ return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
 }
 async function connect(config){
  const url=new URL(config.url);
  if(url.protocol!=="https:"&&!(url.protocol==="http:"&&["localhost","127.0.0.1"].includes(url.hostname)))throw Error("Invalid Auth URL");
  if(!config.publishableKey.startsWith("sb_publishable_"))throw Error("Publishable key required");
+ if(url.username||url.password||url.search||url.hash||!["","/"].includes(url.pathname))throw Error("Invalid Auth URL");
  const {createClient}=await import("../vendor/supabase.js");
  let adapter;
  const guardedFetch=async (...args)=>{
@@ -63,9 +76,18 @@ async function connect(config){
   if(stamp!==adapter?.getGeneration())throw Error("Session changed");
   return new Response(body,{status:response.status,statusText:response.statusText,headers:response.headers});
  };
- adapter=createAuthAdapter(createClient(config.url,config.publishableKey,{global:{fetch:guardedFetch},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:"pickleup_auth_v6"}}));
+ adapter=createAuthAdapter(createClient(config.url,config.publishableKey,{global:{fetch:guardedFetch},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:"pickleup_auth_v6"}}),{rpcTransport:async(method,args,token,signal)=>{
+  // Pin the token captured for this request. Never let an A request acquire B's
+  // token from an async SDK auth lookup after an account switch.
+  const response=await fetch(config.url.replace(/\/$/,"")+"/rest/v1/rpc/"+method,{method:"POST",signal,headers:{apikey:config.publishableKey,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(args)});
+  if(!response.ok)return {status:response.status===401||response.status===403?"auth_required":"network_error"};
+  const text=await response.text();if(text.length>16*1024*1024)return {status:"limit_exceeded"};
+  return JSON.parse(text);
+ }});
  return adapter;
 }
-root.PickleUpAuth={createAuthAdapter,connect};
+let shared,sharedConfig;
+function getShared(config){if(!config?.enabled)return Promise.reject(Error("Auth disabled"));const identity=config.url+"|"+config.publishableKey;if(shared&&identity!==sharedConfig)return Promise.reject(Error("Auth configuration changed; reload required"));if(!shared){sharedConfig=identity;shared=connect(config).catch(error=>{shared=null;sharedConfig=null;throw error})}return shared}
+root.PickleUpAuth={createAuthAdapter,connect,getShared};
 if(typeof module!=="undefined")module.exports={createAuthAdapter};
 })(typeof window!=="undefined"?window:globalThis);

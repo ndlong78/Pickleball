@@ -307,3 +307,5 @@ PR2: nền [IndexedDB/repository/outbox local](docs/LOCAL_REPOSITORY_PR2.md), ch
 V5.3.0 / PR3a (chưa phát hành): [cứu hộ legacy18 khóa và xem trước tệp chỉ đọc](docs/RESCUE_PREVIEW_PR3A.md). Chưa importer hoặc sync.
 
 PR3b: [RPC import nguyên tử](docs/ATOMIC_IMPORT_PR3B.md), chưa nối upload/import UI; app giữ5.3.0.
+
+V5.4.0 / PR3c (chưa phát hành): [importer pilot có preview/consent/checkpoint](docs/IMPORT_PILOT_PR3C.md), flags vẫn false, không auto-sync hoặc đổi nguồn dữ liệu tám route.

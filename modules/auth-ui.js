@@ -10,7 +10,7 @@ const config=window.PICKLEUP_AUTH_CONFIG;
 if(!config?.enabled||!config.url||!config.publishableKey){status.textContent="Chế độ khách · Đăng nhập chưa được cấu hình.";form.hidden=true;return}
 async function init(){
  try{
-  adapter=await PickleUpAuth.connect(config);
+  adapter=await PickleUpAuth.getShared(config);
   adapter.subscribe(state=>{
    serial++;busy=false;otp.value="";
    if(previousUser!==state.user?.id)email.value="";

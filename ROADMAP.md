@@ -499,3 +499,5 @@ PR2 bổ sung persistence local có transaction/CAS/namespace; PR3 preview/impor
 PR3 chia PR3a rescue/inventory preview chỉ đọc và PR3b domain mapping/quarantine/consent/RPC importer. Xem [phạm vi PR3a](docs/RESCUE_PREVIEW_PR3A.md).
 
 PR3b review backend transaction/import RPC trước; PR3c bổ sung mapping, quarantine, overlap và account-bound consent/UI. Xem [ATOMIC_IMPORT_PR3B](docs/ATOMIC_IMPORT_PR3B.md).
+
+PR3c nối mapper/consent + importer pilot mặc định tắt; tiếp theo staging validation/repair workflow trước rollout, PR4 sync domain vẫn riêng. [Hợp đồng PR3c](docs/IMPORT_PILOT_PR3C.md).

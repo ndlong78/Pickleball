@@ -99,6 +99,20 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        return {status:'saved_locally',localRevision};
       });
      },
+     getImportCheckpoint(fingerprint,adapterVersion){
+      if(!/^[a-f0-9]{64}$/.test(fingerprint)||typeof adapterVersion!=='string'||adapterVersion.length>40)fail('invalid_checkpoint');
+      return transaction(['import_receipts'],'readonly',tx=>request(tx.objectStore('import_receipts').get([namespace,fingerprint,adapterVersion])));
+     },
+     saveImportCheckpoint(fingerprint,adapterVersion,value,expectedLocalRevision='0'){
+      if(guest||!/^[a-f0-9]{64}$/.test(fingerprint)||typeof adapterVersion!=='string'||adapterVersion.length<1||adapterVersion.length>40||!revision(expectedLocalRevision))fail('invalid_checkpoint');
+      const snapshot=copy(value);if(new TextEncoder().encode(canonical(snapshot)).length>4*1024*1024)fail('payload_too_large');
+      return transaction(['import_receipts'],'readwrite',async tx=>{
+       const store=tx.objectStore('import_receipts'),old=await request(store.get([namespace,fingerprint,adapterVersion]));
+       if((old?.localRevision||'0')!==expectedLocalRevision)fail('local_conflict');
+       const localRevision=(BigInt(expectedLocalRevision)+1n).toString();
+       await request(store.put({namespace,fingerprint,adapterVersion,localRevision,value:snapshot}));return localRevision;
+      });
+     },
      setDeviceState(deviceId,key,value){
       if(!UUID.test(deviceId)||!['timer','checklist','focus'].includes(key))fail('invalid_device_key');
       const snapshot=copy(value);if(new TextEncoder().encode(canonical(snapshot)).length>64*1024)fail('payload_too_large');
