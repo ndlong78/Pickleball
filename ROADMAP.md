@@ -493,3 +493,5 @@ Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số 
 Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. Chưa merge hoặc triển khai production.
 
 PR1b đang triển khai: OTP/session adapter sau PR1a; gate và giới hạn tại [AUTH_PR1B](docs/AUTH_PR1B.md).
+
+PR2 bổ sung persistence local có transaction/CAS/namespace; PR3 preview/import và PR4 sender/pull/conflict còn ở bước sau. Xem [hợp đồng PR2](docs/LOCAL_REPOSITORY_PR2.md).

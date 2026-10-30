@@ -301,3 +301,5 @@ Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số 
 Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. Chưa merge hoặc triển khai production.
 
 PR1b: email OTP opt-in (flag off), xem [AUTH_PR1B](docs/AUTH_PR1B.md). Chưa phát hành V5.2.0 hay đồng bộ dữ liệu luyện tập.
+
+PR2: nền [IndexedDB/repository/outbox local](docs/LOCAL_REPOSITORY_PR2.md), chưa nối vào tám route hoặc bật sync.
