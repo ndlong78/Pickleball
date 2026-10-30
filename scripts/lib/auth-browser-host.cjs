@@ -37,7 +37,7 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
     const data=Buffer.from(await upstream.arrayBuffer());if(data.length>16*1024*1024)throw fixtureError();
     if(url.pathname.startsWith('/rest/v1/rpc/')){
      const name=url.pathname.split('/').at(-1);state.rpc.push({name,body:body.toString('utf8')});
-     if(name==='import_batch'&&state.dropNextBatch&&upstream.ok&&JSON.parse(data).status==='applied'){state.dropNextBatch=false;state.dropCount++;res.destroy();return}
+     if(name==='import_batch'&&state.dropNextBatch&&upstream.ok&&JSON.parse(data).status==='applied'){state.dropNextBatch=false;state.dropCount++;res.writeHead(502,{...cors,'Content-Type':'application/json'}).end('{"error":"simulated_upstream_response_loss"}');return}
      if(name==='pull_changes'&&state.held&&!state.held.claimed){const hold=state.held;hold.claimed=true;hold.reached(JSON.parse(data));await hold.gate;if(state.held===hold)state.held=null}
     }
     if(!res.destroyed)res.writeHead(upstream.status,{...cors,'Content-Type':upstream.headers.get('content-type')||'application/json'}).end(data);

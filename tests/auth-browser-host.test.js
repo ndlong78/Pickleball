@@ -36,7 +36,7 @@ test('network fault is injected after upstream commit and held pull can be relea
  await fixture(async(host,seen)=>{
   const headers={Origin:host.appOrigin,apikey:host.alias,'Content-Type':'application/json'};
   host.state.dropNextBatch=true;
-  await assert.rejects(fetch(host.apiOrigin+'/rest/v1/rpc/import_batch',{method:'POST',headers,body:'{}'}));
+  assert.equal((await fetch(host.apiOrigin+'/rest/v1/rpc/import_batch',{method:'POST',headers,body:'{}'})).status,502);
   assert.equal(seen.length,1);assert.equal(host.state.dropCount,1);
   const held=host.holdNextPull();const response=fetch(host.apiOrigin+'/rest/v1/rpc/pull_changes',{method:'POST',headers,body:'{}'});
   assert.deepEqual(await held.seen,{status:'applied',changes:[]});held.release();assert.equal((await response).status,200);

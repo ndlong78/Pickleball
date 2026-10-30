@@ -18,7 +18,7 @@ Script chỉ chấp nhận API `http://127.0.0.1:54321` từ `supabase status`, 
 
 CLI2.54.11 local dùng anon JWT, còn adapter shipped chỉ nhận `sb_publishable_`. Gateway sinh public alias trong memory, thay apikey/anonymous Authorization bằng anon key local ở boundary. JWT người dùng đã xác thực được giữ nguyên; GoTrue/REST/SQL response không fabricate. Đây là **fixture ánh xạ API key local**, không phải kiểm chứng gateway/publishable key của Supabase Managed hoặc cấu hình cloud. Frontend không được nới validator để nhận anon JWT/secret. Backend key không được gửi trong static config.
 
-UI, adapter, bundled SDK, mapper/controller, native IndexedDB và Service Worker đều là code thật. Không page.route/mock Auth/RPC, không fake-indexeddb trong scenario browser. Fault fixture chỉ giữ phản hồi pull thật hoặc ngắt kết nối sau khi upstream batch đã commit thành công; receipts/idempotency vẫn do PostgreSQL thật xử lý.
+UI, adapter, bundled SDK, mapper/controller, native IndexedDB và Service Worker đều là code thật. Không page.route/mock Auth/RPC, không fake-indexeddb trong scenario browser. Fault fixture chỉ giữ phản hồi pull thật hoặc trả502 sau khi upstream batch đã commit thành công; receipts/idempotency vẫn do PostgreSQL thật xử lý.
 
 ## Hai scenario — Chromium và WebKit
 
@@ -26,7 +26,7 @@ Mỗi engine tạo hai tài khoản `.invalid` bằng UI OTP; local email quota2
 
 1. Guest → yêu cầu OTP signup → đọc email Mailpit trong memory → thử mã sai → xác thực bằng mã đúng. Account mới có canonical private data rỗng; chưa begin import sau login.
 2. Chọn tệp synthetic có một legacy snapshot, hai Academy attempts trùng nội dung nhưng là hai lượt, một check-in nguồn được xác nhận trước đây (lesson null,30 phút). Preview/consent/timezone rõ; chưa consent thì nút import disabled.
-3. Server commit batch nhưng fixture ngắt phản hồi. UI báo lỗi mạng/khả năng nhập một phần; reload khôi phục phiên SDK và checkpoint IDB, chọn lại đúng tệp, xác nhận lại và replay **cùng operation ID/body**. Finish + canonical reconcile rồi checkpoint complete,4 applied; không nhân đôi attempts/check-in.
+3. Server commit batch nhưng fixture trả HTTP502 thay cho phản hồi thành công. UI báo lỗi mạng/khả năng nhập một phần; reload khôi phục phiên SDK và checkpoint IDB, chọn lại đúng tệp, xác nhận lại và replay **cùng operation ID/body**. Finish + canonical reconcile rồi checkpoint complete,4 applied; không nhân đôi attempts/check-in.
 4. Tab mới khôi phục phiên thật mà không tự upload. Giữ một phản hồi pull A thật đang chờ; logout tab khác → login B bằng OTP UI → release phản hồi A. Preview/file A được xóa, request A bị abort/ignore; B chỉ đọc dữ liệu của B.
 5. B nhập cùng tệp; UUID events khác A, counts của mỗi account độc lập. Check-in có provenance legacy, không bịa attendance từ snapshot/attempts. Các localStorage keys luyện tập giữ nguyên.
 6. SW thực sự ready dưới prefix Pages; CacheStorage không chứa Auth/API origin hoặc token/code query. Logout B phản ánh ở cả ba tab; reload vẫn guest và không còn private preview.
@@ -40,3 +40,5 @@ Runner dùng Playwright API trực tiếp, không runner report/trace/screenshot
 Môi trường executor không tải được browser chuẩn vì proxy trả403 ở CDN; không gọi Chromium cũ là kiểm chứng chuẩn. Supabase image đầy đủ từng vượt disk VFS của executor; full local stack/browser scenarios chạy trên GitHub Actions VM ephemeral. Tách rõ kết quả CI này với việc chạy trực tiếp trong executor.
 
 Chưa kiểm chứng staging SMTP/deliverability/quota, Managed publishable gateway/HTTPS/redirect policy, JWT hết hạn theo thời gian thực/SDK auto-refresh trong browser, thiết bị thật, eviction/quota/load hoặc repair/amend import manifest. Backend suite vẫn kiểm real refresh/logout; unit kiểm expiry/rate limits/account-switch không thay các gate staging. Không rollout trước policy backup/restore/privacy và staging readiness. PR4 sync cùng conflict UI là bước tiếp theo độc lập; importer repair vẫn cần thiết trước pilot nhận dữ liệu thật.
+
+Hai lần backend CI đầu (feb01e9/701808e) fail ở kỳ vọng lỗi sau commit: Chromium tự retry POST khi fixture đóng socket, rồi finish thành công; test đợi UI lỗi nên timeout. HTTP diagnostics xác nhận begin→batch→batch→finish→pull đều200. Đổi fault fixture thành502 sau commit để kiểm resume qua reload một cách xác định; không thay retry/app/receipt logic hoặc nới assertions. Các lần fail này giữ trong evidence PR.
