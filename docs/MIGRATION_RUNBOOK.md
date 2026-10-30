@@ -82,3 +82,5 @@ Mọi PR kiểm exact HEAD SHA và run logs, ghi pass/fail/flaky, không chỉ b
 - Gate production: staging restore chứng minh RPO/RTO, kiểm retention/reset epoch, owner security review, privacy/export/delete và support path, clean CI đúng SHA, Pages đúng merge SHA nếu owner merge sau này. PR0 kết thúc ở PR tài liệu, không merge/deploy V6.
 
 PR3a bổ sung raw rescue18 khóa và inventory preview chỉ đọc: xem [RESCUE_PREVIEW_PR3A](RESCUE_PREVIEW_PR3A.md). Các bước domain validation/import consent/RPC bên trên vẫn thuộc PR3b, chưa được thay bằng việc chỉ parse JSON.
+
+PR3b là backend RPC local/CI riêng; gate domain preview, account consent, quarantine/export và importer UI ở PR3c vẫn bắt buộc trước upload. Hợp đồng [ATOMIC_IMPORT_PR3B](ATOMIC_IMPORT_PR3B.md).

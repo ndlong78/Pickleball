@@ -1,6 +1,6 @@
 # PR3a — cứu hộ legacy và preview chỉ đọc
 
-Nền main bbaa9dd (PR14 merge). Main backend/responsive/Pages thành công đúng merge SHA. PR3 chia nhỏ để bảo toàn dữ liệu trước khi viết importer: PR3a là rescue+inventory preview; PR3b mới làm domain mapping/validation/quarantine/overlap, preview account consent và RPC import transactional. Không gọi PR3a là importer hoàn chỉnh.
+Nền main bbaa9dd (PR14 merge). Main backend/responsive/Pages thành công đúng merge SHA. PR3 chia nhỏ để bảo toàn dữ liệu trước khi viết importer: PR3a là rescue+inventory preview; PR3b làm RPC import transactional riêng để review backend; PR3c nối domain mapping/validation/quarantine/overlap và account consent UI. Không gọi PR3a là importer hoàn chỉnh.
 
 ## Hành vi hiện có
 
