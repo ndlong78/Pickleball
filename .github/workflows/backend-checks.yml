@@ -50,12 +50,20 @@ jobs:
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/upgrade_seed.sql
           supabase migration up --local
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/upgrade_verify.sql
+      - name: Upgrade protocol1 receipts and existing manifest metadata
+        run: |
+          supabase db reset --local --version 20261029000200
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/import_upgrade_seed.sql
+          supabase migration up --local
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/import_upgrade_verify.sql
       - name: Verify migration reset from empty local DB
         run: supabase db reset --local
       - name: pgTAP schema, ownership, constraints and sync tests
         run: supabase test db
       - name: Real REST and concurrent transaction tests
         run: python3 scripts/test_backend.py
+      - name: Atomic import REST, replay, ownership and concurrency
+        run: python3 scripts/test_import.py
       - name: Real OTP, email capture, refresh and private RPC
         run: python3 scripts/test_auth.py
       - name: Clean up local containers
