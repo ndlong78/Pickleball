@@ -15,7 +15,7 @@ function canonical(value,depth=0){
  if(depth>12)fail('invalid_payload');
  if(value===null||typeof value==='boolean'||typeof value==='string')return JSON.stringify(value);
  if(typeof value==='number'&&Number.isFinite(value))return JSON.stringify(value);
- if(Array.isArray(value))return '['+value.map(v=>canonical(v,depth+1)).join(',')+']';
+ if(Array.isArray(value))return '['+Array.from(value,v=>canonical(v,depth+1)).join(',')+']';
  if(value&&Object.getPrototypeOf(value)===Object.prototype){
   const keys=Object.keys(value).sort();
   if(keys.some(k=>/^(access_token|refresh_token|password|otp|service_role|publishableKey)$/i.test(k)))fail('credentials_forbidden');

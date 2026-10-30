@@ -46,3 +46,6 @@ test('closing scope while a write is in flight aborts new mutation and preserves
 test('protocol1 refuses event restore; checkin tombstone retains explicitly supplied timezone',async()=>{
  const {db,a}=await fixture();try{await assert.rejects(a.write({kind:'academy_attempts',id:id1,operationId:id2,value:{},action:'restore'}),{code:'append_only'});await a.write({kind:'practice_checkins',id:'2026-10-29',operationId:id1,value:{timezone_at_entry:'Asia/Ho_Chi_Minh'},action:'delete'});assert.deepEqual((await a.listOutbox())[0].payload,{timezone_at_entry:'Asia/Ho_Chi_Minh'})}finally{db.close()}
 });
+test('sparse arrays cannot collide with empty arrays in operation receipts',async()=>{
+ const {db,a}=await fixture();try{await assert.rejects(a.write({...op(id1),value:{example:new Array(1)}}),{code:'invalid_payload'});assert.equal((await a.listOutbox()).length,0)}finally{db.close()}
+});
