@@ -7,7 +7,9 @@ key=status['ANON_KEY']
 def call(path,data=None,token=None):
     req=urllib.request.Request(base+path,data=None if data is None else json.dumps(data).encode(),headers={'apikey':key,'Authorization':'Bearer '+(token or key),'Content-Type':'application/json'})
     try:
-        with urllib.request.urlopen(req) as r:return r.status,json.load(r)
+        with urllib.request.urlopen(req) as r:
+            body=r.read()
+            return r.status,json.loads(body) if body else {}
     except urllib.error.HTTPError as e:return e.code,{}
 def login():
     email='otp-'+uuid.uuid4().hex+'@example.invalid'
