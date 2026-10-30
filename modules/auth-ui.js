@@ -11,7 +11,7 @@ async function init(){
  try{
   adapter=await PickleUpAuth.connect(config);
   adapter.subscribe(state=>{
-   serial++;busy=false;otp.value="";
+   serial++;busy=false;otp.value="";email.value="";
    const signed=state.status==="authenticated";
    form.hidden=signed||state.status==="restoring";logout.hidden=probe.hidden=!signed&&!state.error;
    status.textContent=state.error||(signed?"Đã đăng nhập: "+state.user.email:state.status==="restoring"?"Đang khôi phục phiên…":"Chế độ khách");
