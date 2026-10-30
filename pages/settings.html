@@ -4,6 +4,20 @@
 <h2>Tốc độ tải từng trang</h2>
 <p class="sub">Đo thời gian nạp module trên chính trình duyệt này; không gửi thông tin lên máy chủ. Thời gian thay đổi theo mạng và cache.</p></div>
 <button type="button" id="pagePerformanceRefresh" class="linkbtn">Làm mới</button></div>
+<div class="card" id="accountPanel" style="padding:20px">
+<h3>Tài khoản · thử nghiệm</h3>
+<p>Dữ liệu tập luyện, lịch sử, mục tiêu, đồng hồ và checklist hiện chỉ nằm trên thiết bị này, dùng chung trong chế độ khách. Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
+<p role="status" aria-live="polite">Chế độ khách</p>
+<form hidden>
+<label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+<label><input name="signup" type="checkbox"> Đăng ký tài khoản mới nếu chưa có</label>
+<button name="send" type="button">Gửi mã OTP</button>
+<label>Mã OTP <input name="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" minlength="6" maxlength="10" required></label>
+<button name="verify" type="submit">Xác thực và đăng nhập</button>
+</form>
+<button type="button" data-private hidden>Kiểm tra truy cập dữ liệu riêng</button>
+<button type="button" data-logout hidden>Đăng xuất trên trình duyệt này</button>
+</div>
 <div class="card" style="padding:20px">
 <h3>Hiển thị trang đầu · Web Vitals</h3>
 <p class="sub">FCP/LCP/CLS đo lần tải tài liệu ban đầu; INP là ước tính độ trễ tương tác trong phiên. Chỉ hiện khi trình duyệt hỗ trợ.</p>

@@ -40,7 +40,7 @@ jobs:
           ) > "$RUNNER_TEMP/pickleup-db-startup.log" 2>&1 &
           db_log_pid=$!
           trap 'kill "$db_log_pid" 2>/dev/null || true' EXIT
-          if ! supabase start -x studio,mailpit,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta > /dev/null; then
+          if ! supabase start -x studio,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta > /dev/null; then
             tail -150 "$RUNNER_TEMP/pickleup-db-startup.log"
             exit 1
           fi
@@ -56,6 +56,8 @@ jobs:
         run: supabase test db
       - name: Real REST and concurrent transaction tests
         run: python3 scripts/test_backend.py
+      - name: Real OTP, email capture, refresh and private RPC
+        run: python3 scripts/test_auth.py
       - name: Clean up local containers
         if: always()
         run: supabase stop --no-backup
