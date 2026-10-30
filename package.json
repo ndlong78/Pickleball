@@ -5,8 +5,9 @@
   "description": "PickleUp responsive PWA",
   "scripts": {
     "test:responsive": "playwright test",
-    "test:unit": "node --test tests/personalized-core.test.js tests/practice-clock.test.js tests/training-log.test.js tests/advanced-curriculum.test.js tests/advanced-coach.test.js tests/tactical-insights.test.js tests/training-evaluation.test.js tests/page-catalog.test.js tests/page-router.test.js tests/page-loader.test.js tests/web-vitals.test.js tests/page-fragments.test.js tests/stable-pwa-cache.test.js tests/release-consistency.test.js tests/academy-trends.test.js tests/academy-insights.test.js tests/weekly-goals.test.js tests/weekly-plan.test.js tests/weekly-checkins.test.js tests/plan-reality.test.js tests/training-journey.test.js tests/auth-adapter.test.js tests/data-repository.test.js tests/rescue-core.test.js tests/import-core.test.js tests/import-controller.test.js",
-    "build:auth": "esbuild node_modules/@supabase/supabase-js/dist/module/index.js --bundle --format=esm --platform=browser --minify --outfile=vendor/supabase.js"
+    "test:unit": "node --test tests/personalized-core.test.js tests/practice-clock.test.js tests/training-log.test.js tests/advanced-curriculum.test.js tests/advanced-coach.test.js tests/tactical-insights.test.js tests/training-evaluation.test.js tests/page-catalog.test.js tests/page-router.test.js tests/page-loader.test.js tests/web-vitals.test.js tests/page-fragments.test.js tests/stable-pwa-cache.test.js tests/release-consistency.test.js tests/academy-trends.test.js tests/academy-insights.test.js tests/weekly-goals.test.js tests/weekly-plan.test.js tests/weekly-checkins.test.js tests/plan-reality.test.js tests/training-journey.test.js tests/auth-adapter.test.js tests/data-repository.test.js tests/rescue-core.test.js tests/import-core.test.js tests/import-controller.test.js tests/auth-browser-host.test.js",
+    "build:auth": "esbuild node_modules/@supabase/supabase-js/dist/module/index.js --bundle --format=esm --platform=browser --minify --outfile=vendor/supabase.js",
+    "test:auth:browser": "node scripts/test_auth_browser.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

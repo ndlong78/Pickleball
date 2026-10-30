@@ -30,6 +30,9 @@ site_url = "http://127.0.0.1:4173/Pickleball/"
 additional_redirect_urls = ["http://127.0.0.1:4173/?auth_callback=1"]
 jwt_expiry = 3600
 enable_signup = true
+[auth.rate_limit]
+# Ephemeral local accounts only; six distinct test recipients across suites.
+email_sent = 20
 [auth.email]
 enable_signup = true
 enable_confirmations = true

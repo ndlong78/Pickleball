@@ -309,3 +309,5 @@ V5.3.0 / PR3a (chưa phát hành): [cứu hộ legacy18 khóa và xem trước t
 PR3b: [RPC import nguyên tử](docs/ATOMIC_IMPORT_PR3B.md), chưa nối upload/import UI; app giữ5.3.0.
 
 V5.4.0 / PR3c (chưa phát hành): [importer pilot có preview/consent/checkpoint](docs/IMPORT_PILOT_PR3C.md), flags vẫn false, không auto-sync hoặc đổi nguồn dữ liệu tám route.
+
+PR3d thêm kiểm chứng UI OTP/import trên Chromium/WebKit với GoTrue/Mailpit/RPC local thật, checkpoint reload và account isolation; không bật flags hoặc sync. Xem [evidence và giới hạn](docs/AUTH_IMPORT_BROWSER_PR3D.md).
