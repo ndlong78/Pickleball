@@ -13,7 +13,7 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
  const base=new URL(backendURL);
  if(base.protocol!=='http:'||base.hostname!=='127.0.0.1'||base.pathname!=='/'||base.search||base.hash||base.username||base.password||!anonKey)throw fixtureError();
  const alias='sb_publishable_local_'+crypto.randomBytes(24).toString('hex');
- const state={rpc:[],dropNextBatch:false,dropCount:0,held:null};let appOrigin,apiOrigin,app,api;
+ const state={rpc:[],dropNextBatch:false,dropCount:0,held:null,http:[]};let appOrigin,apiOrigin,app,api;
  function holdNextPull(){
   if(state.held)throw fixtureError();let reached,release;
   const seen=new Promise(r=>reached=r),gate=new Promise(r=>release=r);
@@ -33,6 +33,7 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
     // Authenticated JWTs pass through unchanged. No fabricated Auth/RPC result.
     if(req.headers.authorization)headers.Authorization=req.headers.authorization==='Bearer '+alias?'Bearer '+anonKey:req.headers.authorization;
     const upstream=await fetch(base.origin+url.pathname+url.search,{method:req.method,headers,body:req.method==='GET'?undefined:body,redirect:'error',signal:AbortSignal.timeout(30000)});
+    state.http.push({endpoint:url.pathname,status:upstream.status});
     const data=Buffer.from(await upstream.arrayBuffer());if(data.length>16*1024*1024)throw fixtureError();
     if(url.pathname.startsWith('/rest/v1/rpc/')){
      const name=url.pathname.split('/').at(-1);state.rpc.push({name,body:body.toString('utf8')});
@@ -51,8 +52,9 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
     if(file==='modules/auth-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_AUTH_CONFIG=Object.freeze('+JSON.stringify({enabled:true,url:apiOrigin,publishableKey:alias})+');');return}
     if(file==='modules/data/import-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_IMPORT_CONFIG=Object.freeze({enabled:true});');return}
     const resolved=path.resolve(ROOT,file),type=TYPES[path.extname(file)];
-    if(!resolved.startsWith(ROOT+path.sep)||!type||file.split('/').some(p=>p.startsWith('.'))||file.startsWith('node_modules/')||file.startsWith('test-results/')){res.writeHead(404).end();return}
-    res.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store','Service-Worker-Allowed':'/Pickleball/'}).end(await fs.readFile(resolved));
+    if(!resolved.startsWith(ROOT+path.sep)||!type||file.split('/').some(p=>p.startsWith('.'))||['node_modules/','test-results/','playwright-report/','scripts/','supabase/','tests/','docs/'].some(prefix=>file.startsWith(prefix))){res.writeHead(404).end();return}
+    const content=await fs.readFile(resolved);
+    res.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store','Service-Worker-Allowed':'/Pickleball/'}).end(content);
    }catch(_){if(!res.headersSent)res.writeHead(404);res.end()}
   });
   appOrigin='http://127.0.0.1:'+await listen(app,appPort);

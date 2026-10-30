@@ -5,7 +5,7 @@ const assert=require('node:assert/strict'),crypto=require('node:crypto');
 const {execFileSync}=require('node:child_process');
 const {chromium,webkit}=require('@playwright/test');
 const {start}=require('./lib/auth-browser-host.cjs');
-let phase='setup';
+let phase='setup',diagnostics=null;
 async function until(work,timeout=20000){
  const deadline=Date.now()+timeout;
  while(Date.now()<deadline){try{const result=await work();if(result)return result}catch(_){}await new Promise(r=>setTimeout(r,100))}
@@ -74,18 +74,18 @@ function verifyData(snapshot){
 }
 async function legacy(page){return page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([key])=>key.startsWith('pickleup_')&&key!=='pickleup_auth_v6').sort()))}
 async function runEngine(engine,name,host){
- let browser,context;
+ let browser,context,page;
  try{
   phase=name+':launch';browser=await engine.launch();context=await browser.newContext({viewport:{width:390,height:900}});
   // No request mocking, storageState files, screenshots, tracing or videos.
-  const page=await context.newPage(),url=host.appOrigin+'/Pickleball/?page=settings',text=source();
+  page=await context.newPage();const url=host.appOrigin+'/Pickleball/?page=settings',text=source();
   await page.goto(url);await hasText(page,authStatus,'Chế độ khách');
   await page.evaluate(()=>localStorage.setItem('pickleup_scores','{"0":{"score":11,"date":"2026-01-01T10:00:00Z"}}'));
   const before=await legacy(page),a='browser-a-'+crypto.randomUUID()+'@example.invalid',b='browser-b-'+crypto.randomUUID()+'@example.invalid';
   phase=name+':otp_ui_wrong_then_valid';await login(page,a,{wrong:true});
   const emptyA=await canonical(page);assert.equal(emptyA.result.status,'ok');assert.deepEqual(emptyA.result.changes,[]);
   assert.equal(host.state.rpc.filter(r=>r.name==='begin_import').length,0);
-  phase=name+':consent_timeout_after_commit';await chooseFile(page,text);await preview(page);host.state.dropNextBatch=true;await consent(page);
+  phase=name+':choose_source';await chooseFile(page,text);phase=name+':preview_source';await preview(page);host.state.dropNextBatch=true;phase=name+':committed_response_loss';await consent(page);
   await hasText(page,importStatus,'Lỗi mạng');assert.equal(host.state.dropCount,1);
   const firstBatch=host.state.rpc.find(r=>r.name==='import_batch').body;
   phase=name+':reload_session_and_checkpoint';await page.reload();await hasText(page,authStatus,'Đã đăng nhập: '+a);await chooseFile(page,text);
@@ -117,15 +117,19 @@ async function runEngine(engine,name,host){
   for(const item of [page,tab,next]){await hasText(item,authStatus,'Chế độ khách');assert.equal((await item.locator('[data-import-summary]').textContent()).trim(),'')}
   await next.reload();await hasText(next,authStatus,'Chế độ khách');assert.equal(await legacy(next),before);
   process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, PWA exclusion\n');
+ }catch(error){
+  const text=await page?.locator(importStatus).textContent({timeout:1000}).catch(()=>null);
+  host.state.ui=['Tệp đã đọc','Preview sẵn sàng','Lỗi mạng','Không thực hiện được','Server từ chối','Có revision mới','Vượt giới hạn','Phiên nhập đã hoàn tất','Còn mục','Cần đăng nhập','Đã dừng','Checkpoint đã khôi phục'].findIndex(prefix=>text?.startsWith(prefix));
+  throw error;
  }finally{host.state.held?.release();await context?.close();await browser?.close()}
 }
 async function main(){
  if(process.env.DEBUG)throw new Error('debug_output_forbidden');
  const config=JSON.parse(execFileSync('supabase',['status','-o','json'],{encoding:'utf8',timeout:15000,stdio:['ignore','pipe','pipe']}));
  assert.equal(config.API_URL,'http://127.0.0.1:54321');
- const host=await start({backendURL:config.API_URL,anonKey:config.ANON_KEY});
+ const host=await start({backendURL:config.API_URL,anonKey:config.ANON_KEY});diagnostics=host.state;
  const watchdog=setTimeout(()=>{process.stderr.write('FAIL real Auth browser: bounded runtime exceeded\n');process.exit(1)},240000);watchdog.unref();
  try{for(const [name,engine]of [['Chromium',chromium],['WebKit',webkit]]){host.state.rpc.length=0;host.state.dropCount=0;await runEngine(engine,name,host)}}finally{clearTimeout(watchdog);await host.close()}
 }
-if(require.main===module)main().catch(error=>{const kind=['AssertionError','TimeoutError','Error'].includes(error.name)?error.name:'Error';process.stderr.write('FAIL real Auth browser: '+phase+' ['+kind+']\n');process.exitCode=1});
+if(require.main===module)main().catch(error=>{const kind=['AssertionError','TimeoutError','Error'].includes(error.name)?error.name:'Error';process.stderr.write('FAIL real Auth browser: '+phase+' ['+kind+'] HTTP '+JSON.stringify(diagnostics?.http.slice(-5)||[])+'\n');process.exitCode=1});
 module.exports={until,source,verifyData};

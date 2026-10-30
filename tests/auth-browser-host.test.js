@@ -12,7 +12,7 @@ test('real-browser host is loopback-only and serves enabled config without leaki
   const config=await(await fetch(host.appOrigin+'/Pickleball/modules/auth-config.js')).text();
   assert.ok(config.includes(host.alias));assert.ok(config.includes(host.apiOrigin));assert.ok(!config.includes('synthetic-local-anon'));
   assert.equal((await fetch(host.appOrigin+'/Pickleball/index.html')).status,200);
-  for(const file of ['.git/config','node_modules/package.json','scripts/test_auth_browser.cjs'])assert.equal((await fetch(host.appOrigin+'/Pickleball/'+file)).status,404);
+  for(const file of ['.git/config','node_modules/package.json','scripts/test_auth_browser.cjs','playwright-report/index.html','supabase/seed.sql','missing.js'])assert.equal((await fetch(host.appOrigin+'/Pickleball/'+file)).status,404);
  });
 });
 test('gateway rejects wrong origin/key and unsupported paths before contacting upstream',async()=>{

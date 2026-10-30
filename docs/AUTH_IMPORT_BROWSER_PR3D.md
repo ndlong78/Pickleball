@@ -31,7 +31,7 @@ Mỗi engine tạo hai tài khoản `.invalid` bằng UI OTP; local email quota2
 5. B nhập cùng tệp; UUID events khác A, counts của mỗi account độc lập. Check-in có provenance legacy, không bịa attendance từ snapshot/attempts. Các localStorage keys luyện tập giữ nguyên.
 6. SW thực sự ready dưới prefix Pages; CacheStorage không chứa Auth/API origin hoặc token/code query. Logout B phản ánh ở cả ba tab; reload vẫn guest và không còn private preview.
 
-Runner dùng Playwright API trực tiếp, không runner report/trace/screenshot/video/storageState/HAR. Chỉ in engine, kết quả và phase enum cố định nếu fail; không in error message/stack, email/OTP/session/payload. Không bật DEBUG. Keys/codes/tokens chỉ memory; không gửi vào artifact. Timeout tổng240s, cleanup đóng browser/server và backend workflow stop local containers always. Không tự retry scenario để che flaky.
+Runner dùng Playwright API trực tiếp, không runner report/trace/screenshot/video/storageState/HAR. Chỉ in engine, kết quả và phase enum cố định cùng endpoint/status HTTP allowlist nếu fail; không in error message/stack, email/OTP/session/payload. Không bật DEBUG. Harness giữ key/OTP trong memory; SDK session chỉ ở context browser cô lập tạm thời để kiểm restore, context đóng sau scenario. Không xuất profile/storageState hoặc gửi credentials vào artifact. Timeout tổng240s, cleanup đóng browser/server và backend workflow stop local containers always. Không tự retry scenario để che flaky.
 
 ## Evidence và giới hạn
 
