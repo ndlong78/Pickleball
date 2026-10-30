@@ -1,0 +1,1 @@
+Supabase JS 2.57.4, bundled from the exact npm dependency with `npm run build:auth` (esbuild 0.25.10). No sourcemap or runtime CDN. Upstream MIT license: https://github.com/supabase/supabase-js/blob/v2.57.4/LICENSE
