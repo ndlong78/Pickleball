@@ -13,7 +13,7 @@ test('history duplicates survive; event IDs stable by account/fingerprint/path a
  const data={academyHistory:[{id:'PU-001',skill:'serve',level:'1.0–2.0',score:7,date},{id:'PU-001',skill:'serve',level:'1.0–2.0',score:7,date}]};const p=await prepare(data,{selected:['academyHistory']}),q=await prepare(data,{selected:['academyHistory']});assert.equal(p.items.length,2);assert.notEqual(p.items[0].payload.client_event_id,p.items[1].payload.client_event_id);assert.equal(p.manifestHash,q.manifestHash);assert.equal(p.items[0].payload.conditions,null);
 });
 test('plans are preserved, dependencies symbolic, orphan/ambiguous plans quarantined',async()=>{
- const data={personalPlans:[plan()],trainingLog:[{id:'t1',planId:'p1',exerciseId:'serve-1',skill:'serve',level:'1.0–2.0',kind:'drill',hits:10,attempts:20,date,note:'original'}],selectedPlan:{source:'basic',id:'p1'}};const p=await prepare(data,{selected:['personalPlans','trainingLog','selectedPlan']});assert.equal(p.items.length,3);assert.deepEqual(p.items[1].payload.plan_id,{$ref:'personalPlans[0]'});assert.equal(p.items[0].payload.plan_snapshot.id,'p1');assert.equal(p.items[1].source_path,'trainingLog[0]#id=t1');
+ const data={personalPlans:[plan()],trainingLog:[{id:'t1',planId:'p1',exerciseId:'serve-1',skill:'serve',level:'1.0–2.0',kind:'drill',hits:10,attempts:20,date,note:'original'}],selectedPlan:{source:'basic',id:'p1'}};const p=await prepare(data,{selected:['personalPlans','trainingLog','selectedPlan']});assert.equal(p.items.length,3);assert.deepEqual(p.items[1].payload.plan_id,{$ref:'personalPlans[0]'});assert.equal(p.items[0].payload.plan_snapshot.id,'p1');assert.equal(p.items[1].source_path,'trainingLog[0]#id='+await core.hash('t1'));
  const q=await prepare({...data,personalPlans:[]},{selected:['trainingLog','selectedPlan']});assert.equal(q.counts.invalid,2);assert.equal(q.rows.find(r=>r.group==='trainingLog').reason,'orphan_plan');
 });
 test('self/stage/advanced score scales remain separate, malformed/unknown fields never coerce',async()=>{
@@ -40,4 +40,7 @@ test('duplicate JSON keys and unsafe integers never silently lose source data',a
 test('invalid calendar dates quarantine; exact source timestamp precision survives',async()=>{
  const p=await prepare({scores:{0:{score:5,date:'2026-02-31T10:00:00Z'}}},{selected:['scores']});assert.equal(p.counts.invalid,1);
  const precise='2026-01-01T10:00:00.123456Z';const q=await prepare({scores:{0:{score:5,date:precise}}},{selected:['scores']});assert.equal(q.items[0].payload.source_date,precise);
+});
+test('explicit quarantine of an unresolved record binds its path in consent without dropping source',async()=>{
+ const data={scores:{0:{score:5,date},1:{score:6,date,future:'retain-original'}}};const p=await prepare(data,{selected:['scores']});assert.equal(p.counts.unresolved,1);const q=await prepare(data,{selected:['scores'],choices:{'scores.1':{mode:'quarantine'}}});assert.equal(q.counts.invalid,1);assert.equal(q.counts.ready,1);assert.equal(q.decisions.find(row=>row.path==='scores.1').reason,'user_quarantine');assert.notEqual(q.manifestHash,p.manifestHash);
 });

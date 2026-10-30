@@ -13,7 +13,7 @@ function create({auth,repository,owner,core=root.PickleUpImportCore,onProgress=(
   for(let pages=0;pages<201;pages++){
    const page=await rpc('pull_changes',{p_after_revision:after,p_limit:50,p_high_water:high,p_epoch:epoch,p_protocol_version:1});
    if(page.status!=='ok'||!Array.isArray(page.changes))fail(page.status||'invalid_response');
-   high=high??page.high_water;epoch=epoch??page.epoch;bytes+=JSON.stringify(page).length;if(bytes>16*1024*1024)fail('source_limit');
+   high=high??page.high_water;epoch=epoch??page.epoch;bytes+=new TextEncoder().encode(JSON.stringify(page)).length;if(bytes>16*1024*1024)fail('source_limit');
    for(const change of page.changes){if(change.row?.user_id!==owner||typeof change.row.revision!=='string'||!/^\d+$/.test(change.row.revision))fail('invalid_response');records.set(change.entity_kind+':'+change.entity_key,{kind:change.entity_kind,key:change.entity_key,row:change.row})}
    if(!page.has_more)return [...records.values()];
    if(page.next_revision===after)fail('invalid_response');after=page.next_revision;

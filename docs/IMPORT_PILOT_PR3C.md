@@ -22,7 +22,7 @@ Pilot giới hạn5000 source units,1000 selected items,2MiB selected DTOs; chec
 
 ## Overlap và consent
 
-Client không tự kết luận event giống nhau từ timestamp/score. Đối tượng mutable đã tồn tại cần chọn dùng nguồn CAS hoặc liên kết/giữ server; tombstone yêu cầu restore riêng, không tự sống lại. Events cùng instant/discriminator hoặc legacy ID mapping là **candidate**; user chọn giữ cả hai hoặc liên kết một own target/revision. Plan source+legacy ID trùng cũng là candidate dù nội dung đổi. Source path giữ array index và #id=encoded legacy ID cho stage/advanced/training/match khi có ID; history lessonID không được coi là event ID.
+Client không tự kết luận event giống nhau từ timestamp/score. Đối tượng mutable đã tồn tại cần chọn dùng nguồn CAS hoặc liên kết/giữ server; tombstone yêu cầu restore riêng, không tự sống lại. Events cùng instant/discriminator hoặc legacy ID mapping là **candidate**; user chọn giữ cả hai hoặc liên kết một own target/revision. Plan source+legacy ID trùng cũng là candidate dù nội dung đổi. Source path giữ array index và #id=SHA256 legacy ID cho stage/advanced/training/match khi có ID; history lessonID không được coi là event ID.
 
 Preview hiển thị payload nguồn/server bằng textContent, account email+UUID, nhóm, counts, source hash, decision/revision. Manifest hash bind owner+source fingerprint+file hash+adapter+nhóm+timezone+counts+items/dependencies. Đổi file/nhóm/timezone/account làm mất xác nhận; mutation plan sau hash bị reject. Lựa chọn reuse mang revision cụ thể, server đổi phải review lại. Không coalesce các quyết định trái nhau trên cùng singleton; có thể bỏ chọn nhóm để giữ trên máy.
 
@@ -42,7 +42,7 @@ Báo cáo quarantine tải riêng giữ `sourceText` nguyên văn và file hash/
 
 Unit mới: mapping, no defaults/attendance, event identity/duplicates, orphan/dependencies, self/stage/advanced, timezone, overlap/tombstone/CAS bigint; duplicate JSON keys/unsafe integers/calendar/microseconds; exact pending replay, account switch/late response, immutable consent, domain HTTP200 conflict, committed-unverified; checkpoint CAS/token exclusion; pinned Auth transport.
 
-Browser Chromium/WebKit: shipped flag-off guest; pilot Auth/RPC mock + mapper/controller/IndexedDB native, consent+no V5 writes tại390/820/1180/1440; actual reload lấy checkpoint và replay receipt body; A→B response muộn. Trace/screenshot/video tắt ở Auth/import fixtures. Đây là browser mock transport, không phải browser GoTrue E2E.
+Browser Chromium/WebKit: shipped flag-off guest; pilot Auth/RPC mock + mapper/controller/IndexedDB native, consent+no V5 writes tại390/820/1180/1440; actual reload lấy checkpoint và replay receipt body; A→B response muộn. Có thêm gating quarantine/report giữ sourceText nguyên văn; resume restore lại nhóm đã duyệt và khóa chỉnh sửa. Trace/screenshot/video tắt ở Auth/import fixtures. Đây là browser mock transport, không phải browser GoTrue E2E.
 
 Backend CI: GoTrue/Mailpit OTP thật → JS mapper/controller bằng real A/B sessions →13 source items/account, dependency plan→training, duplicates preserved/no invented attendance, timeout-after-commit replay/IDB checkpoint fixture, canonical reconcile → refresh/logout. Local checkpoint của Node probe là fake-indexeddb, khác browser native suite; credentials chỉ stdin/memory, không artifact/log. Giữ195 pgTAP+14 import+9 REST và unit/full browser regression. Exact HEAD/counts/flaky ở PR.
 

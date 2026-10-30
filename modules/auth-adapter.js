@@ -81,7 +81,7 @@ async function connect(config){
   // token from an async SDK auth lookup after an account switch.
   const response=await fetch(config.url.replace(/\/$/,"")+"/rest/v1/rpc/"+method,{method:"POST",signal,headers:{apikey:config.publishableKey,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(args)});
   if(!response.ok)return {status:response.status===401||response.status===403?"auth_required":"network_error"};
-  const text=await response.text();if(text.length>16*1024*1024)return {status:"limit_exceeded"};
+  const text=await response.text();if(new TextEncoder().encode(text).length>16*1024*1024)return {status:"limit_exceeded"};
   return JSON.parse(text);
  }});
  return adapter;

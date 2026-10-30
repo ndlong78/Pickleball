@@ -11,7 +11,7 @@ const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 const int=(v,a,b)=>Number.isInteger(v)&&v>=a&&v<=b;
 const str=(v,max)=>typeof v==='string'&&v.length<=max;
 const own=(v,key)=>Object.hasOwn(v,key);
-function keys(v,allowed,required=[]){if(!object(v)||Object.keys(v).some(k=>!allowed.includes(k)))fail('unknown_fields');if(required.some(k=>!own(v,k)))fail('missing_fields')}
+function keys(v,allowed,required=[]){if(!object(v))fail('invalid_object');if(Object.keys(v).some(k=>!allowed.includes(k)))fail('unknown_fields');if(required.some(k=>!own(v,k)))fail('missing_fields')}
 function date(v){if(!str(v,40)||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(v)||v.startsWith('0000-')||!Number.isFinite(Date.parse(v)))fail('unknown_timestamp');if(new Date(v.slice(0,10)+'T00:00:00Z').toISOString().slice(0,10)!==v.slice(0,10))fail('unknown_timestamp');return v}
 function scoreMap(v,ks,max){keys(v,ks,ks);if(ks.some(k=>!int(v[k],0,max)))fail('invalid_scores')}
 function conditions(v){if(v===undefined||v===null)return null;keys(v,['feed','pace','target'],['feed','pace','target']);if(!['partner','machine','rally'].includes(v.feed)||!['slow','moderate','match'].includes(v.pace)||!['wide','standard','narrow'].includes(v.target))fail('invalid_conditions');return v}
@@ -56,7 +56,7 @@ async function prepare(text,{owner,selected=[],timezone='',remote=[],choices={},
  function add(group,path,value,mapper){if(rows.length>=5000)fail('source_limit');const row={group,path,disposition:'local_only',reason:'not_selected'};if(value===null){rows.push({...row,reason:'empty_source'});return}
   if(selectedSet.has(group))try{Object.assign(row,mapper(value),{disposition:'ready',reason:null})}catch(error){row.disposition=error.code==='unknown_fields'||error.code==='ambiguous_plan'||error.code==='timezone_required'?'unresolved':'invalid';row.reason=error.code||'invalid_record'}rows.push(row);
  }
- function each(group,mapper){if(!own(fields,group))return;const list=fields[group];if(Array.isArray(list)&&rows.length+list.length>5000)fail('source_limit');if(!Array.isArray(list)){add(group,group,list,()=>fail('invalid_array'));return}list.forEach((v,i)=>{const tag=['trainingLog','matchJournal','stageChecks','advancedChecks'].includes(group)&&str(v?.id,100)&&v.id?'#id='+encodeURIComponent(v.id):'';add(group,group+'['+i+']'+tag,v,x=>{if(object(x)&&own(x,'id')&&!str(x.id,100))fail('invalid_legacy_id');return mapper(x)})})}
+ function each(group,mapper){if(!own(fields,group))return;const list=fields[group];if(Array.isArray(list)&&rows.length+list.length>5000)fail('source_limit');if(!Array.isArray(list)){add(group,group,list,()=>fail('invalid_array'));return}list.forEach((v,i)=>{add(group,group+'['+i+']',v,x=>{if(object(x)&&own(x,'id')&&!str(x.id,100))fail('invalid_legacy_id');const result=mapper(x);if(['trainingLog','matchJournal','stageChecks','advancedChecks'].includes(group)&&x.id)result.legacyIdentity=x.id;return result})})}
  const fresh=(kind,payload,key=null,dependencies=[])=>({kind,key,payload,dependencies});
  for(const group of ['personalPlans','advancedPlans'])each(group,v=>{const payload=plan(v,group==='advancedPlans');const key=payload.source+':'+v.id,paths=planRefs.get(key)||[];const path=group+'['+fields[group].indexOf(v)+']';paths.push(path);planRefs.set(key,paths);return fresh('personal_plans',payload)});
  function ref(id,source){const paths=source?(planRefs.get(source+':'+id)||[]):[...(planRefs.get('basic:'+id)||[]),...(planRefs.get('advanced:'+id)||[])];if(paths.length!==1)fail(paths.length?'ambiguous_plan':'orphan_plan');return paths[0]}
@@ -80,7 +80,9 @@ async function prepare(text,{owner,selected=[],timezone='',remote=[],choices={},
  if(own(fields,'selectedPlan'))add('selectedPlan','selectedPlan',fields.selectedPlan,v=>{keys(v,['source','id'],['source','id']);if(!['basic','advanced'].includes(v.source)||!str(v.id,100))fail('invalid_selection');const path=ref(v.id,v.source);return fresh('user_selections',{selected_personal_plan_id:{$ref:path}},'self',[path])});
  if(rows.length>5000)fail('source_limit');
  const remoteByKey=new Map(remote.map(r=>[r.kind+':'+r.key,r.row]));const revisions=new Map();
- for(const row of rows){if(!selectedSet.has(row.group)&&row.disposition!=='local_only'){row.disposition='local_only';row.reason='not_selected'}if(row.disposition!=='ready')continue;
+ for(const row of rows){if(!selectedSet.has(row.group)&&row.disposition!=='local_only'){row.disposition='local_only';row.reason='not_selected'}if(row.disposition!=='local_only'&&choices[row.path]?.mode==='quarantine'){row.disposition='invalid';row.reason='user_quarantine';continue}if(row.disposition!=='ready')continue;
+  if(row.legacyIdentity){row.path+='#id='+await hash(row.legacyIdentity);delete row.legacyIdentity}
+  if(choices[row.path]?.mode==='quarantine'){row.disposition='invalid';row.reason='user_quarantine';continue}
   if(['academy_attempts','skill_assessments','training_entries','match_records'].includes(row.kind))row.payload.client_event_id=await eventId(owner,info.fingerprint,row.path);
   const existing=row.key!==null?remoteByKey.get(row.kind+':'+row.key):null;
   const tag=row.path.includes('#id=')?row.path.split('#id=')[1]:null;
@@ -108,7 +110,8 @@ async function prepare(text,{owner,selected=[],timezone='',remote=[],choices={},
  if(Object.values(counts).reduce((a,b)=>a+b,0)!==rows.length)fail('reconcile_error');
  const items=rows.filter(r=>r.disposition==='ready').map(r=>({source_path:r.path,kind:r.kind,entity_key:r.key,expected_revision:r.expectedRevision,payload:r.payload,mode:r.mode,dependencies:r.dependencies}));
  if(items.length>1000||new TextEncoder().encode(JSON.stringify(items)).length>2*1024*1024)fail('source_limit');
- const binding={owner,fingerprint:info.fingerprint,fileHash:info.fileHash,adapterVersion:VERSION,selected:[...selected].sort(),timezone,counts,items,sourceCount:rows.length,format:info.format};
+ const decisions=rows.map(row=>({path:row.path,disposition:row.disposition,reason:row.reason||null,mode:row.mode||null,expected_revision:row.expectedRevision||null,target:row.key??null}));
+ const binding={owner,fingerprint:info.fingerprint,fileHash:info.fileHash,adapterVersion:VERSION,selected:[...selected].sort(),timezone,counts,items,decisions,sourceCount:rows.length,format:info.format};
  return {...binding,rows,manifestHash:await hash(binding)};
 }
 const api={VERSION,GROUPS,prepare,hash,ImportError};if(typeof module!=='undefined')module.exports=api;else root.PickleUpImportCore=api;
