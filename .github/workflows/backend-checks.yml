@@ -72,6 +72,13 @@ jobs:
         run: python3 scripts/test_import.py
       - name: Real OTP, email capture, refresh and private RPC
         run: python3 scripts/test_auth.py
+      - name: Install real Auth browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Real browser OTP, import resume and account isolation
+        env:
+          # Disable Playwright protocol logging; the runner emits phase enums only.
+          DEBUG: ""
+        run: npm run test:auth:browser
       - name: Clean up local containers
         if: always()
         run: supabase stop --no-backup
