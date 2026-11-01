@@ -52,8 +52,7 @@ function createAuthAdapter(client,{rpcTransport}={}){
    return data;
   }catch(_){return {status:stamp!==generation?"stale":"network_error"}}finally{controllers.delete(controller)}
  }
- async function importRpc(owner,method,args){
-  if(!['pull_changes','begin_import','import_batch','finish_import','get_import_status'].includes(method))return {status:"invalid"};
+ async function privateRpc(owner,method,args){
   const stamp=generation,pinned=session;
   if(!pinned||owner!==pinned.user.id)return {status:"auth_required"};
   if(pinned.expires_at*1000<=Date.now())return {status:"auth_required"};
@@ -64,13 +63,15 @@ function createAuthAdapter(client,{rpcTransport}={}){
    return stamp===generation&&session?.user.id===owner?result:{status:"stale"};
   }catch(_){return {status:stamp===generation?"network_error":"stale"}}finally{controllers.delete(controller)}
  }
+ function importRpc(owner,method,args){return ['pull_changes','begin_import','import_batch','finish_import','get_import_status'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
+ function syncRpc(owner,method,args){return ['prepare_sync','apply_sync_operation','pull_changes'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
  function message(error){
   if(!error)return null;
   if(error.status===429||error.code==="over_email_send_rate_limit")return "Gửi quá nhiều mã. Vui lòng chờ rồi thử lại.";
   if(error.code==="otp_expired"||error.status===403)return "Mã sai hoặc đã hết hạn. Kiểm tra mã hoặc yêu cầu mã mới.";
   return "Không thực hiện được. Kiểm tra kết nối hoặc thử lại sau.";
  }
- return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
+ return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,syncRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
 }
 async function connect(config){
  const url=new URL(config.url);

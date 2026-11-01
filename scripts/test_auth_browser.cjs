@@ -116,6 +116,20 @@ async function runEngine(engine,name,host){
     return {delta,full,prefs:await scope.read('user_preferences','self'),sameQueue:JSON.stringify(await scope.listOutbox())===PR4A_QUEUE};
    }finally{scope.close()}
   },dataA.owner);assert.equal(preserved.delta.base.minutes,45);assert.equal(preserved.delta.overlay.status,'skipped');assert.equal(preserved.delta.reviewBase.row.minutes,30);assert.equal(preserved.full.base.minutes,45);assert.equal(preserved.full.reviewReason,'reset_required');assert.equal(preserved.sameQueue,true);assert.equal(preserved.prefs.base.target_days,2);assert.equal(preserved.prefs.base.gentle,true);
+  phase=name+':fenced_conflict_resolution';
+  await page.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/sync-controller.js'});
+  const resolution=await page.evaluate(async owner=>{
+   const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),sender=PickleUpSyncController.create({auth,repository:db,owner,pullFactory:PickleUpPullController,enabled:()=>true}),scope=db.scope('user:'+owner);
+   window.PR4B_SENDER=sender;window.PR4B_DB=db;
+   try{const result=await sender.sync();const old=JSON.parse(PR4A_QUEUE)[0],view=await scope.inspectSyncConflict(old.operationId),operationId=crypto.randomUUID();
+    await scope.resolveSyncConflict({conflictId:old.operationId,operationId,mode:'local',epoch:view.cursor.epoch,expectedLocalRevision:view.record.localRevision,expectedRemoteRevision:view.record.baseRevision,acknowledgeEpochChange:true,value:{status:'skipped',minutes:null,lesson_id:null,timezone_at_entry:'UTC'}});return {status:result.status,operationId,revision:view.record.baseRevision};
+   }finally{scope.close()}
+  },dataA.owner);assert.equal(resolution.status,'needs_review');
+  phase=name+':fenced_commit_loss_and_replay';host.state.dropNextSync=true;
+  assert.equal(await page.evaluate(async()=>{const result=await PR4B_SENDER.sync();PR4B_SENDER.close();PR4B_DB.close();delete window.PR4B_SENDER;delete window.PR4B_DB;return result.status}),'network_error');
+  const originalSync=host.state.rpc.filter(r=>r.name==='apply_sync_operation').at(-1).body;
+  const synced=await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),sender=PickleUpSyncController.create({auth,repository:db,owner,pullFactory:PickleUpPullController,enabled:()=>true}),scope=db.scope('user:'+owner);try{const result=await sender.sync({forceRetry:true});return {status:result.status,row:await scope.read('practice_checkins','2026-01-01'),queue:await scope.listOutbox()}}finally{scope.close();sender.close();db.close()}},dataA.owner);
+  assert.equal(synced.status,'synced');assert.equal(synced.row.base.status,'skipped');assert.equal(synced.row.base.minutes,null);assert.equal(synced.row.base.revision,(BigInt(resolution.revision)+1n).toString());assert.equal(host.state.rpc.filter(r=>r.name==='apply_sync_operation').at(-1).body,originalSync);assert.equal(host.state.syncDropCount,1);
   phase=name+':late_private_a_response';const held=host.holdNextPull();await chooseFile(page,source(6));
   await page.locator('[data-import-preview]').click();const delayed=await held.seen;
   assert.equal(delayed.status,'ok');assert.ok(delayed.changes.some(change=>change.row.user_id===dataA.owner));
@@ -132,6 +146,10 @@ async function runEngine(engine,name,host){
   await next.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/pull-controller.js'});
   const cacheB=await next.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),reader=PickleUpPullController.create({auth,repository:db,owner,enabled:()=>true,pageSize:2}),scope=db.scope('user:'+owner);try{await reader.pull();return {row:await scope.read('practice_checkins','2026-01-01'),queue:await scope.listOutbox()}}finally{scope.close();reader.close();db.close()}},dataB.owner);
   assert.equal(cacheB.row.base.user_id,dataB.owner);assert.equal(cacheB.row.base.minutes,30);assert.equal(cacheB.row.overlay,null);assert.deepEqual(cacheB.queue,[]);
+  phase=name+':fenced_sender_account_b';
+  await next.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/sync-controller.js'});
+  const sentB=await next.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),sender=PickleUpSyncController.create({auth,repository:db,owner,pullFactory:PickleUpPullController,enabled:()=>true}),scope=db.scope('user:'+owner);try{await scope.write({kind:'user_preferences',id:'self',operationId:crypto.randomUUID(),value:{target_days:3,level_band:'1.0–2.0',session_minutes:30,gentle:false,goal_configured:true}});const result=await sender.sync();return {status:result.status,row:await scope.read('user_preferences','self'),queue:await scope.listOutbox()}}finally{scope.close();sender.close();db.close()}},dataB.owner);
+  assert.equal(sentB.status,'synced');assert.equal(sentB.row.base.user_id,dataB.owner);assert.equal(sentB.row.base.target_days,3);assert.ok(sentB.queue.every(op=>op.state==='acked'&&op.request.p_epoch===cacheB.row.baseEpoch));
   assert.equal(await legacy(next),before);
   phase=name+':pwa_private_cache_exclusion';await next.evaluate(()=>navigator.serviceWorker.ready);
   const cacheSafe=await next.evaluate(async api=>{for(const name of await caches.keys())for(const request of await(await caches.open(name)).keys()){const u=new URL(request.url);if(u.origin===api||/[?&#](?:access_token|refresh_token|token|code)=/i.test(u.href))return false}return true},host.apiOrigin);assert.ok(cacheSafe);
@@ -139,7 +157,7 @@ async function runEngine(engine,name,host){
   phase=name+':logout_tabs_and_reload';await next.locator('[data-logout]').click();
   for(const item of [page,tab,next]){await hasText(item,authStatus,'Chế độ khách');assert.equal((await item.locator('[data-import-summary]').textContent()).trim(),'')}
   await next.reload();await hasText(next,authStatus,'Chế độ khách');assert.equal(await legacy(next),before);
-  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, PWA exclusion\n');
+  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, fenced sender/conflict resolution/commit replay, PWA exclusion\n');
  }catch(error){
   const text=await page?.locator(importStatus).textContent({timeout:1000}).catch(()=>null);
   host.state.ui=['Tệp đã đọc','Preview sẵn sàng','Lỗi mạng','Không thực hiện được','Server từ chối','Có revision mới','Vượt giới hạn','Phiên nhập đã hoàn tất','Còn mục','Cần đăng nhập','Đã dừng','Checkpoint đã khôi phục'].findIndex(prefix=>text?.startsWith(prefix));
@@ -152,7 +170,7 @@ async function main(){
  assert.equal(config.API_URL,'http://127.0.0.1:54321');
  const host=await start({backendURL:config.API_URL,anonKey:config.ANON_KEY});diagnostics=host.state;
  const watchdog=setTimeout(()=>{process.stderr.write('FAIL real Auth browser: bounded runtime exceeded\n');process.exit(1)},240000);watchdog.unref();
- try{for(const [name,engine]of [['Chromium',chromium],['WebKit',webkit]]){host.state.rpc.length=0;host.state.dropCount=0;await runEngine(engine,name,host)}}finally{clearTimeout(watchdog);await host.close()}
+ try{for(const [name,engine]of [['Chromium',chromium],['WebKit',webkit]]){host.state.rpc.length=0;host.state.dropCount=0;host.state.syncDropCount=0;await runEngine(engine,name,host)}}finally{clearTimeout(watchdog);await host.close()}
 }
 if(require.main===module)main().catch(error=>{const kind=['AssertionError','TimeoutError','Error'].includes(error.name)?error.name:'Error';process.stderr.write('FAIL real Auth browser: '+phase+' ['+kind+'] ui='+diagnostics?.ui+' dropped='+diagnostics?.dropCount+' HTTP '+JSON.stringify(diagnostics?.http.slice(-5)||[])+'\n');process.exitCode=1});
 module.exports={until,source,verifyData};

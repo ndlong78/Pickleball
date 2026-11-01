@@ -2,7 +2,7 @@
 'use strict';
 const http=require('node:http'),fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
 const ROOT=path.resolve(__dirname,'../..');
-const ALLOWED=new Set(['/auth/v1/otp','/auth/v1/verify','/auth/v1/token','/auth/v1/logout','/auth/v1/user','/auth/v1/settings',...['pull_changes','begin_import','import_batch','finish_import','get_import_status'].map(n=>'/rest/v1/rpc/'+n)]);
+const ALLOWED=new Set(['/auth/v1/otp','/auth/v1/verify','/auth/v1/token','/auth/v1/logout','/auth/v1/user','/auth/v1/settings',...['pull_changes','begin_import','import_batch','finish_import','get_import_status','prepare_sync','apply_sync_operation'].map(n=>'/rest/v1/rpc/'+n)]);
 const TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.webmanifest':'application/manifest+json','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon'};
 const listen=(server,port)=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',()=>resolve(server.address().port))});
 function fixtureError(){return Object.assign(new Error('fixture_error'),{code:'fixture_error'})}
@@ -13,7 +13,7 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
  const base=new URL(backendURL);
  if(base.protocol!=='http:'||base.hostname!=='127.0.0.1'||base.pathname!=='/'||base.search||base.hash||base.username||base.password||!anonKey)throw fixtureError();
  const alias='sb_publishable_local_'+crypto.randomBytes(24).toString('hex');
- const state={rpc:[],dropNextBatch:false,dropCount:0,held:null,http:[]};let appOrigin,apiOrigin,app,api;
+ const state={rpc:[],dropNextBatch:false,dropCount:0,held:null,http:[],dropNextSync:false,syncDropCount:0};let appOrigin,apiOrigin,app,api;
  function holdNextPull(){
   if(state.held)throw fixtureError();let reached,release;
   const seen=new Promise(r=>reached=r),gate=new Promise(r=>release=r);
@@ -38,6 +38,7 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
     if(url.pathname.startsWith('/rest/v1/rpc/')){
      const name=url.pathname.split('/').at(-1);state.rpc.push({name,body:body.toString('utf8')});
      if(name==='import_batch'&&state.dropNextBatch&&upstream.ok&&JSON.parse(data).status==='applied'){state.dropNextBatch=false;state.dropCount++;res.writeHead(502,{...cors,'Content-Type':'application/json'}).end('{"error":"simulated_upstream_response_loss"}');return}
+     if(name==='apply_sync_operation'&&state.dropNextSync&&upstream.ok&&JSON.parse(data).status==='applied'){state.dropNextSync=false;state.syncDropCount++;res.writeHead(502,{...cors,'Content-Type':'application/json'}).end('{"error":"simulated_upstream_response_loss"}');return}
      if(name==='pull_changes'&&state.held&&!state.held.claimed){const hold=state.held;hold.claimed=true;hold.reached(JSON.parse(data));await hold.gate;if(state.held===hold)state.held=null}
     }
     if(!res.destroyed)res.writeHead(upstream.status,{...cors,'Content-Type':upstream.headers.get('content-type')||'application/json'}).end(data);
