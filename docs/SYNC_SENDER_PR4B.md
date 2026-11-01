@@ -45,7 +45,7 @@ Done/skipped/clear đều CAS; clear là tombstone, put không tự sống lại
 
 Unit fake IDB/model RPC: dependency binding, timeout/restart/exact replay, disjoint-field whole-entity conflict, local/server choice archives, conflict lại sau resolve, epoch change, A→B late write, lease expiry replay,401/backoff/ceiling/explicit retry, ack/resolution quota rollback, malformed owner, default-off/offline. Transport test pin JWT/allowlists. Đây không là RLS/Auth security evidence.
 
-Native IDB Chromium/WebKit với mock RPC: actual reload pending request, deferred ack, conflict archives, default-off/epoch block/A-B isolation và quota rollback. Private fixtures không trace/screenshot/video; PWA/regression suites giữ nguyên.
+Native IDB Chromium/WebKit với mock RPC: actual reload pending request, deferred ack, conflict archives, default-off/epoch block/A-B isolation, lease hai tabs khi ack chờ và quota rollback. Private fixtures không trace/screenshot/video; PWA/regression suites giữ nguyên.
 
 Backend pgTAP mới kiểm ACL/FORCE RLS/owner, epoch/receipt binding/old UUID/new epoch, CAS, owner injection/B separation. REST thêm6 tests, gồm hai writer và transaction giữ row lock rồi đổi epoch: writer cũ đợi lock, sau commit phải reset_required dù revision vẫn khớp. Đây là **mô phỏng đổi epoch local**, không restore drill backup thật. Giữ9 REST +14 import +Auth/OTP suites cũ.
 

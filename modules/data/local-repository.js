@@ -149,7 +149,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(response.epoch!==body.p_epoch)fail('invalid_response');
        if(!['applied','conflict','invalid'].includes(response.status))fail('invalid_response');
        const remote=response.status==='conflict'?(response.row??null):response.row;
-       if(response.status!=='invalid'&&remote!==null&&(!remote||remote.user_id!==namespace.slice(5)||!revision(remote.revision)||remote.revision==='0'||!Object.hasOwn(remote,'deleted_at')||op.kind==='practice_checkins'&&remote.local_date!==op.id))fail('invalid_response');
+       if(response.status!=='invalid'&&remote!==null&&(!remote||remote.user_id!==namespace.slice(5)||!revision(remote.revision)||remote.revision==='0'||BigInt(remote.revision)>9223372036854775807n||!Object.hasOwn(remote,'deleted_at')||!(remote.deleted_at===null||typeof remote.deleted_at==='string')||op.kind==='practice_checkins'&&remote.local_date!==op.id))fail('invalid_response');
        if(response.status==='applied'&&(!remote||remote.revision!==(BigInt(body.p_expected_revision)+1n).toString()))fail('invalid_response');
        const newer=remote&&BigInt(remote.revision)>=BigInt(row.baseRevision);
        const current={...row,...(response.status!=='invalid'&&(newer||remote===null&&row.baseRevision==='0')?{base:remote,baseRevision:remote?.revision||'0',baseMissing:remote===null,baseEpoch:body.p_epoch}:{})};
@@ -165,7 +165,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       });
      },
      deferSync(operationId,frozen,{code,nextAttemptAt}){
-      if(!['network_error','auth_required','stale','unavailable','limit_exceeded','invalid_response'].includes(code)||!Number.isSafeInteger(nextAttemptAt))fail('invalid_sync_operation');const body=copy(frozen);
+      if(!['network_error','auth_required','stale','unavailable','limit_exceeded','invalid_response','upgrade_required'].includes(code)||!Number.isSafeInteger(nextAttemptAt))fail('invalid_sync_operation');const body=copy(frozen);
       return transaction(['outbox'],'readwrite',async tx=>{const store=tx.objectStore('outbox'),op=await request(store.get([namespace,operationId]));if(!op||canonical(op.request)!==canonical(body))fail('operation_mismatch');if(op.state==='sending'){op.nextAttemptAt=nextAttemptAt;op.lastError=code;await request(store.put(op))}});
      },
      inspectSyncConflict(conflictId){

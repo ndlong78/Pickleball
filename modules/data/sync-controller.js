@@ -29,7 +29,7 @@ function create({auth,repository,owner,pullFactory=root.PickleUpPullController,e
      if(claim.status==='idle')break;
      const op=claim.operation,body=op.request;let result;
      try{result=await rpc('apply_sync_operation',body)}catch(error){if(['account_changed','pilot_disabled','offline'].includes(error.code))throw error;result={status:'network_error'}}
-     const transient=['network_error','auth_required','stale','unavailable','limit_exceeded'].includes(result?.status);
+     const transient=['network_error','auth_required','stale','unavailable','limit_exceeded','upgrade_required'].includes(result?.status);
      if(transient||!result){
       const code=result?.status||'network_error',delay=Math.min(60000,1000*2**Math.min(op.attempts-1,6))*(0.75+Math.max(0,Math.min(1,random()))*0.5);
       await scope.deferSync(op.operationId,body,{code,nextAttemptAt:now()+Math.round(delay)});guard();return {status:code,...await summary()};

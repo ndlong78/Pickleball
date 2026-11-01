@@ -1,9 +1,9 @@
 const {test,expect}=require('@playwright/test'),{model}=require('./helpers/sync-model.cjs');
 test.use({serviceWorkers:'block',trace:'off',screenshot:'off',video:'off'});
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222',E='33333333-3333-4333-8333-333333333333';
-async function host(context,{drop=false,restore=false}={}){
- const server=model(),requests=[];let once=true;
- await context.exposeBinding('SYNC_RPC_FIXTURE',async(_,{name,args})=>{if(name==='apply_sync_operation'&&restore&&once){once=false;server.restore()}const result=server.rpc(name,args);if(name==='apply_sync_operation'){requests.push(structuredClone(args));if(drop&&once){once=false;return {status:'network_error'}}}return result});return {server,requests};
+async function host(context,{drop=false,restore=false,delay=false}={}){
+ const server=model(),requests=[];let once=true,release;
+ await context.exposeBinding('SYNC_RPC_FIXTURE',async(_,{name,args})=>{if(name==='apply_sync_operation'&&restore&&once){once=false;server.restore()}const result=server.rpc(name,args);if(name==='apply_sync_operation'&&delay&&once){once=false;await new Promise(resolve=>release=resolve)}if(name==='apply_sync_operation'){requests.push(structuredClone(args));if(drop&&once){once=false;return {status:'network_error'}}}return result});return {server,requests,get release(){return release}};
 }
 async function load(page,name){
  await page.goto('/Pickleball/');for(const file of ['local-repository','pull-controller','sync-controller'])await page.addScriptTag({url:'/Pickleball/modules/data/'+file+'.js'});
@@ -38,4 +38,12 @@ test('native IDB: ack quota exception cannot produce false success; same request
   try{await scope.write({kind:'user_preferences',id:'self',operationId:crypto.randomUUID(),value:{target_days:3}});await sender.sync()}catch(e){code=e.code}finally{IDBObjectStore.prototype.put=put;auth.syncRpc=original}
   const pending=(await scope.listOutbox())[0],done=await sender.sync({forceRetry:true});return {code,pending:pending.state,status:done.status,row:await scope.read('user_preferences','self')};
  });expect(result.code).toBe('quota_exceeded');expect(result.pending).toBe('sending');expect(result.status).toBe('synced');expect(result.row.base.target_days).toBe(3);expect(server.changes).toHaveLength(1);
+});
+
+test('native IDB: two tabs honor the same sender lease while an ack is delayed',async({page,context})=>{
+ const fixture=await host(context,{delay:true}),name='pr4b-'+crypto.randomUUID();await load(page,name);const tab=await context.newPage();await load(tab,name);
+ const pending=page.evaluate(async()=>{await SYNC_TEST.scope.write({kind:'user_preferences',id:'self',operationId:crypto.randomUUID(),value:{target_days:3}});return SYNC_TEST.sender.sync()});
+ try{await expect.poll(()=>typeof fixture.release).toBe('function');expect((await tab.evaluate(()=>SYNC_TEST.sender.sync())).status).toBe('busy')}finally{fixture.release?.()}
+ expect((await pending).status).toBe('synced');expect(fixture.server.changes).toHaveLength(1);
+ const operations=await tab.evaluate(()=>SYNC_TEST.scope.listOutbox());expect(operations).toHaveLength(1);expect(operations[0].state).toBe('acked');
 });

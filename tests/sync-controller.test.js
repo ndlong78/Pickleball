@@ -48,5 +48,6 @@ test('resolution quota failure preserves conflict and original intent, then retr
 });
 test('default-off/offline send no requests; invalid or foreign canonical response never acknowledges',async()=>{
  const f=await fixture(),off=f.make({enabled:()=>false}),offline=f.make({online:()=>false});try{await assert.rejects(off.sync(),{code:'pilot_disabled'});await assert.rejects(offline.sync(),{code:'offline'});assert.equal(f.calls.length,0)}finally{off.close();offline.close();f.close()}
+ const upgrade=await fixture(),u=upgrade.make();upgrade.intercept((name,args)=>name==='apply_sync_operation'?{status:'upgrade_required'}:upgrade.server.rpc(name,args));try{await upgrade.write({target_days:3});assert.equal((await u.sync()).status,'upgrade_required');assert.equal((await upgrade.scope.listOutbox())[0].state,'sending')}finally{u.close();upgrade.close()}
  const bad=await fixture(),c=bad.make();bad.intercept((name,args)=>{const result=bad.server.rpc(name,args);if(name==='apply_sync_operation')result.row.user_id=B;return result});try{await bad.write({target_days:3});assert.equal((await c.sync()).status,'invalid_response');assert.equal((await bad.scope.listOutbox())[0].state,'sending');assert.equal((await bad.scope.read('user_preferences','self')).base,null)}finally{c.close();bad.close()}
 });
