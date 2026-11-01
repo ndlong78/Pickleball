@@ -15,7 +15,7 @@
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="description" content="Lộ trình tập Pickleball 60 phút mỗi tuần, dành cho người mới bắt đầu.">
   <title>PickleUp · Huấn luyện Pickleball</title>
-  <script>window.PICKLEUP_BUILD="5.4.1"</script>
+  <script>window.PICKLEUP_BUILD="5.5.0"</script>
   <style>
     /* Font loaded without blocking critical CSS; system font fallback is immediate. */
     :root{--bg:#f6f7f2;--ink:#142d30;--muted:#6b7b79;--green:#b8ef49;--green2:#eaffc9;--line:#dfe6df;--white:#fff;--radius:20px}
@@ -60,11 +60,11 @@
 .th-row span{overflow-wrap:anywhere}.th-row strong{white-space:nowrap}
 @media(max-width:750px){.th-filters{grid-template-columns:1fr}.th-panel{padding:16px}.pc-run-buttons button{min-height:50px;font-size:13px}.pc-run-clock{position:sticky;top:0;background:#fff;z-index:3;padding:10px 0;border-bottom:1px solid #e4eae0}.pc-run-card{scroll-margin-top:12px}.pc-attempt input{min-height:48px}}
 </style>
-<link rel="stylesheet" href="./responsive.css?v=5.4.1">
+<link rel="stylesheet" href="./responsive.css?v=5.5.0">
 
 
 
-<link rel="stylesheet" href="./modules/page-layout.css?v=5.4.1">
+<link rel="stylesheet" href="./modules/page-layout.css?v=5.5.0">
 <script>document.documentElement.classList.add("pickleup-routing")</script>
 </head>
 <body>
@@ -108,7 +108,7 @@
 
 <section class="section" id="levelRoadmap" data-pickleup-page="academy"><div class="sectionHead"><div><div class="kicker">Hành trình dài hạn</div><h2>Từ mới bắt đầu đến 5.0</h2><p class="sub">Mỗi cấp độ mở rộng kỹ thuật và chiến thuật. Đây là lộ trình tham khảo, không phải chứng nhận xếp hạng.</p></div></div><div class="roadmap" id="levelCards"></div></section>
 <section class="section" id="selfAssessment" data-pickleup-page="coach"><div class="sectionHead"><div><div class="kicker">Đánh giá đầu vào</div><h2>Khám phá điểm xuất phát</h2><p class="sub">Chọn mức độ bạn thực hiện ổn định được trong trận đấu, không phải cú đánh tốt nhất từng làm.</p></div></div><div class="card selftest" id="assessmentFields"></div><div class="card" style="padding:20px;margin-top:12px"><div class="backupactions"><button id="assessBtn" type="button">Đánh giá và lưu</button></div><p id="assessResult" class="outcome" role="status"></p></div></section>
-<section class="section" id="backup" data-pickleup-page="settings"><div class="sectionHead"><div><div class="kicker">Dữ liệu của bạn</div><h2>Sao lưu & khôi phục</h2><p class="sub">Lưu điểm tập và đánh giá vào tệp JSON để chuyển thiết bị; không cần tài khoản.</p></div></div><div class="backupactions"><button id="backupAll" type="button">Tải bản sao lưu đầy đủ</button><label for="restoreFile">Khôi phục từ tệp JSON<input id="restoreFile" type="file" accept=".json,application/json"></label></div><p class="sub" id="backupStatus" role="status"></p><div class="card" style="margin-top:16px"><h3>Dọn dữ liệu buổi tập mẫu</h3><p class="sub">Chỉ xóa điểm sáu tuần luyện tập mẫu; không xóa kết quả Học viện, Personal Coach hay nhật ký trận đấu.</p><button id="clearHistory" type="button" class="linkbtn">Xóa điểm 6 tuần mẫu</button></div></section><div id="mount-settings" class="page-mount" data-pickleup-page="settings" aria-label="Nội dung settings"></div>
+<section class="section" id="backup" data-pickleup-page="settings"><div class="sectionHead"><div><div class="kicker">Dữ liệu của bạn</div><h2>Sao lưu & khôi phục</h2><p class="sub">Sao lưu dữ liệu khách cũ trên thiết bị; không gồm cache, queue hoặc conflict của tài khoản V6. Tệp JSON cũ vẫn dùng được như trước.</p></div></div><div class="backupactions"><button id="backupAll" type="button">Tải backup dữ liệu khách trên thiết bị</button><label for="restoreFile">Khôi phục từ tệp JSON<input id="restoreFile" type="file" accept=".json,application/json"></label></div><p class="sub" id="backupStatus" role="status"></p><div class="card" style="margin-top:16px"><h3>Dọn dữ liệu buổi tập mẫu</h3><p class="sub">Chỉ xóa điểm sáu tuần luyện tập mẫu; không xóa kết quả Học viện, Personal Coach hay nhật ký trận đấu.</p><button id="clearHistory" type="button" class="linkbtn">Xóa điểm 6 tuần mẫu</button></div></section><div id="mount-settings" class="page-mount" data-pickleup-page="settings" aria-label="Nội dung settings"></div>
 <section class="section" id="activityHistory" data-pickleup-page="progress"><div class="sectionHead"><div><div class="kicker">Nhật ký cá nhân</div><h2>Thành tích luyện tập</h2><div class="sub">Xem lại kết quả để nhận biết sự tiến bộ.</div></div></div><div class="card history"><div id="historyList" class="historyList"></div></div></section>
 </main><nav id="pickleupMobileDock" class="mobile-dock" aria-label="Điều hướng nhanh PickleUp">
  <a href="#personalCoach"><span class="dock-icon" aria-hidden="true">🎯</span><span>HLV cá nhân</span></a>
@@ -117,11 +117,11 @@
  <a href="#academy"><span class="dock-icon" aria-hidden="true">📚</span><span>Giáo án</span></a>
 </nav>
 <footer class="footer"><div class="shell footflex"><span>© 2026 PickleUp · Website luyện tập Pickleball</span><span>Hoạt động trực tiếp trên trình duyệt · Không cần tài khoản</span></div></footer>
-<script src="./modules/page-catalog.js?v=5.4.1"></script>
-<script src="./modules/page-loader.js?v=5.4.1"></script>
-<script src="./modules/web-vitals.js?v=5.4.1"></script>
-<script src="./modules/page-router.js?v=5.4.1"></script>
-<script src="./mobile-ui.js?v=5.4.1" defer></script>
-<script src="./modules/pwa-client.js?v=5.4.1"></script>
+<script src="./modules/page-catalog.js?v=5.5.0"></script>
+<script src="./modules/page-loader.js?v=5.5.0"></script>
+<script src="./modules/web-vitals.js?v=5.5.0"></script>
+<script src="./modules/page-router.js?v=5.5.0"></script>
+<script src="./mobile-ui.js?v=5.5.0" defer></script>
+<script src="./modules/pwa-client.js?v=5.5.0"></script>
 </body>
 </html>

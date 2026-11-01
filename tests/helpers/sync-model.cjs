@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict');
 const A='11111111-1111-4111-8111-111111111111',E='33333333-3333-4333-8333-333333333333',F='44444444-4444-4444-8444-444444444444';
-function model(){
+function model({owner=A,domainRows=false}={}){
  const rows=new Map(),receipts=new Map(),changes=[];let epoch=E;
  function apply(body){
   if(body.p_epoch!==epoch)return {status:'reset_required'};
@@ -8,7 +8,7 @@ function model(){
   const key=body.p_kind+':'+body.p_entity_key,old=rows.get(key);let result;
   if(body.p_payload.bad)result={status:'invalid',epoch};
   else if((old?.revision||'0')!==body.p_expected_revision||old?.deleted_at&&body.p_action==='put')result={status:'conflict',row:old||null,epoch};
-  else{const row={...old,...body.p_payload,user_id:A,revision:(BigInt(body.p_expected_revision)+1n).toString(),deleted_at:body.p_action==='delete'?'2026-01-02T00:00:00Z':null};if(body.p_kind==='practice_checkins'){row.local_date=body.p_entity_key;if(body.p_action==='delete')Object.assign(row,{status:null,minutes:null,lesson_id:null})}rows.set(key,row);changes.push({server_revision:String(changes.length+1),entity_kind:body.p_kind,entity_key:body.p_entity_key,record_revision:row.revision,row:structuredClone(row)});result={status:'applied',row,epoch,server_revision:String(changes.length)}}
+  else{const row={...(domainRows&&body.p_kind==='user_preferences'?{target_days:3,level_band:'1.0–2.0',session_minutes:45,gentle:false,goal_configured:false}:{}),...old,...body.p_payload,...(domainRows?{updated_at:'2026-01-02T00:00:00Z'}:{}),user_id:owner,revision:(BigInt(body.p_expected_revision)+1n).toString(),deleted_at:body.p_action==='delete'?'2026-01-02T00:00:00Z':null};if(body.p_kind==='practice_checkins'){row.local_date=body.p_entity_key;if(body.p_action==='delete')Object.assign(row,{status:null,minutes:null,lesson_id:null})}rows.set(key,row);changes.push({server_revision:String(changes.length+1),entity_kind:body.p_kind,entity_key:body.p_entity_key,record_revision:row.revision,row:structuredClone(row)});result={status:'applied',row,epoch,server_revision:String(changes.length)}}
   receipts.set(body.p_operation_id,{body:structuredClone(body),result:structuredClone(result)});return structuredClone(result);
  }
  return {rows,receipts,changes,apply,get epoch(){return epoch},restore(){epoch=F},rpc(name,args){

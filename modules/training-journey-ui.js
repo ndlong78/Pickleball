@@ -4,7 +4,8 @@
 const j=window.PICKLEUP_JOURNEY,g=window.PICKLEUP_WEEKLY_GOALS,p=window.PICKLEUP_WEEKLY_PLANNER,c=window.PICKLEUP_WEEK_CHECKINS;
 const $=id=>document.getElementById(id),lessons=window.PICKLEUP_CURRICULUM||[];
 if(!j||!g||!p||!c||!$("jRefresh"))return;
-function raw(key){try{return localStorage.getItem(key)}catch(_){return null}}
+const data=window.PICKLEUP_DATA;
+function raw(key){try{return data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
 function parse(key,fallback){try{const v=JSON.parse(raw(key)||"null");return v===null?fallback:v}catch(_){return fallback}}
 function snapshot(){
  const goal=g.readSettings(raw(g.KEY)),prefs=p.readSettings(raw(p.KEY));
@@ -14,10 +15,11 @@ function snapshot(){
  const ready=Array.isArray(stored)&&stored.some(x=>x?.id===plans?.id&&Array.isArray(x.exercises)&&x.exercises.length===3);
  let trainingLog=[];try{trainingLog=window.PICKLEUP_TRAINING_LOG?.read(localStorage)||[]}catch(_){}
  return j.build({lessons,goal,planPrefs:prefs,checkins:c.read(raw(c.KEY)),history,records:parse("pickleup_academy_v2",{}),
- trainingLog,stageChecks:parse("pickleup_stage_checks_v23",[]),goalConfigured:g.validSettings(parse(g.KEY,null)),
+ trainingLog,stageChecks:parse("pickleup_stage_checks_v23",[]),goalConfigured:data?.isAccount()?data.getView().goalConfigured===true:g.validSettings(parse(g.KEY,null)),
  selectedLessonId:raw("pickleup_academy_last_lesson_v4"),selectedPersonalPlan:ready});
 }
-let current=null;
+let current=null,draftDirty=false,viewRevision='0',viewDeleted=false,viewTag='';
+$('jTodayMinutes').addEventListener('input',()=>{draftDirty=true});
 function state(id,heading,desc){
  const box=$(id);box.replaceChildren();
  const strong=document.createElement("strong");strong.textContent=heading;
@@ -26,7 +28,7 @@ function state(id,heading,desc){
 }
 function redraw(){
  current=snapshot();const x=current,lesson=x.lesson,entry=x.todayEntry;
- $("jIntro").textContent="Hôm nay "+x.today+" · "+x.goal.level+" · "+x.target+" ngày tập được đề xuất/tuần. Hành trình lấy từ dữ liệu đang có trên thiết bị này.";
+ $("jIntro").textContent="Hôm nay "+x.today+" · "+x.goal.level+" · "+x.target+" ngày tập được đề xuất/tuần. Mục tiêu và check-in theo nguồn đang chọn; các nhóm khác vẫn trên thiết bị.";
  $("jProgress").textContent=x.doneThisWeek+"/"+x.target;
  $("jMinutes").textContent=x.minutesThisWeek+" phút";
  $("jNext").textContent=x.next.text;
@@ -49,23 +51,30 @@ function redraw(){
  $("jLessonOpen").dataset.lessonId=lesson?.id||"";
  $("jCourtOpen").href=x.links.court;
  $("jCourtOpen").textContent=x.selectedPersonalPlan?"Mở đồng hồ Trên sân":"Tạo giáo án cho đồng hồ Trên sân";
- $("jTodayMinutes").value=entry?.status==="done"?String(entry.minutes):"30";
+ const source=data?.getView(),tag=(source?source.owner+':'+source.mode:'guest')+':'+c.today();
+ if(tag!==viewTag||!draftDirty){$("jTodayMinutes").value=entry?.status==="done"?String(entry.minutes):"30";viewRevision=data?.revision('practice_checkins',c.today())||'0';viewDeleted=data?.deleted('practice_checkins',c.today())||false;draftDirty=false}viewTag=tag;
  $("jClear").hidden=!entry;
- $("jCheckStatus").textContent=entry?.status==="done"?"Đã lưu "+entry.minutes+" phút tập thực tế hôm nay.":entry?.status==="skipped"?"Hôm nay đã đánh dấu bỏ qua.":"";
+ const deleted=data?.deleted('practice_checkins',c.today());
+ $("jDone").textContent=deleted?'Khôi phục · Đã tập':'Đã tập hôm nay';
+ $("jSkipped").textContent=deleted?'Khôi phục · Bỏ qua':'Bỏ qua hôm nay';
+ for(const id of ['jTodayMinutes','jDone','jSkipped','jClear'])$(id).disabled=data?!data.canWrite('practice_checkins',c.today()):false;
+ $("jCheckStatus").textContent=(data?.isAccount()&&data.pending("practice_checkins",c.today())?"Kho tài khoản trên thiết bị · chờ đồng bộ. ":"")+(entry?.status==="done"?"Đã lưu "+entry.minutes+" phút tập thực tế hôm nay.":entry?.status==="skipped"?"Hôm nay đã đánh dấu bỏ qua.":"");
 }
 $("jLessonOpen").addEventListener("click",()=>{
  const id=$("jLessonOpen").dataset.lessonId;if(!id)return;
  try{localStorage.setItem("pickleup_academy_last_lesson_v4",id)}catch(_){}
  document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
 });
-function checkin(status){
+async function checkin(status){
+ const source=data?.getView(),stamp=source?source.owner+":"+source.mode:"guest",day=c.today(),revision=viewRevision;
  const minutes=status==="done"?Number($("jTodayMinutes").value):null;
  try{
-  const next=c.change(c.read(raw(c.KEY)),c.today(),status,minutes,current?.lesson?.id||null);
-  c.save(localStorage,next);redraw();
-  $("jCheckStatus").textContent=status==="clear"?"Đã xóa xác nhận hôm nay.":status==="skipped"?"Đã đánh dấu bỏ qua hôm nay.":"Đã ghi nhận "+minutes+" phút tập thực tế hôm nay.";
+  if(data?.isAccount())await data.saveCheckin({day,status,minutes,lessonId:current?.lesson?.id||null,timezone:source.timezone,expectedLocalRevision:revision,restore:viewDeleted});
+  else{const next=c.change(c.read(raw(c.KEY)),day,status,minutes,current?.lesson?.id||null);c.save(localStorage,next)}
+  const nextSource=data?.getView();if(nextSource&&stamp!==nextSource.owner+':'+nextSource.mode)return;draftDirty=false;redraw();
+  $("jCheckStatus").textContent=(data?.isAccount()?"Kho tài khoản trên thiết bị · chờ đồng bộ. ":"")+(status==="clear"?"Đã xóa xác nhận hôm nay.":status==="skipped"?"Đã đánh dấu bỏ qua hôm nay.":"Đã ghi nhận "+minutes+" phút tập thực tế hôm nay.");
   document.dispatchEvent(new Event("pickleup:week-checkins-updated"));
- }catch(e){$("jCheckStatus").textContent=e.message||"Không thể ghi nhận; hãy kiểm tra quyền lưu trữ."}
+ }catch(e){const next=data?.getView();if(!next||stamp===next.owner+":"+next.mode)$("jCheckStatus").textContent=data?.isAccount()?"Không lưu được. Kiểm tra xung đột, múi giờ và quyền lưu trữ trong Dữ liệu.":e.message||"Không thể ghi nhận; hãy kiểm tra quyền lưu trữ."}
 }
 $("jDone").addEventListener("click",()=>checkin("done"));
 $("jSkipped").addEventListener("click",()=>checkin("skipped"));
@@ -76,6 +85,6 @@ for(const evt of ["pickleup:score-saved","pickleup:weekly-goal-saved","pickleup:
 window.addEventListener("storage",e=>{
  if([g.KEY,p.KEY,c.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_academy_last_lesson_v4","pickleup_stage_checks_v23","pickleup_selected_plan_v31"].includes(e.key))redraw();
 });
-redraw();
-for(const id of ["jRefresh","jTodayMinutes","jDone","jSkipped","jClear"])$(id).disabled=false;
+document.addEventListener("pickleup:domain-data",redraw);
+redraw();$("jRefresh").disabled=false;
 })();

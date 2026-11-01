@@ -130,8 +130,9 @@ async function runEngine(engine,name,host){
   const originalSync=host.state.rpc.filter(r=>r.name==='apply_sync_operation').at(-1).body;
   const synced=await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),sender=PickleUpSyncController.create({auth,repository:db,owner,pullFactory:PickleUpPullController,enabled:()=>true}),scope=db.scope('user:'+owner);try{const result=await sender.sync({forceRetry:true});return {status:result.status,row:await scope.read('practice_checkins','2026-01-01'),queue:await scope.listOutbox()}}finally{scope.close();sender.close();db.close()}},dataA.owner);
   assert.equal(synced.status,'synced');assert.equal(synced.row.base.status,'skipped');assert.equal(synced.row.base.minutes,null);assert.equal(synced.row.base.revision,(BigInt(resolution.revision)+1n).toString());assert.equal(host.state.rpc.filter(r=>r.name==='apply_sync_operation').at(-1).body,originalSync);assert.equal(host.state.syncDropCount,1);
-  phase=name+':late_private_a_response';const held=host.holdNextPull();await chooseFile(page,source(6));
-  await page.locator('[data-import-preview]').click();const delayed=await held.seen;
+  phase=name+':opt_in_account_source_a';await page.locator('[data-sync-enable]').click();await hasText(page,'#syncPilot [role=status]','Đã đọc kho tài khoản');
+  phase=name+':late_source_a_response';const held=host.holdNextPull();await chooseFile(page,source(6));
+  await page.locator('[data-sync-read]').click();const delayed=await held.seen;
   assert.equal(delayed.status,'ok');assert.ok(delayed.changes.some(change=>change.row.user_id===dataA.owner));
   await tab.locator('[data-logout]').click();await hasText(page,authStatus,'Chế độ khách');
   phase=name+':real_account_b_login';const next=await context.newPage();await next.goto(url);await login(next,b);
@@ -150,6 +151,24 @@ async function runEngine(engine,name,host){
   await next.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/sync-controller.js'});
   const sentB=await next.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),sender=PickleUpSyncController.create({auth,repository:db,owner,pullFactory:PickleUpPullController,enabled:()=>true}),scope=db.scope('user:'+owner);try{await scope.write({kind:'user_preferences',id:'self',operationId:crypto.randomUUID(),value:{target_days:3,level_band:'1.0–2.0',session_minutes:30,gentle:false,goal_configured:true}});const result=await sender.sync();return {status:result.status,row:await scope.read('user_preferences','self'),queue:await scope.listOutbox()}}finally{scope.close();sender.close();db.close()}},dataB.owner);
   assert.equal(sentB.status,'synced');assert.equal(sentB.row.base.user_id,dataB.owner);assert.equal(sentB.row.base.target_days,3);assert.ok(sentB.queue.every(op=>op.state==='acked'&&op.request.p_epoch===cacheB.row.baseEpoch));
+  phase=name+':source_b_requires_own_opt_in';await until(()=>next.locator('[data-sync-enable]').isEnabled());
+  const writesBefore=host.state.rpc.filter(r=>r.name==='apply_sync_operation').length;
+  await next.locator('[data-sync-enable]').click();await hasText(next,'#syncPilot [role=status]','Đã đọc kho tài khoản');
+  assert.equal(host.state.rpc.filter(r=>r.name==='apply_sync_operation').length,writesBefore);
+  await next.locator('[data-sync-timezone]').fill('UTC');await next.locator('[data-sync-zone-save]').click();await hasText(next,'#syncPilot [role=status]','Đã xác nhận múi giờ');
+  phase=name+':real_preferences_and_checkin_ui';await next.evaluate(()=>PICKLEUP_ROUTER.openPage('progress'));await until(()=>next.locator('#wgDays').isEnabled());
+  assert.equal(await next.locator('#wgDays').inputValue(),'3');await next.locator('#wgDays').selectOption('4');await next.locator('#wgSave').click();await hasText(next,'#wgStatus','chờ đồng bộ');
+  await next.locator('#wpGentle').check();await next.locator('#wpSave').click();await hasText(next,'#wpStatus','chờ đồng bộ');
+  await next.evaluate(()=>PICKLEUP_ROUTER.openPage('journey'));await until(()=>next.locator('#jDone').isEnabled());await next.locator('#jTodayMinutes').fill('35');await next.locator('#jDone').click();await hasText(next,'#jCheckStatus','chờ đồng bộ');
+  assert.equal(host.state.rpc.filter(r=>r.name==='apply_sync_operation').length,writesBefore);
+  await next.evaluate(()=>PICKLEUP_ROUTER.openPage('settings'));host.state.dropNextSync=true;await next.locator('[data-sync-send]').click();await hasText(next,'#syncPilot [role=status]','Lỗi mạng');
+  const lostUI=host.state.rpc.filter(r=>r.name==='apply_sync_operation').at(-1).body,requestsBeforeReload=host.state.rpc.length;
+  phase=name+':real_source_restore_and_ui_retry';await next.reload();await hasText(next,authStatus,'Đã đăng nhập');await until(()=>next.locator('[data-sync-retry]').isVisible());assert.equal(host.state.rpc.length,requestsBeforeReload);
+  await next.locator('[data-sync-retry]').click();await hasText(next,'#syncPilot [role=status]','Đã đồng bộ');
+  const uiRequests=host.state.rpc.filter(r=>r.name==='apply_sync_operation').slice(writesBefore);assert.equal(uiRequests.length,4);assert.equal(uiRequests[0].body,lostUI);assert.equal(uiRequests[1].body,lostUI);
+  const uiB=await canonical(next),latestPrefs=uiB.result.changes.filter(change=>change.entity_kind==='user_preferences').at(-1).row;
+  assert.equal(latestPrefs.target_days,4);assert.equal(latestPrefs.gentle,true);assert.equal(latestPrefs.revision,'3');
+  const today=await next.evaluate(()=>PICKLEUP_WEEK_CHECKINS.today()),todayRow=uiB.result.changes.filter(change=>change.entity_kind==='practice_checkins'&&change.entity_key===today).at(-1).row;assert.equal(todayRow.minutes,35);assert.equal(todayRow.status,'done');assert.equal(todayRow.user_id,dataB.owner);
   assert.equal(await legacy(next),before);
   phase=name+':pwa_private_cache_exclusion';await next.evaluate(()=>navigator.serviceWorker.ready);
   const cacheSafe=await next.evaluate(async api=>{for(const name of await caches.keys())for(const request of await(await caches.open(name)).keys()){const u=new URL(request.url);if(u.origin===api||/[?&#](?:access_token|refresh_token|token|code)=/i.test(u.href))return false}return true},host.apiOrigin);assert.ok(cacheSafe);
@@ -157,7 +176,7 @@ async function runEngine(engine,name,host){
   phase=name+':logout_tabs_and_reload';await next.locator('[data-logout]').click();
   for(const item of [page,tab,next]){await hasText(item,authStatus,'Chế độ khách');assert.equal((await item.locator('[data-import-summary]').textContent()).trim(),'')}
   await next.reload();await hasText(next,authStatus,'Chế độ khách');assert.equal(await legacy(next),before);
-  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, fenced sender/conflict resolution/commit replay, PWA exclusion\n');
+  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, fenced sender/conflict resolution/commit replay, account source opt-in and actual preferences/check-in UI with queued reload/retry, PWA exclusion\n');
  }catch(error){
   const text=await page?.locator(importStatus).textContent({timeout:1000}).catch(()=>null);
   host.state.ui=['Tệp đã đọc','Preview sẵn sàng','Lỗi mạng','Không thực hiện được','Server từ chối','Có revision mới','Vượt giới hạn','Phiên nhập đã hoàn tất','Còn mục','Cần đăng nhập','Đã dừng','Checkpoint đã khôi phục'].findIndex(prefix=>text?.startsWith(prefix));

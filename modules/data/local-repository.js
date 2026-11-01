@@ -82,6 +82,20 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
     }
     const api={
      close(){active=false;for(const tx of transactions){try{tx.abort()}catch(_){}}scopes.delete(api)},
+     getDomainSnapshot(){
+      if(guest)fail('auth_required');
+      return transaction(['records','outbox','conflicts','sync_cursor'],'readonly',async tx=>{
+       const own=async name=>(await request(tx.objectStore(name).index('namespace').getAll(namespace))).filter(row=>PULL_KINDS.has(row.kind));
+       return {records:await own('records'),outbox:await own('outbox'),conflicts:await own('conflicts'),cursor:await request(tx.objectStore('sync_cursor').get([namespace,1]))};
+      });
+     },
+     getDomainConsent(){return transaction(['metadata'],'readonly',async tx=>(await request(tx.objectStore('metadata').get([namespace,'preferences-checkins-consent-1'])))?.enabled===true)},
+     getDomainTimezone(){return transaction(['metadata'],'readonly',async tx=>(await request(tx.objectStore('metadata').get([namespace,'checkin-timezone-1'])))?.value||null)},
+     setDomainTimezone(value){if(guest||typeof value!=='string'||value.length>80)fail('invalid_timezone');return transaction(['metadata'],'readwrite',tx=>request(tx.objectStore('metadata').put({namespace,key:'checkin-timezone-1',value})))},
+     setDomainConsent(enabled){
+      if(guest||typeof enabled!=='boolean')fail('invalid_consent');
+      return transaction(['metadata'],'readwrite',tx=>request(tx.objectStore('metadata').put({namespace,key:'preferences-checkins-consent-1',enabled})));
+     },
      read(kind,id){identity(kind,id);return transaction(['records'],'readonly',tx=>request(tx.objectStore('records').get([namespace,kind,id])))},
      listOutbox(){return transaction(['outbox'],'readonly',tx=>request(tx.objectStore('outbox').index('namespace').getAll(namespace)))},
      async write({kind,id,value,operationId,expectedLocalRevision='0',action='put'}){
@@ -105,7 +119,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(old&&EVENTS.has(kind)&&action==='put')fail('append_only');
        const localRevision=(BigInt(expectedLocalRevision)+1n).toString();
        const overlay=action==='delete'?null:PULL_KINDS.has(kind)?{...(old?.overlay||old?.base||{}),...snapshot}:snapshot;
-       const record={...old,namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay,deleted:action==='delete',localRevision,tailOperationId:guest?null:operationId};
+       const record={...old,namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay,deleted:action==='delete',localRevision,localUpdatedAt:new Date().toISOString(),tailOperationId:guest?null:operationId};
        if(!guest)await request(outbox.add({namespace,operationId,kind,id,action,payload:snapshot,baseSnapshot:old?.base||null,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));
        await request(records.put(record));
        await request(metadata.add({namespace,key:receiptKey[1],signature,localRevision}));

@@ -6,7 +6,8 @@ const planner=window.PICKLEUP_WEEKLY_PLANNER,goals=window.PICKLEUP_WEEKLY_GOALS;
 const historyCore=window.PICKLEUP_ACADEMY_TRENDS,logCore=window.PICKLEUP_TRAINING_LOG;
 const byId=id=>document.getElementById(id);
 if(!reality||!checkins||!planner||!goals||!byId("prWeeks"))return;
-function json(key,fallback){try{const x=JSON.parse(localStorage.getItem(key)||"null");return x===null?fallback:x}catch(_){return fallback}}
+const source=window.PICKLEUP_DATA;
+function json(key,fallback){try{const x=JSON.parse((source?source.raw(key):localStorage.getItem(key))||"null");return x===null?fallback:x}catch(_){return fallback}}
 function node(tag,cls,value){const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=String(value);return e}
 function redraw(){
  const settings=goals.readSettings(JSON.stringify(json(goals.KEY,null)));
@@ -51,5 +52,6 @@ document.addEventListener("pickleup:weekly-goal-saved",redraw);
 window.addEventListener("storage",event=>{
  if([goals.KEY,planner.KEY,checkins.KEY,"pickleup_academy_history_v44","pickleup_academy_v2","pickleup_training_log_v26"].includes(event.key))redraw();
 });
+document.addEventListener("pickleup:domain-data",redraw);
 redraw();
 })();

@@ -84,3 +84,5 @@ Index ban đầu: user_id là prefix của PK/unique hoặc index riêng cho m�
 | `metadata` | schema version, feature flags, lock leases, auth generation, migration checkpoint | IDB upgrade không xóa pending; close/versionchange có UX retry |
 
 DB namespace là cách ly ứng dụng, không phải mã hóa chống người dùng cùng browser/OS. Quyền và hạn chế ở [THREAT_MODEL](THREAT_MODEL.md). Không lưu auth secret trong các backup/outbox/raw snapshots; legacy snapshot chỉ allowlist app keys + unknown prefix đã được preview.
+
+PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).

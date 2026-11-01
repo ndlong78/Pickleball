@@ -509,3 +509,5 @@ V5.4.1 / PR3d sửa guarded Auth fetch để HTTP204 logout không làm SDK bỏ
 PR4a thêm canonical pull/bootstrap riêng user cho preferences/check-in: transaction base+cursor, giữ pending/overlay khi delta/full-resync và bỏ phản hồi A sau đổi B. Chưa sender/conflict UI/switch nguồn, flags vẫn tắt. [Hợp đồng và giới hạn](docs/CANONICAL_PULL_PR4A.md).
 
 PR4b thêm RPC epoch fence dưới transaction lock, sender/ack/conflict API cho preferences/check-in, chưa nối UI hoặc bật flags. [Hợp đồng/evidence](docs/SYNC_SENDER_PR4B.md).
+
+PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](docs/SYNC_UI_PR4C.md).

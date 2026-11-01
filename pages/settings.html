@@ -37,9 +37,25 @@
 <button type="button" data-import-stop disabled>Dừng · giữ checkpoint</button>
 </div>
 </div>
+<div class="card sync-panel" id="syncPilot">
+<h3>Mục tiêu và check-in · tài khoản pilot</h3>
+<p role="status" aria-live="polite">Đồng bộ pilot chưa bật.</p>
+<div data-sync-body hidden>
+<p data-sync-account></p>
+<p>Bật nguồn tài khoản riêng cho mục tiêu/lịch tập và check-in. Đăng nhập không tự chuyển nguồn. Dữ liệu khách cũ không được nhập hoặc ghi đè; điểm, giáo án, trận đấu, đồng hồ và checklist vẫn chỉ nằm trên thiết bị.</p>
+<button type="button" data-sync-enable>Dùng mục tiêu và check-in của tài khoản</button>
+<button type="button" data-sync-device>Dùng lại dữ liệu thiết bị</button>
+<p>Thay đổi được lưu vào kho tài khoản trên thiết bị trước. Chỉ gửi khi bạn bấm đồng bộ. Đăng xuất giữ queue riêng; tránh thiết bị dùng chung vì cache chưa được mã hóa hoặc tự xóa.</p>
+<label>Múi giờ cho ghi nhận mới <input data-sync-timezone placeholder="Ví dụ: Asia/Ho_Chi_Minh" maxlength="80"></label>
+<button type="button" data-sync-zone-save>Xác nhận múi giờ</button>
+<p>Ngày check-in là ngày hiển thị trên thiết bị, không tự dịch ngày cũ theo múi giờ mới.</p>
+<div class="sync-actions"><button type="button" data-sync-read>Đọc dữ liệu tài khoản</button><button type="button" data-sync-send>Đồng bộ thay đổi</button><button type="button" data-sync-retry hidden>Thử lại yêu cầu đang chờ</button><button type="button" data-sync-export>Xuất cache mục tiêu/check-in</button></div>
+<p data-sync-count></p><div data-sync-conflicts></div><div data-sync-detail></div>
+<p>Tệp cache gồm hai nhóm trên, yêu cầu chờ và các bản conflict. Chưa phải backup toàn tài khoản hoặc tệp có thể nhập lại. Bản cứu hộ và backup cũ phía trên chỉ gồm dữ liệu khách trên thiết bị.</p>
+</div></div>
 <div class="card" id="accountPanel" style="padding:20px">
 <h3>Tài khoản · thử nghiệm</h3>
-<p>Các trang luyện tập đang đọc dữ liệu cũ trên thiết bị, dùng chung trong chế độ khách. Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Chỉ pilot nhập riêng, khi được bật và bạn xác nhận, mới gửi các mục đã duyệt; các trang chưa tự chuyển sang dữ liệu tài khoản. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
+<p>Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Bạn cần chọn riêng nguồn tài khoản; dữ liệu cũ chỉ được nhập sau preview và xác nhận. Mục tiêu/check-in chỉ dùng kho tài khoản sau khi bạn bật riêng ở mục pilot; các nhóm luyện tập khác vẫn dùng dữ liệu trên thiết bị. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
 <p role="status" aria-live="polite">Chế độ khách</p>
 <form hidden>
 <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>

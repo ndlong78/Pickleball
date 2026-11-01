@@ -5,12 +5,20 @@ const planner=window.PICKLEUP_WEEKLY_PLANNER,goals=window.PICKLEUP_WEEKLY_GOALS;
 const historyCore=window.PICKLEUP_ACADEMY_TRENDS,logCore=window.PICKLEUP_TRAINING_LOG;
 const lessons=window.PICKLEUP_CURRICULUM||[],el=id=>document.getElementById(id);
 if(!planner||!goals||!el("wpMinutes"))return;
-const minutes=el("wpMinutes"),gentle=el("wpGentle");
+const minutes=el("wpMinutes"),gentle=el("wpGentle"),data=window.PICKLEUP_DATA;
+const raw=key=>data?data.raw(key):localStorage.getItem(key);
+let editRevision='0',sourceTag='',dirty=false;
+for(const input of [minutes,gentle])input.addEventListener('change',()=>{dirty=true});
+function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.mode:'guest';
+ if(tag!==sourceTag||!dirty){const saved=storedPlan();minutes.value=String(saved.minutes);gentle.checked=saved.gentle;editRevision=data?.revision('user_preferences','self')||'0';dirty=false}if(tag!==sourceTag)el('wpStatus').textContent='';sourceTag=tag;
+ el('wpSave').textContent=data?.deleted('user_preferences','self')?'Khôi phục tùy chọn lịch tập':'Lưu lịch tập';
+ for(const id of ['wpMinutes','wpGentle','wpSave'])el(id).disabled=data?!data.canWrite('user_preferences','self'):false;
+}
 function json(key,fallback){
  try{const v=JSON.parse(localStorage.getItem(key)||"null");return v===null?fallback:v}catch(_){return fallback}
 }
-function storedPlan(){try{return planner.readSettings(localStorage.getItem(planner.KEY))}catch(_){return {...planner.DEFAULT}}}
-function storedGoal(){try{return goals.readSettings(localStorage.getItem(goals.KEY))}catch(_){return {...goals.DEFAULT}}}
+function storedPlan(){try{return planner.readSettings(raw(planner.KEY))}catch(_){return {...planner.DEFAULT}}}
+function storedGoal(){try{return goals.readSettings(raw(goals.KEY))}catch(_){return {...goals.DEFAULT}}}
 function textNode(tag,cl,value){const n=document.createElement(tag);if(cl)n.className=cl;n.textContent=String(value);return n}
 function draw(){
  const config=storedPlan(),target=storedGoal();
@@ -47,11 +55,14 @@ function draw(){
  el("wpDays").replaceChildren(frag);document.dispatchEvent(new Event("pickleup:weekly-plan-rendered"));
 }
 const original=storedPlan();minutes.value=String(original.minutes);gentle.checked=original.gentle;
-el("wpSave").addEventListener("click",()=>{
+el("wpSave").addEventListener("click",async()=>{
+ const stamp=sourceTag;
  try{
-  planner.saveSettings(localStorage,{minutes:Number(minutes.value),gentle:gentle.checked});
-  el("wpStatus").textContent="Đã lưu tùy chọn lịch tập trên thiết bị này.";draw();
- }catch(_){el("wpStatus").textContent="Không lưu được lịch tập; vui lòng kiểm tra quyền lưu trữ."}
+  if(data?.isAccount())await data.savePreferences({session_minutes:Number(minutes.value),gentle:gentle.checked},editRevision,{restore:data.deleted('user_preferences','self')});
+  else planner.saveSettings(localStorage,{minutes:Number(minutes.value),gentle:gentle.checked});
+  if(stamp!==sourceTag)return;dirty=false;hydrate();
+  el("wpStatus").textContent=data?.isAccount()?"Đã lưu lịch trong kho tài khoản trên thiết bị · chờ đồng bộ.":"Đã lưu tùy chọn lịch tập trên thiết bị này.";draw();
+ }catch(_){if(stamp===sourceTag)el("wpStatus").textContent="Không lưu được lịch tập; hãy kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ."}
 });
 el("wpRefresh").addEventListener("click",draw);
 el("wpDays").addEventListener("click",event=>{
@@ -63,9 +74,10 @@ document.addEventListener("pickleup:training-log-updated",draw);
 document.addEventListener("pickleup:weekly-goal-saved",draw);
 window.addEventListener("storage",event=>{
  if([planner.KEY,goals.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_training_log_v26"].includes(event.key)){
-  if(event.key===planner.KEY){const s=storedPlan();minutes.value=String(s.minutes);gentle.checked=s.gentle}
+  if(event.key===planner.KEY&&!data?.isAccount()){dirty=false;hydrate()}
   draw();
  }
 });
-draw();
+document.addEventListener("pickleup:domain-data",()=>{hydrate();draw()});
+hydrate();draw();
 })();

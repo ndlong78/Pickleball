@@ -88,3 +88,5 @@ Playwright viewport/engine mô phỏng **không** thay thế QA vật lý trên 
 Trước sửa: đọc route, module core/UI, storage keys, tests và các tài liệu này. Sau sửa: thêm unit cho logic (ngày địa phương, year boundary, corrupt dữ liệu, tính tuần, lesson comparability), Playwright cho route/điều khiển/viewport, backup migration khi liên quan và PWA offline nếu ảnh hưởng. Không ẩn lỗi bằng thay expectation cho dễ qua. Với thay đổi hành vi, cập nhật `PRODUCT_SPEC.md` và acceptance criteria. Với thay đổi kiến trúc, cập nhật tài liệu này trong cùng PR.
 
 Mọi tối ưu hoặc refactor đều cần kiểm tra regression ở tám trang hiện có và báo rõ đo lường/ảnh hưởng. Luôn ưu tiên an toàn và hồi phục thay vì thúc đẩy người dùng tập quá sức.
+
+PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
