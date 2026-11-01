@@ -5,13 +5,22 @@ const core=window.PICKLEUP_WEEKLY_GOALS,lessons=window.PICKLEUP_CURRICULUM||[];
 const byId=id=>document.getElementById(id);
 if(!core||!byId("wgDays"))return;
 const historyCore=window.PICKLEUP_ACADEMY_TRENDS,logCore=window.PICKLEUP_TRAINING_LOG;
-const days=byId("wgDays"),level=byId("wgLevel");
-const settings=(()=>{try{return core.readSettings(localStorage.getItem(core.KEY))}catch(_){return {...core.DEFAULT}}})();
+const days=byId("wgDays"),level=byId("wgLevel"),data=window.PICKLEUP_DATA;
+const goalRaw=()=>data?data.raw(core.KEY):localStorage.getItem(core.KEY);
+let editRevision='0',sourceTag='',dirty=false;
+for(const input of [days,level])input.addEventListener('change',()=>{dirty=true});
+function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.mode:'guest',changed=tag!==sourceTag;
+ if(changed||!dirty){const saved=core.readSettings(goalRaw());days.value=String(saved.days);level.value=saved.level;editRevision=data?.revision('user_preferences','self')||'0';dirty=false}if(changed)byId('wgStatus').textContent='';sourceTag=tag;
+ byId('wgRefresh').textContent=data?.isAccount()?'Đọc lại mục tiêu':'Làm mới';
+ byId('wgSave').textContent=data?.deleted('user_preferences','self')?'Khôi phục mục tiêu':'Lưu mục tiêu';
+ for(const id of ['wgDays','wgLevel','wgSave'])byId(id).disabled=data?!data.canWrite('user_preferences','self'):false;
+}
+const settings=(()=>{try{return core.readSettings(goalRaw())}catch(_){return {...core.DEFAULT}}})();
 days.value=String(settings.days);level.value=settings.level;
 let recommendation=null;
 function readJson(key,fallback){try{const x=JSON.parse(localStorage.getItem(key)||"null");return x===null?fallback:x}catch(_){return fallback}}
 function redraw(){
- const saved=(()=>{try{return core.readSettings(localStorage.getItem(core.KEY))}catch(_){return {...core.DEFAULT}}})();
+ const saved=(()=>{try{return core.readSettings(goalRaw())}catch(_){return {...core.DEFAULT}}})();
  const history=historyCore?.readHistory(JSON.stringify(readJson("pickleup_academy_history_v44",[])))||[];
  const records=readJson("pickleup_academy_v2",{});
  const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
@@ -39,24 +48,28 @@ function redraw(){
   ?"Mở tuần "+recommendation.lesson.week+" · "+recommendation.lesson.title:"Chưa có bài để mở";
  byId("wgRecommendation").textContent=recommendation.reason;
 }
-byId("wgSave").addEventListener("click",()=>{
+byId("wgSave").addEventListener("click",async()=>{
+ const stamp=sourceTag;
  try{
-  core.saveSettings(localStorage,{days:Number(days.value),level:level.value});
-  byId("wgStatus").textContent="Đã lưu mục tiêu trên thiết bị này.";
+  if(data?.isAccount())await data.savePreferences({target_days:Number(days.value),level_band:level.value,goal_configured:true},editRevision,{restore:data.deleted('user_preferences','self')});
+  else core.saveSettings(localStorage,{days:Number(days.value),level:level.value});
+  if(stamp!==sourceTag)return;dirty=false;hydrate();
+  byId("wgStatus").textContent=data?.isAccount()?"Đã lưu trong kho tài khoản trên thiết bị · chờ đồng bộ.":"Đã lưu mục tiêu trên thiết bị này.";
   redraw();document.dispatchEvent(new Event("pickleup:weekly-goal-saved"));
- }catch(_){byId("wgStatus").textContent="Không lưu được. Kiểm tra quyền lưu trữ và chọn 1–5 ngày mỗi tuần."}
+ }catch(_){if(stamp===sourceTag)byId("wgStatus").textContent="Không lưu được. Kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ; lựa chọn cần 1–5 ngày mỗi tuần."}
 });
 byId("wgOpen").addEventListener("click",()=>{
  const id=byId("wgOpen").dataset.lessonId;if(!id)return;
  try{localStorage.setItem("pickleup_academy_last_lesson_v4",id)}catch(_){}
  document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
 });
-byId("wgRefresh").addEventListener("click",redraw);
+byId("wgRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate()}redraw()});
 document.addEventListener("pickleup:score-saved",redraw);
 document.addEventListener("pickleup:training-log-updated",redraw);
-window.addEventListener("storage",e=>{if([core.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_training_log_v26"].includes(e.key)){if(e.key===core.KEY){const s=core.readSettings(e.newValue);days.value=String(s.days);level.value=s.level}redraw()}});
-redraw();
+window.addEventListener("storage",e=>{if([core.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_training_log_v26"].includes(e.key)){if(e.key===core.KEY&&!data?.isAccount()){dirty=false;hydrate()}redraw()}});
+document.addEventListener("pickleup:domain-data",()=>{hydrate();redraw()});
+hydrate();redraw();
 // Markup is mounted before lazy scripts execute. Only allow edits after hydration
 // and handler registration, so initialization cannot overwrite an early selection.
-for(const id of ["wgDays","wgLevel","wgSave","wgRefresh"])byId(id).disabled=false;
+byId("wgRefresh").disabled=false;hydrate();
 })();

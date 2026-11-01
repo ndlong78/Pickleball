@@ -3,9 +3,12 @@
 "use strict";
 const c=window.PICKLEUP_WEEK_CHECKINS,$=id=>document.getElementById(id),cards=$("wpDays");
 if(!c||!cards||!$("wcDone"))return;
-function load(){try{return c.read(localStorage.getItem(c.KEY))}catch(_){return c.empty()}}
+const source=window.PICKLEUP_DATA,drafts=new Map();let sourceTag='';
+cards.addEventListener('input',event=>{const input=event.target.closest?.('.wc-label input'),card=input?.closest('.wp-day');if(card)drafts.set(card.dataset.date,{minutes:input.value,revision:input.dataset.revision,deleted:input.dataset.deleted==='true'})});
+function load(){try{return c.read(source?source.raw(c.KEY):localStorage.getItem(c.KEY))}catch(_){return c.empty()}}
 function text(tag,cls,value){const x=document.createElement(tag);if(cls)x.className=cls;if(value!==undefined)x.textContent=String(value);return x}
 function draw(){
+ const state=source?.getView(),tag=state?state.owner+':'+state.mode:'guest';if(tag!==sourceTag){drafts.clear();$('wcStatus').textContent='';sourceTag=tag}
  const data=load(),s=c.summary(data),today=c.today();
  $("wcDone").textContent=String(s.current.done);
  $("wcSkipped").textContent=String(s.current.skipped);
@@ -22,30 +25,37 @@ function draw(){
   const label=text("label","wc-label","Số phút thực tế");
   const input=document.createElement("input");
   input.type="number";input.min="5";input.max="180";input.step="5";input.inputMode="numeric";
-  input.value=row?.status==="done"?String(row.minutes):"30";
-  input.setAttribute("aria-label","Số phút thực tế "+day);input.disabled=future;
+  const draft=drafts.get(day);input.value=draft?draft.minutes:row?.status==="done"?String(row.minutes):"30";
+  input.dataset.revision=draft?.revision||source?.revision('practice_checkins',day)||'0';input.dataset.deleted=String(draft?draft.deleted:source?.deleted('practice_checkins',day)===true);
+  input.setAttribute("aria-label","Số phút thực tế "+day);input.disabled=future||!!source&&!source.canWrite("practice_checkins",day);
   label.append(input);box.append(label);
   const controls=text("div","wc-buttons");
-  function button(label,status){const b=text("button","wc-button",label);b.type="button";b.dataset.status=status;b.dataset.day=day;b.disabled=future;return b}
-  controls.append(button("Đã tập","done"),button("Bỏ qua","skipped"));
+  function button(label,status){const b=text("button","wc-button",label);b.type="button";b.dataset.status=status;b.dataset.day=day;b.dataset.revision=input.dataset.revision;b.dataset.restore=input.dataset.deleted;b.disabled=future||!!source&&!source.canWrite("practice_checkins",day);return b}
+  const deleted=source?.deleted("practice_checkins",day);
+  controls.append(button(deleted?"Khôi phục · Đã tập":"Đã tập","done"),button(deleted?"Khôi phục · Bỏ qua":"Bỏ qua","skipped"));
   if(row)controls.append(button("Xóa ghi nhận","clear"));
   box.append(controls);
   box.append(text("p","wc-state",future?"Ngày chưa đến — không thể điểm danh trước.":row?.status==="done"?"Đã tập · "+row.minutes+" phút":row?.status==="skipped"?"Đã bỏ qua":"Chưa xác nhận"));
   card.append(box);
  });
 }
-cards.addEventListener("click",event=>{
+cards.addEventListener("click",async event=>{
  const button=event.target.closest?.("button[data-status]");if(!button)return;
  const card=button.closest(".wp-day"),day=button.dataset.day,status=button.dataset.status;
  const minutes=status==="done"?Number(card.querySelector(".wc-label input")?.value):null;
+ const state=source?.getView(),stamp=state?state.owner+':'+state.mode:'guest';
  try{
-  const next=c.change(load(),day,status,minutes,card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null);
-  c.save(localStorage,next);document.dispatchEvent(new Event("pickleup:week-checkins-updated"));
-  $("wcStatus").textContent=status==="clear"?"Đã xóa ghi nhận ngày "+day+".":"Đã lưu ghi nhận ngày "+day+".";
+  if(source?.isAccount())await source.saveCheckin({day,status,minutes,lessonId:card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null,timezone:state.timezone,expectedLocalRevision:button.dataset.revision,restore:button.dataset.restore==='true'});
+  else{const next=c.change(load(),day,status,minutes,card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null);c.save(localStorage,next)}
+  const current=source?.getView();if(current&&stamp!==current.owner+':'+current.mode)return;
+  drafts.delete(day);document.dispatchEvent(new Event("pickleup:week-checkins-updated"));
+  $("wcStatus").textContent=(source?.isAccount()?"Kho tài khoản trên thiết bị · chờ đồng bộ. ":"")+(status==="clear"?"Đã xóa ghi nhận ngày "+day+".":"Đã lưu ghi nhận ngày "+day+".");
   draw();
- }catch(e){$("wcStatus").textContent=e.message||"Không thể lưu dữ liệu."}
+ }catch(e){const current=source?.getView();if(!current||stamp===current.owner+":"+current.mode)$("wcStatus").textContent=source?.isAccount()?"Không lưu được. Kiểm tra xung đột, múi giờ và quyền lưu trữ trong Dữ liệu.":e.message||"Không thể lưu dữ liệu."}
 });
 document.addEventListener("pickleup:weekly-plan-rendered",draw);
 window.addEventListener("storage",event=>{if(event.key===c.KEY)draw()});
+document.addEventListener("pickleup:domain-data",draw);
+document.addEventListener("pickleup:discard-checkin-drafts",()=>{drafts.clear();draw()});
 draw();
 })();
