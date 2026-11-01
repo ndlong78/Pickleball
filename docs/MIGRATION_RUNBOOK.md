@@ -86,3 +86,5 @@ PR3a bổ sung raw rescue18 khóa và inventory preview chỉ đọc: xem [RESCU
 PR3b là backend RPC local/CI riêng; gate domain preview, account consent, quarantine/export và importer UI ở PR3c vẫn bắt buộc trước upload. Hợp đồng [ATOMIC_IMPORT_PR3B](ATOMIC_IMPORT_PR3B.md).
 
 PR3c bổ sung mapper/account-consent/checkpoint pilot theo [IMPORT_PILOT_PR3C](IMPORT_PILOT_PR3C.md), cả Auth/import flags mặc định tắt. Repair manifest/group expansion và rollout thật còn gate, không coi merge backend là đủ bật sync.
+
+PR4a bổ sung canonical cache/cursor atomic cho hai domain, không gửi outbox hoặc chuyển nguồn UI: [CANONICAL_PULL_PR4A](CANONICAL_PULL_PR4A.md). PR4b cần epoch fence trong server transaction trước sender; pull rồi push riêng không đủ chống race restore.

@@ -90,3 +90,5 @@ Số test và CI run/SHA cuối cùng ghi ở Pull Request, lấy từ logs. Kh�
 Thêm Auth adapter + UI opt-in, OTP/local mail capture trước rồi staging SMTP khi được kết nối; guest còn hoạt động. Kiểm callback dưới `/Pickleball/`, expiry/refresh, logout và account switching với response in-flight. Không tự import/signup sync, không dùng production secrets. IndexedDB/outbox và conflict UI chưa có trong PR1a; các hợp đồng RPC ở trên là đầu vào cho PR2–PR4.
 
 PR3b hiện thực backend atomic import RPC theo [ATOMIC_IMPORT_PR3B](ATOMIC_IMPORT_PR3B.md), giữ nguyên manual RPC1 và RLS. UI mapper/consent/ingestion chưa bật, tiếp tục ở PR3c.
+
+PR4a bổ sung canonical cache/cursor atomic cho hai domain, không gửi outbox hoặc chuyển nguồn UI: [CANONICAL_PULL_PR4A](CANONICAL_PULL_PR4A.md). PR4b cần epoch fence trong server transaction trước sender; pull rồi push riêng không đủ chống race restore.

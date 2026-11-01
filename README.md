@@ -313,3 +313,5 @@ V5.4.0 / PR3c (chưa phát hành): [importer pilot có preview/consent/checkpoin
 PR3d thêm kiểm chứng UI OTP/import trên Chromium/WebKit với GoTrue/Mailpit/RPC local thật, checkpoint reload và account isolation; không bật flags hoặc sync. Xem [evidence và giới hạn](docs/AUTH_IMPORT_BROWSER_PR3D.md).
 
 V5.4.1 / PR3d sửa guarded Auth fetch để HTTP204 logout không làm SDK bỏ qua xóa/broadcast phiên; thêm regression bodyless response và kiểm chứng browser/backend local thật. [Release notes](RELEASE_V5.4.1.md).
+
+PR4a thêm canonical pull/bootstrap riêng user cho preferences/check-in: transaction base+cursor, giữ pending/overlay khi delta/full-resync và bỏ phản hồi A sau đổi B. Chưa sender/conflict UI/switch nguồn, flags vẫn tắt. [Hợp đồng và giới hạn](docs/CANONICAL_PULL_PR4A.md).
