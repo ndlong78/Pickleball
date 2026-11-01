@@ -5,7 +5,7 @@ const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222
 async function fixture(){
  const db=await repo.open({indexedDB:new IDBFactory()}),servers=new Map([A,B].map(owner=>[owner,model({owner,domainRows:true})])),listeners=new Set(),calls=[];let actor=A,intercept,enabled=true;
  const auth={subscribe(fn){listeners.add(fn);fn({status:actor?'authenticated':'guest',user:actor?{id:actor}:null});return ()=>listeners.delete(fn)},async syncRpc(owner,name,args){calls.push({owner,name,args:structuredClone(args)});const run=()=>servers.get(owner).rpc(name,args);return intercept?intercept(owner,name,args,run):run()},importRpc(owner,name,args){return this.syncRpc(owner,name,args)}};
- const controllers=[],make=()=>{const c=domain.create({auth,repository:db,core,pullFactory:pull,syncFactory:sync,enabled:()=>enabled,now:()=>new Date('2026-11-01T12:00:00Z'),uuid:uid});controllers.push(c);return c};
+ const controllers=[],make=(options={})=>{const c=domain.create({auth,repository:db,core,pullFactory:pull,syncFactory:sync,enabled:()=>enabled,now:()=>new Date('2026-11-01T12:00:00Z'),uuid:uid,...options});controllers.push(c);return c};
  return {db,servers,calls,make,intercept(fn){intercept=fn},disable(){enabled=false},switch(id){actor=id;for(const fn of [...listeners])fn({status:id?'authenticated':'guest',user:id?{id}:null})},close(){for(const c of controllers)c.close();db.close()}};
 }
 const prefRevision=c=>c.getState().projection?.prefRow?.localRevision||'0';
@@ -52,4 +52,7 @@ test('preexisting partial preferences intent stays intact through opt-in, projec
 });
 test('resolving an old partial intent previews its original defaults, without merging a newer remote field',async()=>{
  const f=await fixture(),c=f.make();try{await c.ready;await f.db.scope('user:'+A).write({kind:'user_preferences',id:'self',value:{target_days:4},operationId:uid()});remote(f.servers.get(A),{target_days:2,gentle:true});await c.useAccount();assert.equal((await c.sync()).status,'needs_review');const view=await c.previewConflict(c.getState().snapshot.conflicts[0].conflictId);assert.equal(core.intent(view).target_days,4);assert.equal(core.intent(view).gentle,false);await c.resolveConflict(view,'local');assert.equal((await c.sync()).status,'synced');assert.equal(c.getState().projection.plan.gentle,false)}finally{f.close()}
+});
+test('account switch during a state notification cannot run the old opt-in against the new scope',async()=>{
+ const f=await fixture(),c=f.make({onChange:s=>{if(s.owner===A&&s.busy)f.switch(B)}});try{await c.ready;await assert.rejects(c.useAccount(),{code:'account_changed'});await settled(c);assert.equal(c.getState().owner,B);assert.equal(c.getState().mode,'guest');assert.equal(await f.db.scope('user:'+A).getDomainConsent(),false);assert.equal(await f.db.scope('user:'+B).getDomainConsent(),false);assert.equal(f.calls.length,0)}finally{f.close()}
 });

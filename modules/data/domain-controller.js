@@ -17,7 +17,7 @@ function create({auth,repository,core=root.PickleUpDomainCore,enabled=()=>false,
  async function adopt(next){
   const stamp=++generation;stop();owner=next;
   state={mode:next?'loading':'guest',owner:next,busy:false,error:null,snapshot:null,projection:null};emit();
-  if(!next||closed)return;
+  if(!next||closed||stamp!==generation)return;
   try{
    scope=repository.scope('user:'+next);const consent=await scope.getDomainConsent();guard(stamp);
    if(!consent){state={...state,mode:'guest'};emit();return}
@@ -35,7 +35,7 @@ function create({auth,repository,core=root.PickleUpDomainCore,enabled=()=>false,
  async function task(work,{account=true}={}){
   if(account)ensureAccount();else guard();if(state.busy)fail('busy');
   const stamp=generation;state={...state,busy:true,error:null};emit();
-  try{const result=await work(stamp);guard(stamp);return result}
+  try{guard(stamp);const result=await work(stamp);guard(stamp);return result}
   catch(error){if(stamp===generation&&!closed){state={...state,error:error.code||'storage_unavailable',...(error.code==='invalid_domain'?{mode:'error',snapshot:null,projection:null}:{})};emit()}throw error}
   finally{if(stamp===generation&&!closed){state={...state,busy:false};emit()}}
  }

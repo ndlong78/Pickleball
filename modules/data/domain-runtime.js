@@ -12,6 +12,7 @@ function raw(key){
  return JSON.stringify(key===PickleUpDomainCore.KEYS.goal?p.goal:key===PickleUpDomainCore.KEYS.plan?p.plan:p.checkins);
 }
 function canWrite(kind,id){
+ if(state.busy)return false;
  if(state.mode==='guest')return true;
  if(state.mode!=='account'||state.busy||!state.projection||!state.snapshot?.cursor?.epoch)return false;
  if(kind==='practice_checkins'&&!state.timezone)return false;
