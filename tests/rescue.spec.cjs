@@ -1,10 +1,17 @@
 const {test,expect}=require('@playwright/test');
 const fs=require('node:fs/promises');
 test.use({trace:'off',screenshot:'off',video:'off'});
+async function settingsReady(page){
+ // A visible fragment precedes the remaining lazy scripts. The router schedules
+ // its initial scroll after the loader resolves; wait for that frame as well.
+ await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await document.fonts.ready;await new Promise(requestAnimationFrame)});
+ await expect(page.locator('#pageLoadStatus')).toBeHidden();
+ await expect(page.locator('#rescuePanel')).toBeVisible();
+}
 for(const width of [390,820,1180,1440])test('raw rescue preserves legacy and excludes Auth at '+width,async({page})=>{
  await page.setViewportSize({width,height:900});
  await page.goto('/Pickleball/?page=settings');
- await expect(page.locator('#rescuePanel')).toBeVisible();
+ await settingsReady(page);
  const before=await page.evaluate(()=>{localStorage.setItem('pickleup_scores','{broken');localStorage.setItem('pickleup_weekly_goal_v46','');localStorage.setItem('pickleup_practice_state_v25','{"running":true}');localStorage.setItem('pickleup_auth_v6','fixture-only');localStorage.setItem('pickleup_future','[1,2]');return JSON.stringify(Object.entries(localStorage).sort())});
  await page.locator('[data-refresh]').click();await expect(page.locator('#rescuePanel tbody tr')).toHaveCount(18);
  await expect(page.locator('#rescuePanel [role=status]')).toContainText('Chưa xác thực');
@@ -17,7 +24,7 @@ for(const width of [390,820,1180,1440])test('raw rescue preserves legacy and exc
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
 });
 test('preview files is read-only, identifies Home and renders unknown labels as text',async({page})=>{
- await page.goto('/Pickleball/?page=settings');await expect(page.locator('#rescuePanel')).toBeVisible();
+ await page.goto('/Pickleball/?page=settings');await settingsReady(page);
  const before=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()));
  await page.locator('#rescuePanel input[type=file]').setInputFiles({name:'home.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({app:'PickleUp',records:[{week:1,score:3},{week:1,score:3}],'<img src=x onerror=alert(1)>':true}))});
  await expect(page.locator('[data-source]')).toContainText('home-records');
@@ -26,7 +33,7 @@ test('preview files is read-only, identifies Home and renders unknown labels as 
  expect(await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()))).toBe(before);
 });
 test('changed snapshot and invalid file produce safe errors without writes',async({page})=>{
- await page.goto('/Pickleball/?page=settings');await page.locator('[data-refresh]').click();await expect(page.locator('[data-download]')).toBeEnabled();
+ await page.goto('/Pickleball/?page=settings');await settingsReady(page);await page.locator('[data-refresh]').click();await expect(page.locator('[data-download]')).toBeEnabled();
  await page.evaluate(()=>localStorage.setItem('pickleup_scores','{"changed":true}'));await page.locator('[data-download]').click();
  await expect(page.locator('#rescuePanel [role=status]')).toContainText('Dữ liệu đang thay đổi');
  await page.locator('#rescuePanel input[type=file]').setInputFiles({name:'broken.json',mimeType:'application/json',buffer:Buffer.from('{broken')});
@@ -35,6 +42,23 @@ test('changed snapshot and invalid file produce safe errors without writes',asyn
 test('visited settings and rescue remain available after offline reload',async({page,context})=>{
  await page.goto('/Pickleball/?page=home');
  await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));localStorage.setItem('pickleup_weekly_goal_v46','{"days":2}')});
- await page.goto('/Pickleball/?page=settings');await expect(page.locator('#rescuePanel')).toBeVisible();
- await context.setOffline(true);try{await page.reload();await expect(page.locator('#rescuePanel')).toBeVisible();await page.locator('[data-refresh]').click();await expect(page.locator('#rescuePanel tbody tr')).toHaveCount(18);await expect(page.locator('[data-download]')).toBeEnabled()}finally{await context.setOffline(false)}
+ await page.goto('/Pickleball/?page=settings');await settingsReady(page);
+ await context.setOffline(true);try{await page.reload();await settingsReady(page);await page.locator('[data-refresh]').click();await expect(page.locator('#rescuePanel tbody tr')).toHaveCount(18);await expect(page.locator('[data-download]')).toBeEnabled()}finally{await context.setOffline(false)}
+});
+test.describe('controlled settings loading fixture',()=>{
+// Route interception must hold the late script rather than a service-worker hit.
+// The separate offline test above continues to exercise the real service worker.
+test.use({serviceWorkers:'block'});
+test('rescue readiness waits for the remaining settings modules before interacting',async({page})=>{
+ let release,reached;const gate=new Promise(resolve=>release=resolve),requested=new Promise(resolve=>reached=resolve);
+ await page.route('**/modules/data/import-ui.js*',async route=>{reached();await gate;await route.continue()});
+ try{
+  await page.goto('/Pickleball/?page=settings',{waitUntil:'domcontentloaded'});await requested;
+  await expect(page.locator('#rescuePanel')).toBeVisible();await expect(page.locator('#pageLoadStatus')).toBeVisible();
+  let settled=false;const pending=settingsReady(page).then(()=>settled=true);
+  // The late module is still held, so fragment visibility cannot mean ready.
+  await expect(page.locator('#pageLoadStatus')).toBeVisible();expect(settled).toBe(false);
+  release();await pending;await page.locator('[data-refresh]').click();await expect(page.locator('#rescuePanel tbody tr')).toHaveCount(18);
+ }finally{release()}
+});
 });

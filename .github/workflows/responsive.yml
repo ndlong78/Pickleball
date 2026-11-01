@@ -53,6 +53,8 @@ jobs:
         run: npm run test:unit
       - name: Install browsers
         run: npx playwright install --with-deps chromium webkit
+      - name: Verify WebKit rescue hydration without retries
+        run: npx playwright test tests/rescue.spec.cjs --project="WebKit responsive" --grep="raw rescue preserves legacy and excludes Auth at 390" --repeat-each=5 --retries=0
       - name: Run iPhone and iPad viewport smoke tests
         run: npm run test:responsive
       - name: Upload V3.8 browser benchmark
