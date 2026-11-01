@@ -7,10 +7,10 @@ const checkin=(revision='1',deleted_at=null)=>({user_id:A,revision,deleted_at,lo
 const change=(n,kind='user_preferences',row=prefs(),key='self')=>({server_revision:String(n),entity_kind:kind,entity_key:key,record_revision:row.revision,row});
 const page=(changes,high='1',epoch=E,next=changes.at(-1)?.server_revision||'0')=>({status:'ok',changes,high_water:high,epoch,next_revision:next,has_more:BigInt(next)<BigInt(high)});
 async function fixture(handler,options={}){
- const db=await repository.open({indexedDB:new IDBFactory()}),calls=[];let listener;
+ const indexedDB=new IDBFactory(),db=await repository.open({indexedDB}),calls=[];let listener;
  const auth={subscribe(fn){listener=fn;fn({user:{id:A}});return ()=>{}},async importRpc(owner,name,args){calls.push({owner,name,args});return handler(args,calls.length)}};
  const pull=controller.create({auth,repository:db,owner:A,enabled:()=>true,...options}),scope=db.scope('user:'+A);
- return {db,pull,scope,calls,auth,switchAccount:()=>listener({user:{id:B}}),close(){pull.close();db.close()}};
+ return {db,pull,scope,calls,auth,indexedDB,switchAccount:()=>listener({user:{id:B}}),close(){pull.close();db.close()}};
 }
 test('bounded bootstrap freezes H across pages and caches only preferences/checkins without inventing attendance',async()=>{
  const event={user_id:A,revision:'1',id:F,deleted_at:null,score:8};
@@ -80,4 +80,14 @@ test('bigint cursors stay decimal strings beyond 2^53 and guest snapshot apply i
 test('full reset retries only once and kill switch during read discards the complete response',async()=>{
  const f=await fixture(()=>({status:'reset_required'}));try{await assert.rejects(f.pull.pull(),{code:'reset_required'});assert.equal(f.calls.length,2);assert.equal(await f.scope.getSyncCursor(),undefined)}finally{f.close()}
  let allowed=true;const off=await fixture(()=>{allowed=false;return page([change(1)])},{enabled:()=>allowed});try{await assert.rejects(off.pull.pull(),{code:'pilot_disabled'});assert.equal(await off.scope.getSyncCursor(),undefined)}finally{off.close()}
+});
+
+test('changed cache coverage policy forces bootstrap instead of skipping prior domain history',async()=>{
+ const f=await fixture(()=>page([change(1)]));
+ try{
+  await f.pull.pull();const cursor=await f.scope.getSyncCursor();
+  const raw=await new Promise((resolve,reject)=>{const req=f.indexedDB.open('pickleup-v6');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});
+  try{await new Promise((resolve,reject)=>{const tx=raw.transaction('sync_cursor','readwrite');tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);tx.objectStore('sync_cursor').put({...cursor,policy:'previous-domain-coverage'})})}finally{raw.close()}
+  const result=await f.pull.pull();assert.equal(result.reset,true);assert.equal(f.calls[1].args.p_after_revision,'0');assert.equal(f.calls[1].args.p_epoch,null);assert.equal(result.cursor.policy,'preferences-checkins-1');assert.equal(result.cursor.localVersion,'2');
+ }finally{f.close()}
 });
