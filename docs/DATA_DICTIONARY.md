@@ -86,3 +86,5 @@ Index ban đầu: user_id là prefix của PK/unique hoặc index riêng cho m�
 DB namespace là cách ly ứng dụng, không phải mã hóa chống người dùng cùng browser/OS. Quyền và hạn chế ở [THREAT_MODEL](THREAT_MODEL.md). Không lưu auth secret trong các backup/outbox/raw snapshots; legacy snapshot chỉ allowlist app keys + unknown prefix đã được preview.
 
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
+
+PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).

@@ -319,3 +319,5 @@ PR4a thêm canonical pull/bootstrap riêng user cho preferences/check-in: transa
 PR4b thêm RPC epoch fence dưới transaction lock, sender/ack/conflict API cho preferences/check-in, chưa nối UI hoặc bật flags. [Hợp đồng/evidence](docs/SYNC_SENDER_PR4B.md).
 
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](docs/SYNC_UI_PR4C.md).
+
+PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](docs/ACTIVITY_SYNC_PR5A1.md).
