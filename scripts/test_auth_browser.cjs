@@ -131,7 +131,9 @@ async function runEngine(engine,name,host){
   const synced=await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),sender=PickleUpSyncController.create({auth,repository:db,owner,pullFactory:PickleUpPullController,enabled:()=>true}),scope=db.scope('user:'+owner);try{const result=await sender.sync({forceRetry:true});return {status:result.status,row:await scope.read('practice_checkins','2026-01-01'),queue:await scope.listOutbox()}}finally{scope.close();sender.close();db.close()}},dataA.owner);
   assert.equal(synced.status,'synced');assert.equal(synced.row.base.status,'skipped');assert.equal(synced.row.base.minutes,null);assert.equal(synced.row.base.revision,(BigInt(resolution.revision)+1n).toString());assert.equal(host.state.rpc.filter(r=>r.name==='apply_sync_operation').at(-1).body,originalSync);assert.equal(host.state.syncDropCount,1);
   phase=name+':opt_in_account_source_a';await page.locator('[data-sync-enable]').click();await hasText(page,'#syncPilot [role=status]','Đã đọc kho tài khoản');
-  phase=name+':late_source_a_response';const held=host.holdNextPull();await chooseFile(page,source(6));
+  phase=name+':late_source_a_response';
+  const changedA=await page.evaluate(async()=>{const state=PICKLEUP_DATA.getState(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);return auth.syncRpc(state.owner,'apply_sync_operation',{p_operation_id:crypto.randomUUID(),p_kind:'user_preferences',p_entity_key:'self',p_action:'put',p_expected_revision:state.projection.prefRow.baseRevision,p_epoch:state.snapshot.cursor.epoch,p_payload:{target_days:5},p_protocol_version:1})});assert.equal(changedA.status,'applied');
+  const held=host.holdNextPull();await chooseFile(page,source(6));
   await page.locator('[data-sync-read]').click();const delayed=await held.seen;
   assert.equal(delayed.status,'ok');assert.ok(delayed.changes.some(change=>change.row.user_id===dataA.owner));
   await tab.locator('[data-logout]').click();await hasText(page,authStatus,'Chế độ khách');

@@ -11,6 +11,7 @@ let editRevision='0',sourceTag='',dirty=false;
 for(const input of [days,level])input.addEventListener('change',()=>{dirty=true});
 function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.mode:'guest',changed=tag!==sourceTag;
  if(changed||!dirty){const saved=core.readSettings(goalRaw());days.value=String(saved.days);level.value=saved.level;editRevision=data?.revision('user_preferences','self')||'0';dirty=false}if(changed)byId('wgStatus').textContent='';sourceTag=tag;
+ byId('wgRefresh').textContent=data?.isAccount()?'Đọc lại mục tiêu':'Làm mới';
  byId('wgSave').textContent=data?.deleted('user_preferences','self')?'Khôi phục mục tiêu':'Lưu mục tiêu';
  for(const id of ['wgDays','wgLevel','wgSave'])byId(id).disabled=data?!data.canWrite('user_preferences','self'):false;
 }
@@ -62,7 +63,7 @@ byId("wgOpen").addEventListener("click",()=>{
  try{localStorage.setItem("pickleup_academy_last_lesson_v4",id)}catch(_){}
  document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
 });
-byId("wgRefresh").addEventListener("click",redraw);
+byId("wgRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate()}redraw()});
 document.addEventListener("pickleup:score-saved",redraw);
 document.addEventListener("pickleup:training-log-updated",redraw);
 window.addEventListener("storage",e=>{if([core.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_training_log_v26"].includes(e.key)){if(e.key===core.KEY&&!data?.isAccount()){dirty=false;hydrate()}redraw()}});

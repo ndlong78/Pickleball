@@ -11,6 +11,7 @@ let editRevision='0',sourceTag='',dirty=false;
 for(const input of [minutes,gentle])input.addEventListener('change',()=>{dirty=true});
 function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.mode:'guest';
  if(tag!==sourceTag||!dirty){const saved=storedPlan();minutes.value=String(saved.minutes);gentle.checked=saved.gentle;editRevision=data?.revision('user_preferences','self')||'0';dirty=false}if(tag!==sourceTag)el('wpStatus').textContent='';sourceTag=tag;
+ el('wpRefresh').textContent=data?.isAccount()?'Đọc lại lịch/check-in':'Làm mới';
  el('wpSave').textContent=data?.deleted('user_preferences','self')?'Khôi phục tùy chọn lịch tập':'Lưu lịch tập';
  for(const id of ['wpMinutes','wpGentle','wpSave'])el(id).disabled=data?!data.canWrite('user_preferences','self'):false;
 }
@@ -64,7 +65,7 @@ el("wpSave").addEventListener("click",async()=>{
   el("wpStatus").textContent=data?.isAccount()?"Đã lưu lịch trong kho tài khoản trên thiết bị · chờ đồng bộ.":"Đã lưu tùy chọn lịch tập trên thiết bị này.";draw();
  }catch(_){if(stamp===sourceTag)el("wpStatus").textContent="Không lưu được lịch tập; hãy kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ."}
 });
-el("wpRefresh").addEventListener("click",draw);
+el("wpRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate();document.dispatchEvent(new Event("pickleup:discard-checkin-drafts"))}draw()});
 el("wpDays").addEventListener("click",event=>{
  const a=event.target.closest?.("a[data-lesson-id]");if(!a)return;
  try{localStorage.setItem("pickleup_academy_last_lesson_v4",a.dataset.lessonId)}catch(_){}

@@ -47,16 +47,21 @@ function project(snapshot,{owner,today}={}){
  return {preferences:prefs,prefRow,rows,goal:{days:prefs.target_days,level:prefs.level_band},plan:{minutes:prefs.session_minutes,gentle:prefs.gentle},checkins:{schemaVersion:1,entries},goalConfigured:prefs.goal_configured===true};
 }
 function localDay(now=new Date()){return [now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-')}
+function intent(view){
+ const row=view.record;if(row.deleted)return null;
+ const original=view.conflict.originalBase?.row||null;
+ return row.kind==='user_preferences'?preferences({...DEFAULT,...(original||{}),...row.overlay}):checkin(row.overlay);
+}
 function resolution(view,mode){
- const row=view.record,value=row.overlay;
+ const row=view.record;
  if(mode!=='local')return {action:'put',value:{}};
  if(row.deleted){
   if(row.kind!=='practice_checkins')return {action:'delete',value:{}};
   const zone=view.operations.find(op=>op.operationId===row.tailOperationId)?.payload?.timezone_at_entry||row.base?.timezone_at_entry;
   if(!timezone(zone))fail('invalid_timezone');return {action:'delete',value:{timezone_at_entry:zone}};
  }
- return {action:row.base?.deleted_at?'restore':'put',value:row.kind==='user_preferences'?preferences(value):checkin(value)};
+ return {action:row.base?.deleted_at?'restore':'put',value:intent(view)};
 }
-const api={KEYS,DEFAULT,DomainError,preferences,checkin,project,timezone,localDay,resolution};
+const api={KEYS,DEFAULT,DomainError,preferences,checkin,project,timezone,localDay,resolution,intent};
 if(typeof module!=='undefined')module.exports=api;else root.PickleUpDomainCore=api;
 })(typeof window==='undefined'?globalThis:window);

@@ -8,13 +8,13 @@ const message=code=>errors[code]||'Không thực hiện được. Dữ liệu ch
 function node(tag,text){const el=document.createElement(tag);el.textContent=text;return el}
 function summary(kind,value,deleted){
  if(deleted)return 'Đã xóa ghi nhận.';if(!value)return 'Chưa có dữ liệu.';
- if(kind==='user_preferences')return (value.target_days??'?')+' ngày/tuần · '+(value.level_band??'?')+' · '+(value.session_minutes??'?')+' phút · '+(value.gentle?'Tập nhẹ':'Nhịp thông thường');
- return value.status==='done'?'Đã tập · '+value.minutes+' phút · '+(value.lesson_id||'Không chọn bài'):value.status==='skipped'?'Đã bỏ qua':'Chưa xác nhận';
+ if(kind==='user_preferences')return (value.target_days??'?')+' ngày/tuần · '+(value.level_band??'?')+' · '+(value.session_minutes??'?')+' phút · '+(value.gentle?'Tập nhẹ':'Nhịp thông thường')+' · '+(value.goal_configured===true?'Đã chọn mục tiêu':value.goal_configured===false?'Chưa chọn mục tiêu':'Chưa rõ mục tiêu đã được chọn');
+ return (value.status==='done'?'Đã tập · '+value.minutes+' phút · '+(value.lesson_id||'Không chọn bài'):value.status==='skipped'?'Đã bỏ qua':'Chưa xác nhận')+' · Múi giờ: '+(value.timezone_at_entry||'Chưa rõ');
 }
 function render(){
  const s=data.getState(),source=s.owner+':'+s.mode;
  const sourceChanged=previous!==source;
- if(sourceChanged){serial++;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
+ if(sourceChanged){serial++;running=false;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
  const configured=PICKLEUP_SYNC_CONFIG?.enabled===true&&PICKLEUP_AUTH_CONFIG?.enabled===true;
  body.hidden=!configured;
  $('[data-sync-enable]').disabled=running||s.busy||!s.owner||s.mode!=='guest';
@@ -38,22 +38,24 @@ function render(){
 }
 async function task(work){
  if(running)return;running=true;const stamp=serial;render();
- try{await work()}catch(error){if(stamp===serial)status.textContent=message(error.code)}finally{running=false;render()}
+ try{await work()}catch(error){if(stamp===serial)status.textContent=message(error.code)}finally{if(stamp===serial){running=false;render()}}
 }
 function show(view){
  selection={view,owner:data.getState().owner};detail.replaceChildren();
  detail.append(node('h4','Xem hai bản · '+(view.record.kind==='user_preferences'?'Mục tiêu/lịch tập':view.record.id)),node('p','Chọn một bản cho toàn bộ mục này. Bản còn lại và chuỗi yêu cầu cũ được giữ trong bản cache có thể xuất. Quyết định giữ bản của bạn chỉ tạo thay đổi chờ gửi; có thể xung đột lại.'));
  const grid=node('div','');grid.className='sync-comparison';
- const base=view.conflict.originalBase?.row,local=view.record.overlay,remote=view.record.base;
+ const base=view.conflict.originalBase?.row,remote=view.record.base,uncertain=view.operations.some(o=>o.state==='sending');let local=view.record.overlay,localAvailable=true;
+ try{local=PickleUpDomainCore.intent(view)}catch(_){localAvailable=false;detail.append(node('p','Bản chờ cần kiểm tra định dạng. Hãy xuất cache để giữ nguồn; hiện có thể chọn bản tài khoản.'))}
  for(const [label,value,deleted]of [['Lúc bắt đầu sửa',base,!!base?.deleted_at],['Bạn muốn lưu',local,view.record.deleted],['Trên tài khoản',remote,!!remote?.deleted_at]]){const card=node('div','');card.append(node('strong',label),node('p',summary(view.record.kind,value,deleted)));grid.append(card)}detail.append(grid);
  const select=document.createElement('select');select.setAttribute('aria-label','Bản muốn giữ');select.append(new Option('Chọn bản muốn giữ',''),new Option('Dùng bản tài khoản','server'),new Option('Giữ bản của tôi','local'));detail.append(select);
+ select.options[2].disabled=!localAvailable;
  const epoch=document.createElement('input');epoch.type='checkbox';const epochLabel=node('label',' Tôi đã kiểm tra dữ liệu sau khi tải lại tài khoản.');epochLabel.prepend(epoch);epochLabel.hidden=view.conflict.reason!=='reset_required';detail.append(epochLabel);
- const restore=document.createElement('input');restore.type='checkbox';const restoreLabel=node('label',' Tôi muốn khôi phục ghi nhận đã bị xóa trên tài khoản.');restoreLabel.prepend(restore);restoreLabel.hidden=!(remote?.deleted_at&&!view.record.deleted);detail.append(restoreLabel);
+ const restore=document.createElement('input');restore.type='checkbox';const restoreLabel=node('label',' Tôi muốn khôi phục mục đã bị xóa trên tài khoản.');restoreLabel.prepend(restore);restoreLabel.hidden=!(remote?.deleted_at&&!view.record.deleted);detail.append(restoreLabel);
  const confirm=node('button','Xác nhận lựa chọn');confirm.type='button';confirm.disabled=true;
- const valid=()=>{confirm.disabled=!select.value||!epochLabel.hidden&&!epoch.checked||select.value==='local'&&!restoreLabel.hidden&&!restore.checked};
+ const valid=()=>{confirm.disabled=uncertain||!select.value||!epochLabel.hidden&&!epoch.checked||select.value==='local'&&(!localAvailable||!restoreLabel.hidden&&!restore.checked)};
  for(const input of [select,epoch,restore])input.addEventListener('change',valid);
  confirm.addEventListener('click',()=>{if(confirm.disabled)return;const current=selection;if(!current||current.owner!==data.getState().owner)return;task(async()=>{await data.controller().resolveConflict(current.view,select.value,{acknowledgeEpochChange:epoch.checked,restore:restore.checked});selection=null;detail.replaceChildren();status.textContent=select.value==='server'?'Đã chọn bản tài khoản; bản chưa chọn được giữ trong cache.':'Đã lưu quyết định trên thiết bị. Bấm đồng bộ để gửi.'})});detail.append(confirm);
- if(view.operations.some(o=>o.state==='sending')){confirm.disabled=true;detail.append(node('p',message('uncertain_operation')))}
+ if(uncertain){confirm.disabled=true;detail.append(node('p',message('uncertain_operation')))}
 }
 function click(selector,work){$(selector).addEventListener('click',()=>task(work))}
 click('[data-sync-enable]',async()=>{await data.controller().useAccount();status.textContent='Đã đọc kho tài khoản. Dữ liệu khách chưa được nhập hoặc thay đổi.'});

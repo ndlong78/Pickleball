@@ -56,5 +56,6 @@ cards.addEventListener("click",async event=>{
 document.addEventListener("pickleup:weekly-plan-rendered",draw);
 window.addEventListener("storage",event=>{if(event.key===c.KEY)draw()});
 document.addEventListener("pickleup:domain-data",draw);
+document.addEventListener("pickleup:discard-checkin-drafts",()=>{drafts.clear();draw()});
 draw();
 })();

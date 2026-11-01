@@ -79,7 +79,7 @@ async function checkin(status){
 $("jDone").addEventListener("click",()=>checkin("done"));
 $("jSkipped").addEventListener("click",()=>checkin("skipped"));
 $("jClear").addEventListener("click",()=>checkin("clear"));
-$("jRefresh").addEventListener("click",redraw);
+$("jRefresh").addEventListener("click",()=>{draftDirty=false;redraw()});
 for(const evt of ["pickleup:score-saved","pickleup:weekly-goal-saved","pickleup:week-checkins-updated","pickleup:training-log-updated","pickleup:route-change"])
  document.addEventListener(evt,redraw);
 window.addEventListener("storage",e=>{
