@@ -6,6 +6,7 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 const KINDS=new Set(['profiles','user_preferences','personal_plans','academy_attempts','skill_assessments','practice_checkins','training_entries','match_records','user_selections']);
 const EVENTS=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
 const SINGLETONS=new Set(['profiles','user_preferences','user_selections']);
+const PULL_KINDS=new Set(['user_preferences','practice_checkins']);
 const STORES={records:['namespace','kind','id'],outbox:['namespace','operationId'],conflicts:['namespace','conflictId'],sync_cursor:['namespace','protocol'],import_receipts:['namespace','fingerprint','adapterVersion'],legacy_snapshots:['installationId','snapshotId'],device_state:['namespace','deviceId','key'],metadata:['namespace','key']};
 class RepositoryError extends Error{constructor(code){super(code);this.name='RepositoryError';this.code=code}}
 const fail=code=>{throw new RepositoryError(code)};
@@ -92,11 +93,48 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(!old?.deleted&&action==='restore')fail('not_deleted');
        if(old&&EVENTS.has(kind)&&action==='put')fail('append_only');
        const localRevision=(BigInt(expectedLocalRevision)+1n).toString();
-       const record={namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay:action==='delete'?null:snapshot,deleted:action==='delete',localRevision,tailOperationId:guest?null:operationId};
+       const record={...old,namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay:action==='delete'?null:snapshot,deleted:action==='delete',localRevision,tailOperationId:guest?null:operationId};
        if(!guest)await request(outbox.add({namespace,operationId,kind,id,action,payload:snapshot,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));
        await request(records.put(record));
        await request(metadata.add({namespace,key:receiptKey[1],signature,localRevision}));
        return {status:'saved_locally',localRevision};
+      });
+     },
+     getSyncCursor(){return transaction(['sync_cursor'],'readonly',tx=>request(tx.objectStore('sync_cursor').get([namespace,1])))},
+     // PR4a commits a complete bounded pull cycle, never a partial bootstrap.
+     // A reset replaces server bases only; pending requests/overlays survive.
+     async applyCanonicalSnapshot({rows,afterRevision,epoch,expectedLocalVersion='0',reset=false}){
+      if(guest)fail('auth_required');
+      if(!Array.isArray(rows)||rows.length>10050||rows.length>0&&afterRevision==='0'||!revision(afterRevision)||BigInt(afterRevision)>9223372036854775807n||!revision(expectedLocalVersion)||typeof reset!=='boolean'||!(epoch===null||UUID.test(epoch))||afterRevision!=='0'&&epoch===null)fail('invalid_snapshot');
+      const snapshot=copy(rows),unique=new Set();
+      if(new TextEncoder().encode(canonical(snapshot)).length>16*1024*1024)fail('payload_too_large');
+      for(const item of snapshot){
+       if(!PULL_KINDS.has(item.kind))fail('invalid_snapshot');identity(item.kind,item.id);
+       const tag=item.kind+':'+item.id,row=item.row;
+       if(unique.has(tag)||!row||row.user_id!==namespace.slice(5)||!revision(row.revision)||row.revision==='0'||BigInt(row.revision)>9223372036854775807n||!Object.hasOwn(row,'deleted_at')||!(row.deleted_at===null||typeof row.deleted_at==='string')||item.kind==='practice_checkins'&&row.local_date!==item.id)fail('invalid_snapshot');unique.add(tag);
+      }
+      return transaction(['records','sync_cursor'],'readwrite',async tx=>{
+       const cursors=tx.objectStore('sync_cursor'),store=tx.objectStore('records'),prior=await request(cursors.get([namespace,1]));
+       if((prior?.localVersion||'0')!==expectedLocalVersion)fail('cursor_conflict');
+       if(!reset&&prior&&(prior.policy!=='preferences-checkins-1'||prior.epoch!==epoch||BigInt(afterRevision)<BigInt(prior.afterRevision)))fail('reset_required');
+       const oldRows=(await request(store.index('namespace').getAll(namespace))).filter(r=>PULL_KINDS.has(r.kind));
+       const oldByKey=new Map(oldRows.map(r=>[r.kind+':'+r.id,r])),incoming=new Map(snapshot.map(r=>[r.kind+':'+r.id,r]));
+       const keys=reset?new Set([...oldByKey.keys(),...incoming.keys()]):new Set(incoming.keys());
+       for(const key of keys){
+        const old=oldByKey.get(key),item=incoming.get(key),base=item?.row||null;
+        if(!reset&&old?.baseEpoch===epoch&&BigInt(base.revision)<BigInt(old.baseRevision))fail('invalid_snapshot');
+        const pending=!!old?.tailOperationId,changed=reset||canonical(old?.base||null)!==canonical(base);
+        const record={...old,namespace,kind:item?.kind||old.kind,id:item?.id||old.id,base,baseRevision:base?.revision||'0',baseEpoch:epoch,baseMissing:base===null,
+         overlay:pending?old.overlay:null,deleted:pending?old.deleted:base!==null&&base.deleted_at!==null,
+         tailOperationId:pending?old.tailOperationId:null,localRevision:(BigInt(old?.localRevision||'0')+1n).toString(),reviewRequired:pending&&(old.reviewRequired||changed)||false};
+        if(pending&&changed){
+         record.reviewReason=reset?'reset_required':old.reviewReason||'remote_changed';
+         if(!Object.hasOwn(old,'reviewBase'))record.reviewBase={row:old.base,revision:old.baseRevision,epoch:old.baseEpoch??prior?.epoch??null};
+        }
+        await request(store.put(record));
+       }
+       const cursor={namespace,protocol:1,policy:'preferences-checkins-1',afterRevision,epoch,localVersion:(BigInt(expectedLocalVersion)+1n).toString()};
+       await request(cursors.put(cursor));return cursor;
       });
      },
      getImportCheckpoint(fingerprint,adapterVersion){

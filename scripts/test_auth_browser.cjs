@@ -98,6 +98,24 @@ async function runEngine(engine,name,host){
   assert.equal(checkpoint.value.phase,'complete');assert.equal(checkpoint.value.counts.applied,4);
   phase=name+':native_tab_restore';const tab=await context.newPage();await tab.goto(url);await hasText(tab,authStatus,'Đã đăng nhập: '+a);
   assert.equal(host.state.rpc.filter(r=>r.name==='import_batch').length,2);
+  phase=name+':canonical_cache_bootstrap';
+  await page.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/pull-controller.js'});
+  const cache=await page.evaluate(async owner=>{
+   const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),reader=PickleUpPullController.create({auth,repository:db,owner,enabled:()=>true,pageSize:2});
+   window.PR4A_READER=reader;window.PR4A_DB=db;await reader.pull();const scope=db.scope('user:'+owner);
+   try{const row=await scope.read('practice_checkins','2026-01-01');await scope.write({kind:'practice_checkins',id:'2026-01-01',value:{status:'skipped',minutes:null,lesson_id:null,timezone_at_entry:'UTC'},operationId:crypto.randomUUID(),expectedLocalRevision:row.localRevision});window.PR4A_QUEUE=JSON.stringify(await scope.listOutbox());return {minutes:row.base.minutes,cursor:await scope.getSyncCursor()}}finally{scope.close()}
+  },dataA.owner);assert.equal(cache.minutes,30);assert.ok(BigInt(cache.cursor.afterRevision)>2n);
+  phase=name+':same_account_remote_update';
+  const updatedSource=JSON.stringify({app:'PickleUp',schemaVersion:1,scores:{},weeklyGoal:{days:2,level:'1.0–2.0'},weeklyPlan:{minutes:30,gentle:true},weeklyCheckins:{schemaVersion:1,entries:{'2026-01-01':{status:'done',minutes:45,lessonId:null,updatedAt:date}}}});
+  await chooseFile(tab,updatedSource);for(const group of ['weeklyGoal','weeklyPlan','weeklyCheckins'])await tab.locator('[data-import-groups] input[value='+group+']').check();await tab.locator('[data-import-timezone]').fill('UTC');await tab.locator('[data-import-preview]').click();await hasText(tab,importStatus,'Còn mục');
+  await tab.locator('[data-import-rows] select').selectOption('1');await tab.locator('[data-import-preview]').click();await hasText(tab,importStatus,'Preview sẵn sàng');await consent(tab);await hasText(tab,importStatus,'Phiên nhập đã hoàn tất');
+  phase=name+':delta_and_full_resync_keep_pending';
+  const preserved=await page.evaluate(async owner=>{
+   await PR4A_READER.pull();const scope=PR4A_DB.scope('user:'+owner);try{
+    const delta=await scope.read('practice_checkins','2026-01-01');await PR4A_READER.pull({forceReset:true});const full=await scope.read('practice_checkins','2026-01-01');
+    return {delta,full,prefs:await scope.read('user_preferences','self'),sameQueue:JSON.stringify(await scope.listOutbox())===PR4A_QUEUE};
+   }finally{scope.close()}
+  },dataA.owner);assert.equal(preserved.delta.base.minutes,45);assert.equal(preserved.delta.overlay.status,'skipped');assert.equal(preserved.delta.reviewBase.row.minutes,30);assert.equal(preserved.full.base.minutes,45);assert.equal(preserved.full.reviewReason,'reset_required');assert.equal(preserved.sameQueue,true);assert.equal(preserved.prefs.base.target_days,2);assert.equal(preserved.prefs.base.gentle,true);
   phase=name+':late_private_a_response';const held=host.holdNextPull();await chooseFile(page,source(6));
   await page.locator('[data-import-preview]').click();const delayed=await held.seen;
   assert.equal(delayed.status,'ok');assert.ok(delayed.changes.some(change=>change.row.user_id===dataA.owner));
@@ -109,6 +127,11 @@ async function runEngine(engine,name,host){
   phase=name+':same_file_distinct_owner';await chooseFile(next,text);await preview(next);await consent(next);await hasText(next,importStatus,'Phiên nhập đã hoàn tất');
   const dataB=await canonical(next);verifyData(dataB);
   const idsA=new Set(dataA.result.changes.filter(c=>c.entity_kind==='academy_attempts').map(c=>c.entity_key));assert.ok(dataB.result.changes.filter(c=>c.entity_kind==='academy_attempts').every(c=>!idsA.has(c.entity_key)));
+  phase=name+':canonical_cache_account_b';
+  assert.equal(await page.evaluate(()=>PR4A_READER.pull().then(()=>null,error=>error.code)),'account_changed');await page.evaluate(()=>{PR4A_DB.close();delete window.PR4A_DB;delete window.PR4A_READER;delete window.PR4A_QUEUE});
+  await next.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/pull-controller.js'});
+  const cacheB=await next.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),reader=PickleUpPullController.create({auth,repository:db,owner,enabled:()=>true,pageSize:2}),scope=db.scope('user:'+owner);try{await reader.pull();return {row:await scope.read('practice_checkins','2026-01-01'),queue:await scope.listOutbox()}}finally{scope.close();reader.close();db.close()}},dataB.owner);
+  assert.equal(cacheB.row.base.user_id,dataB.owner);assert.equal(cacheB.row.base.minutes,30);assert.equal(cacheB.row.overlay,null);assert.deepEqual(cacheB.queue,[]);
   assert.equal(await legacy(next),before);
   phase=name+':pwa_private_cache_exclusion';await next.evaluate(()=>navigator.serviceWorker.ready);
   const cacheSafe=await next.evaluate(async api=>{for(const name of await caches.keys())for(const request of await(await caches.open(name)).keys()){const u=new URL(request.url);if(u.origin===api||/[?&#](?:access_token|refresh_token|token|code)=/i.test(u.href))return false}return true},host.apiOrigin);assert.ok(cacheSafe);
@@ -116,7 +139,7 @@ async function runEngine(engine,name,host){
   phase=name+':logout_tabs_and_reload';await next.locator('[data-logout]').click();
   for(const item of [page,tab,next]){await hasText(item,authStatus,'Chế độ khách');assert.equal((await item.locator('[data-import-summary]').textContent()).trim(),'')}
   await next.reload();await hasText(next,authStatus,'Chế độ khách');assert.equal(await legacy(next),before);
-  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, PWA exclusion\n');
+  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, PWA exclusion\n');
  }catch(error){
   const text=await page?.locator(importStatus).textContent({timeout:1000}).catch(()=>null);
   host.state.ui=['Tệp đã đọc','Preview sẵn sàng','Lỗi mạng','Không thực hiện được','Server từ chối','Có revision mới','Vượt giới hạn','Phiên nhập đã hoàn tất','Còn mục','Cần đăng nhập','Đã dừng','Checkpoint đã khôi phục'].findIndex(prefix=>text?.startsWith(prefix));

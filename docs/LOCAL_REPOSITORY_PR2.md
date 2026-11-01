@@ -29,3 +29,5 @@ Unit dùng fake-indexeddb: atomic rollback khi inject QuotaExceededError sau put
 `tests/data-repository.spec.cjs` chạy Chromium/WebKit với IndexedDB thật dưới `/Pickleball/`: offline/reopen/reload, legacy key giữ nguyên, race hai tabs, namespace isolation, quota exception injection rollback native và upgrade abort giữ pending. Quota được inject deterministic, không phải đo quota/eviction vật lý hoặc browser crash/power-loss. Commit complete không hứa chống mất điện/OS eviction; chưa QA iPhone/iPad/Android thật. Không có domain UI hoặc rollout trong PR2.
 
 Chạy `npm run test:unit`, `npm run test:responsive`; backend CI giữ pgTAP/REST/Auth local thật hiện hữu. Kết quả exact HEAD và flaky ghi trong PR.
+
+PR4a bổ sung canonical cache/cursor atomic cho hai domain, không gửi outbox hoặc chuyển nguồn UI: [CANONICAL_PULL_PR4A](CANONICAL_PULL_PR4A.md). PR4b cần epoch fence trong server transaction trước sender; pull rồi push riêng không đủ chống race restore.
