@@ -149,3 +149,5 @@ Tách 1a/1b và 5a/5b để không gộp schema/security với toàn UI. Có th�
 Nguồn thiết kế: blueprint đính kèm `PICKLEUP_V6_DATABASE_BLUEPRINT.md` (đề xuất), source tại baseline và [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls), [SMTP](https://supabase.com/docs/guides/auth/auth-smtp), [local development](https://supabase.com/docs/guides/local-development). Các giới hạn dịch vụ phải đối chiếu lại trước provisioning.
 
 PR4 tách reader foundation PR4a theo [CANONICAL_PULL_PR4A](CANONICAL_PULL_PR4A.md), sender/epoch fence/conflict ở PR4b và domain source integration sau đó. Cache đọc chưa là sync đã vận hành; full-resync phải giữ pending và yêu cầu review, không tự replay writes qua epoch mới.
+
+PR4b bổ sung prepare_sync/apply_sync_operation với epoch fence, immutable sender/ack/conflict API theo [SYNC_SENDER_PR4B](SYNC_SENDER_PR4B.md). Legacy RPC giữ nguyên; chưa UI/source switch hoặc rollout.

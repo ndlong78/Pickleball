@@ -88,3 +88,5 @@ PR3b là backend RPC local/CI riêng; gate domain preview, account consent, quar
 PR3c bổ sung mapper/account-consent/checkpoint pilot theo [IMPORT_PILOT_PR3C](IMPORT_PILOT_PR3C.md), cả Auth/import flags mặc định tắt. Repair manifest/group expansion và rollout thật còn gate, không coi merge backend là đủ bật sync.
 
 PR4a bổ sung canonical cache/cursor atomic cho hai domain, không gửi outbox hoặc chuyển nguồn UI: [CANONICAL_PULL_PR4A](CANONICAL_PULL_PR4A.md). PR4b cần epoch fence trong server transaction trước sender; pull rồi push riêng không đủ chống race restore.
+
+PR4b bổ sung prepare_sync/apply_sync_operation với epoch fence, immutable sender/ack/conflict API theo [SYNC_SENDER_PR4B](SYNC_SENDER_PR4B.md). Legacy RPC giữ nguyên; chưa UI/source switch hoặc rollout.

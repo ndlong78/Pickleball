@@ -47,3 +47,5 @@ Backend real-browser harness tiếp tục OTP/Mailpit và SDK/RPC thật qua ali
 Main/PR CI giữ pgTAP195 +REST9 +import14, Node real-RPC probe và hai scenario UI Auth/browser thật. Exact HEAD/counts/fail/flaky lấy từ PR CI; chưa staging SMTP/Managed gateway, operational restore drill, physical devices, quota/eviction/load, large histories, full cache export/purge, sender/conflict UI hoặc switch nguồn các route. Không rollout dữ liệu thật trước backup/privacy/repair gates của policy.
 
 Executor đã thử cài engines chuẩn nhưng CDN trả403; không có browser chuẩn khả dụng tại local. Full Chromium/WebKit và Supabase local/Auth thật được kiểm ở CI ephemeral; không gọi local unit là native browser hoặc staging evidence.
+
+PR4b bổ sung prepare_sync/apply_sync_operation với epoch fence, immutable sender/ack/conflict API theo [SYNC_SENDER_PR4B](SYNC_SENDER_PR4B.md). Legacy RPC giữ nguyên; chưa UI/source switch hoặc rollout.

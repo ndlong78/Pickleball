@@ -27,7 +27,7 @@ test('delta keeps optimistic intent, frozen outbox and original conflict base; f
   await f.pull.pull();const before=await f.scope.read('user_preferences','self');
   await f.scope.write({kind:'user_preferences',id:'self',value:{target_days:4},operationId:F,expectedLocalRevision:before.localRevision});const queue=JSON.stringify(await f.scope.listOutbox());
   remote=page([change(2,'user_preferences',prefs('2',3))],'2');await f.pull.pull();
-  const row=await f.scope.read('user_preferences','self');assert.equal(row.base.target_days,3);assert.deepEqual(row.overlay,{target_days:4});assert.equal(row.reviewRequired,true);assert.equal(row.reviewBase.row.target_days,2);assert.equal(row.reviewReason,'remote_changed');assert.equal(JSON.stringify(await f.scope.listOutbox()),queue);
+  const row=await f.scope.read('user_preferences','self');assert.equal(row.base.target_days,3);assert.deepEqual(row.overlay,{...before.base,target_days:4});assert.equal(row.reviewRequired,true);assert.equal(row.reviewBase.row.target_days,2);assert.equal(row.reviewReason,'remote_changed');assert.equal(JSON.stringify(await f.scope.listOutbox()),queue);
   await f.scope.write({kind:'user_preferences',id:'self',value:{gentle:true},operationId:E,expectedLocalRevision:row.localRevision});const edited=await f.scope.read('user_preferences','self');assert.equal(edited.reviewRequired,true);assert.deepEqual(edited.reviewBase,row.reviewBase);assert.equal((await f.scope.listOutbox()).find(o=>o.operationId===E).dependsOn,F);
  }finally{f.close()}
 });
@@ -36,7 +36,7 @@ test('reset_required atomically replaces bases, preserves pending and device sta
  try{
   await f.pull.pull();await f.scope.write({kind:'user_preferences',id:'self',value:{target_days:4},operationId:F,expectedLocalRevision:'1'});await f.scope.setDeviceState(F,'focus',{index:2});const queue=JSON.stringify(await f.scope.listOutbox());reset=true;
   const result=await f.pull.pull();assert.equal(result.reset,true);assert.equal(result.cursor.epoch,null);assert.equal(result.cursor.afterRevision,'0');
-  const pending=await f.scope.read('user_preferences','self'),absent=await f.scope.read('practice_checkins','2026-01-01');assert.equal(pending.base,null);assert.equal(pending.reviewReason,'reset_required');assert.deepEqual(pending.overlay,{target_days:4});assert.equal(pending.baseMissing,true);assert.equal(absent.baseMissing,true);assert.equal(absent.deleted,false);assert.equal(JSON.stringify(await f.scope.listOutbox()),queue);assert.equal((await f.scope.getDeviceState(F,'focus')).value.index,2);
+  const pending=await f.scope.read('user_preferences','self'),absent=await f.scope.read('practice_checkins','2026-01-01');assert.equal(pending.base,null);assert.equal(pending.reviewReason,'reset_required');assert.deepEqual(pending.overlay,{...prefs(),target_days:4});assert.equal(pending.baseMissing,true);assert.equal(absent.baseMissing,true);assert.equal(absent.deleted,false);assert.equal(JSON.stringify(await f.scope.listOutbox()),queue);assert.equal((await f.scope.getDeviceState(F,'focus')).value.index,2);
   await f.scope.write({kind:'practice_checkins',id:'2026-01-01',operationId:E,value:{status:'skipped',minutes:null},expectedLocalRevision:absent.localRevision});assert.equal((await f.scope.listOutbox()).find(o=>o.operationId===E).expectedRevision,'0');
  }finally{f.close()}
 });

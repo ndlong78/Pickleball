@@ -69,6 +69,17 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      if(!KINDS.has(kind)||typeof id!=='string')fail('invalid_entity');
      if(SINGLETONS.has(kind)?id!=='self':kind==='practice_checkins'?!/^\d{4}-\d{2}-\d{2}$/.test(id)||!Number.isFinite(Date.parse(id+'T00:00:00Z'))||new Date(id+'T00:00:00Z').toISOString().slice(0,10)!==id:!UUID.test(id))fail('invalid_entity');
     }
+    const syncStores=['records','outbox','metadata','conflicts','sync_cursor'];
+    const rowKey=op=>[namespace,op.kind,op.id];
+    function syncIdentity(op){if(guest||!PULL_KINDS.has(op.kind))fail('invalid_sync_operation');identity(op.kind,op.id)}
+    async function touchCursor(tx){const store=tx.objectStore('sync_cursor'),cursor=await request(store.get([namespace,1]));if(cursor)await request(store.put({...cursor,localVersion:(BigInt(cursor.localVersion)+1n).toString()}));return cursor}
+    async function block(tx,op,row,reason){
+     const conflicts=tx.objectStore('conflicts'),prior=await request(conflicts.get([namespace,op.operationId]));
+     op.state=reason==='conflict'||reason==='remote_changed'?'conflict':'blocked';op.reason=reason;
+     await request(tx.objectStore('outbox').put(op));
+     await request(conflicts.put(prior||{namespace,conflictId:op.operationId,kind:op.kind,id:op.id,state:'open',reason,originalBase:row.reviewBase||{row:op.baseSnapshot||null,revision:op.expectedRevision,epoch:op.request?.p_epoch||row.baseEpoch||null},local:row.overlay,deleted:row.deleted}));
+     await request(tx.objectStore('records').put({...row,reviewRequired:true,reviewReason:reason,localRevision:(BigInt(row.localRevision)+1n).toString()}));
+    }
     const api={
      close(){active=false;for(const tx of transactions){try{tx.abort()}catch(_){}}scopes.delete(api)},
      read(kind,id){identity(kind,id);return transaction(['records'],'readonly',tx=>request(tx.objectStore('records').get([namespace,kind,id])))},
@@ -93,11 +104,97 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(!old?.deleted&&action==='restore')fail('not_deleted');
        if(old&&EVENTS.has(kind)&&action==='put')fail('append_only');
        const localRevision=(BigInt(expectedLocalRevision)+1n).toString();
-       const record={...old,namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay:action==='delete'?null:snapshot,deleted:action==='delete',localRevision,tailOperationId:guest?null:operationId};
-       if(!guest)await request(outbox.add({namespace,operationId,kind,id,action,payload:snapshot,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));
+       const overlay=action==='delete'?null:PULL_KINDS.has(kind)?{...(old?.overlay||old?.base||{}),...snapshot}:snapshot;
+       const record={...old,namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay,deleted:action==='delete',localRevision,tailOperationId:guest?null:operationId};
+       if(!guest)await request(outbox.add({namespace,operationId,kind,id,action,payload:snapshot,baseSnapshot:old?.base||null,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));
        await request(records.put(record));
        await request(metadata.add({namespace,key:receiptKey[1],signature,localRevision}));
        return {status:'saved_locally',localRevision};
+      });
+     },
+     claimSync({leaseOwner,epoch,now=Date.now(),forceRetry=false}){
+      if(guest||!UUID.test(leaseOwner)||!UUID.test(epoch)||!Number.isSafeInteger(now)||typeof forceRetry!=='boolean')fail('invalid_sync_operation');
+      return transaction(syncStores,'readwrite',async tx=>{
+       const lease=await request(tx.objectStore('metadata').get([namespace,'senderLease'])),cursor=await request(tx.objectStore('sync_cursor').get([namespace,1]));
+       if(lease?.owner!==leaseOwner||lease.until<=now)fail('lease_lost');if(cursor?.epoch!==epoch)fail('reset_required');
+       const store=tx.objectStore('outbox'),all=await request(store.index('namespace').getAll(namespace)),byId=new Map(all.map(o=>[o.operationId,o]));
+       const candidates=all.filter(o=>PULL_KINDS.has(o.kind)&&['pending','deferred','sending'].includes(o.state)).sort((a,b)=>Number(!!b.request)-Number(!!a.request));
+       let paused=null;
+       for(const op of candidates){
+        syncIdentity(op);const parent=op.dependsOn?byId.get(op.dependsOn):null;
+        if(op.dependsOn&&parent?.state!=='acked')continue;
+        const row=await request(tx.objectStore('records').get(rowKey(op)));if(!row)fail('invalid_sync_operation');
+        if((row.baseRevision!=='0'&&row.baseEpoch!==epoch)||op.request&&op.request.p_epoch!==epoch){await block(tx,op,row,'reset_required');continue}
+        if(!op.request&&row.reviewRequired){await block(tx,op,row,row.reviewReason==='reset_required'?'reset_required':'remote_changed');continue}
+        if(!forceRetry&&((op.attempts||0)>=8||(op.nextAttemptAt||0)>now)){paused={status:'retry_wait',retryAt:op.nextAttemptAt||now,exhausted:(op.attempts||0)>=8};continue}
+        if(!op.request){
+         if(parent){if(parent.ackEpoch!==epoch){await block(tx,op,row,'reset_required');continue}op.expectedRevision=parent.ackRevision}
+         if(!revision(op.expectedRevision))fail('invalid_sync_operation');
+         op.request={p_operation_id:op.operationId,p_kind:op.kind,p_entity_key:op.id,p_action:op.action,p_expected_revision:op.expectedRevision,p_epoch:epoch,p_payload:copy(op.payload),p_protocol_version:1};
+        }
+        op.state='sending';op.attempts=(op.attempts||0)+1;op.nextAttemptAt=0;
+        await request(store.put(op));return {status:'claimed',operation:op};
+       }return paused||{status:'idle'};
+      });
+     },
+     completeSync(operationId,frozen,result){
+      if(guest||!UUID.test(operationId))fail('invalid_sync_operation');const body=copy(frozen),response=copy(result);canonical(response);
+      return transaction(syncStores,'readwrite',async tx=>{
+       const store=tx.objectStore('outbox'),op=await request(store.get([namespace,operationId]));
+       if(!op||canonical(op.request)!==canonical(body))fail('operation_mismatch');
+       if(op.state==='acked')return {status:'acked'};
+       if(op.state!=='sending')return {status:'stale'};
+       const row=await request(tx.objectStore('records').get(rowKey(op))),cursor=await request(tx.objectStore('sync_cursor').get([namespace,1]));
+       if(cursor?.epoch!==body.p_epoch||response.status==='reset_required'){await block(tx,op,row,'reset_required');await touchCursor(tx);return {status:'reset_required'}}
+       if(response.epoch!==body.p_epoch)fail('invalid_response');
+       if(!['applied','conflict','invalid'].includes(response.status))fail('invalid_response');
+       const remote=response.status==='conflict'?(response.row??null):response.row;
+       if(response.status!=='invalid'&&remote!==null&&(!remote||remote.user_id!==namespace.slice(5)||!revision(remote.revision)||remote.revision==='0'||BigInt(remote.revision)>9223372036854775807n||!Object.hasOwn(remote,'deleted_at')||!(remote.deleted_at===null||typeof remote.deleted_at==='string')||op.kind==='practice_checkins'&&remote.local_date!==op.id))fail('invalid_response');
+       if(response.status==='applied'&&(!remote||remote.revision!==(BigInt(body.p_expected_revision)+1n).toString()))fail('invalid_response');
+       const newer=remote&&BigInt(remote.revision)>=BigInt(row.baseRevision);
+       const current={...row,...(response.status!=='invalid'&&(newer||remote===null&&row.baseRevision==='0')?{base:remote,baseRevision:remote?.revision||'0',baseMissing:remote===null,baseEpoch:body.p_epoch}:{})};
+       if(response.status!=='applied'){
+        await block(tx,op,current,response.status==='conflict'?'conflict':'invalid');await touchCursor(tx);return {status:'needs_review'};
+       }
+       op.state='acked';op.ackRevision=remote.revision;op.ackEpoch=body.p_epoch;await request(store.put(op));
+       const tail=current.tailOperationId===operationId;
+       current.overlay=tail?null:current.overlay;current.deleted=tail?current.base.deleted_at!==null:current.deleted;current.tailOperationId=tail?null:current.tailOperationId;
+       current.reviewRequired=!tail&&BigInt(current.baseRevision)>BigInt(op.ackRevision);current.localRevision=(BigInt(current.localRevision)+1n).toString();
+       if(!current.reviewRequired){delete current.reviewBase;delete current.reviewReason}else current.reviewReason='remote_changed';
+       await request(tx.objectStore('records').put(current));await touchCursor(tx);return {status:'acked'};
+      });
+     },
+     deferSync(operationId,frozen,{code,nextAttemptAt}){
+      if(!['network_error','auth_required','stale','unavailable','limit_exceeded','invalid_response','upgrade_required'].includes(code)||!Number.isSafeInteger(nextAttemptAt))fail('invalid_sync_operation');const body=copy(frozen);
+      return transaction(['outbox'],'readwrite',async tx=>{const store=tx.objectStore('outbox'),op=await request(store.get([namespace,operationId]));if(!op||canonical(op.request)!==canonical(body))fail('operation_mismatch');if(op.state==='sending'){op.nextAttemptAt=nextAttemptAt;op.lastError=code;await request(store.put(op))}});
+     },
+     inspectSyncConflict(conflictId){
+      return transaction(['records','outbox','conflicts','sync_cursor'],'readonly',async tx=>{
+       const conflict=await request(tx.objectStore('conflicts').get([namespace,conflictId]));if(!conflict)fail('conflict_not_found');
+       return {conflict,record:await request(tx.objectStore('records').get([namespace,conflict.kind,conflict.id])),operations:(await request(tx.objectStore('outbox').index('namespace').getAll(namespace))).filter(o=>o.kind===conflict.kind&&o.id===conflict.id),cursor:await request(tx.objectStore('sync_cursor').get([namespace,1]))};
+      });
+     },
+     resolveSyncConflict({conflictId,expectedLocalRevision,expectedRemoteRevision,epoch,mode,operationId,action='put',value={},acknowledgeEpochChange=false}){
+      if(guest||!UUID.test(conflictId)||!revision(expectedLocalRevision)||!revision(expectedRemoteRevision)||!UUID.test(epoch)||!['server','local'].includes(mode)||!UUID.test(operationId)||!['put','delete','restore'].includes(action))fail('invalid_resolution');
+      const snapshot=copy(value);if(!snapshot||Object.getPrototypeOf(snapshot)!==Object.prototype||new TextEncoder().encode(canonical(snapshot)).length>256*1024)fail('invalid_payload');
+      const decision=canonical({resolution:conflictId,mode,epoch,expectedLocalRevision,expectedRemoteRevision,action,value:snapshot,acknowledgeEpochChange});
+      return transaction(syncStores,'readwrite',async tx=>{
+       const priorDecision=await request(tx.objectStore('metadata').get([namespace,'operation:'+operationId]));if(priorDecision){if(priorDecision.signature!==decision)fail('operation_mismatch');return {status:'replayed',localRevision:priorDecision.localRevision}}
+       const conflicts=tx.objectStore('conflicts'),conflict=await request(conflicts.get([namespace,conflictId]));if(conflict?.state!=='open')fail('conflict_not_found');
+       const store=tx.objectStore('outbox'),records=tx.objectStore('records'),row=await request(records.get([namespace,conflict.kind,conflict.id])),cursor=await request(tx.objectStore('sync_cursor').get([namespace,1]));
+       if(row.localRevision!==expectedLocalRevision||row.baseRevision!==expectedRemoteRevision||cursor?.epoch!==epoch)fail('local_conflict');
+       if(conflict.reason==='reset_required'&&acknowledgeEpochChange!==true)fail('epoch_review_required');
+       if(await request(tx.objectStore('metadata').get([namespace,'operation:'+operationId]))||await request(store.get([namespace,operationId])))fail('operation_mismatch');
+       if(mode==='local'&&(row.base?.deleted_at&&action==='put'||!row.base?.deleted_at&&action==='restore'))fail('explicit_restore_required');
+       if(mode==='local'&&action==='delete'&&canonical(snapshot)!=='{}'&&!(conflict.kind==='practice_checkins'&&Object.keys(snapshot).length===1&&typeof snapshot.timezone_at_entry==='string'))fail('invalid_payload');
+       const operations=(await request(store.index('namespace').getAll(namespace))).filter(o=>o.kind===conflict.kind&&o.id===conflict.id&&!['acked','resolved'].includes(o.state));
+       if(operations.some(o=>o.state==='sending'))fail('uncertain_operation');
+       conflict.state='resolved';conflict.resolution={mode,operationId,epoch,revision:row.baseRevision,local:row.overlay,deleted:row.deleted,remote:row.base,operations:copy(operations)};
+       await request(conflicts.put(conflict));for(const old of operations){old.state='resolved';old.resolutionId=operationId;await request(store.put(old));const other=await request(conflicts.get([namespace,old.operationId]));if(other&&other.conflictId!==conflictId){other.state='resolved';other.resolutionId=operationId;await request(conflicts.put(other))}}
+       const localRevision=(BigInt(row.localRevision)+1n).toString();
+       if(mode==='local')await request(store.add({namespace,operationId,kind:row.kind,id:row.id,action,payload:snapshot,baseSnapshot:row.base,expectedRevision:row.baseRevision,dependsOn:null,state:'pending',protocol:1}));
+       await request(records.put({...row,localRevision,overlay:mode==='local'?(action==='delete'?null:{...(row.base||{}),...snapshot}):null,deleted:mode==='local'?action==='delete':!!row.base?.deleted_at,tailOperationId:mode==='local'?operationId:null,reviewRequired:false,reviewBase:null,reviewReason:null}));
+       await request(tx.objectStore('metadata').add({namespace,key:'operation:'+operationId,signature:decision,localRevision}));await touchCursor(tx);return {status:'resolved',localRevision};
       });
      },
      getSyncCursor(){return transaction(['sync_cursor'],'readonly',tx=>request(tx.objectStore('sync_cursor').get([namespace,1])))},
@@ -129,7 +226,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
          tailOperationId:pending?old.tailOperationId:null,localRevision:(BigInt(old?.localRevision||'0')+1n).toString(),reviewRequired:pending&&(old.reviewRequired||changed)||false};
         if(pending&&changed){
          record.reviewReason=reset?'reset_required':old.reviewReason||'remote_changed';
-         if(!Object.hasOwn(old,'reviewBase'))record.reviewBase={row:old.base,revision:old.baseRevision,epoch:old.baseEpoch??prior?.epoch??null};
+         if(!old.reviewBase)record.reviewBase={row:old.base,revision:old.baseRevision,epoch:old.baseEpoch??prior?.epoch??null};
         }
         await request(store.put(record));
        }
@@ -165,7 +262,8 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(lease&&lease.owner!==owner&&lease.until>now)return false;
        await request(store.put({namespace,key:'senderLease',owner,until:now+duration}));return true;
       });
-     }
+     },
+     releaseLease(owner){return transaction(['metadata'],'readwrite',async tx=>{const store=tx.objectStore('metadata'),lease=await request(store.get([namespace,'senderLease']));if(lease?.owner===owner)await request(store.delete([namespace,'senderLease']))})}
     };
     scopes.add(api);return api;
    }
