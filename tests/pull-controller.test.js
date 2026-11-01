@@ -63,7 +63,7 @@ test('concurrent late pull cannot overwrite a newer canonical snapshot/cursor',a
 test('A→B invalidates delayed A response; disabled pull performs no network or cache writes',async()=>{
  let resolve;const f=await fixture(()=>new Promise(r=>resolve=r));
  try{const work=f.pull.pull();while(!resolve)await new Promise(r=>setTimeout(r,0));await assert.rejects(f.pull.pull(),{code:'busy'});f.switchAccount();resolve(page([change(1)]));await assert.rejects(work,{code:'account_changed'});assert.equal(await f.db.scope('user:'+A).getSyncCursor(),undefined);assert.equal(await f.db.scope('user:'+B).getSyncCursor(),undefined)}finally{f.close()}
- const off=await fixture(()=>{throw Error('must not call')},{enabled:()=>false});try{await assert.rejects(off.pull.pull(),{code:'pilot_disabled'});assert.equal(off.calls.length,0)}finally{off.close()}
+ for(const value of [false,'false',Promise.resolve(true)]){const off=await fixture(()=>{throw Error('must not call')},{enabled:()=>value});try{await assert.rejects(off.pull.pull(),{code:'pilot_disabled'});assert.equal(off.calls.length,0);assert.throws(()=>controller.create({auth:off.auth,repository:off.db,owner:A,enabled:true}),{code:'invalid_options'})}finally{off.close()}}
 });
 test('quota failure on cursor put rolls back preceding base writes and preserves the exact pending queue',async()=>{
  const f=await fixture(()=>page([change(1)]));const original=IDBObjectStore.prototype.put;

@@ -6,7 +6,7 @@ Nền main `2689b36672987da66f26f2d0785c7396336ced5c`, PR18 merge ngày31/10/202
 
 Tách PR4 thành các bước review được: PR4a canonical read/bootstrap; PR4b sender với epoch fence/CAS/ack/conflict; sau đó tích hợp nguồn dữ liệu preferences/check-in trên mọi reader/writer liên quan. PR4a **chưa phải sync hoàn chỉnh**, không gửi outbox, sửa server, tự import hoặc chuyển nguồn tám route. Guest/V5 vẫn hoạt động như trước. Flags Auth/import vẫn false, không provision hay đổi production.
 
-`modules/data/pull-controller.js` standalone, chưa có trong page-loader/SW shell. Caller phải tạo controller đúng Auth UUID, truyền enabled callback và chủ động gọi pull; mặc định disabled, login/subscribe không tạo RPC. Chỉ dùng Auth adapter hiện hữu với token ghim theo owner/generation, không thêm Supabase calls vào UI. Không có UI mới, background job, retry timer hoặc tuyên bố đã đồng bộ.
+`modules/data/pull-controller.js` standalone, chưa có trong page-loader/SW shell. Caller phải tạo controller đúng Auth UUID, truyền enabled callback đồng bộ trả đúng boolean true và chủ động gọi pull; mặc định disabled, login/subscribe không tạo RPC. Chỉ dùng Auth adapter hiện hữu với token ghim theo owner/generation, không thêm Supabase calls vào UI. Không có UI mới, background job, retry timer hoặc tuyên bố đã đồng bộ.
 
 Repository thêm API, schema IndexedDB vẫn1, không migration/xóa store/keys. Module importer đã có vẫn chỉ dùng API cũ. Không phát hành hành vi app mới nên giữ version/PWA5.4.1; trước PR tích hợp runtime phải bump build/cache để trình duyệt đang giữ repository5.4.1 cũ nhận API mới. Các harness nạp module PR4a trực tiếp chỉ trong test.
 

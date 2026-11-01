@@ -9,11 +9,11 @@ const decimal=value=>typeof value==='string'&&/^(0|[1-9][0-9]{0,18})$/.test(valu
 class PullError extends Error{constructor(code){super(code);this.name='PullError';this.code=code}}
 const fail=code=>{throw new PullError(code)};
 function create({auth,repository,owner,enabled=()=>false,pageSize=50,maxPages=201,maxBytes=16*1024*1024}){
- if(!UUID.test(owner)||!Number.isInteger(pageSize)||pageSize<1||pageSize>200||!Number.isInteger(maxPages)||maxPages<1||maxPages>201||!Number.isInteger(maxBytes)||maxBytes<1||maxBytes>16*1024*1024)fail('invalid_options');
+ if(typeof enabled!=='function'||!UUID.test(owner)||!Number.isInteger(pageSize)||pageSize<1||pageSize>200||!Number.isInteger(maxPages)||maxPages<1||maxPages>201||!Number.isInteger(maxBytes)||maxBytes<1||maxBytes>16*1024*1024)fail('invalid_options');
  const scope=repository.scope('user:'+owner);let active=true,busy=false;
  const unsubscribe=auth.subscribe(state=>{if(state.user?.id!==owner){active=false;scope.close()}});
  if(!active)unsubscribe();
- function guard(){if(!active)fail('account_changed');if(!enabled())fail('pilot_disabled')}
+ function guard(){if(!active)fail('account_changed');if(enabled()!==true)fail('pilot_disabled')}
  async function fetchCycle(start){
   let after=start.afterRevision,high=null,epoch=start.epoch,bytes=0,count=0;const latest=new Map();
   for(let index=0;index<maxPages;index++){
