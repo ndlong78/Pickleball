@@ -1,8 +1,8 @@
 # V6 — quyết định pilot và chính sách vận hành
 
-Ngày 29/10/2026. Chủ repository đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản phù hợp giai đoạn đầu. Đây là quyết định được ghi nhận từ hội thoại sau PR0; **chính sách chưa được triển khai**. PR0 #10 đã được merge ở `40c2ad3789dadfe005e43ef8f45a618010ee8689`; phiên bản ứng dụng vẫn5.1.0.
+Quyết định ngày 29/10/2026; cập nhật tiến độ **02/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #22 là `6a59bdb`, ứng dụng5.5.0. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
 
-PR1a hiện thực một phần nền tảng schema/RLS/CAS/RPC trong môi trường local/test, xem [BACKEND_PR1A](BACKEND_PR1A.md). Chưa có dịch vụ cloud, email, backup/retention job, xóa account UI hoặc client sync đang vận hành; các target vận hành dưới đây chưa thành SLA.
+Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in và nền sự kiện đã merge/kiểm chứng local; Auth/import/sync flags đều tắt. Chưa có bằng chứng cloud/SMTP staging được cấu hình, backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
 
 ## 1. Phạm vi ủy quyền và chi phí
 
@@ -49,6 +49,6 @@ Free không được coi là có automatic DB backup/PITR/SLA. Mục tiêu pilot
 
 ## 5. Thứ tự triển khai và readiness
 
-Tiếp theo là PR1a: migrations/schema/RLS/RPC contracts/backend CI trên local ephemeral, tests A/B/anon, CAS/replay/cursor; chưa sửa ứng dụng live hoặc tạo production DB. Sau đó PR1b Auth opt-in staging; các PR2–PR6 theo [kiến trúc](ARCHITECTURE_V6_DATABASE.md).
+PR1a–PR4c và PR5a1 đã merge. Tiếp theo là lifecycle/repair/consent sự kiện và lát cắt Academy; plans/selections phải sẵn sàng trước tạo training account mới, sau đó full V6 backup/purge và hardening. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
 
 Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nhận region/quota, SMTP hoạt động, backup destination/job và restore drill đạt, privacy/export/delete được kiểm thử, CI đúng HEAD, feature flag opt-in. Owner đã ủy quyền lựa chọn kỹ thuật; thiếu quyền truy cập/cấu hình thực tế là công việc còn lại, không phải quyết định kỹ thuật cần hỏi lại.

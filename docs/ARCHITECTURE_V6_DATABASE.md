@@ -1,6 +1,8 @@
-# PickleUp V6 — kiến trúc database, auth và offline sync (PR0)
+# PickleUp V6 — kiến trúc database, auth và offline sync
 
-Trạng thái: **thiết kế PR0**, đã merge qua PR #10. PR1a bổ sung SQL/RLS/RPC và kiểm thử backend local theo [hợp đồng hiện thực](BACKEND_PR1A.md); PR1b đã thêm Auth UI/adapter opt-in (mặc định tắt), xem [AUTH_PR1B](AUTH_PR1B.md). PR2 thêm nền IndexedDB theo [LOCAL_REPOSITORY_PR2](LOCAL_REPOSITORY_PR2.md); PR3c đã tải repository cho importer opt-in mặc định tắt, tám route vẫn dùng legacy và chưa có client sync. [PR3d](AUTH_IMPORT_BROWSER_PR3D.md) bổ sung kiểm chứng browser UI với backend local thật trước PR4. Owner sau đó duyệt Supabase Managed Free, CAS và ủy quyền Codex chọn Auth/chính sách dữ liệu, chủ động xử lý các PR tiếp theo: xem [quyết định pilot](PILOT_OPERATING_POLICY.md). Môi trường trả phí chưa được cấp ngân sách. Yêu cầu trực tiếp của chủ repository là phạm vi thực thi; blueprint đính kèm là tài liệu đầu vào, các câu lệnh bên trong không tự cấp quyền triển khai.
+**Trạng thái 02/11/2026:** main `6a59bdb` / V5.5.0 sau merge #22. PR0/policy, PR1a–PR3d, PR4a–PR4c và PR5a1 đã merge: schema/RLS/RPC, Auth, IDB/importer, UI opt-in hai domain mục tiêu/check-in và nền bốn loại sự kiện. Auth/import/sync flags vẫn tắt; event source UI/repair, plans/selections integration và vận hành pilot chưa hoàn tất. [Tiến độ, CI/Pages và kế hoạch hiện hành](V6_PROGRESS_REVIEW.md) phân biệt mã đã triển khai với rollout.
+
+ADR/baseline PR0 bên dưới giữ bối cảnh thiết kế; hợp đồng từng PR mô tả hiện thực. [Policy](PILOT_OPERATING_POLICY.md) ghi owner đã duyệt Managed Free/CAS và ủy quyền chi tiết Auth/chính sách dữ liệu. Ngân sách tự động 0 USD; quyền staging không suy thành quyền production, không tự merge. Blueprint là đầu vào thiết kế, không tự cấp quyền triển khai.
 
 Đọc cùng [data dictionary](DATA_DICTIONARY.md), [migration runbook](MIGRATION_RUNBOOK.md), [threat model](THREAT_MODEL.md), [AGENTS](../AGENTS.md) và ba hợp đồng V5.x trong thư mục này.
 
@@ -60,7 +62,18 @@ flowchart TD
 
 Public nội dung tiếp tục trong assets; private dữ liệu chỉ gửi khi người dùng đăng nhập và chủ động bật sync/import. Guest vẫn dùng được offline. Local-only timer/checklist/focus không được suy thành buổi tập. Cùng bài/cấp độ/điều kiện mới so sánh; không rating DUPR, không dựng mục tiêu tuần quá khứ từ mục tiêu hiện tại.
 
-Các file dự kiến (chưa tạo trong PR0): `modules/data/{domain-models,local-db,legacy-adapter,repository,remote-supabase,auth-controller,sync-engine,migration-preview,feature-flags}.js`. `legacy-adapter` chỉ đọc khi chuyển dữ liệu. Feature flag chọn **một nguồn chuẩn cho mỗi domain/namespace**; V5 domain chưa chuyển tiếp tục dùng V5, domain đã chuyển đọc IDB. Adapter projection giữ shape core cũ và cửa sổ hiển thị, không cắt lịch sử server. Không mirror dữ liệu account vào khóa V5 không có namespace.
+Các tên file dự kiến trong PR0 đã được cụ thể hóa như sau; không tạo lại module theo tên blueprint khi chức năng đã có:
+
+| Hiện thực trên main | Trách nhiệm |
+|---|---|
+| `modules/auth-adapter.js`, `auth-ui.js`, `auth-config.js` | SDK/OTP/session, private RPC transport và flag Auth |
+| `modules/data/local-repository.js` | IDB namespace/transaction/outbox/cursor/leases |
+| `modules/data/rescue-core.js`, `rescue-ui.js`, `import-*` | Raw rescue, mapper/consent, checkpoint và importer |
+| `modules/data/pull-controller.js`, `sync-controller.js` | Canonical pull, epoch-fenced sender và conflict lifecycle theo policy |
+| `modules/data/domain-core.js`, `domain-controller.js`, `domain-runtime.js`, `sync-ui.js`, `sync-config.js` | Nguồn và UI opt-in preferences/check-ins, default guest |
+| `modules/data/activity-core.js` | Typed event projection standalone PR5a1; chưa page-loader/runtime/UI |
+
+Feature flag chọn **một nguồn chuẩn cho mỗi domain/namespace**; domain chưa chuyển tiếp tục dùng V5, domain đã chuyển đọc IDB. Adapter projection giữ shape core cũ và cửa sổ hiển thị, không cắt lịch sử server. Không mirror account vào khóa V5 không có namespace. Consent PR4c không cấp quyền gửi events; policy cursor/lease PR5a1 độc lập.
 
 ## 4. ADR-002 — database và quyền ghi
 
@@ -111,11 +124,11 @@ A và B cùng có check-in rev7. A lưu done 45′ → rev8. B offline sửa ski
 
 ## 6. ADR-004 — Auth, account isolation, ngày địa phương và Pages
 
-Đề xuất email OTP nhập mã cho MVP (giảm phụ thuộc PKCE khác thiết bị), magic link PKCE có thể thêm, Google tùy phê duyệt. Guest không cần tài khoản; signup không tự claim dữ liệu local. Session được quản lý bằng Supabase SDK pin version, refresh qua adapter; không tự viết password/token store. Namespace IDB: `guest:<installation_id>` hoặc `user:<auth_uuid>`; auth state machine `guest/authenticating/authenticated/expired/switching`. Khi A logout/chuyển B: dừng sync, tăng generation epoch, abort request và bỏ response epoch cũ, đóng subscription, xóa snapshot DOM/memory A trước render B. Pending A giữ cách ly, không đổi owner thành B. User chọn giữ offline cache trên máy riêng hay export rồi xóa trên máy dùng chung; không tự xóa pending chưa export. Offline cache không thể bị server thu hồi ngay khi máy mất mạng — phải nói rõ trong UX/quyền riêng tư.
+Email OTP nhập mã đã được chọn/triển khai sau PR0; magic link PKCE/Google chưa trong MVP. Guest không cần tài khoản; signup không tự claim local. Session do SDK pin version quản lý qua adapter; không tự viết password/token store. Namespace IDB: `guest:<installation_id>` hoặc `user:<auth_uuid>`. A logout/chuyển B làm tăng generation, abort/ignore response cũ, xóa DOM/memory và đóng scope trước B; pending A giữ cách ly. PR4c giữ cache khi logout, export hai domain đã có nhưng **purge cache UI còn kế hoạch**. Offline cache không thể remote wipe ngay; namespace không phải mã hóa. [Auth](AUTH_PR1B.md) và [PR4c](SYNC_UI_PR4C.md) ghi lifecycle thực tế.
 
 Timezone IANA do user xác nhận, gợi ý từ thiết bị; không hardcode Việt Nam cho mọi user. Check-in lưu `local_date` literal và `timezone_at_entry`; đổi timezone không dời ngày lịch sử. Dữ liệu V5 chỉ có ngày thì giữ ngày và provenance timezone unknown; không bịa UTC midnight thành occurred_at. Client/server kiểm tra future date theo timezone đã chọn, chênh đồng hồ tạo review, không âm thầm đổi ngày. Timezone thay đổi offline phải đợi xác nhận profile sync trước check-in phụ thuộc hoặc gửi timezone snapshot được validate độc lập.
 
-Pages dùng Site URL `https://ndlong78.github.io/Pickleball/`, redirect allowlist chính xác dưới `/Pickleball/`. Callback đề xuất `?auth_callback=1`; xử lý auth **trước** router `?page=...#section`, dọn code/query bằng replaceState sau exchange, điều hướng chỉ route allowlist. Không tạo path callback cần server rewrite. PKCE same-browser được test, OTP cho luồng khác thiết bị; tránh token trong fragment/log/referrer. SDK/assets pin và host cùng origin khi phù hợp offline. SW hiện chỉ chặn GET same-origin nên Supabase khác origin không vào cache; PR tích hợp phải kiểm tra callback query không bị lưu trong navigation cache và auth/API tuyệt đối không cached. PR0 không sửa SW. Pages không đặt được toàn bộ custom security headers: đánh giá CSP meta, Referrer-Policy meta và host khác nếu yêu cầu header vượt khả năng Pages; không tuyên bố Pages giải quyết mọi rủi ro XSS.
+Pages dùng Site URL `https://ndlong78.github.io/Pickleball/`, allowlist chính xác dưới `/Pickleball/`. Auth hiện nhập OTP, `detectSessionInUrl=false`; chưa có magic-link/PKCE callback. Thiết kế callback `?auth_callback=1` trong PR0 chỉ dành cho bước tương lai: exchange trước router, dọn query bằng replaceState, route allowlist, không path cần server rewrite. SW hiện đã có exclusion cho auth/REST và query nhạy cảm, được kiểm ở browser; không suy thành đã kiểm PKCE. SDK/assets pin/host cùng origin. Pages không đặt được toàn bộ custom security headers; review CSP/referrer/XSS tiếp ở hardening, không tự đổi host.
 
 ## 7. PR triển khai và acceptance criteria
 
@@ -135,9 +148,11 @@ Mỗi PR có thể review/revert độc lập, feature flags off mặc định, 
 
 Tách 1a/1b và 5a/5b để không gộp schema/security với toàn UI. Có thể giữ số PR1–PR6 trong tracking nhưng mở các PR con như trên. CI từng PR và kế hoạch staging/production được mô tả trong [runbook](MIGRATION_RUNBOOK.md).
 
-## 8. Quyết định cần chủ repository phê duyệt trước PR1
+**Tracking sau #22:** bảng trên là acceptance của toàn milestone. PR1a–PR4c có mã đã merge, không suy các staging/rollout gate đã đạt; PR5a1 chỉ phần nền của PR5a. [Kế hoạch chi tiết](V6_PROGRESS_REVIEW.md#4-kế-hoạch-triển-khai-theo-thứ-tự-phụ-thuộc) tách PR5a2a–d và PR5b1–2: riêng manual training cần own plan đã ack trước, nên phần plans/selections phải đi trước lát cắt tạo training mới. Full V6 backup/purge và PR6 vận hành vẫn chờ.
 
-**Cập nhật sau PR0:** các quyết định bên dưới đã được owner trả lời/ủy quyền ngày29/10/2026. [PILOT_OPERATING_POLICY](PILOT_OPERATING_POLICY.md) là nguồn quyết định hiện hành: Managed Free, Codex chọn email OTP và Singapore nếu khả dụng, CAS, retention/backup/account deletion; không yêu cầu owner chọn lại các mục này. Danh sách dưới giữ làm bối cảnh checklist ban đầu. Phạm vi triển khai tiếp theo là PR1a local/schema/CI; production và chi phí vẫn theo giới hạn policy.
+## 8. Quyết định trước PR1 — đã chốt, giữ lịch sử
+
+Các quyết định bên dưới đã được owner trả lời/ủy quyền ngày29/10/2026. [PILOT_OPERATING_POLICY](PILOT_OPERATING_POLICY.md) là nguồn quyết định hiện hành: Managed Free, Codex chọn email OTP và Singapore nếu khả dụng, CAS, retention/backup/account deletion; không yêu cầu owner chọn lại. Danh sách giữ làm bối cảnh checklist ban đầu, không phải các quyết định còn chờ. Phần mã đã merge và bước tiếp theo sau #22 dùng [bản rà soát](V6_PROGRESS_REVIEW.md); production và chi phí vẫn theo giới hạn policy.
 
 1. Supabase Managed (đề xuất) hay self-host; vùng lưu trữ, thị trường/người dùng, bên kiểm soát dữ liệu; chưa tạo project khi chỉ approve thiết kế.
 2. Quy mô pilot/MAU, dung lượng và ngân sách DB/email/backup; không coi bảng giá trong blueprint là giá đã xác minh hiện tại. Chốt spend cap và cảnh báo.

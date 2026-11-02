@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Status:** mô tả chức năng V5.x, baseline main V5.1.0 tại `8f99fcb` đã merge PR #9 và Pages deploy ngày 29/10/2026; [bằng chứng](ARCHITECTURE_V6_DATABASE.md). V6 database/auth/sync chỉ là đề xuất PR0. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+**Status 02/11/2026:** ứng dụng V5.5.0, main `6a59bdb` sau #22. Giữ hợp đồng sản phẩm V5 bên dưới; V6 đã có backend/Auth/importer, UI mục tiêu/check-in và nền sự kiện, flags vẫn tắt. [Tiến độ và giới hạn hiện hành](V6_PROGRESS_REVIEW.md); baseline V5.1/PR0 trong kiến trúc là lịch sử. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 

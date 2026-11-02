@@ -2,6 +2,17 @@
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
 
+## Trạng thái hiện tại — 02/11/2026
+
+**V5.5.0**, main `6a59bdb` sau merge [PR #22](https://github.com/ndlong78/Pickleball/pull/22). Xem [tiến độ, bằng chứng CI/Pages và kế hoạch V6](docs/V6_PROGRESS_REVIEW.md) hoặc [roadmap hiện hành](ROADMAP.md).
+
+- Website: https://ndlong78.github.io/Pickleball/ — tám trang, 80 bài hiện có ở 1.0–4.0. Nội dung đến 5.0 vẫn là định hướng.
+- Chế độ khách là mặc định. Mã Auth OTP, importer và UI sync mục tiêu/check-in đã merge nhưng **các flag đều tắt**; chưa mở cloud pilot/đăng ký công khai. Đăng nhập không tự nhập hoặc đồng bộ dữ liệu thiết bị.
+- #22 mới thêm nền đồng bộ bốn loại sự kiện, chưa nối UI điểm/đánh giá/nhật ký/trận đấu. Chưa hoàn tất backup V6 có thể nhập lại, purge/xóa account hoặc vận hành backup/restore.
+- Trước xóa trình duyệt/chuyển máy: giữ backup V5 và raw rescue ngoài browser. Export cache tài khoản hiện chỉ mục tiêu/check-in, **chưa phải backup toàn tài khoản**.
+
+Các mục phiên bản bên dưới là lịch sử tính năng tại thời điểm triển khai; trạng thái phát hành và bước tiếp theo dùng bản rà soát ở trên.
+
 ## Phiên bản 1.1
 
 - Sáu giáo án mẫu 60 phút với ba bài tập mỗi tuần, đồng hồ, lưu kết quả (giữ tương thích dữ liệu cũ).
@@ -14,7 +25,7 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 Bật GitHub Pages trong **Settings → Pages → Deploy from a branch → main → /(root)**.
 
-Địa chỉ dự kiến sau triển khai: https://ndlong78.github.io/Pickleball/
+Địa chỉ đã triển khai: https://ndlong78.github.io/Pickleball/
 
 Hoặc mở `index.html` để xem giao diện; tính năng service worker/PWA cần nguồn HTTPS hoặc localhost.
 
@@ -22,7 +33,7 @@ Hoặc mở `index.html` để xem giao diện; tính năng service worker/PWA c
 
 Trước khi xóa dữ liệu trình duyệt hay chuyển điện thoại, chọn **Tải bản sao lưu đầy đủ**. Mở trên thiết bị mới rồi dùng **Khôi phục từ tệp JSON**. Dữ liệu không tự đồng bộ giữa các thiết bị. Không tải tệp sao lưu từ người lạ.
 
-## Lộ trình kế tiếp
+## Lộ trình ban đầu (lịch sử V1.1)
 
 - V1.2: tách cấu trúc dữ liệu `curriculum / drills / assessments`, thêm tiêu chí học xong.
 - V2.0: phát triển và kiểm chứng 36 giáo án 1.0–3.0; báo cáo tiến bộ theo kỹ năng.
@@ -298,26 +309,6 @@ Trạng thái hiển thị dựa trên dữ liệu thật đang có trên thiế
 
 Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số phút thực tế, giáo án gắn với bản ghi và số ngày/phút trong tuần so với mục tiêu hiện tại. Bản ghi không có lessonId được ghi rõ chưa có giáo án, không suy đoán từ lựa chọn mới. Đạt mục tiêu tuần, chế độ nhẹ hoặc buổi từ 60 phút ưu tiên hồi phục; có điểm cùng bài hôm nay thì xem kết quả; còn lại chuẩn bị lịch kế tiếp. Tóm tắt giữ qua reload, cập nhật khi sửa và ẩn khi bỏ qua/xóa. Không thêm storage key/schema, không tự xác nhận từ đồng hồ/điểm.
 
-Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. Chưa merge hoặc triển khai production.
+V5.1 đã merge/deploy qua #9; QA thiết bị thật chưa được xác minh. Các thay đổi sau đó đã lên main đến V5.5.0/#22; [bản rà soát hiện hành](docs/V6_PROGRESS_REVIEW.md) ghi tiến độ và bằng chứng riêng cho từng mốc.
 
-PR1b: email OTP opt-in (flag off), xem [AUTH_PR1B](docs/AUTH_PR1B.md). Chưa phát hành V5.2.0 hay đồng bộ dữ liệu luyện tập.
-
-PR2: nền [IndexedDB/repository/outbox local](docs/LOCAL_REPOSITORY_PR2.md), chưa nối vào tám route hoặc bật sync.
-
-V5.3.0 / PR3a (chưa phát hành): [cứu hộ legacy18 khóa và xem trước tệp chỉ đọc](docs/RESCUE_PREVIEW_PR3A.md). Chưa importer hoặc sync.
-
-PR3b: [RPC import nguyên tử](docs/ATOMIC_IMPORT_PR3B.md), chưa nối upload/import UI; app giữ5.3.0.
-
-V5.4.0 / PR3c (chưa phát hành): [importer pilot có preview/consent/checkpoint](docs/IMPORT_PILOT_PR3C.md), flags vẫn false, không auto-sync hoặc đổi nguồn dữ liệu tám route.
-
-PR3d thêm kiểm chứng UI OTP/import trên Chromium/WebKit với GoTrue/Mailpit/RPC local thật, checkpoint reload và account isolation; không bật flags hoặc sync. Xem [evidence và giới hạn](docs/AUTH_IMPORT_BROWSER_PR3D.md).
-
-V5.4.1 / PR3d sửa guarded Auth fetch để HTTP204 logout không làm SDK bỏ qua xóa/broadcast phiên; thêm regression bodyless response và kiểm chứng browser/backend local thật. [Release notes](RELEASE_V5.4.1.md).
-
-PR4a thêm canonical pull/bootstrap riêng user cho preferences/check-in: transaction base+cursor, giữ pending/overlay khi delta/full-resync và bỏ phản hồi A sau đổi B. Chưa sender/conflict UI/switch nguồn, flags vẫn tắt. [Hợp đồng và giới hạn](docs/CANONICAL_PULL_PR4A.md).
-
-PR4b thêm RPC epoch fence dưới transaction lock, sender/ack/conflict API cho preferences/check-in, chưa nối UI hoặc bật flags. [Hợp đồng/evidence](docs/SYNC_SENDER_PR4B.md).
-
-PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](docs/SYNC_UI_PR4C.md).
-
-PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](docs/ACTIVITY_SYNC_PR5A1.md).
+Hợp đồng triển khai V6 đã merge: [Auth PR1b](docs/AUTH_PR1B.md), [repository PR2](docs/LOCAL_REPOSITORY_PR2.md), [rescue PR3a](docs/RESCUE_PREVIEW_PR3A.md), [atomic import PR3b](docs/ATOMIC_IMPORT_PR3B.md), [importer PR3c](docs/IMPORT_PILOT_PR3C.md), [real browser PR3d](docs/AUTH_IMPORT_BROWSER_PR3D.md), [pull PR4a](docs/CANONICAL_PULL_PR4A.md), [sender PR4b](docs/SYNC_SENDER_PR4B.md), [source UI PR4c](docs/SYNC_UI_PR4C.md), [event foundation PR5a1](docs/ACTIVITY_SYNC_PR5A1.md). Auth/import/sync flags vẫn tắt; chưa rollout dữ liệu thật. Kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.

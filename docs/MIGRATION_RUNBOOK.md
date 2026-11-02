@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-Đề xuất PR0. Không chạy các bước provisioning/migration trong PR0. Các quyết định trước PR1 nay đã được owner duyệt/ủy quyền; dùng [policy pilot hiện hành](PILOT_OPERATING_POLICY.md) cho phạm vi tự chủ, Free tier, Auth và retention. PR1a local/schema/CI không chờ duyệt lại các quyết định đó. Đọc [dictionary](DATA_DICTIONARY.md) và [threat model](THREAT_MODEL.md).
+Runbook khởi đầu từ PR0, cập nhật trạng thái sau #22 / main `6a59bdb` / V5.5.0 tại [bản rà soát](V6_PROGRESS_REVIEW.md). Local backend/Auth/importer, UI hai domain và nền sự kiện đã merge; Auth/import/sync flags vẫn tắt. Các bước provisioning/backup/restore/delete chưa có evidence vận hành. Dùng [policy pilot](PILOT_OPERATING_POLICY.md) cho quyền tự chủ/Free tier/Auth/retention đã được giao; không hỏi duyệt lại các quyết định đó, không dùng production. Đọc [dictionary](DATA_DICTIONARY.md) và [threat model](THREAT_MODEL.md).
 
 ## 1. Rủi ro restore hiện tại cần thiết kế bù
 
@@ -20,7 +20,7 @@ Home còn có export `pickleup-ket-qua.json` shape `{app,exportedAt,records:[{we
 ## 3. Thu thập an toàn trên từng thiết bị
 
 - Giữ nguyên origin `https://ndlong78.github.io/Pickleball/`; đổi hostname/browser/PWA storage không tự mang dữ liệu. Với origin cũ không truy cập được, dùng JSON do người dùng tải lên, không truy tìm dữ liệu từ thiết bị khác.
-- Trước chuyển: cung cấp tải backup V1 tương thích và **raw rescue export** V6 gồm giá trị nguyên văn18 keys, marker absent/empty, schema/source/version/hashes, device-local fields và unknown `pickleup_*` đã preview. Không xuất token/session/Supabase SDK keys, không dump toàn origin. Raw hỏng vẫn xuất text được. Đây là chức năng PR3 phải viết, không nói V5.1 đã có.
+- Trước chuyển: tải backup V1 tương thích và **raw rescue export** gồm giá trị nguyên văn18 keys, marker absent/empty, schema/source/version/hashes, device-local fields và unknown `pickleup_*` đã preview. Không xuất token/session/Supabase SDK keys hoặc dump toàn origin; raw hỏng vẫn xuất text được. UI đã có từ PR3a, không gồm toàn bộ dữ liệu account V6; giữ file ngoài browser.
 - Chụp snapshot local khi UI writer đang quiesce; localStorage không snapshot atomic nên detect thay đổi trước/sau theo per-key hashes và retry có thông báo. Multi-tab legacy không tuân lock thì yêu cầu đóng tab khác hoặc báo dữ liệu đang đổi, không claim snapshot nhất quán.
 - Lưu rescue file ngoài trình duyệt, không chỉ IDB vì quota/eviction có thể mất cả hai. Không xóa/cắt/sửa legacy storage. `navigator.storage.persist()` nếu được hỗ trợ chỉ giảm nguy cơ eviction, không thay backup.
 
@@ -53,7 +53,9 @@ Rollback một import đã commit: user xem diff, chỉ tombstone rows do import
 
 Xóa account/export dữ liệu là workflow riêng: yêu cầu reauth/confirmation, dừng writes và drain hoặc export pending, xóa server theo auth FK và private ledgers, xác nhận backup retention. Các thiết bị offline có thể còn cache, cần reconnect purge/tự xóa trên máy; không hứa remote wipe offline.
 
-## 7. CI backend đề xuất — PR0 không đổi workflow
+## 7. CI backend và regression hiện hành
+
+Backend workflow đã hiện thực, nay gồm upgrade fixtures/reset/241 pgTAP/37 REST/Auth thật/Mailpit và browser Chromium/WebKit; counts phải đọc lại đúng HEAD ở từng run. Các scripts `test:data`, `test:sync`, `test:db` dưới đây là tên đề xuất từ PR0, chưa phải npm scripts; lệnh hiện hành ở [BACKEND_PR1A](BACKEND_PR1A.md), `package.json` và `.github/workflows/backend-checks.yml`. Staging/restore không thuộc CI local.
 
 Hiện `responsive.yml`: Node24, npm install, unit, Chromium+WebKit; pull_request vào main không path filter, push main có paths và bỏ qua Markdown. Playwright CI retries=1: success có retry không phải clean run. Không sửa retries/assertions để có xanh.
 

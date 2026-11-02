@@ -2,7 +2,7 @@
 
 Phạm vi: một người dùng nhiều thiết bị, private training/match data, Supabase Auth/Postgres/RPC/RLS, IndexedDB và GitHub Pages. Chưa mở sharing/coach/admin CMS. Thiết kế kiểm soát chưa phải kết quả pentest hoặc bằng chứng RLS đã được triển khai. Đọc [architecture](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md).
 
-**Cập nhật PR1a:** schema/RLS/RPC và tests database local đã được bổ sung theo [BACKEND_PR1A](BACKEND_PR1A.md). Evidence cuối lấy từ PR CI đúng SHA, không thay pentest/security review độc lập. Rủi ro Auth/session/cache/import/production trong bảng dưới vẫn còn đến các PR tương ứng; frontend chưa dùng backend.
+**Cập nhật sau #22 (02/11/2026):** schema/RLS/RPC, Auth, importer, source UI hai domain và event foundation đã có cùng tests local; Auth/import/sync flags vẫn tắt. [Rà soát tiến độ/rủi ro](V6_PROGRESS_REVIEW.md) ghi đúng merge SHA/evidence. Bảng dưới là yêu cầu kiểm soát, không phải mọi ô đều đã hoàn tất. Chưa Managed staging/SMTP, event repair/source UI, full V6 backup/purge/account deletion, restore drill hoặc pentest độc lập; client cache không mã hóa và main protection chưa bật tại snapshot.
 
 ## 1. Tài sản, tác nhân và trust boundaries
 
