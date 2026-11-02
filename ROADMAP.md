@@ -1,5 +1,23 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: 27/10/2026
+Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — main `6a59bdb` sau merge #22, ứng dụng **5.5.0**.
+
+## Tiến độ hiện hành và bước tiếp theo
+
+[Rà soát V6 sau #22](docs/V6_PROGRESS_REVIEW.md) là bảng theo dõi hiện hành: PR1a–PR4c đã merge; PR5a1 hoàn tất phần nền sự kiện, chưa source UI/repair, PR5b/PR6 còn lại. Auth/import/sync flags vẫn tắt; Pages deploy mã không có nghĩa cloud pilot đã bật.
+
+| Thứ tự | Công việc | Điều kiện hoàn tất chính |
+|---|---|---|
+| 1 | PR5a2a: consent/lifecycle và repair sự kiện | Giữ frozen requests/pending, review reset/conflict, không rebind epoch hoặc sửa event bất biến |
+| 2 | PR5a2b: Academy; PR5a2c: assessments/matches | Chuyển toàn bộ reader/writer từng domain, nhãn nguồn rõ, UUID ổn định, không dual-write hoặc tạo attendance; native browser và Auth thật |
+| 3 | PR5b1 plans/selections → PR5a2d training | Own plan đã ack trước training mới; CAS giáo án/lựa chọn, orphan/dependency được xử lý; timer local |
+| 4 | PR5b2: đủ route, full V6 backup round-trip và purge cache | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 compatibility export riêng; không mất legacy |
+| 5 | PR6: staging và vận hành trước pilot | SMTP/Managed gateway, expiry browser thật, importer repair, encrypted backup/Auth restore/deletion, load/quota/privacy và QA thiết bị thật |
+
+Đây là các phạm vi PR kế hoạch, chưa phải PR đã mở hoặc ngày phát hành cam kết. Gate chi tiết, CI đúng merge SHA và phần owner cần cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md). Không tự merge, không production/chi phí hoặc mở signup công khai. Giữ ưu tiên độ đúng dữ liệu và phục hồi trước mở thêm domain.
+
+## Lịch sử roadmap V1–V5
+
+Các checklist dưới đây ghi trạng thái tại từng phiên bản, không phải trạng thái release hiện hành. Các mục chưa có evidence thiết bị thật/HLV vẫn cần nghiệm thu; không suy từ việc CI mới xanh.
 
 ## Mục tiêu sản phẩm
 PWA huấn luyện Pickleball bằng tiếng Việt từ nhập môn đến 5.0. Điểm ứng dụng là đánh giá nội bộ, KHÔNG phải DUPR hoặc xác nhận rating thi đấu.
@@ -29,8 +47,8 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.6 beta | Web Vitals cục bộ, đo route và versioned assets chống cache cũ | Đã đưa mã nguồn; cần benchmark và QA iOS |
 | V3.7 beta | Tách HTML theo trang, giảm DOM khởi động, cache fragments | Đã triển khai mã nguồn; còn CI và kiểm thử thiết bị thật |
 | V3.8 beta | Benchmark profile thiết bị, tối ưu render Học viện/Dashboard, PWA migration | Đã triển khai mã nguồn; chờ kết quả CI và thiết bị thật |
-| V4.0 | 4.0–5.0: chiến thuật đôi và thi đấu áp lực | Kế hoạch |
-| V5.0 | Tài khoản/đồng bộ, quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn |
+| Nội dung 4.0–5.0 | Chiến thuật đôi và thi đấu áp lực | Kế hoạch nội dung, không phải số phiên bản app V4.0 |
+| Sau phạm vi V6 hiện hành | Quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn; Auth/sync được theo dõi riêng ở kế hoạch V6 |
 
 ## Phạm vi nội dung dự kiến
 - 1.0–2.0: 8 buổi
@@ -51,7 +69,7 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 - [ ] Kiểm thử và hiệu chỉnh hình minh họa theo từng bài cụ thể, phù hợp đúng luật.
 - [ ] Kiểm thử sao lưu/khôi phục trên ít nhất hai trình duyệt.
 
-## Kiến trúc hiện tại
+## Kiến trúc tại baseline V2 (lịch sử)
 - GitHub Pages tĩnh, không máy chủ dữ liệu.
 - index.html: UI; curriculum.js: dữ liệu giáo án; sw.js: PWA offline cache.
 - localStorage: điểm, bài tự đánh giá và lịch sử.
@@ -490,26 +508,4 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 
 Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số phút thực tế, giáo án gắn với bản ghi và số ngày/phút trong tuần so với mục tiêu hiện tại. Bản ghi không có lessonId được ghi rõ chưa có giáo án, không suy đoán từ lựa chọn mới. Đạt mục tiêu tuần, chế độ nhẹ hoặc buổi từ 60 phút ưu tiên hồi phục; có điểm cùng bài hôm nay thì xem kết quả; còn lại chuẩn bị lịch kế tiếp. Tóm tắt giữ qua reload, cập nhật khi sửa và ẩn khi bỏ qua/xóa. Không thêm storage key/schema, không tự xác nhận từ đồng hồ/điểm.
 
-Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. Chưa merge hoặc triển khai production.
-
-PR1b đang triển khai: OTP/session adapter sau PR1a; gate và giới hạn tại [AUTH_PR1B](docs/AUTH_PR1B.md).
-
-PR2 bổ sung persistence local có transaction/CAS/namespace; PR3 preview/import và PR4 sender/pull/conflict còn ở bước sau. Xem [hợp đồng PR2](docs/LOCAL_REPOSITORY_PR2.md).
-
-PR3 chia PR3a rescue/inventory preview chỉ đọc và PR3b domain mapping/quarantine/consent/RPC importer. Xem [phạm vi PR3a](docs/RESCUE_PREVIEW_PR3A.md).
-
-PR3b review backend transaction/import RPC trước; PR3c bổ sung mapping, quarantine, overlap và account-bound consent/UI. Xem [ATOMIC_IMPORT_PR3B](docs/ATOMIC_IMPORT_PR3B.md).
-
-PR3c nối mapper/consent + importer pilot mặc định tắt; tiếp theo staging validation/repair workflow trước rollout, PR4 sync domain vẫn riêng. [Hợp đồng PR3c](docs/IMPORT_PILOT_PR3C.md).
-
-PR3d thêm kiểm chứng UI OTP/import trên Chromium/WebKit với GoTrue/Mailpit/RPC local thật, checkpoint reload và account isolation; không bật flags hoặc sync. Xem [evidence và giới hạn](docs/AUTH_IMPORT_BROWSER_PR3D.md).
-
-V5.4.1 / PR3d sửa guarded Auth fetch để HTTP204 logout không làm SDK bỏ qua xóa/broadcast phiên; thêm regression bodyless response và kiểm chứng browser/backend local thật. [Release notes](RELEASE_V5.4.1.md).
-
-PR4a thêm canonical pull/bootstrap riêng user cho preferences/check-in: transaction base+cursor, giữ pending/overlay khi delta/full-resync và bỏ phản hồi A sau đổi B. Chưa sender/conflict UI/switch nguồn, flags vẫn tắt. [Hợp đồng và giới hạn](docs/CANONICAL_PULL_PR4A.md).
-
-PR4b thêm RPC epoch fence dưới transaction lock, sender/ack/conflict API cho preferences/check-in, chưa nối UI hoặc bật flags. [Hợp đồng/evidence](docs/SYNC_SENDER_PR4B.md).
-
-PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](docs/SYNC_UI_PR4C.md).
-
-PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](docs/ACTIVITY_SYNC_PR5A1.md).
+V5.1 đã merge/deploy ở #9. Đến #22, mã Auth/importer, source UI mục tiêu/check-in và nền event sync đã merge; các mốc tiếp theo/gates được theo dõi ở đầu roadmap và [bản rà soát V6](docs/V6_PROGRESS_REVIEW.md). Flags vẫn tắt, chưa cloud pilot; kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.

@@ -1,10 +1,10 @@
 # PickleUp V6 — data dictionary và legacy inventory
 
-Thiết kế PR0; schema/RLS/RPC local của PR1a được mô tả tại [BACKEND_PR1A](BACKEND_PR1A.md), chưa deploy cloud hoặc đổi storage ứng dụng. Baseline legacy `8f99fcb329cbac89b92413929dcdd113fd87790e`, V5.1.0. [Kiến trúc](ARCHITECTURE_V6_DATABASE.md) quyết định quyền ghi/CAS; [runbook](MIGRATION_RUNBOOK.md) quyết định import/rollback. Protocol1 mở write9 domain; legacy snapshots/import manifests/items chỉ có schema, atomic import để PR3. Caps import batch vẫn là thiết kế.
+Inventory legacy lấy từ baseline `8f99fcb` / V5.1.0; **main hiện hành sau #22 là `6a59bdb` / V5.5.0**. Schema/RLS/RPC, atomic import, IDB, UI hai domain và event foundation đã merge, flags vẫn tắt; [tiến độ hiện hành](V6_PROGRESS_REVIEW.md). [BACKEND_PR1A](BACKEND_PR1A.md) và [ATOMIC_IMPORT_PR3B](ATOMIC_IMPORT_PR3B.md) ghi hợp đồng SQL hiện thực; [kiến trúc](ARCHITECTURE_V6_DATABASE.md)/[runbook](MIGRATION_RUNBOOK.md) ghi CAS/import/rollback. Các bảng legacy snapshots/manifests/items đã có đường atomic import, không direct DML.
 
 ## 1. Toàn bộ storage keys hiện có
 
-Inventory từ toàn bộ JS ứng dụng (không tính tests/node_modules): **18 localStorage keys**, không có user database IndexedDB/sessionStorage hiện hành. CacheStorage của SW là asset cache. Bảng ghi shape đang lưu, không hứa validator cũ kiểm tra mọi trường của shape đó. Dấu “—” nghĩa không có trong backup tổng `schemaVersion:1`.
+Inventory legacy: **18 localStorage keys** của dữ liệu V5, không gồm Auth SDK session hoặc IndexedDB V6. DB `pickleup-v6` schema1 đã có từ PR2 và được dùng khi bật importer/source account; không thay 18 khóa guest. CacheStorage của SW là asset cache. Bảng ghi shape legacy, không hứa validator cũ kiểm mọi trường. Dấu “—” nghĩa không có trong backup tổng `schemaVersion:1`.
 
 | localStorage key | Shape/ý nghĩa; module sở hữu ghi | Field backup tổng | Đích V6 |
 |---|---|---|---|
@@ -66,11 +66,13 @@ Mọi dữ liệu private: `user_id uuid NOT NULL REFERENCES auth.users(id) ON D
 
 Composite FK selection tới plan cần kiểm cả trạng thái soft-delete bằng RPC/trigger; FK SQL đơn thuần chỉ kiểm tồn tại. Plan delete phải clear selection có revision/change log trong cùng transaction, hoặc trả dependency conflict có preview; không cascade âm thầm xóa lịch sử training. Legacy plan ID trùng giữa hai source/import không unique toàn user: mapping `(user,import,source,path)` là nguồn chuẩn, source/legacy_id chỉ candidate trùng để review.
 
-Đề xuất giới hạn mới để triển khai và test trong PR1: operation≤256 KiB UTF-8, plan_snapshot≤64 KiB, event JSON≤16 KiB, import batch≤100 items và≤512 KiB, pull page≤200 changes; JSON object exact schema, depth≤12. Import file raw lớn hơn limit legacy chia local batches, không silently truncate. Đây là cap V6 mới cần benchmark, không mô tả là giới hạn đang chạy. Cột số/range/enum/FK/CHECK được DB enforce; JSON schema/size enforce cả RPC và DB function/constraint versioned, không chỉ JS.
+Caps SQL đã hiện thực: operation≤256 KiB UTF-8, plan_snapshot≤64 KiB, event JSON≤16 KiB, import batch≤100 items/512 KiB, pull page≤200 changes, depth≤12. Client importer dùng batch≤25 items/200 KiB và các cap preview riêng theo [PR3c](IMPORT_PILOT_PR3C.md); không silently truncate. Đây là validation caps đã kiểm thử, chưa benchmark tải gần cap. Cột/range/enum/FK/CHECK và JSON shape/size được DB enforce, không chỉ JS.
 
 Index ban đầu: user_id là prefix của PK/unique hoặc index riêng cho mọi bảng RLS; `(user_id,occurred_at DESC,id)` trên event tables; `(user_id,lesson_id,occurred_at DESC,id)` cho Academy; checkins PK theo user/date; change log PK hỗ trợ cursor. Không thêm duplicate index user_id nếu prefix đã đủ. Kiểm `EXPLAIN` trên synthetic pilot trước thêm index.
 
-## 4. IndexedDB V6 dự kiến
+## 4. Hợp đồng IndexedDB V6
+
+Schema1 đã tạo tám stores bên dưới. Đây là mô hình logic; key/API thực tế và phần còn dự phòng dùng [PR2](LOCAL_REPOSITORY_PR2.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md). `device_state`/`legacy_snapshots` không chứng minh đã migrate timer/checklist/raw rescue vào IDB. Cursor `protocol` là local slot: mutable dùng1, activity dùng `activity-events-1`; wire RPC vẫn protocol1.
 
 | Store | Key và nội dung | Bất biến |
 |---|---|---|
