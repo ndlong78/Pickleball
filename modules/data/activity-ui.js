@@ -39,6 +39,7 @@ function render(){
 }
 async function task(type,work){
  if(running)return;running=true;action=type;const stamp=serial;render();
+ status.textContent=({enable:'Đang đọc kho hoạt động tài khoản…',device:'Đang chuyển về kho thiết bị…',read:'Đang đọc lại hoạt động tài khoản…',sync:'Đang đồng bộ hoạt động tài khoản…',preview:'Đang đọc dữ liệu cần xử lý…',resolve:'Đang lưu quyết định xử lý…',export:'Đang chuẩn bị tệp cache hoạt động…'})[type]||'Đang xử lý hoạt động…';
  try{
   const result=await work();if(stamp!==serial)return;
   if(result?.view)show(result.view);

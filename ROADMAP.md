@@ -3,21 +3,20 @@ Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — nền main `afc50d4` sau #24
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6 sau #22](docs/V6_PROGRESS_REVIEW.md) là bảng theo dõi hiện hành: PR1a–PR4c đã merge; PR5a1 hoàn tất phần nền sự kiện, chưa source UI/repair, PR5b/PR6 còn lại. Auth/import/sync flags vẫn tắt; Pages deploy mã không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot sau #22 và tiến độ mới: PR1a–PR4c, PR5a1 và PR5a2a đã merge. [PR #25 / PR5a2b](https://github.com/ndlong78/Pickleball/pull/25) nối Academy source/save/delete/history/review và các reader, đang review. Cả bốn flag Auth/import/sync/activity vẫn tắt; Pages deploy mã không có nghĩa cloud pilot đã bật.
 
 | Thứ tự | Công việc | Điều kiện hoàn tất chính |
 |---|---|---|
-| 1 | PR5a2a: consent/lifecycle và repair sự kiện | Giữ frozen requests/pending, review reset/conflict, không rebind epoch hoặc sửa event bất biến |
-| 2 | PR5a2b: Academy; PR5a2c: assessments/matches | Chuyển toàn bộ reader/writer từng domain, nhãn nguồn rõ, UUID ổn định, không dual-write hoặc tạo attendance; native browser và Auth thật |
-| 3 | PR5b1 plans/selections → PR5a2d training | Own plan đã ack trước training mới; CAS giáo án/lựa chọn, orphan/dependency được xử lý; timer local |
-| 4 | PR5b2: đủ route, full V6 backup round-trip và purge cache | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 compatibility export riêng; không mất legacy |
-| 5 | PR6: staging và vận hành trước pilot | SMTP/Managed gateway, expiry browser thật, importer repair, encrypted backup/Auth restore/deletion, load/quota/privacy và QA thiết bị thật |
+| Đã merge #24 | PR5a2a: consent/lifecycle và repair sự kiện | API standalone giữ frozen requests/pending, review reset/conflict, không rebind epoch hoặc sửa event bất biến |
+| Đang review #25 | PR5a2b: Academy | Nguồn rõ, immutable save/delete, history/comparability, cross-route, native browser và Auth thật; không dual-write/attendance |
+| Tiếp theo | PR5a2c: assessments/matches | Chuyển mọi reader/writer, giữ thang điểm/metric sets riêng, nguồn/pending/repair rõ và bỏ phản hồi account cũ |
+| Sau đó | PR5b1 plans/selections → PR5a2d training | Own plan đã ack trước training mới; CAS giáo án/lựa chọn, orphan/dependency được xử lý; timer local |
+| Phục hồi | PR5b2: đủ route, full V6 backup round-trip và purge cache | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 compatibility export riêng; không mất legacy |
+| Trước pilot | PR6: staging và vận hành | SMTP/Managed gateway, expiry browser thật, importer repair, encrypted backup/Auth restore/deletion, load/quota/privacy và QA thiết bị thật |
 
-Đây là các phạm vi PR kế hoạch, chưa phải PR đã mở hoặc ngày phát hành cam kết. Gate chi tiết, CI đúng merge SHA và phần owner cần cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md). Không tự merge, không production/chi phí hoặc mở signup công khai. Giữ ưu tiên độ đúng dữ liệu và phục hồi trước mở thêm domain.
+Các bước sau #25 là phạm vi kế hoạch, chưa phải PR đã mở hoặc ngày phát hành cam kết. Gate chi tiết, CI đúng SHA và phần owner cần cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md). Không tự merge, không production/chi phí hoặc mở signup công khai.
 
-PR5a2a hiện thực API standalone consent CAS, lifecycle và quyết định review bất biến theo [hợp đồng riêng](docs/ACTIVITY_LIFECYCLE_PR5A2A.md); chưa source/review UI hoặc rollout. Exact HEAD/CI ở PR, bước UI kế tiếp là Academy PR5a2b.
-
-PR5a2a đã merge #24. [PR5a2b/V5.6.0](docs/ACADEMY_ACCOUNT_PR5A2B.md) tích hợp Academy source/save/delete/history/review và các reader; flags vẫn tắt. Còn PR5a2c đánh giá/trận đấu, PR5b1 plans/selections trước training và PR5b2 full backup/purge, rồi PR6 vận hành. Coach chưa tự nạp account points vào giáo án khách; legacy latest snapshots chưa thành attempts trong view account.
+Coach chưa tự nạp account points vào giáo án khách; legacy latest snapshots chưa thành attempts trong view account. Giữ ưu tiên độ đúng dữ liệu và phục hồi trước mở pilot thật.
 
 ## Lịch sử roadmap V1–V5
 

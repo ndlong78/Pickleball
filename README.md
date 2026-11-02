@@ -9,7 +9,7 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 - Website: https://ndlong78.github.io/Pickleball/ — tám trang, 80 bài hiện có ở 1.0–4.0. Nội dung đến 5.0 vẫn là định hướng.
 - Chế độ khách là mặc định. Auth OTP/importer/mutable sync đã merge; PR5a2b nối Academy account opt-in nhưng **cả bốn flag vẫn tắt**. Chưa cloud pilot/đăng ký công khai; login không tự nhập hoặc đồng bộ dữ liệu thiết bị.
 - Academy account có UI save/delete/history/review; đánh giá/nhật ký/trận đấu/giáo án vẫn đọc ghi thiết bị. Chưa hoàn tất full V6 backup round-trip, purge/xóa account hoặc vận hành backup/restore.
-- Trước xóa trình duyệt/chuyển máy: giữ backup V5 và raw rescue ngoài browser. Export cache tài khoản hiện chỉ mục tiêu/check-in, **chưa phải backup toàn tài khoản**.
+- Trước xóa trình duyệt/chuyển máy: giữ backup V5 và raw rescue ngoài browser. Export cache tài khoản gồm hai tệp riêng: mục tiêu/check-in và bốn loại hoạt động; **chưa hỗ trợ nhập lại và chưa phải backup toàn tài khoản**.
 
 Các mục phiên bản bên dưới là lịch sử tính năng tại thời điểm triển khai; trạng thái phát hành và bước tiếp theo dùng bản rà soát ở trên.
 

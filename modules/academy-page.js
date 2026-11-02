@@ -6,13 +6,16 @@ let records={};try{records=activity?activity.records():JSON.parse(localStorage.g
 const trends=window.PICKLEUP_ACADEMY_TRENDS;
 const historyKey='pickleup_academy_history_v44';
 let history=[];try{history=activity?activity.history():trends.readHistory(localStorage.getItem(historyKey))}catch(_){}
-let dirty=false,saving=false,formLesson=null,sourceToken=activity?.token(),historyPage=0;
+let dirty=false,saving=false,formLesson=null,sourceToken=activity?.token(),historyPage=0,feedbackVersion=null;
+// Focus/tab reads of the same cache must preserve feedback; a new revision invalidates it.
+function statusVersion(){const cursor=activity?.getState().snapshot?.cursor;return cursor?cursor.epoch+':'+cursor.localVersion:null}
+function feedback(text){status.textContent=text;feedbackVersion=statusVersion()}
 score.addEventListener('input',()=>{dirty=true});
 function paintScore(){
  const x=get();if(!x)return;
  if(activity?.isAccount()&&activity.getView().mode!=='account'){score.value='';status.textContent=activity.notice();return}
  if(!dirty)score.value=records[x.id]?.score??x.assessment.target;
- if(!dirty&&!saving)status.textContent=records[x.id]?(activity?.isAccount()?'Kho tài khoản · ':'Đã lưu: ')+records[x.id].score+'/20 · '+new Date(records[x.id].date).toLocaleDateString('vi-VN')+(records[x.id].pending?' · chờ đồng bộ':''):'';
+ if(!dirty&&!saving&&(feedbackVersion===null||feedbackVersion!==statusVersion())){feedbackVersion=null;status.textContent=records[x.id]?(activity?.isAccount()?'Kho tài khoản · ':'Đã lưu: ')+records[x.id].score+'/20 · '+new Date(records[x.id].date).toLocaleDateString('vi-VN')+(records[x.id].pending?' · chờ đồng bộ':''):''}
 }
 function controls(){
  const blocked=saving||activity&&!activity.canWrite();score.disabled=!!blocked;document.getElementById('academySave').disabled=!!blocked;
@@ -36,16 +39,16 @@ function renderAttempts(){
   const renderedToken=activity.token();button.addEventListener('click',async()=>{
    if(saving||renderedToken!==activity.token())return;
    if(!confirm('Xóa riêng lượt kiểm tra này? Thay đổi sẽ chờ đồng bộ; sự kiện đã xóa không có thao tác khôi phục.'))return;
-   const stamp=activity.token();saving=true;controls();button.disabled=true;
-   try{await activity.deleteAttempt(event.id,row.localRevision);if(stamp===activity.token())status.textContent='Đã lưu thao tác xóa trên thiết bị · chờ đồng bộ.'}
-   catch(_){if(stamp===activity.token())status.textContent='Chưa xóa được. Đọc lại hoặc xem mục cần xử lý trong Dữ liệu.'}
+   const stamp=activity.token();saving=true;feedbackVersion=null;controls();button.disabled=true;
+   try{await activity.deleteAttempt(event.id,row.localRevision);if(stamp===activity.token())feedback('Đã lưu thao tác xóa trên thiết bị · chờ đồng bộ.')}
+   catch(_){if(stamp===activity.token())feedback('Chưa xóa được. Đọc lại hoặc xem mục cần xử lý trong Dữ liệu.')}
    finally{saving=false;controls();renderAttempts()}
   });item.append(text,button);fragment.append(item);
  }list.replaceChildren(fragment);
 }
 for(const [id,delta]of [['academyHistoryPrev',-1],['academyHistoryNext',1]])document.getElementById(id).addEventListener('click',()=>{historyPage+=delta;renderAttempts()});
 document.addEventListener('pickleup:activity-data',()=>{
- const next=activity?.token();if(next!==sourceToken){sourceToken=next;dirty=false;saving=false;status.textContent='';historyPage=0;for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value=''}
+ const next=activity?.token();if(next!==sourceToken){sourceToken=next;dirty=false;saving=false;feedbackVersion=null;status.textContent='';historyPage=0;for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value=''}
  records=activity.records();history=activity.history();refreshLearning();paintScore();controls();renderAttempts();
 });
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -197,7 +200,7 @@ function choose(){
 }
 let lastDrawnId=null;
 function show(persistSelection=false){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
-if(formLesson!==x.id){formLesson=x.id;dirty=false}
+if(formLesson!==x.id){formLesson=x.id;dirty=false;feedbackVersion=null}
 if(focusTimer&&focusTimer.lessonId!==x.id){stopTick();focusTimer=null}
 resumedId=x.id;
 if(!activity?.isAccount()||persistSelection===true)try{localStorage.setItem(selectionKey,x.id)}catch(_){}
@@ -223,9 +226,9 @@ document.getElementById('academySave').addEventListener('click',async()=>{
  if(activity?.isAccount()){
   const values=['academyFeed','academyPace','academyTarget'].map(id=>document.getElementById(id).value);
   if(values.some(Boolean)&&!values.every(Boolean)){status.textContent='Ghi đủ ba điều kiện hoặc để tất cả là chưa rõ.';return}
-  const conditions=values.every(Boolean)?{feed:values[0],pace:values[1],target:values[2]}:null,stamp=activity.token();saving=true;controls();
-  try{await activity.saveAttempt(x,v,conditions);if(stamp===activity.token()&&get()?.id===x.id){dirty=false;status.textContent='Đã lưu '+v+'/20 trong kho tài khoản trên thiết bị · chờ đồng bộ. Không tự xác nhận buổi tập.'}}
-  catch(error){if(stamp===activity.token())status.textContent=error.code==='quota_exceeded'?'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.':'Chưa lưu được. Kiểm tra nguồn dữ liệu hoặc mục cần xử lý trong Dữ liệu.'}
+  const conditions=values.every(Boolean)?{feed:values[0],pace:values[1],target:values[2]}:null,stamp=activity.token();saving=true;feedbackVersion=null;controls();
+  try{await activity.saveAttempt(x,v,conditions);if(stamp===activity.token()&&get()?.id===x.id){dirty=false;feedback('Đã lưu '+v+'/20 trong kho tài khoản trên thiết bị · chờ đồng bộ. Không tự xác nhận buổi tập.')}}
+  catch(error){if(stamp===activity.token())feedback(error.code==='quota_exceeded'?'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.':'Chưa lưu được. Kiểm tra nguồn dữ liệu hoặc mục cần xử lý trong Dữ liệu.')}
   finally{saving=false;controls();renderAttempts()}
   return;
  }
