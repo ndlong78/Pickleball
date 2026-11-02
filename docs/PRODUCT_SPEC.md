@@ -96,3 +96,5 @@ Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số 
 Kiểm thử tự động không thay thế QA trên iPhone/iPad/Android thật. V5.1 đã merge/deploy theo baseline ở đầu tài liệu; QA thiết bị thật chưa được xác minh trong PR0.
 
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
+
+PR5a2b / V5.6.0 thêm source hoạt động opt-in, UI lưu/xóa lượt Academy và review; cùng nguồn điểm/history trên Academy/Journey/Progress, không mirror V5. Xu hướng chỉ cùng bài/nội dung/điều kiện biết rõ; unknown/future không thành ngày tập. Coach chưa nạp account points vào giáo án khách. Bốn flags vẫn false, source UI ba nhóm sự kiện khác chưa chuyển. [Hợp đồng và giới hạn](ACADEMY_ACCOUNT_PR5A2B.md).

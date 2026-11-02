@@ -18,10 +18,10 @@ function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.m
 const settings=(()=>{try{return core.readSettings(goalRaw())}catch(_){return {...core.DEFAULT}}})();
 days.value=String(settings.days);level.value=settings.level;
 let recommendation=null;
-function readJson(key,fallback){try{const x=JSON.parse(localStorage.getItem(key)||"null");return x===null?fallback:x}catch(_){return fallback}}
+function readJson(key,fallback){try{const x=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):localStorage.getItem(key))||"null");return x===null?fallback:x}catch(_){return fallback}}
 function redraw(){
  const saved=(()=>{try{return core.readSettings(goalRaw())}catch(_){return {...core.DEFAULT}}})();
- const history=historyCore?.readHistory(JSON.stringify(readJson("pickleup_academy_history_v44",[])))||[];
+ const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore?.readHistory(JSON.stringify(readJson("pickleup_academy_history_v44",[])))||[];
  const records=readJson("pickleup_academy_v2",{});
  const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
  const report=core.summarize(lessons,records,history,log,saved);
@@ -64,6 +64,7 @@ byId("wgOpen").addEventListener("click",()=>{
  document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
 });
 byId("wgRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate()}redraw()});
+document.addEventListener("pickleup:activity-data",redraw);
 document.addEventListener("pickleup:score-saved",redraw);
 document.addEventListener("pickleup:training-log-updated",redraw);
 window.addEventListener("storage",e=>{if([core.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_training_log_v26"].includes(e.key)){if(e.key===core.KEY&&!data?.isAccount()){dirty=false;hydrate()}redraw()}});

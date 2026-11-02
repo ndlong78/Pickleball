@@ -8,7 +8,7 @@ function gather(lessons,records,history,level,skill){
  const allowed=new Map((Array.isArray(lessons)?lessons:[]).filter(x=>x&&x.level===level&&x.skill===skill).map(x=>[x.id,x]));
  const attempts=(Array.isArray(history)?history:[])
   .filter(a=>a&&allowed.has(a.id)&&a.level===level&&a.skill===skill&&scoreOK(a.score)&&typeof a.date==="string"&&Number.isFinite(Date.parse(a.date)))
-  .map((a,i)=>({id:a.id,score:a.score,date:a.date,order:i,lesson:allowed.get(a.id),legacy:false}));
+  .map((a,i)=>({id:a.id,score:a.score,date:a.date,order:i,lesson:allowed.get(a.id),legacy:false,account:a.account===true,currentContent:a.currentContent===true,comparisonKey:a.comparisonKey||null}));
  const recorded=new Set(attempts.map(a=>a.id));
  for(const [id,lesson] of allowed){
   const r=records&&typeof records==="object"?records[id]:null;
@@ -29,13 +29,14 @@ function analyze(lessons,records,history,level,skill,lessonId){
   .sort((a,b)=>Date.parse(b.at(-1).date)-Date.parse(a.at(-1).date)||b.at(-1).order-a.at(-1).order);
  const autoGroup=repeatable[0]||byLesson.get(attempts.at(-1).id);
  const chosen=byLesson.get(lessonId)||autoGroup;
- const recent=chosen.slice(-12),comparison=chosen.slice(-6),first=comparison[0],last=comparison.at(-1);
+ const latest=chosen.at(-1),comparable=latest.account?(latest.comparisonKey?chosen.filter(a=>a.account&&a.comparisonKey===latest.comparisonKey):[latest]):chosen;
+ const recent=comparable.slice(-12),comparison=comparable.slice(-6),first=comparison[0],last=comparison.at(-1);
  const delta=comparison.length>=2?last.score-first.score:null;
  const mean=recent.reduce((sum,a)=>sum+a.score,0)/recent.length;
  const target=last.lesson;
  let status,advice;
  if(delta===null){
-  status="Giáo án “"+target.title+"” mới có một lần kiểm tra; chưa đủ dữ liệu về xu hướng.";
+  status=latest.account?'Chưa đủ lượt cùng bài, phiên bản nội dung và điều kiện được ghi rõ để tính xu hướng.':"Giáo án “"+target.title+"” mới có một lần kiểm tra; chưa đủ dữ liệu về xu hướng.";
   advice="Tập lại cùng giáo án trong điều kiện tương tự và ghi điểm để so sánh chính xác hơn.";
  }else if(delta<=-3){
   status="Cùng giáo án “"+target.title+"”: giảm "+Math.abs(delta)+" điểm qua "+comparison.length+" lượt gần nhất.";
@@ -47,7 +48,7 @@ function analyze(lessons,records,history,level,skill,lessonId){
   status="Cùng giáo án “"+target.title+"”: biến động "+(delta===0?"0":delta>0?"+"+delta:String(delta))+" điểm qua "+comparison.length+" lượt gần nhất.";
   advice="Giữ bài tập hiện tại, ưu tiên độ chính xác và luyện thêm một lượt trước khi thay đổi độ khó.";
  }
- return {count:attempts.length,lessonCount:chosen.length,mean,delta,lesson:target,lessons:lessonOptions,
+ return {count:attempts.length,lessonCount:chosen.length,comparableCount:comparable.length,account:latest.account,currentContent:latest.currentContent,mean,delta,lesson:target,lessons:lessonOptions,
   chart:recent.map(a=>({score:a.score,date:a.date,week:a.lesson.week,title:a.lesson.title,id:a.id,legacy:a.legacy})),
   status,advice};
 }

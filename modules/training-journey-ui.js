@@ -5,11 +5,11 @@ const j=window.PICKLEUP_JOURNEY,g=window.PICKLEUP_WEEKLY_GOALS,p=window.PICKLEUP
 const $=id=>document.getElementById(id),lessons=window.PICKLEUP_CURRICULUM||[];
 if(!j||!g||!p||!c||!$("jRefresh"))return;
 const data=window.PICKLEUP_DATA;
-function raw(key){try{return data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
+function raw(key){try{return ["pickleup_academy_v2","pickleup_academy_history_v44"].includes(key)&&window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
 function parse(key,fallback){try{const v=JSON.parse(raw(key)||"null");return v===null?fallback:v}catch(_){return fallback}}
 function snapshot(){
  const goal=g.readSettings(raw(g.KEY)),prefs=p.readSettings(raw(p.KEY));
- const history=window.PICKLEUP_ACADEMY_TRENDS?.readHistory(JSON.stringify(parse("pickleup_academy_history_v44",[])))||[];
+ const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():window.PICKLEUP_ACADEMY_TRENDS?.readHistory(JSON.stringify(parse("pickleup_academy_history_v44",[])))||[];
  const plans=parse("pickleup_selected_plan_v31",null);
  const stored=plans?.source==="basic"?parse("pickleup_plans_v24",[]):plans?.source==="advanced"?parse("pickleup_advanced_plans_v31",[]):[];
  const ready=Array.isArray(stored)&&stored.some(x=>x?.id===plans?.id&&Array.isArray(x.exercises)&&x.exercises.length===3);
@@ -86,5 +86,6 @@ window.addEventListener("storage",e=>{
  if([g.KEY,p.KEY,c.KEY,"pickleup_academy_v2","pickleup_academy_history_v44","pickleup_academy_last_lesson_v4","pickleup_stage_checks_v23","pickleup_selected_plan_v31"].includes(e.key))redraw();
 });
 document.addEventListener("pickleup:domain-data",redraw);
+document.addEventListener("pickleup:activity-data",redraw);
 redraw();$("jRefresh").disabled=false;
 })();

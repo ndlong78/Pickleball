@@ -1,10 +1,53 @@
 (function(){
 const data=window.PICKLEUP_CURRICULUM||[];
 const level=document.getElementById('academyLevel'),weeks=document.getElementById('academyWeek'),detail=document.getElementById('academyDetail'),score=document.getElementById('academyScore'),status=document.getElementById('academyStatus');
-let records={};try{records=JSON.parse(localStorage.getItem('pickleup_academy_v2')||'{}')}catch(e){}
+const activity=window.PICKLEUP_ACTIVITY;
+let records={};try{records=activity?activity.records():JSON.parse(localStorage.getItem('pickleup_academy_v2')||'{}')}catch(e){}
 const trends=window.PICKLEUP_ACADEMY_TRENDS;
 const historyKey='pickleup_academy_history_v44';
-let history=[];try{history=trends.readHistory(localStorage.getItem(historyKey))}catch(_){}
+let history=[];try{history=activity?activity.history():trends.readHistory(localStorage.getItem(historyKey))}catch(_){}
+let dirty=false,saving=false,formLesson=null,sourceToken=activity?.token(),historyPage=0;
+score.addEventListener('input',()=>{dirty=true});
+function paintScore(){
+ const x=get();if(!x)return;
+ if(activity?.isAccount()&&activity.getView().mode!=='account'){score.value='';status.textContent=activity.notice();return}
+ if(!dirty)score.value=records[x.id]?.score??x.assessment.target;
+ if(!dirty&&!saving)status.textContent=records[x.id]?(activity?.isAccount()?'Kho tài khoản · ':'Đã lưu: ')+records[x.id].score+'/20 · '+new Date(records[x.id].date).toLocaleDateString('vi-VN')+(records[x.id].pending?' · chờ đồng bộ':''):'';
+}
+function controls(){
+ const blocked=saving||activity&&!activity.canWrite();score.disabled=!!blocked;document.getElementById('academySave').disabled=!!blocked;
+ document.getElementById('academyConditions').hidden=!activity?.isAccount();for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).disabled=!!blocked;
+}
+function renderAttempts(){
+ const host=document.getElementById('academyAccountHistory');host.hidden=!activity?.isAccount();if(host.hidden){document.getElementById('academyAttemptList').replaceChildren();return}
+ if(activity.getView().mode!=='account'){document.getElementById('academyAttemptList').replaceChildren();document.getElementById('academyHistoryCount').textContent=activity.notice();document.getElementById('academyHistoryPage').textContent='Chưa đọc được lịch sử';document.getElementById('academyHistoryPrev').disabled=true;document.getElementById('academyHistoryNext').disabled=true;return}
+ const snapshot=activity.getState().snapshot,byId=new Map((snapshot?.records||[]).map(r=>[r.kind+':'+r.id,r]));
+ const events=activity.events(),total=events.length,pages=Math.max(1,Math.ceil(total/20));historyPage=Math.min(historyPage,pages-1);
+ document.getElementById('academyHistoryCount').textContent=total+' lượt đang lưu trong cache tài khoản · không cắt lịch sử theo giới hạn 500 lượt của kho cũ.';
+ document.getElementById('academyHistoryPage').textContent='Trang '+(historyPage+1)+'/'+pages;
+ document.getElementById('academyHistoryPrev').disabled=historyPage===0;document.getElementById('academyHistoryNext').disabled=historyPage===pages-1;
+ const list=document.getElementById('academyAttemptList'),fragment=document.createDocumentFragment();
+ for(const event of events.slice(historyPage*20,(historyPage+1)*20)){
+  const item=document.createElement('li'),text=document.createElement('p'),button=document.createElement('button');
+  const when=event.occurred_at===null?'Chưa rõ ngày':new Date(event.occurred_at).toLocaleString('vi-VN');
+  const conditions=event.conditions?['Nguồn bóng: '+({partner:'người hỗ trợ',machine:'máy',rally:'đánh qua lại'})[event.conditions.feed],'nhịp '+({slow:'chậm',moderate:'vừa',match:'thi đấu'})[event.conditions.pace],'mục tiêu '+({wide:'rộng',standard:'thường',narrow:'hẹp'})[event.conditions.target]].join(' · '):'Điều kiện chưa rõ';
+  text.textContent=event.lesson_id+' · '+event.lesson_snapshot.title+' · '+event.score+'/20 · '+when+' · '+conditions+(event.pending?' · chờ đồng bộ':'')+(event.occurred_at&&Date.parse(event.occurred_at)>Date.now()?' · ngày tương lai, chưa dùng để phân tích':'');
+  button.type='button';button.textContent='Xóa lượt này';button.setAttribute('aria-label','Xóa lượt '+event.lesson_id+' '+event.score+'/20 · '+when);const row=byId.get('academy_attempts:'+event.id);button.disabled=saving||!activity.canWrite()||!row||row.reviewRequired;
+  const renderedToken=activity.token();button.addEventListener('click',async()=>{
+   if(saving||renderedToken!==activity.token())return;
+   if(!confirm('Xóa riêng lượt kiểm tra này? Thay đổi sẽ chờ đồng bộ; sự kiện đã xóa không có thao tác khôi phục.'))return;
+   const stamp=activity.token();saving=true;controls();button.disabled=true;
+   try{await activity.deleteAttempt(event.id,row.localRevision);if(stamp===activity.token())status.textContent='Đã lưu thao tác xóa trên thiết bị · chờ đồng bộ.'}
+   catch(_){if(stamp===activity.token())status.textContent='Chưa xóa được. Đọc lại hoặc xem mục cần xử lý trong Dữ liệu.'}
+   finally{saving=false;controls();renderAttempts()}
+  });item.append(text,button);fragment.append(item);
+ }list.replaceChildren(fragment);
+}
+for(const [id,delta]of [['academyHistoryPrev',-1],['academyHistoryNext',1]])document.getElementById(id).addEventListener('click',()=>{historyPage+=delta;renderAttempts()});
+document.addEventListener('pickleup:activity-data',()=>{
+ const next=activity?.token();if(next!==sourceToken){sourceToken=next;dirty=false;saving=false;status.textContent='';historyPage=0;for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value=''}
+ records=activity.records();history=activity.history();refreshLearning();paintScore();controls();renderAttempts();
+});
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function get(){return data.find(x=>x.id===weeks.value)}
 const selectionKey='pickleup_academy_last_lesson_v4';
@@ -14,11 +57,12 @@ function completedIds(){return new Set(Object.keys(records).filter(id=>data.some
 function refreshLearning(){
  const complete=completedIds(),total=data.length;
  const progress=document.getElementById('academyProgressText'),resume=document.getElementById('academyResumeText'),next=document.getElementById('academyNext'),resumeButton=document.getElementById('academyResume');
- progress.textContent='Đã ghi kết quả '+complete.size+'/'+total+' bài học';
+ const unavailable=activity?.isAccount()&&activity.getView().mode!=='account';
+ progress.textContent=unavailable?'Chưa đọc được tiến độ tài khoản.':'Đã ghi kết quả '+complete.size+'/'+total+' bài học';
  const last=data.find(x=>x.id===resumedId);
  resume.textContent=last?'Bài gần nhất: Tuần '+last.week+' · '+last.title:'Bạn chưa chọn bài học trước đó.';
  resumeButton.disabled=!last;
- next.disabled=complete.size>=total;
+ next.disabled=unavailable||complete.size>=total;
  updateRecommendation();
 }
 function recommendedLesson(){
@@ -26,6 +70,7 @@ function recommendedLesson(){
  return trends.recommend(data,records,history,scope);
 }
 function updateRecommendation(){
+ if(activity?.isAccount()&&activity.getView().mode!=='account'){document.getElementById('academyRecommendReason').textContent=activity.notice();document.getElementById('academyTrendText').textContent='Chưa có nguồn để phân tích.';document.getElementById('academyRecommendLesson').textContent='Chưa đọc được kết quả.';document.getElementById('academyRecommendOpen').disabled=true;return}
  const result=recommendedLesson();
  document.getElementById('academyRecommendReason').textContent=result.reason;
  document.getElementById('academyTrendText').textContent=result.trend;
@@ -39,7 +84,7 @@ function visitLesson(id){
  level.value='all';
  choose();
  weeks.value=id;
- show();
+ show(true);
 }
 document.addEventListener('pickleup:academy-request-lesson',event=>{const id=event.detail?.id;if(data.some(x=>x.id===id))visitLesson(id)});
 const stepsKey='pickleup_academy_steps_v41';
@@ -151,27 +196,39 @@ function choose(){
  show();
 }
 let lastDrawnId=null;
-function show(){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
+function show(persistSelection=false){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
+if(formLesson!==x.id){formLesson=x.id;dirty=false}
 if(focusTimer&&focusTimer.lessonId!==x.id){stopTick();focusTimer=null}
 resumedId=x.id;
-try{localStorage.setItem(selectionKey,x.id)}catch(_){}
+if(!activity?.isAccount()||persistSelection===true)try{localStorage.setItem(selectionKey,x.id)}catch(_){}
 refreshLearning();
 drawSteps(x);
-if(lastDrawnId===x.id){score.value=records[x.id]?.score??x.assessment.target;return}
+if(lastDrawnId===x.id){paintScore();return}
 lastDrawnId=x.id;
 const court=x.advanced?(window.PICKLEUP_ADVANCED_COURT?window.PICKLEUP_ADVANCED_COURT(x):''):(window.PICKLEUP_COURT?window.PICKLEUP_COURT(x):'');
 detail.innerHTML='<h3>Tuần '+x.week+' · '+esc(x.title)+'</h3><p class="sub">Cấp độ '+esc(x.level)+' · '+esc(x.goal)+'</p><p class="sub"><b>Chuẩn bị:</b> '+esc(x.setup||'Hai người chơi, bóng và sân.')+'</p>'+court+'<p class="sub"><b>Vùng mục tiêu:</b> '+esc(x.zone||'Trong sân đối phương')+' · Vùng tô sáng là minh họa kỹ năng; thực hiện theo hướng dẫn và quy tắc sân thực tế.</p><div class="block"><div class="minute">10<small>phút</small></div><div><h4>Khởi động</h4><p>Di chuyển nhẹ, xoay khớp và đánh bóng làm quen.</p></div></div>'+x.drills.map((d,i)=>'<div class="block"><div class="minute">'+d.minutes+'<small>phút</small></div><div><h4>Bài '+(i+1)+': '+esc(d.name)+'</h4><p>'+esc(d.instruction)+'</p><em>'+esc(d.check)+'</em></div></div>').join('')+'<div class="block"><div class="minute">6<small>phút</small></div><div><h4>Kiểm tra</h4><p>'+esc(x.assessment.instruction)+' Mục tiêu tham khảo: '+x.assessment.target+'/20.</p></div></div><div class="block"><div class="minute">5<small>phút</small></div><div><h4>Thả lỏng</h4><p>Đi bộ nhẹ, thả lỏng vai và chân, uống nước.</p></div></div><h4>Cần tránh</h4><ul class="noteList">'+x.mistakes.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><h4>Điểm cần nhớ</h4><ul class="noteList">'+(x.cues||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p class="sub">Giáo án và ngưỡng kiểm tra là tham khảo; xếp hạng 3.0/4.0 cần kiểm chứng trong thi đấu thực tế.</p>';
-score.value=records[x.id]?.score??x.assessment.target;status.textContent=records[x.id]?'Đã lưu: '+records[x.id].score+'/20 vào '+new Date(records[x.id].date).toLocaleDateString('vi-VN'):''}
-level.addEventListener('change',choose);weeks.addEventListener('change',show);
+paintScore()}
+level.addEventListener('change',choose);weeks.addEventListener('change',()=>show(true));
 document.getElementById('academyResume').addEventListener('click',()=>{if(resumedId)visitLesson(resumedId)});
 document.getElementById('academyNext').addEventListener('click',()=>{
  const complete=completedIds();
  const next=data.find(x=>!complete.has(x.id));
  if(next)visitLesson(next.id);
 });
-document.getElementById('academySave').addEventListener('click',()=>{
+document.getElementById('academySave').addEventListener('click',async()=>{
+ if(saving)return;
  const x=get(),v=Number(score.value);
  if(!x||score.value.trim()===''||!Number.isInteger(v)||v<0||v>20){status.textContent='Hãy nhập số nguyên từ 0 đến 20.';return}
+ if(activity&&!activity.canWrite()){status.textContent='Chưa thể lưu. Kiểm tra nguồn và kho tài khoản trong Dữ liệu.';return}
+ if(activity?.isAccount()){
+  const values=['academyFeed','academyPace','academyTarget'].map(id=>document.getElementById(id).value);
+  if(values.some(Boolean)&&!values.every(Boolean)){status.textContent='Ghi đủ ba điều kiện hoặc để tất cả là chưa rõ.';return}
+  const conditions=values.every(Boolean)?{feed:values[0],pace:values[1],target:values[2]}:null,stamp=activity.token();saving=true;controls();
+  try{await activity.saveAttempt(x,v,conditions);if(stamp===activity.token()&&get()?.id===x.id){dirty=false;status.textContent='Đã lưu '+v+'/20 trong kho tài khoản trên thiết bị · chờ đồng bộ. Không tự xác nhận buổi tập.'}}
+  catch(error){if(stamp===activity.token())status.textContent=error.code==='quota_exceeded'?'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.':'Chưa lưu được. Kiểm tra nguồn dữ liệu hoặc mục cần xử lý trong Dữ liệu.'}
+  finally{saving=false;controls();renderAttempts()}
+  return;
+ }
  const date=new Date().toISOString(),nextRecord={score:v,date,skill:x.skill,level:x.level};
  try{
   localStorage.setItem('pickleup_academy_v2',JSON.stringify({...records,[x.id]:nextRecord}));
@@ -194,6 +251,5 @@ if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson);
 refreshLearning();
 // The fragment can become visible before this lazy-loaded script arrives.
 // Enable score editing only after initial values and save listeners are ready.
-score.disabled=false;
-document.getElementById('academySave').disabled=false;
+controls();renderAttempts();
 })();

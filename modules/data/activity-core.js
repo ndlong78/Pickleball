@@ -37,6 +37,7 @@ function row(kind,value,{owner,id}={}){
 }
 function comparisonKey(kind,value){
  if(!['academy_attempts','training_entries'].includes(kind)||!value.conditions||!conditions(value.conditions)||value.occurred_at===null)return null;
+ if(kind==='academy_attempts'&&(value.content_version==='legacy-unknown'||typeof value.lesson_snapshot?.assessment!=='string'||!value.lesson_snapshot.assessment.trim()))return null;
  try{validate(kind,value,value.source_kind==='legacy')}catch(_){return null}
  if(kind==='training_entries'&&!uuid(value.plan_id))return null;
  return JSON.stringify([kind,kind==='academy_attempts'?value.lesson_id:value.exercise_id,value.skill,value.level_band,kind==='academy_attempts'?[value.content_version,value.lesson_snapshot?.title,value.lesson_snapshot?.assessment??null]:[value.plan_id,value.kind],value.conditions.feed,value.conditions.pace,value.conditions.target]);

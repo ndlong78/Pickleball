@@ -1,5 +1,5 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — main `6a59bdb` sau merge #22, ứng dụng **5.5.0**.
+Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — nền main `afc50d4` sau #24/app5.5.0; PR5a2b/V5.6.0 đang review, chưa merge/deploy.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
@@ -16,6 +16,8 @@ Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — main `6a59bdb` sau merge #22
 Đây là các phạm vi PR kế hoạch, chưa phải PR đã mở hoặc ngày phát hành cam kết. Gate chi tiết, CI đúng merge SHA và phần owner cần cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md). Không tự merge, không production/chi phí hoặc mở signup công khai. Giữ ưu tiên độ đúng dữ liệu và phục hồi trước mở thêm domain.
 
 PR5a2a hiện thực API standalone consent CAS, lifecycle và quyết định review bất biến theo [hợp đồng riêng](docs/ACTIVITY_LIFECYCLE_PR5A2A.md); chưa source/review UI hoặc rollout. Exact HEAD/CI ở PR, bước UI kế tiếp là Academy PR5a2b.
+
+PR5a2a đã merge #24. [PR5a2b/V5.6.0](docs/ACADEMY_ACCOUNT_PR5A2B.md) tích hợp Academy source/save/delete/history/review và các reader; flags vẫn tắt. Còn PR5a2c đánh giá/trận đấu, PR5b1 plans/selections trước training và PR5b2 full backup/purge, rồi PR6 vận hành. Coach chưa tự nạp account points vào giáo án khách; legacy latest snapshots chưa thành attempts trong view account.
 
 ## Lịch sử roadmap V1–V5
 

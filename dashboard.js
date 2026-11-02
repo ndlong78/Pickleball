@@ -5,10 +5,10 @@ const names={serve:"Giao bóng",return:"Trả giao bóng",dink:"Dinking",volley:
 const keys=Object.keys(names),sessions=window.PICKLEUP_CURRICULUM||[];
 const byId=Object.fromEntries(sessions.map(s=>[s.id,s]));
 const $=id=>document.getElementById(id);
-function read(key){try{const data=JSON.parse(localStorage.getItem(key)||"{}");return data&&typeof data==="object"&&!Array.isArray(data)?data:{}}catch(_){return {}}}
+function read(key){try{const data=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):localStorage.getItem(key))||"{}");return data&&typeof data==="object"&&!Array.isArray(data)?data:{}}catch(_){return {}}}
 function entries(){
  const academy=Object.entries(read("pickleup_academy_v2")).map(([id,r])=>({id,r,s:byId[id]})).filter(({r,s})=>s&&r&&Number.isInteger(r.score)&&r.score>=0&&r.score<=20&&typeof r.date==="string");
- const legacy=Object.entries(read("pickleup_scores")).map(([id,r])=>({id,r,s:sessions[Number(id)]})).filter(({id,r,s})=>/^[0-5]$/.test(id)&&s&&r&&Number.isInteger(r.score)&&r.score>=0&&r.score<=20&&typeof r.date==="string");
+ const legacy=Object.entries(window.PICKLEUP_ACTIVITY?.isAccount()?{}:read("pickleup_scores")).map(([id,r])=>({id,r,s:sessions[Number(id)]})).filter(({id,r,s})=>/^[0-5]$/.test(id)&&s&&r&&Number.isInteger(r.score)&&r.score>=0&&r.score<=20&&typeof r.date==="string");
  // Prefer academy results when a matching first-six-week lesson has both formats.
  const newer=new Set(academy.map(x=>x.s.week));
  return academy.concat(legacy.filter(x=>!newer.has(x.s.week))).sort((a,b)=>a.s.week-b.s.week);
@@ -51,6 +51,7 @@ if(!$("dbSkills"))return;
 draw();
 window.addEventListener("storage",e=>{if(["pickleup_scores","pickleup_academy_v2"].includes(e.key))draw()});
 document.addEventListener("pickleup:score-saved",draw);
+document.addEventListener("pickleup:activity-data",draw);
 $("dbRefresh").addEventListener("click",draw);
 $("dbLevel")?.addEventListener("change",draw);
 });

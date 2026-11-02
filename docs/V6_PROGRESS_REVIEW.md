@@ -6,6 +6,8 @@ Frontend vẫn **5.5.0**, build `5.5.0`, cache `pickleup-shell-v5-5-0-stable`. P
 
 Cập nhật triển khai tiếp theo trên nền main `04afdde` sau #23: [PR5a2a](ACTIVITY_LIFECYCLE_PR5A2A.md) thêm API standalone consent/review/lifecycle và export riêng events. Chưa source/review UI; bảng snapshot sau #22 dưới đây là lịch sử của lần rà soát. CI/HEAD mới ghi ở PR triển khai, không suy từ baseline. PR5a2b Academy là bước UI tiếp theo, flags vẫn tắt.
 
+PR5a2a đã merge #24 ở `afc50d4`, CI main/Pages sạch theo [baseline PR5a2b](ACADEMY_ACCOUNT_PR5A2B.md). PR5a2b/V5.6.0 đang review: Academy account UI và reader integration, không rollout. Bảng sau #22 vẫn là snapshot lịch sử; bước còn lại assessments/matches, plans/selections→training, full backup/purge và vận hành pilot.
+
 ## 1. Đã triển khai đến đâu
 
 | Hạng mục | Mã đã merge | Trạng thái sử dụng và phần còn thiếu |

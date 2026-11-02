@@ -3,10 +3,11 @@
 "use strict";
 const core=window.PICKLEUP_PERSONAL_CORE;if(!core)return;
 const keys=Object.keys(core.names),$=id=>document.getElementById(id),storageKey="pickleup_plans_v24";
-function read(key,fallback){try{const x=JSON.parse(localStorage.getItem(key)||"null");return x??fallback}catch(_){return fallback}}
+function read(key,fallback){try{const x=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):localStorage.getItem(key))||"null");return x??fallback}catch(_){return fallback}}
 function history(){const data=read(storageKey,[]);return Array.isArray(data)?data.filter(p=>p&&p.version==="2.4"&&p.id&&Array.isArray(p.exercises)):[]}
 function valid(v){return Number.isInteger(v)&&v>=0&&v<=20}
 function latestInputs(){
+ if(window.PICKLEUP_ACTIVITY?.isAccount())return {scores:{},level:"1.0–2.0",source:"Học viện dùng kho tài khoản. Nạp điểm vào giáo án trên thiết bị chưa bật; nhập sáu điểm thủ công hoặc dùng lại kho thiết bị. Không tự sao chép điểm tài khoản vào giáo án khách."};
  const tests=read("pickleup_stage_checks_v23",[]);
  const stage=Array.isArray(tests)?tests.filter(t=>t&&core.validScores(t.values)&&core.levels.includes(t.level)).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")))[0]:null;
  const lastCompleted=history().filter(p=>p.completedAt&&valid(p.checkScore)&&p.checkpoint&&core.validScores(p.scores)).sort((a,b)=>String(b.completedAt).localeCompare(String(a.completedAt)))[0];
@@ -138,6 +139,7 @@ function complete(){
  });
  $("pcComplete").addEventListener("click",complete);
  const saved=history();render(saved[saved.length-1]||null);renderHistory();
+ let activityToken=window.PICKLEUP_ACTIVITY?.token();document.addEventListener("pickleup:activity-data",()=>{const next=window.PICKLEUP_ACTIVITY?.token();if(next!==activityToken){activityToken=next;fill();setStatus("")}});
  window.addEventListener("storage",event=>{if([storageKey,"pickleup_stage_checks_v23","pickleup_academy_v2"].includes(event.key))renderHistory()});
 });
 })();
