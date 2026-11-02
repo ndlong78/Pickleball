@@ -27,7 +27,7 @@ test('preview files is read-only, identifies Home and renders unknown labels as 
  await page.goto('/Pickleball/?page=settings');await settingsReady(page);
  const before=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()));
  await page.locator('#rescuePanel input[type=file]').setInputFiles({name:'home.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({app:'PickleUp',records:[{week:1,score:3},{week:1,score:3}],'<img src=x onerror=alert(1)>':true}))});
- await expect(page.locator('[data-source]')).toContainText('home-records');
+ await expect(page.locator('#rescuePanel [data-source]')).toContainText('home-records');
  await expect(page.locator('#rescuePanel tbody')).toContainText('<img src=x onerror=alert(1)>');expect(await page.locator('#rescuePanel tbody img').count()).toBe(0);
  await expect(page.locator('[data-download]')).toBeDisabled();
  expect(await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()))).toBe(before);
