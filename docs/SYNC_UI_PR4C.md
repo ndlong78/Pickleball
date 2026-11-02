@@ -35,3 +35,5 @@ Backend workflow vẫn Supabase local thật + Mailpit và pgTAP/REST. Browser i
 Máy làm việc bị CDN trả403 khi tải Chromium; native browser/full Supabase được kiểm trong Actions ephemeral. CI exact HEAD, counts và fail/flaky ghi trong PR trước ready.
 
 Chưa staging SMTP/Managed gateway, browser JWT expiry/auto-refresh theo wall clock, physical devices, backup/Auth recovery/deletion drill, source UI các domain PR5, full V6 backup round-trip/purge, near-cap/load/eviction hoặc background scheduler. Pilot dữ liệu thật vẫn đóng theo backup/privacy/repair/consent gates; không coi PR4c là rollout production.
+
+PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).

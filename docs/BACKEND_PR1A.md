@@ -94,3 +94,5 @@ PR3b hiện thực backend atomic import RPC theo [ATOMIC_IMPORT_PR3B](ATOMIC_IM
 PR4a bổ sung canonical cache/cursor atomic cho hai domain, không gửi outbox hoặc chuyển nguồn UI: [CANONICAL_PULL_PR4A](CANONICAL_PULL_PR4A.md). PR4b cần epoch fence trong server transaction trước sender; pull rồi push riêng không đủ chống race restore.
 
 PR4b bổ sung prepare_sync/apply_sync_operation với epoch fence, immutable sender/ack/conflict API theo [SYNC_SENDER_PR4B](SYNC_SENDER_PR4B.md). Legacy RPC giữ nguyên; chưa UI/source switch hoặc rollout.
+
+PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).

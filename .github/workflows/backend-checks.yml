@@ -72,6 +72,8 @@ jobs:
         run: python3 scripts/test_import.py
       - name: Fenced sender REST, CAS and restore lock race
         run: python3 scripts/test_sync.py
+      - name: Activity events REST, append identity, ownership and epoch race
+        run: python3 scripts/test_activity.py
       - name: Real OTP, email capture, refresh and private RPC
         run: python3 scripts/test_auth.py
       - name: Install real Auth browser engines

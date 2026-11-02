@@ -65,13 +65,14 @@ function createAuthAdapter(client,{rpcTransport}={}){
  }
  function importRpc(owner,method,args){return ['pull_changes','begin_import','import_batch','finish_import','get_import_status'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
  function syncRpc(owner,method,args){return ['prepare_sync','apply_sync_operation','pull_changes'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
+ function eventRpc(owner,method,args){return ['prepare_sync','apply_event_operation','pull_changes'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
  function message(error){
   if(!error)return null;
   if(error.status===429||error.code==="over_email_send_rate_limit")return "Gửi quá nhiều mã. Vui lòng chờ rồi thử lại.";
   if(error.code==="otp_expired"||error.status===403)return "Mã sai hoặc đã hết hạn. Kiểm tra mã hoặc yêu cầu mã mới.";
   return "Không thực hiện được. Kiểm tra kết nối hoặc thử lại sau.";
  }
- return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,syncRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
+ return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,syncRpc,eventRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
 }
 async function connect(config){
  const url=new URL(config.url);
