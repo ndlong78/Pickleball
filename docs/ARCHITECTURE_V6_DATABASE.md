@@ -1,6 +1,6 @@
 # PickleUp V6 — kiến trúc database, auth và offline sync
 
-**Trạng thái 02/11/2026:** main `6a59bdb` / V5.5.0 sau merge #22. PR0/policy, PR1a–PR3d, PR4a–PR4c và PR5a1 đã merge: schema/RLS/RPC, Auth, IDB/importer, UI opt-in hai domain mục tiêu/check-in và nền bốn loại sự kiện. Auth/import/sync flags vẫn tắt; event source UI/repair, plans/selections integration và vận hành pilot chưa hoàn tất. [Tiến độ, CI/Pages và kế hoạch hiện hành](V6_PROGRESS_REVIEW.md) phân biệt mã đã triển khai với rollout.
+**Trạng thái 02/11/2026:** main `c9afa50` / V5.6.0 sau #25. Backend/Auth/importer, UI mục tiêu/check-in, event lifecycle/repair và Academy account UI đã merge. PR5a2c/V5.7.0 nối assessments/matches, đang review. Bốn flags vẫn tắt; plans/selections→training, full backup/purge và vận hành pilot còn lại. [Tiến độ và evidence](V6_PROGRESS_REVIEW.md).
 
 ADR/baseline PR0 bên dưới giữ bối cảnh thiết kế; hợp đồng từng PR mô tả hiện thực. [Policy](PILOT_OPERATING_POLICY.md) ghi owner đã duyệt Managed Free/CAS và ủy quyền chi tiết Auth/chính sách dữ liệu. Ngân sách tự động 0 USD; quyền staging không suy thành quyền production, không tự merge. Blueprint là đầu vào thiết kế, không tự cấp quyền triển khai.
 
@@ -71,8 +71,8 @@ Các tên file dự kiến trong PR0 đã được cụ thể hóa như sau; kh�
 | `modules/data/rescue-core.js`, `rescue-ui.js`, `import-*` | Raw rescue, mapper/consent, checkpoint và importer |
 | `modules/data/pull-controller.js`, `sync-controller.js` | Canonical pull, epoch-fenced sender và conflict lifecycle theo policy |
 | `modules/data/domain-core.js`, `domain-controller.js`, `domain-runtime.js`, `sync-ui.js`, `sync-config.js` | Nguồn và UI opt-in preferences/check-ins, default guest |
-| `modules/data/activity-core.js` | Typed event projection standalone PR5a1; chưa page-loader/runtime/UI |
-| `modules/data/activity-controller.js` | Consent/lifecycle/review standalone [PR5a2a](ACTIVITY_LIFECYCLE_PR5A2A.md); chưa source UI |
+| `modules/data/activity-core.js` | Typed event payload/row validation PR5a1; đã được page-loader/runtime dùng |
+| `modules/data/activity-controller.js` | Consent/lifecycle/review [PR5a2a](ACTIVITY_LIFECYCLE_PR5A2A.md), đã nối Academy source UI ở #25 |
 
 Feature flag chọn **một nguồn chuẩn cho mỗi domain/namespace**; domain chưa chuyển tiếp tục dùng V5, domain đã chuyển đọc IDB. Adapter projection giữ shape core cũ và cửa sổ hiển thị, không cắt lịch sử server. Không mirror account vào khóa V5 không có namespace. Consent PR4c không cấp quyền gửi events; policy cursor/lease PR5a1 độc lập.
 
@@ -171,3 +171,5 @@ PR4b bổ sung prepare_sync/apply_sync_operation với epoch fence, immutable se
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
 
 PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).
+
+PR5a2c bổ sung [assessment/match projections và UI](ASSESSMENT_MATCH_PR5A2C.md) trong cùng facade/consent, không schema/RLS/RPC mới. Backup/importer vẫn legacy thực; private assessment/match không tự nạp sang plans khách. Bản đồ2 mô tả nguồn V5 gốc cần chuyển, không thay bảng reader hiện thực trong hợp đồng từng PR.

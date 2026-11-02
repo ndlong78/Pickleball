@@ -1,8 +1,8 @@
 # V6 — quyết định pilot và chính sách vận hành
 
-Quyết định ngày 29/10/2026; cập nhật tiến độ **02/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #22 là `6a59bdb`, ứng dụng5.5.0. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
+Quyết định ngày 29/10/2026; cập nhật tiến độ **02/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #25 là `c9afa50`, ứng dụng5.6.0. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
 
-Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in và nền sự kiện đã merge/kiểm chứng local; Auth/import/sync flags đều tắt. Chưa có bằng chứng cloud/SMTP staging được cấu hình, backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
+Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in, event lifecycle và Academy account đã merge/kiểm chứng local; Auth/import/sync/activity flags đều tắt. Chưa có bằng chứng cloud/SMTP staging được cấu hình, backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
 
 ## 1. Phạm vi ủy quyền và chi phí
 

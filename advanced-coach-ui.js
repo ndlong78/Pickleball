@@ -18,6 +18,7 @@ function writableHistory(){
 }
 function status(s){$("acCoachStatus").textContent=s}
 function chooseSource(){
+ if(window.PICKLEUP_ACTIVITY?.isAccount())return {scores:{},level:"3.0–3.5",label:"Đánh giá dùng kho tài khoản. Không tự sao chép điểm tài khoản vào giáo án khách; nhập sáu điểm thủ công hoặc dùng lại kho thiết bị."};
  const checks=read("pickleup_advanced_checks_v3",[]);
  const recent=Array.isArray(checks)?checks.filter(x=>x&&core.levels.includes(x.level)&&core.validScores(x.values)).slice().sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")))[0]:null;
  const last=history().filter(p=>p.completedAt&&valid(p.checkScore)).sort((a,b)=>String(b.completedAt).localeCompare(String(a.completedAt)))[0];
@@ -152,5 +153,6 @@ document.addEventListener("pickleup:plan-selected",event=>{
  const selected=read(selectionKey,null),plans=history(),saved=selected?.source==="advanced"?plans.find(p=>p.id===selected.id):null;
  if(saved)select(saved,true);else planCard($("acCoachPlan"),null,false);
  showHistory();
+ let activityToken=window.PICKLEUP_ACTIVITY?.token();document.addEventListener("pickleup:activity-data",()=>{const next=window.PICKLEUP_ACTIVITY?.token();if(next!==activityToken){activityToken=next;populate();focus.value="";$("acCoachFocusStatus").textContent="Chỉ áp dụng khi bạn chủ động chọn kỹ năng.";$("acCoachMatchSuggestion").textContent="Chưa có gợi ý trong nguồn dữ liệu này.";status("")}});
 });
 })();

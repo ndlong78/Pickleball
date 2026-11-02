@@ -13,10 +13,10 @@ async function setup(context){
  await context.addInitScript(()=>{if(!localStorage.getItem('fixture-academy-seeded')){localStorage.setItem('fixture-academy-seeded','1');localStorage.setItem('pickleup_academy_v2',JSON.stringify({'PU-001':{score:4,date:'2026-01-01T10:00:00Z'}}));localStorage.setItem('pickleup_academy_history_v44','[]');localStorage.setItem('pickleup_scores',JSON.stringify({'1':{score:20,date:'2026-01-01T10:00:00Z'}}))}});
  await context.exposeBinding('ACADEMY_RPC',async(_,{owner,name,args})=>{
   calls.push({owner,name,args:structuredClone(args)});const result=servers.get(owner).rpc(name,args);
-  if(name==='pull_changes'&&hold&&!hold.claimed){hold.claimed=true;hold.reached();await hold.gate}
+  if(name===hold?.name&&hold&&!hold.claimed){hold.claimed=true;hold.reached();await hold.gate}
   if(name==='apply_event_operation'&&drop&&result.status==='applied'){drop=false;return {status:'network_error'}}return result;
  });
- return {servers,calls,drop(){drop=true},hold(){let reached,release;const seen=new Promise(r=>reached=r),gate=new Promise(r=>release=r);hold={gate,reached,claimed:false};return {seen,release(){release();hold=null}}}};
+ return {servers,calls,drop(){drop=true},hold(name='pull_changes'){let reached,release;const seen=new Promise(r=>reached=r),gate=new Promise(r=>release=r);hold={gate,reached,claimed:false,name};return {seen,release(){release();hold=null}}}};
 }
 async function route(page,name){
  await page.evaluate(async name=>{await PICKLEUP_ROUTER.openPage(name);await PICKLEUP_PAGE_LOADER.ensure(name);await document.fonts.ready;await new Promise(requestAnimationFrame)},name);

@@ -42,7 +42,7 @@
 <p role="status" aria-live="polite">Đồng bộ pilot chưa bật.</p>
 <div data-sync-body hidden>
 <p data-sync-account></p>
-<p>Bật nguồn tài khoản riêng cho mục tiêu/lịch tập và check-in. Đăng nhập không tự chuyển nguồn. Dữ liệu khách cũ không được nhập hoặc ghi đè; Học viện có lựa chọn nguồn riêng phía dưới; giáo án, trận đấu, đồng hồ và checklist vẫn trên thiết bị.</p>
+<p>Bật nguồn tài khoản riêng cho mục tiêu/lịch tập và check-in. Đăng nhập không tự chuyển nguồn. Dữ liệu khách cũ không được nhập hoặc ghi đè; Học viện, đánh giá và trận đấu có lựa chọn nguồn hoạt động riêng phía dưới; giáo án, nhật ký tập, đồng hồ và checklist vẫn trên thiết bị.</p>
 <button type="button" data-sync-enable>Dùng mục tiêu và check-in của tài khoản</button>
 <button type="button" data-sync-device>Dùng lại dữ liệu thiết bị</button>
 <p>Thay đổi được lưu vào kho tài khoản trên thiết bị trước. Chỉ gửi khi bạn bấm đồng bộ. Đăng xuất giữ queue riêng; tránh thiết bị dùng chung vì cache chưa được mã hóa hoặc tự xóa.</p>
@@ -54,14 +54,14 @@
 <p>Tệp cache gồm hai nhóm trên, yêu cầu chờ và các bản conflict. Chưa phải backup toàn tài khoản hoặc tệp có thể nhập lại. Bản cứu hộ và backup cũ phía trên chỉ gồm dữ liệu khách trên thiết bị.</p>
 </div></div>
 <div class="card sync-panel" id="activityPilot">
-<h3>Hoạt động tài khoản · Học viện</h3>
+<h3>Hoạt động tài khoản · Học viện, đánh giá và trận đấu</h3>
 <p role="status" aria-live="polite">Kho hoạt động pilot chưa bật.</p>
 <div data-activity-body hidden>
 <p data-activity-account></p>
-<p>Kho hoạt động gồm lượt Học viện, đánh giá, nhật ký tập và trận đấu. Bản này chỉ chuyển giao diện Học viện; ba nhóm còn lại và giáo án vẫn dùng kho thiết bị. Lựa chọn này độc lập với mục tiêu/check-in.</p>
-<p>Không tự nhập dữ liệu khách. Mở kho chỉ đọc; lưu điểm trên Học viện tạo lượt riêng trong kho tài khoản trên thiết bị. Chỉ gửi các thay đổi đã xếp hàng khi bạn bấm đồng bộ; đăng xuất giữ cache riêng, chưa mã hóa hoặc tự xóa.</p>
+<p>Kho hoạt động gồm lượt Học viện, đánh giá, nhật ký tập và trận đấu. Bản này chuyển giao diện Học viện, tự đánh giá, kiểm tra cơ bản/nâng cao và trận đấu. Nhật ký tập và giáo án vẫn dùng kho thiết bị. Lựa chọn này độc lập với mục tiêu/check-in.</p>
+<p>Không tự nhập dữ liệu khách. Mở kho chỉ đọc; lưu điểm, đánh giá hoặc trận đấu tạo lượt riêng trong kho tài khoản trên thiết bị. Chỉ gửi các thay đổi đã xếp hàng khi bạn bấm đồng bộ; đăng xuất giữ cache riêng, chưa mã hóa hoặc tự xóa.</p>
 <label><input type="checkbox" data-activity-consent> Tôi chọn kho hoạt động của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
-<div class="sync-actions"><button type="button" data-activity-enable>Dùng kho hoạt động tài khoản</button><button type="button" data-activity-device>Dùng lại Học viện trên thiết bị</button><button type="button" data-activity-read>Đọc hoạt động tài khoản</button><button type="button" data-activity-send>Đồng bộ hoạt động</button><button type="button" data-activity-retry hidden>Thử lại yêu cầu hoạt động đang chờ</button><button type="button" data-activity-export>Xuất cache hoạt động</button></div>
+<div class="sync-actions"><button type="button" data-activity-enable>Dùng kho hoạt động tài khoản</button><button type="button" data-activity-device>Dùng lại hoạt động trên thiết bị</button><button type="button" data-activity-read>Đọc hoạt động tài khoản</button><button type="button" data-activity-send>Đồng bộ hoạt động</button><button type="button" data-activity-retry hidden>Thử lại yêu cầu hoạt động đang chờ</button><button type="button" data-activity-export>Xuất cache hoạt động</button></div>
 <p data-activity-count></p><div data-activity-reviews></div><div data-activity-detail></div>
 <p>Cache xuất gồm bốn nhóm hoạt động, yêu cầu chờ và bản cần xử lý. Tệp riêng tư, chưa phải backup toàn tài khoản hoặc tệp nhập lại được. Backup V5/raw rescue vẫn chỉ chứa kho khách, không chứa dữ liệu tài khoản.</p>
 </div></div>

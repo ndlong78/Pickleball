@@ -1,22 +1,19 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — nền main `afc50d4` sau #24/app5.5.0; PR5a2b/V5.6.0 đang review, chưa merge/deploy.
+Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — nền main `c9afa50` sau #25/app5.6.0; PR5a2c/V5.7.0 đang review, chưa merge/deploy.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot sau #22 và tiến độ mới: PR1a–PR4c, PR5a1 và PR5a2a đã merge. [PR #25 / PR5a2b](https://github.com/ndlong78/Pickleball/pull/25) nối Academy source/save/delete/history/review và các reader, đang review. Cả bốn flag Auth/import/sync/activity vẫn tắt; Pages deploy mã không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1, PR5a2a và PR5a2b đã merge. [PR5a2c/V5.7.0](docs/ASSESSMENT_MATCH_PR5A2C.md) nối ba loại assessment và matches vào UI/source/review, đang review. Bốn flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
 
-| Thứ tự | Công việc | Điều kiện hoàn tất chính |
+| Trạng thái | Công việc | Gate chính |
 |---|---|---|
-| Đã merge #24 | PR5a2a: consent/lifecycle và repair sự kiện | API standalone giữ frozen requests/pending, review reset/conflict, không rebind epoch hoặc sửa event bất biến |
-| Đang review #25 | PR5a2b: Academy | Nguồn rõ, immutable save/delete, history/comparability, cross-route, native browser và Auth thật; không dual-write/attendance |
-| Tiếp theo | PR5a2c: assessments/matches | Chuyển mọi reader/writer, giữ thang điểm/metric sets riêng, nguồn/pending/repair rõ và bỏ phản hồi account cũ |
-| Sau đó | PR5b1 plans/selections → PR5a2d training | Own plan đã ack trước training mới; CAS giáo án/lựa chọn, orphan/dependency được xử lý; timer local |
-| Phục hồi | PR5b2: đủ route, full V6 backup round-trip và purge cache | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 compatibility export riêng; không mất legacy |
-| Trước pilot | PR6: staging và vận hành | SMTP/Managed gateway, expiry browser thật, importer repair, encrypted backup/Auth restore/deletion, load/quota/privacy và QA thiết bị thật |
+| Đã merge #24/#25 | Consent/lifecycle/repair và Academy | Stable UUID/frozen requests, source rõ, history/comparability, không dual-write/attendance |
+| Đang review | PR5a2c assessments/matches | Đúng thang/metric sets, mọi reader cùng nguồn, no auto-copy vào guest plans, late A→B và Auth thật |
+| Tiếp theo | PR5b1 plans/selections → PR5a2d training | Own plan đã ack trước training mới, CAS/dependency/orphan, timer local |
+| Phục hồi | PR5b2 đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
+| Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
-Các bước sau #25 là phạm vi kế hoạch, chưa phải PR đã mở hoặc ngày phát hành cam kết. Gate chi tiết, CI đúng SHA và phần owner cần cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md). Không tự merge, không production/chi phí hoặc mở signup công khai.
-
-Coach chưa tự nạp account points vào giáo án khách; legacy latest snapshots chưa thành attempts trong view account. Giữ ưu tiên độ đúng dữ liệu và phục hồi trước mở pilot thật.
+Các bước sau PR5a2c là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Giáo án và nhật ký tập hiện còn device-only; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
 
 ## Lịch sử roadmap V1–V5
 
