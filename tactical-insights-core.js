@@ -13,7 +13,7 @@ const MATCH_KEY="pickleup_match_journal_v3",ATTEMPT_KEY="pickleup_training_log_v
 function isMatch(m){return !!m&&typeof m==="object"&&typeof m.date==="string"&&Number.isFinite(Date.parse(m.date))&&Object.prototype.hasOwnProperty.call(FOCUS,m.focus)&&["singles","doubles"].includes(m.mode)&&Number.isInteger(m.ours)&&Number.isInteger(m.theirs)}
 function isAttempt(r){return !!r&&typeof r==="object"&&r.exerciseId&&/^ADV-PU-0(?:3[7-9]|[4-7][0-9]|80)$/.test(r.exerciseId)&&["3.0–3.5","3.5–4.0"].includes(r.level)&&["drill","assessment"].includes(r.kind)&&Number.isInteger(r.hits)&&r.hits>=0&&r.hits<=20&&typeof r.date==="string"&&Number.isFinite(Date.parse(r.date))}
 function analyze(matches=[],attempts=[],level="3.0–3.5"){
- const usable=Array.isArray(matches)?matches.filter(isMatch).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10):[];
+ const usable=Array.isArray(matches)?matches.filter(isMatch).sort((a,b)=>a.account&&b.account?a.accountOrder-b.accountOrder:b.date.localeCompare(a.date)).slice(0,10):[];
  const votes=Object.fromEntries(METRICS.map(m=>[m,0]));
  for(const match of usable)votes[FOCUS[match.focus]]++;
  const ordered=METRICS.filter(m=>votes[m]>0).sort((a,b)=>votes[b]-votes[a]||METRICS.indexOf(a)-METRICS.indexOf(b));

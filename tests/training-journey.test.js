@@ -22,6 +22,11 @@ test("existing stage-check evidence is optional and validated",()=>{
  const invalid={...stage,values:{serve:200}};
  assert.equal(core.build({...base,stageChecks:[invalid]}).hasAssessment,false);
 });
+test('account self and advanced evidence remain distinct scales and never create attendance or auto-change level',()=>{
+ const selfAssessment={date:stage.date,answers:Object.fromEntries(Object.keys(stage.values).map(k=>[k,2]))},advancedChecks=[{date:stage.date,level:'3.0–3.5',values:Object.fromEntries(['third','reset','movement','counter','doubles','decision'].map(k=>[k,20]))}];
+ for(const input of [{selfAssessment},{advancedChecks}]){const result=core.build({...base,...input});assert.equal(result.hasAssessment,true);assert.equal(result.doneThisWeek,0);assert.equal(result.goal.level,base.goal.level)}
+ assert.equal(core.build({...base,selfAssessment:{...selfAssessment,date:'2099-01-01T00:00:00Z'}}).hasAssessment,false);assert.equal(core.build({...base,selfAssessment:{...selfAssessment,answers:stage.values}}).hasAssessment,false);
+});
 test("selected in-level lesson resumes; other-level choice never mismatched",()=>{
  assert.equal(core.build({...base,selectedLessonId:"PU-002"}).lesson.id,"PU-002");
  assert.notEqual(core.build({...base,selectedLessonId:"PU-003"}).lesson.id,"PU-003");

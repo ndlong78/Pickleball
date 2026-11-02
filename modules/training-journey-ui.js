@@ -5,7 +5,7 @@ const j=window.PICKLEUP_JOURNEY,g=window.PICKLEUP_WEEKLY_GOALS,p=window.PICKLEUP
 const $=id=>document.getElementById(id),lessons=window.PICKLEUP_CURRICULUM||[];
 if(!j||!g||!p||!c||!$("jRefresh"))return;
 const data=window.PICKLEUP_DATA;
-function raw(key){try{return ["pickleup_academy_v2","pickleup_academy_history_v44"].includes(key)&&window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
+function raw(key){try{return ["pickleup_academy_v2","pickleup_academy_history_v44","pickleup_stage_checks_v23"].includes(key)&&window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
 function parse(key,fallback){try{const v=JSON.parse(raw(key)||"null");return v===null?fallback:v}catch(_){return fallback}}
 function snapshot(){
  const goal=g.readSettings(raw(g.KEY)),prefs=p.readSettings(raw(p.KEY));
@@ -15,7 +15,7 @@ function snapshot(){
  const ready=Array.isArray(stored)&&stored.some(x=>x?.id===plans?.id&&Array.isArray(x.exercises)&&x.exercises.length===3);
  let trainingLog=[];try{trainingLog=window.PICKLEUP_TRAINING_LOG?.read(localStorage)||[]}catch(_){}
  return j.build({lessons,goal,planPrefs:prefs,checkins:c.read(raw(c.KEY)),history,records:parse("pickleup_academy_v2",{}),
- trainingLog,stageChecks:parse("pickleup_stage_checks_v23",[]),goalConfigured:data?.isAccount()?data.getView().goalConfigured===true:g.validSettings(parse(g.KEY,null)),
+ trainingLog,stageChecks:parse("pickleup_stage_checks_v23",[]),selfAssessment:window.PICKLEUP_ACTIVITY?.isAccount()?window.PICKLEUP_ACTIVITY.assessments("self")[0]||null:null,advancedChecks:window.PICKLEUP_ACTIVITY?.isAccount()?window.PICKLEUP_ACTIVITY.assessments("advanced"):[],goalConfigured:data?.isAccount()?data.getView().goalConfigured===true:g.validSettings(parse(g.KEY,null)),
  selectedLessonId:raw("pickleup_academy_last_lesson_v4"),selectedPersonalPlan:ready});
 }
 let current=null,draftDirty=false,viewRevision='0',viewDeleted=false,viewTag='';

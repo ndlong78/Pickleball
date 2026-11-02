@@ -32,7 +32,7 @@ function evaluate(attempts=[],level="3.0–3.5"){
 }
 function doubles(matches=[]){
  const opts=cond.DOUBLES;
- const all=Array.isArray(matches)?matches.filter(m=>m&&m.mode==="doubles"&&typeof m.date==="string"&&Number.isFinite(Date.parse(m.date))).slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20):[];
+ const all=Array.isArray(matches)?matches.filter(m=>m&&m.mode==="doubles"&&typeof m.date==="string"&&Number.isFinite(Date.parse(m.date))).slice().sort((a,b)=>a.account&&b.account?a.accountOrder-b.accountOrder:b.date.localeCompare(a.date)).slice(0,20):[];
  const counts=Object.fromEntries(Object.keys(opts).map(k=>[k,0]));
  let documented=0;
  for(const m of all){if(Object.prototype.hasOwnProperty.call(opts,m.doublesIssue)){counts[m.doublesIssue]++;documented++}}

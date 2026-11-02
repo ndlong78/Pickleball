@@ -1,5 +1,5 @@
 const {test,expect}=require("@playwright/test");
-test("V5.6.0 upgrades legacy PWA cache without erasing local training data",async({page})=>{
+test("V5.7.0 upgrades legacy PWA cache without erasing local training data",async({page})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{
   localStorage.setItem("pickleup_v38_migration_probe",JSON.stringify({hits:13,date:"2026-10-28"}));
@@ -15,6 +15,8 @@ test("V5.6.0 upgrades legacy PWA cache without erasing local training data",asyn
   await v541.put("./v541-probe",new Response("previous sender API cache"));
   const v55=await caches.open("pickleup-shell-v5-5-0-stable");
   await v55.put("./v55-probe",new Response("previous activity lifecycle assets"));
+  const v56=await caches.open("pickleup-shell-v5-6-0-stable");
+  await v56.put("./v56-probe",new Response("previous Academy source assets"));
   const oldRegistration=await navigator.serviceWorker.getRegistration();
   if(oldRegistration)await oldRegistration.unregister();
   // A fresh install exercises install/activate and cache cleanup.
@@ -22,7 +24,7 @@ test("V5.6.0 upgrades legacy PWA cache without erasing local training data",asyn
   await navigator.serviceWorker.ready;
   await registration.update();
  });
- await expect.poll(async()=>await page.evaluate(async()=>{const keys=await caches.keys();return ["pickleup-shell-v3-6-vitals-versioned","pickleup-shell-v3-7-fragments","pickleup-shell-v5-0-stable","pickleup-shell-v5-4-stable","pickleup-shell-v5-4-1-stable","pickleup-shell-v5-5-0-stable"].every(name=>!keys.includes(name))})).toBe(true);
+ await expect.poll(async()=>await page.evaluate(async()=>{const keys=await caches.keys();return ["pickleup-shell-v3-6-vitals-versioned","pickleup-shell-v3-7-fragments","pickleup-shell-v5-0-stable","pickleup-shell-v5-4-stable","pickleup-shell-v5-4-1-stable","pickleup-shell-v5-5-0-stable","pickleup-shell-v5-6-0-stable"].every(name=>!keys.includes(name))})).toBe(true);
  const result=await page.evaluate(async()=>{
   const keys=await caches.keys();
   return {keys,record:JSON.parse(localStorage.getItem("pickleup_v38_migration_probe"))};
@@ -33,9 +35,10 @@ test("V5.6.0 upgrades legacy PWA cache without erasing local training data",asyn
  expect(result.keys).not.toContain("pickleup-shell-v5-0-stable");
  expect(result.keys).not.toContain("pickleup-shell-v5-4-stable");
  expect(result.keys).not.toContain("pickleup-shell-v5-5-0-stable");
- expect(result.keys).toContain("pickleup-shell-v5-6-0-stable");
+ expect(result.keys).not.toContain("pickleup-shell-v5-6-0-stable");
+ expect(result.keys).toContain("pickleup-shell-v5-7-0-stable");
 });
-test("V5.6.0 caches a visited advanced page for later offline reuse",async({page,context})=>{
+test("V5.7.0 caches a visited advanced page for later offline reuse",async({page,context})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
  await page.reload(); // ensure the active service worker controls the document
@@ -43,7 +46,7 @@ test("V5.6.0 caches a visited advanced page for later offline reuse",async({page
  await page.locator('#pageNavigation a[data-route="academy"]').click();
  await expect(page.locator("#academyWeek option")).toHaveCount(80);
  const cached=await page.evaluate(async()=>{
-  const c=await caches.open("pickleup-shell-v5-6-0-stable");
+  const c=await caches.open("pickleup-shell-v5-7-0-stable");
   const keys=await c.keys();
   return keys.map(x=>new URL(x.url).pathname);
  });
@@ -52,4 +55,12 @@ test("V5.6.0 caches a visited advanced page for later offline reuse",async({page
  await page.reload();
  await expect(page.locator("#academyWeek option")).toHaveCount(80);
  await context.setOffline(false);
+});
+test('V5.7.0 restores the visited match route and its new activity modules offline under Pickleball',async({page,context})=>{
+ await page.goto('/Pickleball/?page=matches');await page.evaluate(()=>navigator.serviceWorker.ready);await page.reload();
+ await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+ await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('matches'));await expect(page.locator('#matchFocus option')).toHaveCount(11);
+ await page.locator('#matchOurs').fill('11');await page.locator('#matchTheirs').fill('9');await page.locator('#matchSave').click();await expect(page.locator('#matchSummary')).toContainText('1 trận');
+ await expect.poll(()=>page.evaluate(async()=>{const c=await caches.open('pickleup-shell-v5-7-0-stable'),keys=(await c.keys()).map(x=>new URL(x.url).pathname);return ['modules/data/activity-source-core.js','modules/data/activity-history-ui.js','match-journal.js','pages/matches.html'].every(x=>keys.includes('/Pickleball/'+x))})).toBe(true);
+ await context.setOffline(true);await page.reload();await expect(page.locator('#matchSummary')).toContainText('1 trận');await expect(page.locator('#matchSave')).toBeEnabled();expect(new URL(page.url()).pathname).toBe('/Pickleball/');await context.setOffline(false);
 });

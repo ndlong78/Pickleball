@@ -1,10 +1,10 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
-Cập nhật ngày **02/11/2026 (Asia/Ho_Chi_Minh)**. Nền main hiện hành `afc50d4639bdc14b06931610cfca076c68a65274` sau [PR #24](https://github.com/ndlong78/Pickleball/pull/24), app/build5.5.0. PR5a2a đã nối API standalone consent/review/lifecycle và export events theo [hợp đồng](ACTIVITY_LIFECYCLE_PR5A2A.md). Main regression/backend/Pages sạch theo [baseline PR5a2b](ACADEMY_ACCOUNT_PR5A2B.md).
+Cập nhật ngày **02/11/2026 (Asia/Ho_Chi_Minh)**. Nền main `c9afa506da79a8cb408d0ad364fcba4bf985e9fe` sau [PR #25](https://github.com/ndlong78/Pickleball/pull/25), app/build5.6.0. PR5a2a lifecycle và PR5a2b Academy account đã merge. CI main/Pages cùng merge SHA sạch:232 unit+368 browser+5 WebKit bổ sung,241 pgTAP/37 REST và Auth thật hai engines; [baseline và URLs](ASSESSMENT_MATCH_PR5A2C.md).
 
-[PR #25 / PR5a2b / V5.6.0](https://github.com/ndlong78/Pickleball/pull/25) đang review: Academy account source/save/delete/history/comparability và review UI, giữ Coach chưa tự sao chép private points sang giáo án khách. CI đúng HEAD được cập nhật trong mô tả PR, chưa merge/deploy5.6.0.
+[PR5a2c/V5.7.0](ASSESSMENT_MATCH_PR5A2C.md) đang review: self/stage/advanced và matches source/UI, reader Journey/tactical/doubles, lịch sử raw/delete/review. Chưa tự nạp private điểm/trọng tâm vào plans khách. CI đúng HEAD mới ở PR, chưa merge/deploy5.7.0.
 
-Auth/import/sync/activity flags vẫn `enabled:false`, Auth URL/key rỗng. Chưa staging Supabase/SMTP hoặc vận hành dữ liệu thật. Merge/deploy frontend không đồng nghĩa mở cloud pilot. Tiếp theo PR5a2c assessments/matches; plans/selections→training, full backup/purge và PR6 vận hành còn lại.
+Bốn flags Auth/import/sync/activity vẫn false, URL/key rỗng. Chưa staging Supabase/SMTP hoặc vận hành dữ liệu thật. Tiếp theo PR5b1 plans/selections→PR5a2d training, full backup/purge và PR6; frontend deploy không mở cloud pilot.
 
 **Các bảng mã nguồn và evidence ở mục1–3 dưới đây là snapshot lịch sử sau #22** (`6a59bdb622ae564a7f954584191197f9aa4c0767`, app5.5.0), không phải danh sách thiếu của HEAD hiện tại. Mục4–5 phản ánh kế hoạch tiếp theo; hợp đồng từng PR giữ phạm vi riêng.
 
@@ -58,13 +58,13 @@ Trong lần rà soát tài liệu: local Node24 chạy lại 206 unit pass/0 fai
 
 ## 4. Kế hoạch triển khai theo thứ tự phụ thuộc
 
-PR5a2a đã merge #24; PR5a2b đang review ở #25. Các bước sau đó là **phạm vi kế hoạch**, chưa là GitHub PR đã mở. Mỗi bước nhỏ có CI đúng HEAD và review riêng, không tự merge. Có thể tách nhỏ thêm theo reader/writer thực tế; không ấn định lịch khi phụ thuộc staging chưa sẵn sàng.
+PR5a2a/#24 và PR5a2b/#25 đã merge; PR5a2c đang review. Các bước sau đó là **phạm vi kế hoạch**, chưa là GitHub PR đã mở. Mỗi bước nhỏ có CI đúng HEAD và review riêng, không tự merge. Có thể tách nhỏ thêm theo reader/writer thực tế; không ấn định lịch khi phụ thuộc staging chưa sẵn sàng.
 
 | Ưu tiên / bước | Kết quả cần có | Gate để coi hoàn tất |
 |---|---|---|
 | Đã merge #24 — PR5a2a: vòng đời và repair sự kiện | Hợp đồng consent/source riêng, blocked/conflict/epoch review và export đủ intent; phân biệt create, delete và outcome chưa biết | Unknown commit phải replay request cũ trước quyết định; không update/restore event bất biến, không rebind epoch hoặc sinh event mới im lặng; A→B/multi-tab/quota/native reload + Auth thật |
-| Đang review #25 — PR5a2b: Academy end-to-end | Chọn nguồn tài khoản rõ ràng, lưu lượt mới với UUID bền vững; latest/history/trend dùng projection account khi đã opt-in | Rà soát toàn bộ reader/writer Academy và các trang tham chiếu; không dual-write V5, không dựng attempt từ latest snapshot, không trim >500; cùng bài/level/content/conditions; rollout flags off, bump build/assets/cache khi nối runtime |
-| 3 — PR5a2c: đánh giá và trận đấu | Lần lượt nối self/stage/advanced assessment và matches qua cùng lifecycle; UI nguồn/pending/repair rõ | Thang 0–2/0–20 và metric sets riêng, không suy DUPR/attendance; không gửi notes vào logs; mọi consumer đã mount cập nhật và xóa account cũ |
+| Đã merge #25 — PR5a2b: Academy end-to-end | Chọn nguồn tài khoản rõ ràng, lưu lượt mới với UUID bền vững; latest/history/trend dùng projection account khi đã opt-in | Rà soát toàn bộ reader/writer Academy và các trang tham chiếu; không dual-write V5, không dựng attempt từ latest snapshot, không trim >500; cùng bài/level/content/conditions; rollout flags off, bump build/assets/cache khi nối runtime |
+| Đang review — PR5a2c: đánh giá và trận đấu | Lần lượt nối self/stage/advanced assessment và matches qua cùng lifecycle; UI nguồn/pending/repair rõ | Thang 0–2/0–20 và metric sets riêng, không suy DUPR/attendance; không gửi notes vào logs; mọi consumer đã mount cập nhật và xóa account cũ |
 | 4 — PR5b1: plans/selections, rồi PR5a2d: training | Fenced CAS/pull/projection giáo án và lựa chọn; sau đó cho tạo training entries gắn own plan đã ack | Snapshot plan immutable, kết quả CAS, plan→training/selection dependency, orphan/deleted plan có UX; timer giữ local, không tạo attendance. Phụ thuộc này cần trước manual training, dù các phần khác PR5a đã xong |
 | 5 — PR5b2: tích hợp đủ route và phục hồi | Một nguồn/domain, full V6 backup round-trip, compatibility export riêng, cache purge có preview/export pending; profile UI nếu cần | Native reload/offline/two tabs/late A→B trên 8 route; không trim lịch sử, không hứa V5 restore được dữ liệu V6; test import/export pending/frozen/conflicts/device state và credential exclusion |
 | 6 — PR6: hardening/vận hành pilot | Staging SMTP/Managed gateway, Auth expiry/refresh browser thật, importer repair/compensation, backup/Auth recovery/deletion/restore; load/rate/quota/privacy/support | Encrypted backup 7 bản ngày + 4 bản tuần, tuổi tối đa 35 ngày; restore đổi epoch và replay deletion markers; chứng minh RPO24h/RTO1 ngày làm việc; clean CI + QA iPhone/iPad/Android/PWA thật trước opt-in dữ liệu thật |
@@ -73,10 +73,10 @@ Công việc staging có thể chuẩn bị với dữ liệu giả trong lúc h
 
 ## 5. Việc owner cần chuẩn bị và điểm dừng hiện tại
 
-- **Review PR #25/CI:** không cần cung cấp credentials. PR Academy bump5.6.0/cache nhưng giữ cả bốn flags tắt; owner tự quyết merge khi các gate đúng HEAD sạch.
+- **Review PR5a2c/CI:** không cần credentials. PR đánh giá/trận đấu bump5.7.0/cache, giữ cả bốn flags tắt; owner tự quyết merge khi các gate đúng HEAD sạch.
 - **Khi bắt đầu staging:** cung cấp quyền project đúng môi trường qua kết nối bảo mật; kiểm region Singapore nếu khả dụng, Free quota và tách staging/pilot. Frontend chỉ URL HTTPS + publishable key; DB/service-role/SMTP secrets nằm ở cấu hình vận hành an toàn, không chat/repo/client.
 - **Trước email pilot:** custom SMTP/sender/domain đã xác minh, template OTP nhập mã, expiry/rate limits và `/Pickleball/` Site URL/allowlist; kiểm delivery/spam/abuse. Flag client không thay chính sách server về signup hoặc quyền RLS.
 - **Trước dữ liệu thật:** kho backup mã hóa ngoài Supabase, job/quyền operator, restore/Auth identity drill và workflow xóa account/cache đã kiểm chứng; privacy/support và QA thiết bị thật. Target trong [policy](PILOT_OPERATING_POLICY.md) chưa thành SLA đang vận hành.
-- **Tiếp theo về code:** hoàn tất review PR5a2b/#25 rồi PR5a2c assessments/matches, giữ flags off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
+- **Tiếp theo về code:** hoàn tất review PR5a2c rồi PR5b1 plans/selections trước PR5a2d training, giữ flags off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
 
 Hợp đồng tham chiếu: [kiến trúc](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md), [policy](PILOT_OPERATING_POLICY.md), [threat model](THREAT_MODEL.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md).

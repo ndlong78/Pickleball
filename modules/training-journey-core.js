@@ -5,7 +5,7 @@
 const GOALS=root.PICKLEUP_WEEKLY_GOALS,PLAN=root.PICKLEUP_WEEKLY_PLANNER,CHECK=root.PICKLEUP_WEEK_CHECKINS;
 const SKILLS=["serve","return","dink","volley","position","strategy"];
 const validScores=x=>x&&typeof x==="object"&&SKILLS.every(k=>Number.isInteger(x[k])&&x[k]>=0&&x[k]<=20);
-function build({lessons=[],goal=null,planPrefs=null,checkins=null,history=[],records={},trainingLog=[],stageChecks=[],goalConfigured=false,selectedLessonId=null,selectedPersonalPlan=false,now=new Date()}={}){
+function build({lessons=[],goal=null,planPrefs=null,checkins=null,history=[],records={},trainingLog=[],stageChecks=[],selfAssessment=null,advancedChecks=[],goalConfigured=false,selectedLessonId=null,selectedPersonalPlan=false,now=new Date()}={}){
  if(!GOALS||!PLAN||!CHECK)throw Error("Thiếu module nền tảng Hành trình");
  const config=GOALS.validSettings(goal)?goal:GOALS.DEFAULT;
  const prefs=PLAN.validSettings(planPrefs)?planPrefs:PLAN.DEFAULT;
@@ -17,7 +17,10 @@ function build({lessons=[],goal=null,planPrefs=null,checkins=null,history=[],rec
  const todayEntry=checks.entries[date]||null;
  const todayDone=todayEntry?.status==="done";
  const current=CHECK.summary(checks,now).current;
- const assessment=Array.isArray(stageChecks)&&stageChecks.some(a=>a&&GOALS.LEVELS.includes(a.level)&&validScores(a.values)&&typeof a.date==="string"&&Number.isFinite(Date.parse(a.date))&&Date.parse(a.date)<=new Date(now).getTime());
+ const knownDate=a=>typeof a?.date==="string"&&Number.isFinite(Date.parse(a.date))&&Date.parse(a.date)<=new Date(now).getTime();
+ const self=knownDate(selfAssessment)&&SKILLS.every(k=>Number.isInteger(selfAssessment.answers?.[k])&&selfAssessment.answers[k]>=0&&selfAssessment.answers[k]<=2);
+ const advanced=Array.isArray(advancedChecks)&&advancedChecks.some(a=>knownDate(a)&&["3.0–3.5","3.5–4.0"].includes(a.level)&&["third","reset","movement","counter","doubles","decision"].every(k=>Number.isInteger(a.values?.[k])&&a.values[k]>=0&&a.values[k]<=20));
+ const assessment=self||advanced||Array.isArray(stageChecks)&&stageChecks.some(a=>a&&GOALS.LEVELS.includes(a.level)&&validScores(a.values)&&typeof a.date==="string"&&Number.isFinite(Date.parse(a.date))&&Date.parse(a.date)<=new Date(now).getTime());
  const choice=library.find(x=>x?.id===selectedLessonId&&x.level===config.level);
  const nextScheduled=plan.days.find(d=>d.kind==="practice"&&d.date>=date&&d.lessonId);
  const recommended=GOALS.recommend(library,records,history,config.level);

@@ -247,3 +247,5 @@ button[aria-label="Cài ứng dụng PickleUp"]{
 .activity-attempt-list li{padding-block:12px;border-bottom:1px solid #cbd8c9;min-width:0}
 .activity-attempt-list p,#activityPilot p,#activityPilot label{overflow-wrap:anywhere}
 .activity-attempt-list button,#activityPilot button{min-height:44px;max-width:100%;white-space:normal}
+
+.activity-history{min-width:0;overflow-wrap:anywhere}.activity-history li{min-width:0}.activity-history button{min-height:44px}.activity-history .sync-actions{flex-wrap:wrap}

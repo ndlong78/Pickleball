@@ -7,7 +7,8 @@ const $=id=>document.getElementById(id);
 function e(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);if(cls)n.className=cls;return n}
 function report(){
  if(!$("tacticalStats"))return;
- const level=$("tacticalLevel").value,info=core.fromStorage(localStorage,level);
+ if(window.PICKLEUP_ACTIVITY?.isAccount()&&window.PICKLEUP_ACTIVITY.getView().mode!=="account"){for(const id of ["tacticalStats","tacticalSignals","tacticalRecommendation","tacticalComparisons"])$(id).replaceChildren();$("tacticalNotice").textContent=window.PICKLEUP_ACTIVITY.notice();if($("acCoachMatchSuggestion"))$("acCoachMatchSuggestion").textContent="Chưa đọc được nguồn trận đấu.";return}
+ const level=$("tacticalLevel").value,info=core.fromStorage({getItem:key=>window.PICKLEUP_ACTIVITY?.raw(key)??localStorage.getItem(key)},level);
  const stats=$("tacticalStats");stats.replaceChildren();
  for(const [v,label] of [[info.matchCount,"Trận gần nhất phân tích"],[info.attemptCount,"Lượt đo tại cấp độ này"],[info.comparable.length,"Bài có ≥2 lượt so sánh"]]){
   const box=e("div",undefined,"tactical-stat");box.append(e("strong",v),e("span",label));stats.append(box)
@@ -25,20 +26,22 @@ function report(){
  const recommendation=$("tacticalRecommendation");recommendation.replaceChildren();
  if(info.suggested){
   recommendation.append(e("p","Trọng tâm xuất hiện nhiều nhất trong "+info.matchCount+" trận gần nhất: "+coach.names[info.suggested]+" ("+info.votes[info.suggested]+" lần)."));
-  const btn=e("button","Đưa trọng tâm này vào HLV nâng cao","pc-alt");btn.type="button";
+  if(window.PICKLEUP_ACTIVITY?.isAccount()){recommendation.append(e("p","Chưa tự chuyển trọng tâm tài khoản sang giáo án trên thiết bị. Giáo án tài khoản sẽ được tích hợp riêng."));}
+  else{const btn=e("button","Đưa trọng tâm này vào HLV nâng cao","pc-alt");btn.type="button";
   btn.addEventListener("click",()=>{
-   const priority=info.suggested;
+   const priority=info.suggested,sourceToken=window.PICKLEUP_ACTIVITY?.token();
    window.PICKLEUP_ROUTER?.openSection("advancedCoach");
    const ready=window.PICKLEUP_PAGE_LOADER?.ensure("coach")||Promise.resolve();
    ready.then(()=>{
+    if(sourceToken!==window.PICKLEUP_ACTIVITY?.token()||window.PICKLEUP_ACTIVITY?.isAccount())return;
     const target=$("acCoachMatchFocus");if(!target)return;
     target.value=priority;
     target.dispatchEvent(new Event("change"));
     $("acCoachFocusStatus").textContent="Đã chọn ưu tiên "+coach.names[priority]+". Điểm kiểm tra gốc không thay đổi.";
     $("advancedCoach").scrollIntoView({behavior:"smooth",block:"start"});
-   }).catch(()=>{$("acCoachFocusStatus").textContent="Không tải được HLV nâng cao. Hãy kiểm tra mạng và thử lại."});
+   }).catch(()=>{if(sourceToken===window.PICKLEUP_ACTIVITY?.token()&&!window.PICKLEUP_ACTIVITY?.isAccount())$("acCoachFocusStatus").textContent="Không tải được HLV nâng cao. Hãy kiểm tra mạng và thử lại."});
   });
-  recommendation.append(btn);
+  recommendation.append(btn);}
  }else recommendation.append(e("p","Chưa có trọng tâm sau trận để đề xuất. Hãy ghi nhận trận đấu trước."));
  const comparisons=$("tacticalComparisons");comparisons.replaceChildren();
  if(!info.comparable.length){
@@ -51,7 +54,7 @@ function report(){
    item.append(line,e("p",row.count+" lần đo · đầu "+row.first+"/20 → gần nhất "+row.last+"/20","sub"));comparisons.append(item)
   });
  }
- $("tacticalNotice").textContent="Dữ liệu trên thiết bị này. Trọng tâm sau trận là nhận xét định tính, không tương đương điểm 0–20. Chỉ so sánh bài cùng mã, cấp độ và loại kiểm tra; điều kiện thực tế vẫn có thể khác nhau.";
+ $("tacticalNotice").textContent=(window.PICKLEUP_ACTIVITY?.isAccount()?"Trận đấu từ kho tài khoản; lượt đo luyện tập vẫn trên thiết bị. ":"Dữ liệu trên thiết bị này. ")+" Trọng tâm sau trận là nhận xét định tính, không tương đương điểm 0–20. Chỉ so sánh bài cùng mã, cấp độ và loại kiểm tra; điều kiện thực tế vẫn có thể khác nhau.";
  const summary=$("acCoachMatchSuggestion");
  if(summary)summary.textContent=info.suggested?"Nhật ký gợi ý: "+coach.names[info.suggested]+" ("+info.votes[info.suggested]+"/"+info.matchCount+" trận). Chỉ áp dụng khi bạn chọn.":"Chưa có gợi ý dựa trên nhật ký trận đấu.";
 }
@@ -60,6 +63,7 @@ function report(){
  $("tacticalLevel").addEventListener("change",report);
  $("tacticalRefresh").addEventListener("click",report);
  $("acCoachLevel")?.addEventListener("change",()=>{if($("tacticalLevel"))$("tacticalLevel").value=$("acCoachLevel").value;report()});
+ document.addEventListener("pickleup:activity-data",report);
  document.addEventListener("pickleup:match-saved",report);
  document.addEventListener("pickleup:training-log-updated",report);
  window.addEventListener("storage",event=>{if([core.MATCH_KEY,core.ATTEMPT_KEY].includes(event.key))report()});

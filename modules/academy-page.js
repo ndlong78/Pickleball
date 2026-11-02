@@ -39,7 +39,8 @@ function renderAttempts(){
   const renderedToken=activity.token();button.addEventListener('click',async()=>{
    if(saving||renderedToken!==activity.token())return;
    if(!confirm('Xóa riêng lượt kiểm tra này? Thay đổi sẽ chờ đồng bộ; sự kiện đã xóa không có thao tác khôi phục.'))return;
-   const stamp=activity.token();saving=true;feedbackVersion=null;controls();button.disabled=true;
+   if(renderedToken!==activity.token())return;
+   const stamp=renderedToken;saving=true;feedbackVersion=null;controls();button.disabled=true;
    try{await activity.deleteAttempt(event.id,row.localRevision);if(stamp===activity.token())feedback('Đã lưu thao tác xóa trên thiết bị · chờ đồng bộ.')}
    catch(_){if(stamp===activity.token())feedback('Chưa xóa được. Đọc lại hoặc xem mục cần xử lý trong Dữ liệu.')}
    finally{saving=false;controls();renderAttempts()}

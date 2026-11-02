@@ -52,3 +52,17 @@ for(const size of sizes){
   });
  });
 }
+test.describe('optional font loading',()=>{
+ test.use({serviceWorkers:'block'});
+ test('delayed optional font does not block load, dock navigation or Progress controls',async({page})=>{
+  let release,reached,settled=false;const gate=new Promise(resolve=>release=resolve),requested=new Promise(resolve=>reached=resolve);
+  await page.route('https://fonts.googleapis.com/**',async route=>{reached();await gate;settled=true;await route.fulfill({contentType:'text/css',body:'/* controlled optional font response */'}).catch(()=>{})});
+  try{
+   // This is intentionally load, not domcontentloaded: the held font must be optional.
+   await page.goto('/Pickleball/?page=home',{waitUntil:'load'});await requested;
+   expect(await page.evaluate(()=>performance.getEntriesByType('navigation')[0].loadEventEnd>0)).toBe(true);expect(settled).toBe(false);
+   await page.locator('#pickleupMobileDock a[href="#personalCoach"]').click();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('coach'));await expect(page.locator('#personalCoach')).toBeInViewport();await expect(page.locator('#pickleupMobileDock a[href="#personalCoach"]')).toHaveAttribute('aria-current','page');
+   await page.locator('#pickleupMobileDock a[href="#trainingHistory"]').click();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));await page.locator('#aiRefresh').click();await expect(page.locator('#aiCount')).toHaveText('0');await expect(page.locator('#pickleupMobileDock a[href="#trainingHistory"]')).toHaveAttribute('aria-current','page');expect(settled).toBe(false);
+  }finally{release();await page.unrouteAll({behavior:'wait'})}
+ });
+});

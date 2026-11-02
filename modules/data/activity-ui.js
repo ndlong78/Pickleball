@@ -16,7 +16,7 @@ function render(){
  }
  const configured=window.PICKLEUP_ACTIVITY_CONFIG?.enabled===true&&window.PICKLEUP_AUTH_CONFIG?.enabled===true;
  $('[data-activity-body]').hidden=!configured;
- if(!configured){status.textContent='Kho hoạt động pilot chưa bật. Học viện khách vẫn dùng bình thường.';return}
+ if(!configured){status.textContent='Kho hoạt động pilot chưa bật. Chế độ khách vẫn dùng bình thường.';return}
  const consent=$('[data-activity-consent]');consent.disabled=running||s.busy||s.mode!=='guest';
  $('[data-activity-account]').textContent=s.owner?'Kho riêng của tài khoản đang đăng nhập · kiểm tra email trong mục Tài khoản.':'Đăng nhập để chọn kho hoạt động.';
  $('[data-activity-enable]').disabled=running||s.busy||!s.owner||s.mode!=='guest'||!consent.checked;
@@ -52,9 +52,9 @@ function summary(kind,value,deleted){
  if(deleted)return 'Muốn xóa lượt này.';if(!value)return 'Chưa có lượt này.';
  const date=value.occurred_at?new Date(value.occurred_at).toLocaleString('vi-VN'):'Chưa rõ ngày';
  if(kind==='academy_attempts')return value.lesson_id+' · '+value.score+'/20 · '+date+' · '+(value.conditions?'Đã ghi điều kiện':'Điều kiện chưa rõ');
- if(kind==='skill_assessments')return 'Đánh giá '+value.assessment_type+' · thang '+value.scale+' · '+date;
+ if(kind==='skill_assessments')return ({self:'Tự đánh giá',stage:'Kiểm tra cơ bản',advanced:'Kiểm tra nâng cao'})[value.assessment_type]+' · '+(value.level_band||'Thang tự đánh giá')+' · '+date+' · '+Object.entries(value.scores).map(([key,score])=>PickleUpActivitySourceCore.NAMES[key]+': '+score+'/'+value.scale).join(' · ');
  if(kind==='training_entries')return value.exercise_id+' · '+value.hits+'/20 · '+date;
- return value.ours+'–'+value.theirs+' · '+date;
+ return value.ours+'–'+value.theirs+' · '+(value.mode==='doubles'?'Đánh đôi':'Đánh đơn')+' · '+date+' · '+PickleUpActivitySourceCore.FOCUS_LABELS[value.focus]+(value.doubles_issue?' · '+(window.PICKLEUP_PRACTICE_CONDITIONS?.DOUBLES[value.doubles_issue]||value.doubles_issue):'')+(value.note?' · '+value.note:'');
 }
 function show(view){
  selection={view,owner,token:data.token(),operationId:crypto.randomUUID()};detail.replaceChildren();
@@ -81,7 +81,7 @@ function show(view){
 const click=(selector,type,work)=>$(selector).addEventListener('click',()=>task(type,work));
 $('[data-activity-consent]').addEventListener('change',render);
 click('[data-activity-enable]','enable',async()=>{if(!$('[data-activity-consent]').checked)return;await data.controller().useAccount();return {message:'Đã đọc kho hoạt động tài khoản. Chưa nhập dữ liệu khách hoặc gửi thay đổi.'}});
-$('[data-activity-device]').addEventListener('click',()=>{serial++;running=false;task('device',async()=>{await data.controller().useDevice();return {message:'Học viện đang dùng kho thiết bị; cache và queue tài khoản vẫn giữ riêng.'}})});
+$('[data-activity-device]').addEventListener('click',()=>{serial++;running=false;task('device',async()=>{await data.controller().useDevice();return {message:'Hoạt động đang dùng kho thiết bị; cache và queue tài khoản vẫn giữ riêng.'}})});
 click('[data-activity-read]','read',async()=>{await data.controller().refresh();return {message:'Đã đọc hoạt động tài khoản; lượt chờ vẫn được giữ.'}});
 for(const [selector,forceRetry]of [['[data-activity-send]',false],['[data-activity-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {message:result.status==='synced'?'Đã đồng bộ hoạt động tài khoản.':message(result.status)}});
 click('[data-activity-export]','export',async()=>({artifact:await data.controller().exportCache(),message:'Đã xuất cache hoạt động. Giữ tệp riêng tư ngoài trình duyệt; chưa phải backup toàn tài khoản.'}));

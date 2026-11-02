@@ -4,7 +4,7 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `6a59bdb` / V5.5.0 sau #22, Auth/import/sync flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `c9afa50` / V5.6.0 sau #25, Auth/import/sync/activity flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
 
 **Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
 
@@ -92,3 +92,5 @@ Mọi tối ưu hoặc refactor đều cần kiểm tra regression ở tám tran
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
 
 [PR5a2b](ACADEMY_ACCOUNT_PR5A2B.md) nối `activity-runtime`/`academy-source-core`/`activity-ui` với flag riêng; mọi reader Academy dùng facade đồng bộ, backup/importer vẫn đọc raw guest. Build/assets/cache5.6.0; không SQL/RLS/schema thay đổi. Home không nạp account modules; đủ80 bài trước source projection. Unknown content/conditions không comparable, Coach không auto-copy private points vào plans legacy; không tự RPC khi login/reload.
+
+[PR5a2c](ASSESSMENT_MATCH_PR5A2C.md) thêm projection assessment/match trong activity facade, tách self UI khỏi raw backup, nối mọi reader và generic history/delete. Advanced/match UI phải khởi tạo idempotent khi fragment đến sau validator Settings. Latest/statistics chỉ ngày biết rõ/past, thứ tự microsecond/timezone; giữ mọi raw identity và không dùng capped legacy validators cho account. Source token guard writer/DOM/delayed Coach callback; không auto-copy private data vào plan guest. Build/assets/cache5.7.0, cùng RPC/IDB schema/RLS, không SQL changes.

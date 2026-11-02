@@ -4,16 +4,14 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 ## Trạng thái hiện tại — 02/11/2026
 
-**V5.6.0 — PR5a2b đang review**, trên nền main `afc50d4` sau [PR #24](https://github.com/ndlong78/Pickleball/pull/24), app main5.5.0. Xem [hợp đồng Học viện tài khoản](docs/ACADEMY_ACCOUNT_PR5A2B.md), [tiến độ và CI baseline](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md). Chưa tuyên bố merge/Pages5.6.0.
+**V5.7.0 — PR5a2c đang review**, trên nền main `c9afa50` sau [PR #25](https://github.com/ndlong78/Pickleball/pull/25), app main5.6.0 và Pages cùng merge SHA. Xem [hợp đồng đánh giá/trận đấu](docs/ASSESSMENT_MATCH_PR5A2C.md), [tiến độ V6](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md). Chưa merge/deploy5.7.0.
 
-- Website: https://ndlong78.github.io/Pickleball/ — tám trang, 80 bài hiện có ở 1.0–4.0. Nội dung đến 5.0 vẫn là định hướng.
-- Chế độ khách là mặc định. Auth OTP/importer/mutable sync đã merge; PR5a2b nối Academy account opt-in nhưng **cả bốn flag vẫn tắt**. Chưa cloud pilot/đăng ký công khai; login không tự nhập hoặc đồng bộ dữ liệu thiết bị.
-- Academy account có UI save/delete/history/review; đánh giá/nhật ký/trận đấu/giáo án vẫn đọc ghi thiết bị. Chưa hoàn tất full V6 backup round-trip, purge/xóa account hoặc vận hành backup/restore.
-- Trước xóa trình duyệt/chuyển máy: giữ backup V5 và raw rescue ngoài browser. Export cache tài khoản gồm hai tệp riêng: mục tiêu/check-in và bốn loại hoạt động; **chưa hỗ trợ nhập lại và chưa phải backup toàn tài khoản**.
+- Website: https://ndlong78.github.io/Pickleball/ — tám trang,80 bài1.0–4.0; nội dung đến5.0 vẫn là định hướng.
+- Guest là mặc định. **Cả bốn flags Auth/import/sync/activity vẫn tắt**; chưa cloud pilot/public signup. Login không tự nhập hoặc gửi dữ liệu thiết bị.
+- PR5a2b đã merge Academy account UI. PR5a2c thêm self/stage/advanced và trận đấu, cùng reader Journey/báo cáo, local-first/manual sync/delete/review. Giáo án, lựa chọn, nhật ký tập, timer và checklist vẫn trên thiết bị; không tự chép private points/insights sang giáo án khách.
+- Trước xóa trình duyệt/chuyển máy, giữ backup V5/raw rescue và tệp cache riêng ngoài browser. Hai cache export mục tiêu/check-in và bốn hoạt động **chưa round-trip hoặc backup toàn account**. Chưa purge/xóa account hay vận hành backup/restore.
 
-Các mục phiên bản bên dưới là lịch sử tính năng tại thời điểm triển khai; trạng thái phát hành và bước tiếp theo dùng bản rà soát ở trên.
-
-PR5a2a đã merge #24; [PR5a2b](docs/ACADEMY_ACCOUNT_PR5A2B.md) nối API vào Academy và panel hoạt động. Bước tiếp theo là đánh giá/trận đấu PR5a2c; giữ pilot gates đóng.
+Các mục phiên bản bên dưới là lịch sử tính năng; trạng thái phát hành/evidence mới dùng bản rà soát ở trên. Tiếp theo PR5b1 plans/selections, rồi PR5a2d training; pilot gates vẫn đóng.
 
 ## Phiên bản 1.1
 

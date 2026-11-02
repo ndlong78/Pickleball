@@ -5,7 +5,7 @@ const api=window.PICKLEUP_EVALUATION,ctx=window.PICKLEUP_PRACTICE_CONDITIONS;
 if(!api||!ctx)return;
 const $=id=>document.getElementById(id);
 function el(tag,text,cls){const x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);if(cls)x.className=cls;return x}
-function read(key){try{const items=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(items)?items:[]}catch(_){return []}}
+function read(key){try{const items=JSON.parse((window.PICKLEUP_ACTIVITY?.raw(key)??localStorage.getItem(key))||"[]");return Array.isArray(items)?items:[]}catch(_){return []}}
 function title(id){const a=(window.PICKLEUP_ADVANCED_CURRICULUM||[]).find(x=>"ADV-"+x.id===id);if(a)return a.title;const base=window.PICKLEUP_PERSONAL_CORE?.library||{};for(const rows of Object.values(base)){const item=rows.find(x=>x.id===id);if(item)return item.name}return id}
 function draw(){
  const level=$("evalLevel").value;
@@ -23,7 +23,8 @@ function draw(){
   row.append(el("p",ctx.describe(entry.conditions),"sub"));list.append(row);
  }
  const details=$("evalDoubles");details.replaceChildren();
- $("evalDoublesSummary").textContent="Xem tối đa 20 trận đánh đôi gần nhất: "+doubles.documented+"/"+doubles.total+" trận có ghi tình huống.";
+ const unavailable=window.PICKLEUP_ACTIVITY?.isAccount()&&window.PICKLEUP_ACTIVITY.getView().mode!=="account";
+ $("evalDoublesSummary").textContent=unavailable?window.PICKLEUP_ACTIVITY.notice():(window.PICKLEUP_ACTIVITY?.isAccount()?"Kho tài khoản · ":"Kho thiết bị · ")+"Xem tối đa 20 trận đánh đôi gần nhất: "+doubles.documented+"/"+doubles.total+" trận có ghi tình huống.";
  if(doubles.documented===0)details.append(el("p","Chưa có tình huống đánh đôi được phân loại. Hãy chọn một vấn đề sau trận.","sub"));
  for(const [key,label] of Object.entries(ctx.DOUBLES)){
   if(!doubles.counts[key])continue;
@@ -48,6 +49,7 @@ function draw(){
  $("evalLevel").addEventListener("change",draw);
  $("evalRefresh").addEventListener("click",draw);
  document.addEventListener("pickleup:training-log-updated",draw);
+ document.addEventListener("pickleup:activity-data",draw);
  document.addEventListener("pickleup:match-saved",draw);
  window.addEventListener("storage",ev=>{if(["pickleup_training_log_v26","pickleup_match_journal_v3"].includes(ev.key))draw()});
  draw();
