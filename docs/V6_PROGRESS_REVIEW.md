@@ -4,6 +4,8 @@ Cập nhật ngày **02/11/2026 (Asia/Ho_Chi_Minh)**. Snapshot mã nguồn: main
 
 Frontend vẫn **5.5.0**, build `5.5.0`, cache `pickleup-shell-v5-5-0-stable`. Pages đã deploy mã này, nhưng **Auth/import/sync đều `enabled:false`**, Auth URL/key rỗng. Chưa có bằng chứng staging Supabase/SMTP hoặc vận hành dữ liệu thật được cấu hình. Merge/deploy frontend không đồng nghĩa đã bật cloud hay phát hành V6 cho người dùng.
 
+Cập nhật triển khai tiếp theo trên nền main `04afdde` sau #23: [PR5a2a](ACTIVITY_LIFECYCLE_PR5A2A.md) thêm API standalone consent/review/lifecycle và export riêng events. Chưa source/review UI; bảng snapshot sau #22 dưới đây là lịch sử của lần rà soát. CI/HEAD mới ghi ở PR triển khai, không suy từ baseline. PR5a2b Academy là bước UI tiếp theo, flags vẫn tắt.
+
 ## 1. Đã triển khai đến đâu
 
 | Hạng mục | Mã đã merge | Trạng thái sử dụng và phần còn thiếu |

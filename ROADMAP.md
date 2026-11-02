@@ -15,6 +15,8 @@ Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — main `6a59bdb` sau merge #22
 
 Đây là các phạm vi PR kế hoạch, chưa phải PR đã mở hoặc ngày phát hành cam kết. Gate chi tiết, CI đúng merge SHA và phần owner cần cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md). Không tự merge, không production/chi phí hoặc mở signup công khai. Giữ ưu tiên độ đúng dữ liệu và phục hồi trước mở thêm domain.
 
+PR5a2a hiện thực API standalone consent CAS, lifecycle và quyết định review bất biến theo [hợp đồng riêng](docs/ACTIVITY_LIFECYCLE_PR5A2A.md); chưa source/review UI hoặc rollout. Exact HEAD/CI ở PR, bước UI kế tiếp là Academy PR5a2b.
+
 ## Lịch sử roadmap V1–V5
 
 Các checklist dưới đây ghi trạng thái tại từng phiên bản, không phải trạng thái release hiện hành. Các mục chưa có evidence thiết bị thật/HLV vẫn cần nghiệm thu; không suy từ việc CI mới xanh.

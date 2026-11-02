@@ -93,10 +93,36 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       return {records:await own('records'),outbox:await own('outbox'),conflicts:await own('conflicts'),cursor:await request(tx.objectStore('sync_cursor').get([namespace,config.slot]))};
      });
     }
+    async function activityConsent(tx){
+     const saved=await request(tx.objectStore('metadata').get([namespace,'activity-consent-1']));
+     if(!saved)return {enabled:false,localRevision:'0'};
+     if(typeof saved.enabled!=='boolean'||!revision(saved.localRevision)||saved.localRevision==='0')fail('invalid_consent');
+     return {enabled:saved.enabled,localRevision:saved.localRevision};
+    }
+    async function requireActivityConsent(tx,expected){
+     if(guest||!revision(expected)||expected==='0')fail('consent_changed');
+     const consent=await activityConsent(tx);
+     if(!consent.enabled||consent.localRevision!==expected)fail('consent_changed');
+    }
+    async function activityReview(tx,kind,id){
+     identity(kind,id);if(guest||!EVENTS.has(kind))fail('invalid_review');
+     const record=await request(tx.objectStore('records').get([namespace,kind,id]));if(!record)fail('entity_not_found');
+     const own=async store=>(await request(tx.objectStore(store).index('namespace').getAll(namespace))).filter(row=>row.kind===kind&&row.id===id);
+     return {record,operations:(await own('outbox')).filter(op=>!['acked','resolved'].includes(op.state)),conflicts:(await own('conflicts')).filter(row=>row.state==='open'),cursor:await request(tx.objectStore('sync_cursor').get([namespace,ACTIVITY_POLICY])),consent:await activityConsent(tx)};
+    }
     const api={
      close(){active=false;for(const tx of transactions){try{tx.abort()}catch(_){}}scopes.delete(api)},
      getDomainSnapshot(){return domainSnapshot(DEFAULT_POLICY)},
      getActivitySnapshot(){return domainSnapshot(ACTIVITY_POLICY)},
+     getActivityConsent(){if(guest)fail('auth_required');return transaction(['metadata'],'readonly',activityConsent)},
+     setActivityConsent(enabled,expectedLocalRevision){
+      if(guest||typeof enabled!=='boolean'||!revision(expectedLocalRevision))fail('invalid_consent');
+      return transaction(['metadata'],'readwrite',async tx=>{
+       const prior=await activityConsent(tx);if(prior.localRevision!==expectedLocalRevision)fail('local_conflict');
+       const consent={enabled,localRevision:(BigInt(expectedLocalRevision)+1n).toString()};
+       await request(tx.objectStore('metadata').put({namespace,key:'activity-consent-1',...consent}));return consent;
+      });
+     },
      getDomainConsent(){return transaction(['metadata'],'readonly',async tx=>(await request(tx.objectStore('metadata').get([namespace,'preferences-checkins-consent-1'])))?.enabled===true)},
      getDomainTimezone(){return transaction(['metadata'],'readonly',async tx=>(await request(tx.objectStore('metadata').get([namespace,'checkin-timezone-1'])))?.value||null)},
      setDomainTimezone(value){if(guest||typeof value!=='string'||value.length>80)fail('invalid_timezone');return transaction(['metadata'],'readwrite',tx=>request(tx.objectStore('metadata').put({namespace,key:'checkin-timezone-1',value})))},
@@ -106,7 +132,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      },
      read(kind,id){identity(kind,id);return transaction(['records'],'readonly',tx=>request(tx.objectStore('records').get([namespace,kind,id])))},
      listOutbox(){return transaction(['outbox'],'readonly',tx=>request(tx.objectStore('outbox').index('namespace').getAll(namespace)))},
-     async write({kind,id,value,operationId,expectedLocalRevision='0',action='put'}){
+     async write({kind,id,value,operationId,expectedLocalRevision='0',action='put',activityConsentRevision=null}){
       identity(kind,id);
       if(!UUID.test(operationId)||!revision(expectedLocalRevision)||!['put','delete','restore'].includes(action))fail('invalid_operation');
       const snapshot=copy(value);
@@ -116,6 +142,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       if(action==='restore'&&EVENTS.has(kind))fail('append_only');
       if(action==='delete'&&canonical(snapshot)!=='{}'&&!(kind==='practice_checkins'&&Object.keys(snapshot).length===1&&typeof snapshot.timezone_at_entry==='string'&&snapshot.timezone_at_entry.length<=80))fail('invalid_payload');
       return transaction(['records','outbox','metadata'],'readwrite',async tx=>{
+       if(activityConsentRevision!==null){if(!EVENTS.has(kind))fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
        const records=tx.objectStore('records'),outbox=tx.objectStore('outbox'),metadata=tx.objectStore('metadata');
        const receiptKey=[namespace,'operation:'+operationId];
        const prior=await request(metadata.get(receiptKey));
@@ -134,10 +161,11 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        return {status:'saved_locally',localRevision};
       });
      },
-     claimSync({leaseOwner,epoch,now=Date.now(),forceRetry=false,policy=DEFAULT_POLICY}){
+     claimSync({leaseOwner,epoch,now=Date.now(),forceRetry=false,policy=DEFAULT_POLICY,activityConsentRevision=null}){
       const config=policyConfig(policy);
       if(guest||!UUID.test(leaseOwner)||!UUID.test(epoch)||!Number.isSafeInteger(now)||typeof forceRetry!=='boolean')fail('invalid_sync_operation');
       return transaction(syncStores,'readwrite',async tx=>{
+       if(activityConsentRevision!==null){if(policy!==ACTIVITY_POLICY)fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
        const lease=await request(tx.objectStore('metadata').get([namespace,config.lease])),cursor=await request(tx.objectStore('sync_cursor').get([namespace,config.slot]));
        if(lease?.owner!==leaseOwner||lease.until<=now)fail('lease_lost');if(cursor?.epoch!==epoch)fail('reset_required');
        const store=tx.objectStore('outbox'),all=await request(store.index('namespace').getAll(namespace)),byId=new Map(all.map(o=>[o.operationId,o]));
@@ -160,10 +188,11 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        }return paused||{status:'idle'};
       });
      },
-     completeSync(operationId,frozen,result,{policy=DEFAULT_POLICY}={}){
+     completeSync(operationId,frozen,result,{policy=DEFAULT_POLICY,activityConsentRevision=null}={}){
       const config=policyConfig(policy);
       if(guest||!UUID.test(operationId))fail('invalid_sync_operation');const body=copy(frozen),response=copy(result);canonical(response);
       return transaction(syncStores,'readwrite',async tx=>{
+       if(activityConsentRevision!==null){if(policy!==ACTIVITY_POLICY)fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
        const store=tx.objectStore('outbox'),op=await request(store.get([namespace,operationId]));
        if(!op||canonical(op.request)!==canonical(body))fail('operation_mismatch');
        syncIdentity(op,policy);
@@ -200,6 +229,37 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        return {conflict,record:await request(tx.objectStore('records').get([namespace,conflict.kind,conflict.id])),operations:(await request(tx.objectStore('outbox').index('namespace').getAll(namespace))).filter(o=>o.kind===conflict.kind&&o.id===conflict.id),cursor:await request(tx.objectStore('sync_cursor').get([namespace,config.slot]))};
       });
      },
+     inspectActivityReview(kind,id){return transaction(syncStores,'readonly',tx=>activityReview(tx,kind,id))},
+     resolveActivityReview({review,mode,operationId,acknowledgeEpochChange=false}){
+      if(guest||!UUID.test(operationId)||!['server','retry_create','retry_delete'].includes(mode)||typeof acknowledgeEpochChange!=='boolean')fail('invalid_resolution');
+      const preview=copy(review);if(!preview?.record||preview.record.namespace!==namespace)fail('invalid_review');
+      const signature=canonical({activityResolution:preview,mode,acknowledgeEpochChange});
+      if(new TextEncoder().encode(signature).length>4*1024*1024)fail('review_limit');
+      return transaction(syncStores,'readwrite',async tx=>{
+       await requireActivityConsent(tx,preview.consent?.localRevision);
+       const metadata=tx.objectStore('metadata'),receiptKey=[namespace,'operation:'+operationId],prior=await request(metadata.get(receiptKey));
+       if(prior){if(prior.signature!==signature)fail('operation_mismatch');return {...prior.result,status:'replayed'}}
+       const view=await activityReview(tx,preview.record.kind,preview.record.id);
+       if(canonical(view)!==canonical(preview))fail('local_conflict');
+       const {record:row,operations,conflicts,cursor}=view;
+       if(!cursor||!UUID.test(cursor.epoch)||!row.reviewRequired&&!conflicts.length&&!operations.some(op=>['blocked','conflict'].includes(op.state)))fail('review_not_required');
+       if(operations.some(op=>op.state==='sending'))fail('uncertain_operation');
+       if((row.reviewReason==='reset_required'||conflicts.some(c=>c.reason==='reset_required')||operations.some(op=>op.request&&op.request.p_epoch!==cursor.epoch))&&!acknowledgeEpochChange)fail('epoch_review_required');
+       const tail=operations.find(op=>op.operationId===row.tailOperationId);
+       if(mode!=='server'&&!tail)fail('invalid_resolution');
+       if(mode==='retry_create'&&(tail.action!=='put'||row.deleted||row.base!==null||row.baseRevision!=='0'||canonical(row.overlay)!==canonical(tail.payload)))fail('append_only');
+       if(mode==='retry_delete'&&(tail.action!=='delete'||!row.deleted||!row.base||row.base.deleted_at!==null))fail('invalid_resolution');
+       const store=tx.objectStore('outbox'),archive=tx.objectStore('conflicts');
+       if(await request(store.get([namespace,operationId]))||await request(archive.get([namespace,operationId])))fail('operation_mismatch');
+       const queued=mode!=='server',localRevision=(BigInt(row.localRevision)+1n).toString();
+       await request(archive.add({namespace,conflictId:operationId,kind:row.kind,id:row.id,state:'resolved',reason:row.reviewReason||conflicts[0]?.reason||'needs_review',resolution:{mode,operationId,epoch:cursor.epoch,revision:row.baseRevision,originalBase:row.reviewBase||conflicts[0]?.originalBase||null,local:copy(row.overlay),deleted:row.deleted,remote:copy(row.base),operations:copy(operations),consent:copy(view.consent)}}));
+       for(const old of operations)await request(store.put({...old,state:'resolved',resolutionId:operationId}));
+       for(const conflict of conflicts)await request(archive.put({...conflict,state:'resolved',resolutionId:operationId}));
+       if(queued)await request(store.add({namespace,operationId,kind:row.kind,id:row.id,action:mode==='retry_delete'?'delete':'put',payload:mode==='retry_delete'?{}:copy(tail.payload),baseSnapshot:copy(row.base),expectedRevision:row.baseRevision,dependsOn:null,state:'pending',protocol:1}));
+       await request(tx.objectStore('records').put({...row,localRevision,overlay:queued&&mode==='retry_create'?copy(tail.payload):null,deleted:queued?mode==='retry_delete':!!row.base?.deleted_at,tailOperationId:queued?operationId:null,reviewRequired:false,reviewBase:null,reviewReason:null}));
+       const result={status:'resolved',localRevision,operationId,queued};await request(metadata.add({namespace,key:receiptKey[1],signature,result}));await touchCursor(tx,ACTIVITY_POLICY);return result;
+      });
+     },
      resolveSyncConflict({conflictId,expectedLocalRevision,expectedRemoteRevision,epoch,mode,operationId,action='put',value={},acknowledgeEpochChange=false}){
       if(guest||!UUID.test(conflictId)||!revision(expectedLocalRevision)||!revision(expectedRemoteRevision)||!UUID.test(epoch)||!['server','local'].includes(mode)||!UUID.test(operationId)||!['put','delete','restore'].includes(action))fail('invalid_resolution');
       const snapshot=copy(value);if(!snapshot||Object.getPrototypeOf(snapshot)!==Object.prototype||new TextEncoder().encode(canonical(snapshot)).length>256*1024)fail('invalid_payload');
@@ -226,7 +286,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      getSyncCursor(policy=DEFAULT_POLICY){return transaction(['sync_cursor'],'readonly',tx=>request(tx.objectStore('sync_cursor').get([namespace,policyConfig(policy).slot])))},
      // PR4a commits a complete bounded pull cycle, never a partial bootstrap.
      // A reset replaces server bases only; pending requests/overlays survive.
-     async applyCanonicalSnapshot({rows,afterRevision,epoch,expectedLocalVersion='0',reset=false,policy=DEFAULT_POLICY}){
+     async applyCanonicalSnapshot({rows,afterRevision,epoch,expectedLocalVersion='0',reset=false,policy=DEFAULT_POLICY,activityConsentRevision=null}){
       const config=policyConfig(policy);
       if(guest)fail('auth_required');
       if(!Array.isArray(rows)||rows.length>10050||rows.length>0&&afterRevision==='0'||!revision(afterRevision)||BigInt(afterRevision)>9223372036854775807n||!revision(expectedLocalVersion)||typeof reset!=='boolean'||!(epoch===null||UUID.test(epoch))||afterRevision!=='0'&&epoch===null)fail('invalid_snapshot');
@@ -237,7 +297,8 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        const tag=item.kind+':'+item.id,row=item.row;
        if(unique.has(tag)||!row||row.user_id!==namespace.slice(5)||!revision(row.revision)||row.revision==='0'||BigInt(row.revision)>9223372036854775807n||!Object.hasOwn(row,'deleted_at')||!(row.deleted_at===null||typeof row.deleted_at==='string')||item.kind==='practice_checkins'&&row.local_date!==item.id||EVENTS.has(item.kind)&&row.id!==item.id)fail('invalid_snapshot');unique.add(tag);
       }
-      return transaction(['records','sync_cursor'],'readwrite',async tx=>{
+      return transaction(['records','sync_cursor',...(activityConsentRevision!==null?['metadata']:[])],'readwrite',async tx=>{
+       if(activityConsentRevision!==null){if(policy!==ACTIVITY_POLICY)fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
        const cursors=tx.objectStore('sync_cursor'),store=tx.objectStore('records'),prior=await request(cursors.get([namespace,config.slot]));
        if((prior?.localVersion||'0')!==expectedLocalVersion)fail('cursor_conflict');
        if(!reset&&prior&&(prior.policy!==policy||prior.epoch!==epoch||BigInt(afterRevision)<BigInt(prior.afterRevision)))fail('reset_required');
@@ -295,7 +356,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
     };
     scopes.add(api);return api;
    }
-   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY])});
+   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY]),activityLifecycle:1});
   };
  });
 }
