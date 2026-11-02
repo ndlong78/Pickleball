@@ -22,7 +22,9 @@ function create({auth,repository,core=root.PickleUpActivityCore,pullFactory=root
   const snapshot=await own.getActivitySnapshot();guard(stamp);
   const current=await own.getActivityConsent();guard(stamp);
   if(!current.enabled||current.localRevision!==consent.localRevision)fail('consent_changed');
-  const projection=core.project(snapshot,{owner,now:now()});
+  let projection;
+  try{projection=core.project(snapshot,{owner,now:now()})}
+  catch(error){if(stamp===generation&&!closed){stop();state={...blank('error',owner),error:error.code||'invalid_activity'};emit()}throw error}
   state={...state,snapshot,projection};emit();return snapshot;
  }
  async function adopt(next){

@@ -139,3 +139,11 @@ test('export refuses credential-shaped fields in corrupted cache instead of seri
   const repository={...f.db,scope(namespace){const own=f.db.scope(namespace),read=own.getActivitySnapshot;own.getActivitySnapshot=async()=>({...await read(),access_token:'synthetic-forbidden-field'});return own}},c=f.make({repository});await c.ready;await assert.rejects(c.exportCache(),{code:'credentials_forbidden'});
  }finally{f.close()}
 });
+test('cache corruption discovered after a local save blocks edits while retaining the committed valid intent',async()=>{
+ const f=await fixture(),c=f.make(),bad=command(),good=command('match_records');try{
+  await c.ready;await c.useAccount();const cursor=await f.scope.getSyncCursor(POLICY),row={...core.payload(bad.kind,bad.value),id:bad.id,user_id:A,source_kind:'manual',revision:'1',created_at:'2026-01-01T10:00:00Z',updated_at:'2026-01-01T10:00:00Z',deleted_at:null,score:21};
+  await f.scope.applyCanonicalSnapshot({rows:[{kind:bad.kind,id:bad.id,row}],afterRevision:'1',epoch:cursor.epoch,policy:POLICY,expectedLocalVersion:cursor.localVersion});
+  await assert.rejects(c.createEvent(good),{code:'invalid_activity'});assert.equal(c.getState().mode,'error');assert.equal(c.getState().snapshot,null);await assert.rejects(c.createEvent(command()),{code:'source_unavailable'});
+  const cache=await c.exportCache();assert.equal(cache.records.length,2);assert.equal(cache.outbox.length,1);assert.equal(cache.outbox[0].operationId,good.operationId);assert.equal(cache.outbox[0].state,'pending');assert.equal(cache.outbox[0].payload.client_event_id,good.value.client_event_id);
+ }finally{f.close()}
+});
