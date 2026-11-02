@@ -6,8 +6,8 @@ const byId=id=>document.getElementById(id),level=byId("aiLevel"),skill=byId("aiS
 if(!core||!historyCore||!level||!skill||!lesson)return;
 const historyKey="pickleup_academy_history_v44",scoresKey="pickleup_academy_v2";
 function load(){
- let scores={};try{const v=JSON.parse(localStorage.getItem(scoresKey)||"{}");if(v&&typeof v==="object"&&!Array.isArray(v))scores=v}catch(_){}
- let history=[];try{history=historyCore.readHistory(localStorage.getItem(historyKey))}catch(_){}
+ let scores={};try{const v=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(scoresKey):localStorage.getItem(scoresKey))||"{}");if(v&&typeof v==="object"&&!Array.isArray(v))scores=v}catch(_){}
+ let history=[];try{history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore.readHistory(localStorage.getItem(historyKey))}catch(_){}
  return {scores,history};
 }
 function element(tag,cls,value){
@@ -48,7 +48,7 @@ function draw(values=load()){
  byId("aiDelta").textContent=result.delta===null?"Chưa đủ dữ liệu":(result.delta>0?"+":"")+result.delta+" điểm";
  byId("aiStatus").textContent=result.status;
  byId("aiAdvice").textContent=result.advice;
- byId("aiChartSummary").textContent=result.lesson
+ byId("aiChartSummary").textContent=result.account?'Kho tài khoản: '+result.lessonCount+' lượt của bài đã chọn; '+result.comparableCount+' lượt trong nhóm so sánh hiện tại. Biểu đồ chỉ dùng cùng nội dung và điều kiện, hoặc một mốc đơn khi chưa rõ điều kiện.'+(result.currentContent?'':' Nội dung nhóm lịch sử này chưa xác nhận khớp giáo án hiện tại.'):result.lesson
   ?"Đang xem "+result.lessonCount+" lượt của riêng tuần "+result.lesson.week+" · "+result.lesson.title+
    ". Biểu đồ tối đa 12 lượt; biến động dựa trên tối đa 6 lượt gần nhất cùng giáo án."
   :"Chưa có điểm ở kỹ năng và cấp độ đã chọn.";
@@ -79,5 +79,6 @@ byId("aiOpenLesson").addEventListener("click",()=>{
 });
 window.addEventListener("storage",event=>{if([historyKey,scoresKey].includes(event.key))chooseSkill(true)});
 document.addEventListener("pickleup:score-saved",()=>chooseSkill(true));
+document.addEventListener("pickleup:activity-data",()=>chooseSkill(true));
 chooseSkill(false);
 })();

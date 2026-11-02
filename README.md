@@ -4,16 +4,16 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 ## Trạng thái hiện tại — 02/11/2026
 
-**V5.5.0**, main `6a59bdb` sau merge [PR #22](https://github.com/ndlong78/Pickleball/pull/22). Xem [tiến độ, bằng chứng CI/Pages và kế hoạch V6](docs/V6_PROGRESS_REVIEW.md) hoặc [roadmap hiện hành](ROADMAP.md).
+**V5.6.0 — PR5a2b đang review**, trên nền main `afc50d4` sau [PR #24](https://github.com/ndlong78/Pickleball/pull/24), app main5.5.0. Xem [hợp đồng Học viện tài khoản](docs/ACADEMY_ACCOUNT_PR5A2B.md), [tiến độ và CI baseline](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md). Chưa tuyên bố merge/Pages5.6.0.
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám trang, 80 bài hiện có ở 1.0–4.0. Nội dung đến 5.0 vẫn là định hướng.
-- Chế độ khách là mặc định. Mã Auth OTP, importer và UI sync mục tiêu/check-in đã merge nhưng **các flag đều tắt**; chưa mở cloud pilot/đăng ký công khai. Đăng nhập không tự nhập hoặc đồng bộ dữ liệu thiết bị.
-- #22 mới thêm nền đồng bộ bốn loại sự kiện, chưa nối UI điểm/đánh giá/nhật ký/trận đấu. Chưa hoàn tất backup V6 có thể nhập lại, purge/xóa account hoặc vận hành backup/restore.
-- Trước xóa trình duyệt/chuyển máy: giữ backup V5 và raw rescue ngoài browser. Export cache tài khoản hiện chỉ mục tiêu/check-in, **chưa phải backup toàn tài khoản**.
+- Chế độ khách là mặc định. Auth OTP/importer/mutable sync đã merge; PR5a2b nối Academy account opt-in nhưng **cả bốn flag vẫn tắt**. Chưa cloud pilot/đăng ký công khai; login không tự nhập hoặc đồng bộ dữ liệu thiết bị.
+- Academy account có UI save/delete/history/review; đánh giá/nhật ký/trận đấu/giáo án vẫn đọc ghi thiết bị. Chưa hoàn tất full V6 backup round-trip, purge/xóa account hoặc vận hành backup/restore.
+- Trước xóa trình duyệt/chuyển máy: giữ backup V5 và raw rescue ngoài browser. Export cache tài khoản gồm hai tệp riêng: mục tiêu/check-in và bốn loại hoạt động; **chưa hỗ trợ nhập lại và chưa phải backup toàn tài khoản**.
 
 Các mục phiên bản bên dưới là lịch sử tính năng tại thời điểm triển khai; trạng thái phát hành và bước tiếp theo dùng bản rà soát ở trên.
 
-PR5a2a bổ sung [API consent/lifecycle/review sự kiện](docs/ACTIVITY_LIFECYCLE_PR5A2A.md) standalone, chưa UI hoặc rollout. Bước kế tiếp là Academy PR5a2b; mọi flag vẫn tắt.
+PR5a2a đã merge #24; [PR5a2b](docs/ACADEMY_ACCOUNT_PR5A2B.md) nối API vào Academy và panel hoạt động. Bước tiếp theo là đánh giá/trận đấu PR5a2c; giữ pilot gates đóng.
 
 ## Phiên bản 1.1
 

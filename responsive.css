@@ -240,3 +240,10 @@ button[aria-label="Cài ứng dụng PickleUp"]{
 #importPilot fieldset{min-inline-size:0;max-inline-size:100%}
 #importPilot legend{max-inline-size:100%;white-space:normal}
 #importPilot button,#importPilot input,#importPilot select{max-inline-size:100%}
+/* Account Academy keeps long lesson snapshots and controls within the viewport. */
+#academyConditions{min-inline-size:0;margin-block:16px;padding:12px;border:1px solid #b4cab1;border-radius:10px}
+#academyConditions legend{max-inline-size:100%;white-space:normal}
+.activity-attempt-list{padding-inline-start:24px}
+.activity-attempt-list li{padding-block:12px;border-bottom:1px solid #cbd8c9;min-width:0}
+.activity-attempt-list p,#activityPilot p,#activityPilot label{overflow-wrap:anywhere}
+.activity-attempt-list button,#activityPilot button{min-height:44px;max-width:100%;white-space:normal}

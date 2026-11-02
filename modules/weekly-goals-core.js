@@ -80,12 +80,12 @@ function recommend(lessons,academyRecords,academyHistory,level){
   if(r&&isScore(r.score)&&isDate(r.date))grouped.get(x.id).push({id:x.id,skill:x.skill,level:x.level,score:r.score,date:r.date});
  }
  for(const rows of grouped.values())rows.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
- const repeated=available.map(x=>({lesson:x,rows:grouped.get(x.id)})).filter(x=>x.rows.length>=2);
+ const repeated=available.map(x=>{const rows=grouped.get(x.id),last=rows.at(-1);return {lesson:x,rows:last?.account?(last.comparisonKey?rows.filter(a=>a.account&&a.comparisonKey===last.comparisonKey):[last]):rows}}).filter(x=>x.rows.length>=2);
  const declining=repeated.filter(x=>x.rows.at(-1).score-x.rows.at(-2).score<=-3)
   .sort((a,b)=>Date.parse(b.rows.at(-1).date)-Date.parse(a.rows.at(-1).date)||a.lesson.week-b.lesson.week);
  if(declining.length)return {lesson:declining[0].lesson,code:"decline",reason:"Kết quả 2 lần gần nhất của cùng giáo án giảm ít nhất 3/20. Nên ôn kỹ thuật với điều kiện kiểm tra tương tự."};
  const below=available.map(x=>({lesson:x,rows:grouped.get(x.id)}))
-  .filter(x=>x.rows.length&&isScore(x.lesson.assessment?.target)&&x.rows.at(-1).score<x.lesson.assessment.target)
+  .filter(x=>x.rows.length&&(!x.rows.at(-1).account||x.rows.at(-1).currentContent===true)&&isScore(x.lesson.assessment?.target)&&x.rows.at(-1).score<x.lesson.assessment.target)
   .sort((a,b)=>Date.parse(b.rows.at(-1).date)-Date.parse(a.rows.at(-1).date)||a.lesson.week-b.lesson.week);
  if(below.length)return {lesson:below[0].lesson,code:"target",reason:"Lần kiểm tra gần nhất chưa đạt mục tiêu tham khảo của chính giáo án này. Hãy tập lại trước khi tăng độ khó."};
  const next=available.find(x=>grouped.get(x.id).length===0);

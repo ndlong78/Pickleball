@@ -3,16 +3,18 @@
  * Scripts are inserted in dependency order, with page-specific CSS loaded on demand. */
 (function(root){
 "use strict";
-const DOMAIN_FILES=["modules/auth-config.js","modules/auth-adapter.js","modules/data/sync-config.js","modules/data/local-repository.js","modules/data/pull-controller.js","modules/data/sync-controller.js","modules/data/domain-core.js","modules/data/domain-controller.js","modules/data/domain-runtime.js"];
+const ACCOUNT_FILES=["modules/auth-config.js","modules/auth-adapter.js","modules/data/local-repository.js","modules/data/pull-controller.js","modules/data/sync-controller.js"];
+const DOMAIN_FILES=["modules/data/sync-config.js","modules/data/domain-core.js","modules/data/domain-controller.js","modules/data/domain-runtime.js"];
+const ACTIVITY_FILES=["modules/data/activity-config.js","modules/data/activity-core.js","modules/data/activity-controller.js","modules/data/academy-source-core.js","curriculum.js","advanced-curriculum.js","modules/data/activity-runtime.js"];
 const PAGE_FILES={
  home:["modules/weekly-practice.js"],
- journey:[...DOMAIN_FILES,"curriculum.js","modules/academy-trends-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","training-log-core.js","modules/training-journey-core.js","modules/training-journey-ui.js"],
- coach:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
+ journey:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,"modules/academy-trends-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","training-log-core.js","modules/training-journey-core.js","modules/training-journey-ui.js"],
+ coach:[...ACCOUNT_FILES,...ACTIVITY_FILES,"modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
  court:["modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","personalized-core.js","practice-conditions.js","training-log-core.js","practice-clock.js","practice-diagrams.js","advanced-diagrams.js","advanced-coach-core.js","practice-runner.js"],
- academy:["curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/academy-page.js"],
- progress:[...DOMAIN_FILES,"modules/weekly-practice.js","curriculum.js","advanced-curriculum.js","modules/academy-trends-core.js","modules/academy-insights-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/plan-reality-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","modules/academy-insights-ui.js","modules/weekly-goals-ui.js","modules/weekly-plan-ui.js","modules/weekly-checkins-ui.js","modules/plan-reality-ui.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
+ academy:[...ACCOUNT_FILES,...ACTIVITY_FILES,"modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/academy-page.js"],
+ progress:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,"modules/weekly-practice.js","modules/academy-trends-core.js","modules/academy-insights-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/plan-reality-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","modules/academy-insights-ui.js","modules/weekly-goals-ui.js","modules/weekly-plan-ui.js","modules/weekly-checkins-ui.js","modules/plan-reality-ui.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
  matches:["curriculum.js","advanced-curriculum.js","practice-conditions.js","advanced-coach-core.js","tactical-insights-core.js","match-journal.js","tactical-insights-ui.js"],
- settings:[...DOMAIN_FILES,"modules/data/rescue-core.js","modules/data/rescue-ui.js","modules/auth-ui.js","modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/page-performance.js","modules/data/import-config.js","modules/data/import-core.js","modules/data/import-controller.js","modules/data/import-ui.js","modules/data/sync-ui.js"]
+ settings:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,"modules/data/rescue-core.js","modules/data/rescue-ui.js","modules/auth-ui.js","modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/page-performance.js","modules/data/import-config.js","modules/data/import-core.js","modules/data/import-controller.js","modules/data/import-ui.js","modules/data/sync-ui.js","modules/data/activity-ui.js"]
 };
 const PAGE_STYLES={
  coach:["advanced.css"],
@@ -124,7 +126,7 @@ function ensure(page){
   const css=styles.map(loadStyle);
   const fragment=await ensureMarkup(page);
   let scripts=0;
-  for(const file of files){if(await loadScript(file))scripts++;if(file==="modules/data/domain-runtime.js")await root.PICKLEUP_DATA?.ready;}
+  for(const file of files){if(await loadScript(file))scripts++;if(file==="modules/data/domain-runtime.js")await root.PICKLEUP_DATA?.ready;if(file==="modules/data/activity-runtime.js")await root.PICKLEUP_ACTIVITY?.ready;}
   await Promise.all(css);
   // Coach may dispatch plan-selected before the on-court module exists.
   // Replay the latest selection after its event listener is installed.

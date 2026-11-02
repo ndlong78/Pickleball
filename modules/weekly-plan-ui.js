@@ -6,7 +6,7 @@ const historyCore=window.PICKLEUP_ACADEMY_TRENDS,logCore=window.PICKLEUP_TRAININ
 const lessons=window.PICKLEUP_CURRICULUM||[],el=id=>document.getElementById(id);
 if(!planner||!goals||!el("wpMinutes"))return;
 const minutes=el("wpMinutes"),gentle=el("wpGentle"),data=window.PICKLEUP_DATA;
-const raw=key=>data?data.raw(key):localStorage.getItem(key);
+const raw=key=>data?data.raw(key):(window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):localStorage.getItem(key));
 let editRevision='0',sourceTag='',dirty=false;
 for(const input of [minutes,gentle])input.addEventListener('change',()=>{dirty=true});
 function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.mode:'guest';
@@ -16,7 +16,7 @@ function hydrate(){const state=data?.getView(),tag=state?state.owner+':'+state.m
  for(const id of ['wpMinutes','wpGentle','wpSave'])el(id).disabled=data?!data.canWrite('user_preferences','self'):false;
 }
 function json(key,fallback){
- try{const v=JSON.parse(localStorage.getItem(key)||"null");return v===null?fallback:v}catch(_){return fallback}
+ try{const v=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):localStorage.getItem(key))||"null");return v===null?fallback:v}catch(_){return fallback}
 }
 function storedPlan(){try{return planner.readSettings(raw(planner.KEY))}catch(_){return {...planner.DEFAULT}}}
 function storedGoal(){try{return goals.readSettings(raw(goals.KEY))}catch(_){return {...goals.DEFAULT}}}
@@ -24,7 +24,7 @@ function textNode(tag,cl,value){const n=document.createElement(tag);if(cl)n.clas
 function draw(){
  const config=storedPlan(),target=storedGoal();
  const records=json("pickleup_academy_v2",{});
- const history=historyCore?.readHistory(JSON.stringify(json("pickleup_academy_history_v44",[])))||[];
+ const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore?.readHistory(JSON.stringify(json("pickleup_academy_history_v44",[])))||[];
  const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
  const week=planner.buildWeek(lessons,records,history,log,target,config);
  el("wpSummary").textContent="Tuần "+week.start+" đến "+week.end+" · "+week.scheduled+" ngày tập đề xuất, "+week.rest+" ngày hồi phục · "+week.totalMinutes+" phút dự kiến. Cấp độ: "+week.level+".";
@@ -70,6 +70,7 @@ el("wpDays").addEventListener("click",event=>{
  const a=event.target.closest?.("a[data-lesson-id]");if(!a)return;
  try{localStorage.setItem("pickleup_academy_last_lesson_v4",a.dataset.lessonId)}catch(_){}
 });
+document.addEventListener("pickleup:activity-data",draw);
 document.addEventListener("pickleup:score-saved",draw);
 document.addEventListener("pickleup:training-log-updated",draw);
 document.addEventListener("pickleup:weekly-goal-saved",draw);

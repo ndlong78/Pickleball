@@ -7,13 +7,13 @@ const historyCore=window.PICKLEUP_ACADEMY_TRENDS,logCore=window.PICKLEUP_TRAININ
 const byId=id=>document.getElementById(id);
 if(!reality||!checkins||!planner||!goals||!byId("prWeeks"))return;
 const source=window.PICKLEUP_DATA;
-function json(key,fallback){try{const x=JSON.parse((source?source.raw(key):localStorage.getItem(key))||"null");return x===null?fallback:x}catch(_){return fallback}}
+function json(key,fallback){try{const x=JSON.parse((["pickleup_academy_v2","pickleup_academy_history_v44"].includes(key)&&window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):source?source.raw(key):localStorage.getItem(key))||"null");return x===null?fallback:x}catch(_){return fallback}}
 function node(tag,cls,value){const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=String(value);return e}
 function redraw(){
  const settings=goals.readSettings(JSON.stringify(json(goals.KEY,null)));
  const prefs=planner.readSettings(JSON.stringify(json(planner.KEY,null)));
  const records=json("pickleup_academy_v2",{});
- const history=historyCore?.readHistory(JSON.stringify(json("pickleup_academy_history_v44",[])))||[];
+ const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore?.readHistory(JSON.stringify(json("pickleup_academy_history_v44",[])))||[];
  const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
  const week=planner.buildWeek(window.PICKLEUP_CURRICULUM||[],records,history,log,settings,prefs);
  const actual=checkins.read(JSON.stringify(json(checkins.KEY,null)));
@@ -53,5 +53,6 @@ window.addEventListener("storage",event=>{
  if([goals.KEY,planner.KEY,checkins.KEY,"pickleup_academy_history_v44","pickleup_academy_v2","pickleup_training_log_v26"].includes(event.key))redraw();
 });
 document.addEventListener("pickleup:domain-data",redraw);
+document.addEventListener("pickleup:activity-data",redraw);
 redraw();
 })();

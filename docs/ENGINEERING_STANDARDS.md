@@ -90,3 +90,5 @@ Trước sửa: đọc route, module core/UI, storage keys, tests và các tài 
 Mọi tối ưu hoặc refactor đều cần kiểm tra regression ở tám trang hiện có và báo rõ đo lường/ảnh hưởng. Luôn ưu tiên an toàn và hồi phục thay vì thúc đẩy người dùng tập quá sức.
 
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
+
+[PR5a2b](ACADEMY_ACCOUNT_PR5A2B.md) nối `activity-runtime`/`academy-source-core`/`activity-ui` với flag riêng; mọi reader Academy dùng facade đồng bộ, backup/importer vẫn đọc raw guest. Build/assets/cache5.6.0; không SQL/RLS/schema thay đổi. Home không nạp account modules; đủ80 bài trước source projection. Unknown content/conditions không comparable, Coach không auto-copy private points vào plans legacy; không tự RPC khi login/reload.

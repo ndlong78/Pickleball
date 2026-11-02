@@ -27,6 +27,11 @@ function recommend(lessons,records,history,level){
   .map(x=>({id:x.id,skill:x.skill,level:x.level,score:records[x.id].score,date:records[x.id].date||"1970-01-01T00:00:00.000Z"}));
  const attempts=valid.concat(legacy).map((a,i)=>({...a,order:i})).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)||a.order-b.order);
  if(!attempts.length)return {lesson:available[0],reason:"Chưa có điểm kiểm tra ở cấp độ này. Hãy bắt đầu để tạo mốc theo dõi.",trend:"Chưa đủ dữ liệu xu hướng."};
+ if(attempts.some(a=>a.account)){
+  const groups=new Map();for(const a of attempts){const group=groups.get(a.id)||[];group.push(a);groups.set(a.id,group)}
+  const ranked=[...groups.values()].sort((a,b)=>a.at(-1).score-b.at(-1).score),group=ranked[0],last=group.at(-1),same=last.comparisonKey?group.filter(a=>a.account&&a.comparisonKey===last.comparisonKey).slice(-3):[last],delta=same.length>=2?last.score-same[0].score:null;
+  return {lesson:available.find(x=>x.id===last.id),reason:'Ôn lại bài có điểm gần nhất '+last.score+'/20. Không dùng trung bình các bài khác nhau để kết luận tiến bộ.',trend:delta===null?'Chưa đủ lượt cùng bài, phiên bản nội dung và điều kiện được ghi rõ để tính xu hướng.':'Cùng bài và điều kiện: '+(delta>0?'tăng '+delta:delta<0?'giảm '+Math.abs(delta):'không đổi')+' điểm qua '+same.length+' lượt.'};
+ }
  const skills=[...new Set(attempts.map(a=>a.skill))].map(skill=>{
   const recent=attempts.filter(a=>a.skill===skill).slice(-3);
   const average=recent.reduce((sum,a)=>sum+a.score,0)/recent.length;
