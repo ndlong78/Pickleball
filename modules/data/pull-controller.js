@@ -8,9 +8,10 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 const decimal=value=>typeof value==='string'&&/^(0|[1-9][0-9]{0,18})$/.test(value)&&BigInt(value)<=9223372036854775807n;
 class PullError extends Error{constructor(code){super(code);this.name='PullError';this.code=code}}
 const fail=code=>{throw new PullError(code)};
-function create({auth,repository,owner,enabled=()=>false,pageSize=50,maxPages=201,maxBytes=16*1024*1024,policy='preferences-checkins-1',activityCore=root.PickleUpActivityCore}){
+function create({auth,repository,owner,enabled=()=>false,pageSize=50,maxPages=201,maxBytes=16*1024*1024,policy='preferences-checkins-1',activityCore=root.PickleUpActivityCore,activityConsentRevision=null}){
  const events=policy==='activity-events-1',cached=events?new Set(['academy_attempts','skill_assessments','training_entries','match_records']):CACHED;
- if(events&&!repository.policies?.includes(policy))fail('upgrade_required');
+ if(events&&!repository.policies?.includes(policy)||activityConsentRevision!==null&&repository.activityLifecycle!==1)fail('upgrade_required');
+ if(activityConsentRevision!==null&&(!events||!decimal(activityConsentRevision)||activityConsentRevision==='0'))fail('invalid_options');
  if(!['preferences-checkins-1','activity-events-1'].includes(policy)||events&&(!activityCore||typeof auth.eventRpc!=='function'))fail('invalid_options');
  if(typeof enabled!=='function'||!UUID.test(owner)||!Number.isInteger(pageSize)||pageSize<1||pageSize>200||!Number.isInteger(maxPages)||maxPages<1||maxPages>201||!Number.isInteger(maxBytes)||maxBytes<1||maxBytes>16*1024*1024)fail('invalid_options');
  const scope=repository.scope('user:'+owner);let active=true,busy=false;
@@ -48,12 +49,12 @@ function create({auth,repository,owner,enabled=()=>false,pageSize=50,maxPages=20
     try{result=await fetchCycle(reset?{afterRevision:'0',epoch:null}:cursor||{afterRevision:'0',epoch:null})}
     catch(error){if(error.code!=='reset_required'||reset)throw error;guard();reset=true;result=await fetchCycle({afterRevision:'0',epoch:null})}
     guard();if(cursor&&cursor.epoch!==result.epoch)reset=true;
-    const saved=await scope.applyCanonicalSnapshot({...result,reset,policy,expectedLocalVersion:cursor?.localVersion||'0'});guard();
+    const saved=await scope.applyCanonicalSnapshot({...result,reset,policy,activityConsentRevision,expectedLocalVersion:cursor?.localVersion||'0'});guard();
     return {status:'updated',cursor:saved,reset,records:result.rows.length};
    }finally{busy=false}
   },
   close(){active=false;unsubscribe();scope.close()}
  };
 }
-const api={create,PullError,POLICIES:Object.freeze(['preferences-checkins-1','activity-events-1'])};if(typeof module!=='undefined')module.exports=api;else root.PickleUpPullController=api;
+const api={create,PullError,ACTIVITY_LIFECYCLE:1,POLICIES:Object.freeze(['preferences-checkins-1','activity-events-1'])};if(typeof module!=='undefined')module.exports=api;else root.PickleUpPullController=api;
 })(typeof window==='undefined'?globalThis:window);

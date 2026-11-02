@@ -72,6 +72,7 @@ Các tên file dự kiến trong PR0 đã được cụ thể hóa như sau; kh�
 | `modules/data/pull-controller.js`, `sync-controller.js` | Canonical pull, epoch-fenced sender và conflict lifecycle theo policy |
 | `modules/data/domain-core.js`, `domain-controller.js`, `domain-runtime.js`, `sync-ui.js`, `sync-config.js` | Nguồn và UI opt-in preferences/check-ins, default guest |
 | `modules/data/activity-core.js` | Typed event projection standalone PR5a1; chưa page-loader/runtime/UI |
+| `modules/data/activity-controller.js` | Consent/lifecycle/review standalone [PR5a2a](ACTIVITY_LIFECYCLE_PR5A2A.md); chưa source UI |
 
 Feature flag chọn **một nguồn chuẩn cho mỗi domain/namespace**; domain chưa chuyển tiếp tục dùng V5, domain đã chuyển đọc IDB. Adapter projection giữ shape core cũ và cửa sổ hiển thị, không cắt lịch sử server. Không mirror account vào khóa V5 không có namespace. Consent PR4c không cấp quyền gửi events; policy cursor/lease PR5a1 độc lập.
 

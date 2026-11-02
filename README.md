@@ -13,6 +13,8 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 Các mục phiên bản bên dưới là lịch sử tính năng tại thời điểm triển khai; trạng thái phát hành và bước tiếp theo dùng bản rà soát ở trên.
 
+PR5a2a bổ sung [API consent/lifecycle/review sự kiện](docs/ACTIVITY_LIFECYCLE_PR5A2A.md) standalone, chưa UI hoặc rollout. Bước kế tiếp là Academy PR5a2b; mọi flag vẫn tắt.
+
 ## Phiên bản 1.1
 
 - Sáu giáo án mẫu 60 phút với ba bài tập mỗi tuần, đồng hồ, lưu kết quả (giữ tương thích dữ liệu cũ).

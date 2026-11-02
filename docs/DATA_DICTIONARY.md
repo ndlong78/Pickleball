@@ -87,6 +87,8 @@ Schema1 đã tạo tám stores bên dưới. Đây là mô hình logic; key/API 
 
 DB namespace là cách ly ứng dụng, không phải mã hóa chống người dùng cùng browser/OS. Quyền và hạn chế ở [THREAT_MODEL](THREAT_MODEL.md). Không lưu auth secret trong các backup/outbox/raw snapshots; legacy snapshot chỉ allowlist app keys + unknown prefix đã được preview.
 
+[PR5a2a](ACTIVITY_LIFECYCLE_PR5A2A.md) thêm metadata `activity-consent-1` với enabled/localRevision theo user, không upgrade schema1. Decision archive và receipt dùng stores conflicts/metadata hiện hữu; giữ nguyên requests cũ, không GC. Export activity riêng chưa round-trip, không thuộc backup V5 hoặc export hai mutable domains.
+
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
 
 PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).
