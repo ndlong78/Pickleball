@@ -175,6 +175,7 @@ document.addEventListener("pickleup:plan-selected",event=>{
  const selected=plansSource?.isAccount()?{source:plansSource.selected()?.version==="3.1"?"advanced":"basic",id:plansSource.selected()?.id}:read(selectionKey,null),plans=history(),saved=selected?.source==="advanced"?plans.find(p=>p.id===selected.id):null;
  if(saved)select(saved,true);else planCard($("acCoachPlan"),null,false);
  showHistory();controls();
+ document.addEventListener('pickleup:plan-score-request',event=>{if(event.detail?.version!=='3.1')return;const target=history().find(p=>p.id===event.detail.id);if(target){resultDirty=false;select(target,true);controls()}});
  let planToken=plansSource?.token();document.addEventListener("pickleup:plan-data",()=>{const next=plansSource?.token();sourceUpdate(next!==planToken);planToken=next});
  let activityToken=window.PICKLEUP_ACTIVITY?.token();document.addEventListener("pickleup:activity-data",()=>{const next=window.PICKLEUP_ACTIVITY?.token();if(next!==activityToken){activityToken=next;populate();focus.value="";$("acCoachFocusStatus").textContent="Chỉ áp dụng khi bạn chủ động chọn kỹ năng.";$("acCoachMatchSuggestion").textContent="Chưa có gợi ý trong nguồn dữ liệu này.";status("")}});
 });

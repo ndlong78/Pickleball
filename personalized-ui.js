@@ -163,7 +163,8 @@ function sourceUpdate(changed){
  });
  $("pcComplete").addEventListener("click",complete);
  $("pcPostScore").addEventListener("input",()=>{if(!resultDirty)editRevision=current?._localRevision;resultDirty=true});
- const saved=history();render(saved[saved.length-1]||null);renderHistory();controls();
+ const saved=history();render((plansSource?.isAccount()?saved.find(p=>p.id===plansSource.selected()?.id):null)||saved[saved.length-1]||null);renderHistory();controls();
+ document.addEventListener('pickleup:plan-score-request',event=>{if(event.detail?.version!=='2.4')return;const target=history().find(p=>p.id===event.detail.id);if(target){resultDirty=false;render(target);controls()}});
  let planToken=plansSource?.token();document.addEventListener("pickleup:plan-data",()=>{const next=plansSource?.token();sourceUpdate(next!==planToken);planToken=next});
  let activityToken=window.PICKLEUP_ACTIVITY?.token();document.addEventListener("pickleup:activity-data",()=>{const next=window.PICKLEUP_ACTIVITY?.token();if(next!==activityToken){activityToken=next;fill();setStatus("")}});
  window.addEventListener("storage",event=>{if([storageKey,"pickleup_stage_checks_v23","pickleup_academy_v2"].includes(event.key))renderHistory()});

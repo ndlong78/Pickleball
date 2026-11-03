@@ -20,7 +20,7 @@ function phaseInfo(index){
  return {name:step.title+" · "+(window.PICKLEUP_ADVANCED_COACH?.names[c.skill]||window.PICKLEUP_PERSONAL_CORE?.names[c.skill]||c.skill),minutes:6,info:"Thực hiện 20 lượt kiểm tra kỹ năng ưu tiên số một. Mốc trước tập "+c.baseline+"/20, mục tiêu tham khảo "+c.target+"/20. Chỉ tính lượt hợp lệ đúng mục tiêu.",skill:c.skill,exercise:plan.exercises[0]};
 }
 function loadPlan(p){
- if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;renderedDrillKey=null;render();return}
+ if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;renderedDrillKey=null;wakeWanted=false;wakeLock?.release().catch(()=>{});wakeLock=null;if($("pcWakeToggle"))$("pcWakeToggle").checked=false;render();return}
  const old=plansSource?.isAccount()?null:read(storageKey,null),changing=plan?.id!==p.id;
  plan=p;if(changing){state=clock.readStored(old,plan.id);lastExpired=-1}
  render();
@@ -96,6 +96,7 @@ function saveAttempt(){
  }catch(e){message("Không thể lưu lần tập: "+e.message)}
 }
 async function toggleWake(){
+ const sourceStamp=plansSource?.token();
  if(!("wakeLock" in navigator)){
   $("pcWakeToggle").checked=false;
   message("Trình duyệt này chưa hỗ trợ giữ màn hình sáng. Hãy điều chỉnh thời gian khóa màn hình trên điện thoại.");
@@ -104,10 +105,11 @@ async function toggleWake(){
  wakeWanted=$("pcWakeToggle").checked;
  if(!wakeWanted){try{if(wakeLock)await wakeLock.release()}catch(_){}wakeLock=null;return}
  try{
-  wakeLock=await navigator.wakeLock.request("screen");
-  wakeLock.addEventListener?.("release",()=>{wakeLock=null});
+  const acquired=await navigator.wakeLock.request("screen");
+  if(sourceStamp!==plansSource?.token()||!wakeWanted){await acquired.release();return}
+  wakeLock=acquired;wakeLock.addEventListener?.("release",()=>{if(wakeLock===acquired)wakeLock=null});
   message("Đã yêu cầu giữ màn hình sáng. Tính năng có thể tự ngắt khi khóa màn hình hoặc tiết kiệm pin.");
- }catch(e){wakeWanted=false;$("pcWakeToggle").checked=false;message("Không bật được giữ màn hình sáng trên thiết bị này.")}
+ }catch(e){if(sourceStamp!==plansSource?.token())return;wakeWanted=false;$("pcWakeToggle").checked=false;message("Không bật được giữ màn hình sáng trên thiết bị này.")}
 }
 function pulse(){
  if(!state||!state.running)return;
@@ -146,7 +148,7 @@ document.addEventListener("pickleup:plan-selected",event=>loadPlan(plansSource?.
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
  $("pcRunReset").addEventListener("click",reset);
- $("pcRunScore").addEventListener("click",()=>{if(plan?.version==="3.1"){window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("acCoachComplete").scrollIntoView({behavior:"smooth",block:"center"});$("acCoachResult").focus()}else{window.PICKLEUP_ROUTER?.openSection("personalCoach")||$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()}});
+ $("pcRunScore").addEventListener("click",async()=>{if(!plan)return;const id=plan.id,version=plan.version,stamp=plansSource?.token();window.PICKLEUP_ROUTER?.openSection(version==='3.1'?'advancedCoach':'personalCoach');try{await window.PICKLEUP_PAGE_LOADER?.ensure('coach');if(stamp!==plansSource?.token()||plan?.id!==id)return;document.dispatchEvent(new CustomEvent('pickleup:plan-score-request',{detail:{id,version}}));$(version==='3.1'?'acCoachResult':'pcPostScore')?.focus()}catch(_){if(stamp===plansSource?.token())message('Chưa mở được phần kết quả; thử lại khi có mạng.')}});
  // Wall-clock deadlines recover from mobile background throttling without incorrectly skipping stages.
  setInterval(pulse,350);
  document.addEventListener("visibilitychange",()=>{
