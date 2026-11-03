@@ -59,8 +59,14 @@ class PlanTests(unittest.TestCase):
         for kind in ['profiles','user_preferences','academy_attempts','training_entries']:self.assertEqual(self.apply({**body,'p_kind':kind})['status'],'invalid')
         for table in ['personal_plans','user_selections']:
             for method in ['POST','PATCH','DELETE']:
-                value=({'check_score':12} if table=='personal_plans' else {'selected_academy_lesson_id':'PU-001'}) if method!='DELETE' else None
-                self.assertIn(self.request(table,value,self.token_a,method)[0],(401,403))
+                with self.subTest(table=table,method=method):
+                    # Supabase safeupdate rejects unfiltered PATCH/DELETE before
+                    # the privilege check. Target our fixture, as in PR1a.
+                    value=({'check_score':12} if table=='personal_plans' else {'selected_academy_lesson_id':'PU-001'}) if method!='DELETE' else None
+                    code,result=self.request(table+'?user_id=eq.'+self.a,value,self.token_a,method)
+                    self.assertEqual(code,403);self.assertEqual(result['code'],'42501')
+        self.assertEqual(self.request('personal_plans',token=self.token_a)[1][0]['revision'],1)
+        self.assertEqual(self.request('user_selections',token=self.token_a)[1],[])
 
     def test_shape_validation_protocol_server_fields_and_legacy_compatibility(self):
         body=self.body()
