@@ -267,7 +267,7 @@ document.getElementById('academyRemember').addEventListener('click',()=>{const x
 document.addEventListener('pickleup:plan-data',()=>{
  const next=plans?.token(),s=plans?.academySelection();if(!s)return;const changed=next!==planToken;
  if(changed){planToken=next;resetPracticeSource();level.value='all';selectionId=null;resumedId=null;weeks.value='';choose()}
- if(changed||s.id!==selectionId){selectionId=s.id;resumedId=s.id;if(s.id)visitLesson(s.id,false)}
+ if(changed||s.id!==selectionId){selectionId=s.id;resumedId=s.id;if(s.id&&get()?.id!==s.id)visitLesson(s.id,false)}
  refreshLearning();paintScore();controls();
 });
 const initialLesson=resumedId;
