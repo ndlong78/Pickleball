@@ -27,7 +27,7 @@ function render(){
  const ops=s.snapshot?.outbox||[],pending=ops.filter(o=>['pending','sending','deferred'].includes(o.state)),uncertain=pending.filter(o=>o.state==='sending');
  $('[data-plan-retry]').hidden=!uncertain.length;
  $('[data-plan-count]').textContent=s.mode==='account'?pending.length+' giáo án chờ gửi · '+uncertain.length+' yêu cầu chưa rõ kết quả. Lưu trên thiết bị chưa có nghĩa đã đồng bộ.':'';
- $('[data-plan-clear]').disabled=running||s.busy||s.mode!=='account'||!s.snapshot;$('[data-plan-clear-lesson]').disabled=running||!data.canSelectLesson();const selected=s.snapshot?.records.find(r=>r.kind==='user_selections'&&r.id==='self');$('[data-plan-restore-selection]').hidden=!selected?.base?.deleted_at;$('[data-plan-restore-selection]').disabled=running||s.busy||!!selected?.tailOperationId||selected?.reviewRequired;manage(s);
+ $('[data-plan-clear]').disabled=running||s.busy||s.mode!=='account'||!s.snapshot;$('[data-plan-clear-lesson]').disabled=running||s.mode!=='account'||!data.canSelectLesson();const selected=s.snapshot?.records.find(r=>r.kind==='user_selections'&&r.id==='self');$('[data-plan-restore-selection]').hidden=!selected?.base?.deleted_at;$('[data-plan-restore-selection]').disabled=running||s.mode!=='account'||s.busy||!!selected?.tailOperationId||selected?.reviewRequired;manage(s);
  if(s.error)status.textContent=message(s.error);
  for(const input of detail.querySelectorAll('input,select'))input.disabled=running||s.busy;
  if(selection?.valid)selection.valid();
@@ -94,7 +94,7 @@ click('[data-plan-read]','read',async()=>{await data.controller().refresh();retu
 for(const [selector,forceRetry]of [['[data-plan-send]',false],['[data-plan-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {message:result.status==='synced'?'Đã đồng bộ giáo án tài khoản.':message(result.status)}});
 click('[data-plan-export]','export',async()=>({artifact:await data.controller().exportCache(),message:'Đã xuất cache giáo án. Giữ tệp riêng tư ngoài trình duyệt; chưa phải backup toàn tài khoản.'}));
 click('[data-plan-clear]','manage',async()=>{await data.choose(null);return {message:'Đã bỏ chọn trên thiết bị · chờ đồng bộ.'}});
-click('[data-plan-clear-lesson]','manage',async()=>{await data.chooseLesson(null);return {message:'Đã bỏ chọn bài Học viện trên thiết bị · chờ đồng bộ.'}});
+click('[data-plan-clear-lesson]','manage',async()=>{if(data.getState().mode!=='account')throw Object.assign(Error('source_unavailable'),{code:'source_unavailable'});await data.chooseLesson(null);return {message:'Đã bỏ chọn bài Học viện trên thiết bị · chờ đồng bộ.'}});
 $('[data-plan-restore-selection]').addEventListener('click',()=>{const stamp=data.token(),s=data.getState(),r=s.snapshot?.records.find(x=>x.kind==='user_selections'&&x.id==='self');if(!r||!confirm('Khôi phục lựa chọn trống? Cả bài Học viện và giáo án cá nhân sẽ không được chọn; thay đổi còn chờ đồng bộ.')||stamp!==data.token())return;task('manage',async()=>{await data.controller().restoreEntity({kind:r.kind,id:r.id,operationId:crypto.randomUUID(),expectedLocalRevision:r.localRevision,value:{selected_personal_plan_id:null,selected_academy_lesson_id:null}});return {message:'Đã khôi phục lựa chọn trống trên thiết bị · chờ đồng bộ.'}})});
 document.addEventListener('pickleup:plan-data',render);data.ready.then(render);render();
 })();
