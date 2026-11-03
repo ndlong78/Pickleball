@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Status 03/11/2026:** main V5.8.0, `411df63` sau #29 có UI plans/selections; backend sau merge fail fixture Auth dependency, chưa clean. PR5a2d/V5.9.0 đang nối nhật ký tài khoản, chưa merge/deploy. Năm flags vẫn tắt. [Tiến độ và giới hạn](V6_PROGRESS_REVIEW.md). **Đọc cùng:** [AGENTS](../AGENTS.md), [engineering](ENGINEERING_STANDARDS.md), [release gates](RELEASE_CHECKLIST.md).
+**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md). **Đọc cùng:** [AGENTS](../AGENTS.md), [engineering](ENGINEERING_STANDARDS.md), [release gates](RELEASE_CHECKLIST.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 
@@ -104,3 +104,5 @@ PR5a2c / V5.7.0 nối ba loại đánh giá và matches vào kho hoạt động 
 PR5b1c/V5.8.0: người dùng chọn riêng nguồn giáo án, tạo basic/advanced snapshot từ điểm nhập thủ công, chọn và đồng bộ trước Court. Result CAS không tạo attendance/training. Nút read/send/retry/review/delete/restore rõ, guest giữ nguyên. Account timer không resume sau reload; nhật ký/bài Học viện gần nhất vẫn trên thiết bị. [Hợp đồng và giới hạn](PLAN_UI_PR5B1C.md).
 
 PR5a2d/V5.9.0: Court ghi drill hoặc lượt kiểm tra riêng vào activity source khi own plan đã ACK và cùng nguồn. Điểm plan/timer không tự sinh training/attendance. History/evaluation/Journey/planner/tactical dùng cùng nguồn, account không trim1000; so sánh tách plan/bài/level/kind/conditions, orphan/null/future không bị dựng dữ liệu. [Hợp đồng và giới hạn](TRAINING_ACCOUNT_PR5A2D.md).
+
+PR5b2a/V5.10.0: lựa chọn bài Học viện theo nguồn giáo án/selection, điểm theo nguồn hoạt động riêng. Academy/Journey/Progress links dùng cùng choice, pending có nhãn, quota giữ preview, conflict review cả hai field. Checklist/focus/timer khi có nguồn account chỉ RAM phiên trang, guest giữ persistence. Chọn bài/checkbox/timer không tạo attendance hoặc attempt. [Hợp đồng/giới hạn](ACADEMY_SELECTION_PR5B2A.md).

@@ -58,11 +58,6 @@ byId("wgSave").addEventListener("click",async()=>{
   redraw();document.dispatchEvent(new Event("pickleup:weekly-goal-saved"));
  }catch(_){if(stamp===sourceTag)byId("wgStatus").textContent="Không lưu được. Kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ; lựa chọn cần 1–5 ngày mỗi tuần."}
 });
-byId("wgOpen").addEventListener("click",()=>{
- const id=byId("wgOpen").dataset.lessonId;if(!id)return;
- try{localStorage.setItem("pickleup_academy_last_lesson_v4",id)}catch(_){}
- document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
-});
 byId("wgRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate()}redraw()});
 document.addEventListener("pickleup:activity-data",redraw);
 document.addEventListener("pickleup:score-saved",redraw);

@@ -29,7 +29,7 @@ function create(urlString){
  const win={location,history:{pushState(_a,_b,url){setLocation(url)},replaceState(_a,_b,url){setLocation(url)}},scrollY:0,scrollTo(){},requestAnimationFrame(fn){fn()},addEventListener(){},console:{warn(){}}};
  const ctx={window:win,document,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail}}};
  vm.runInNewContext(catalog,ctx);vm.runInNewContext(code,ctx);
- return {win,document,nodes,links};
+ return {win,document,nodes,links,listeners};
 }
 test("query routes show only their respective mounted modules",()=>{
  const app=create("https://example.org/Pickleball/index.html?page=coach");
@@ -60,3 +60,4 @@ test("all eight pages resolve a top-level URL",()=>{
   assert.equal(app.win.PICKLEUP_ROUTER.getPage(),page);
  }
 });
+test('Academy lesson links delegate persistence before routing under Pickleball',()=>{const app=create('https://example.org/Pickleball/?page=journey'),calls=[];app.win.PICKLEUP_PLANS={requestLesson:id=>calls.push(id)};const a={href:'https://example.org/Pickleball/?page=academy',dataset:{lessonId:'PU-037'},hasAttribute:()=>false};let prevented=false;app.listeners.get('click')({button:0,target:{closest:()=>a},preventDefault(){prevented=true}});assert.equal(prevented,true);assert.deepEqual(calls,['PU-037']);assert.equal(app.win.PICKLEUP_ROUTER.getPage(),'journey')});

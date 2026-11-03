@@ -3,7 +3,7 @@
 const host=document.getElementById('planPilot'),data=window.PICKLEUP_PLANS;if(!host||!data)return;
 const $=s=>host.querySelector(s),status=$('[role=status]'),detail=$('[data-plan-detail]');
 let running=false,action=null,serial=0,owner,token,selection=null;
-const names={personal_plans:'Giáo án cá nhân',user_selections:'Lựa chọn giáo án'};
+const names={personal_plans:'Giáo án cá nhân',user_selections:'Lựa chọn giáo án và bài Học viện'};
 const errors={plan_selected:"Bỏ chọn giáo án trước khi xóa; đồng bộ sẽ gửi bỏ chọn trước lệnh xóa.",dependency_changed:"Giáo án hoặc lựa chọn liên quan đã đổi; đọc lại và mở mục cần xử lý.",restore_requires_ack:"Chờ xác nhận xóa rồi mới khôi phục.",invalid_plan:"Dữ liệu giáo án cần kiểm tra; xuất cache và đọc lại.",network_error:'Lỗi mạng. Yêu cầu đang chờ được giữ nguyên.',offline:'Đang offline; thay đổi vẫn nằm trên thiết bị.',auth_required:'Đăng nhập lại đúng tài khoản để tiếp tục.',account_changed:'Tài khoản hoặc lựa chọn nguồn đã thay đổi; yêu cầu cũ giữ riêng.',consent_changed:'Lựa chọn nguồn đã thay đổi ở tab khác. Hãy kiểm tra lại.',busy:'Một tab hoặc thao tác khác đang đồng bộ. Thử lại sau.',retry_wait:'Chưa đến lượt thử lại. Chỉ bấm thử lại khi bạn muốn gửi tiếp.',needs_review:'Có giáo án cần xem và xử lý.',uncertain_operation:'Có yêu cầu đã gửi chưa rõ kết quả. Thử lại đúng yêu cầu trước khi quyết định.',local_conflict:'Dữ liệu đã đổi sau khi xem. Mở lại mục cần xử lý trước khi chọn.',epoch_review_required:'Hãy xác nhận đã xem lại dữ liệu sau khi tải lại tài khoản.',quota_exceeded:'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.',upgrade_required:'Cần cập nhật ứng dụng. Dữ liệu chờ vẫn được giữ.',invalid_plan:'Dữ liệu cần kiểm tra. Xuất cache và đọc lại; chưa chuyển sang kho khách.',append_only:'Không thể ghi đè hoặc khôi phục lượt đã tồn tại. Chọn bản tài khoản hoặc xuất cache.',credentials_forbidden:'Không xuất được cache có trường thông tin đăng nhập. Giữ dữ liệu và kiểm tra riêng.',pending:'Còn thay đổi chờ gửi. Bấm đồng bộ tiếp để xử lý lượt kế tiếp.'};
 const message=code=>errors[code]||'Chưa thực hiện được. Hãy giữ cache và kiểm tra nguồn dữ liệu trong mục này.';
 const node=(tag,text)=>{const el=document.createElement(tag);el.textContent=text;return el};
@@ -27,7 +27,7 @@ function render(){
  const ops=s.snapshot?.outbox||[],pending=ops.filter(o=>['pending','sending','deferred'].includes(o.state)),uncertain=pending.filter(o=>o.state==='sending');
  $('[data-plan-retry]').hidden=!uncertain.length;
  $('[data-plan-count]').textContent=s.mode==='account'?pending.length+' giáo án chờ gửi · '+uncertain.length+' yêu cầu chưa rõ kết quả. Lưu trên thiết bị chưa có nghĩa đã đồng bộ.':'';
- $('[data-plan-clear]').disabled=running||s.busy||s.mode!=='account'||!s.snapshot;manage(s);
+ $('[data-plan-clear]').disabled=running||s.busy||s.mode!=='account'||!s.snapshot;$('[data-plan-clear-lesson]').disabled=running||s.mode!=='account'||!data.canSelectLesson();const selected=s.snapshot?.records.find(r=>r.kind==='user_selections'&&r.id==='self');$('[data-plan-restore-selection]').hidden=!selected?.base?.deleted_at;$('[data-plan-restore-selection]').disabled=running||s.mode!=='account'||s.busy||!!selected?.tailOperationId||selected?.reviewRequired;manage(s);
  if(s.error)status.textContent=message(s.error);
  for(const input of detail.querySelectorAll('input,select'))input.disabled=running||s.busy;
  if(selection?.valid)selection.valid();
@@ -52,9 +52,10 @@ async function task(type,work){
 function summary(kind,value,deleted,related=[]){
  if(!value)return 'Chưa có dữ liệu.';if(deleted)return 'Đã xóa / muốn xóa giáo án hoặc lựa chọn này.';
  if(kind==='user_selections'){
-  if(!value.selected_personal_plan_id)return 'Không chọn giáo án cá nhân.';
+  const lesson=(window.PICKLEUP_CURRICULUM||[]).find(x=>x.id===value.selected_academy_lesson_id),lessonText=lesson?'Học viện: '+lesson.id+' · '+lesson.title:value.selected_academy_lesson_id?'Học viện: '+value.selected_academy_lesson_id:'Không chọn bài Học viện';
+  if(!value.selected_personal_plan_id)return lessonText+' · Không chọn giáo án cá nhân.';
   const target=related.find(r=>r.kind==='personal_plans'&&r.id===value.selected_personal_plan_id),plan=target?.overlay||target?.base;
-  return plan?.plan_snapshot?'Chọn giáo án '+plan.level_band+' · '+new Date(plan.plan_snapshot.createdAt).toLocaleString('vi-VN')+' · '+plan.plan_snapshot.exercises.map(e=>e.name).join(' · ')+' · Điểm '+(plan.check_score??'chưa có')+'/20':'Giáo án được chọn không có trong cache hiện tại; đọc lại kho trước khi quyết định.';
+  return lessonText+' · '+(plan?.plan_snapshot?'Chọn giáo án '+plan.level_band+' · '+new Date(plan.plan_snapshot.createdAt).toLocaleString('vi-VN')+' · '+plan.plan_snapshot.exercises.map(e=>e.name).join(' · ')+' · Điểm '+(plan.check_score??'chưa có')+'/20':'Giáo án cá nhân được chọn không có trong cache hiện tại; đọc lại kho trước khi quyết định.');
  }
  const p=value.plan_snapshot;return (p?value.level_band+' · '+p.exercises.map(e=>e.name).join(' · '):'Kết quả giáo án')+' · Điểm '+(value.check_score??'chưa có')+'/20'+(value.completed_at?' · '+new Date(value.completed_at).toLocaleString('vi-VN'):'');
 }
@@ -93,5 +94,7 @@ click('[data-plan-read]','read',async()=>{await data.controller().refresh();retu
 for(const [selector,forceRetry]of [['[data-plan-send]',false],['[data-plan-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {message:result.status==='synced'?'Đã đồng bộ giáo án tài khoản.':message(result.status)}});
 click('[data-plan-export]','export',async()=>({artifact:await data.controller().exportCache(),message:'Đã xuất cache giáo án. Giữ tệp riêng tư ngoài trình duyệt; chưa phải backup toàn tài khoản.'}));
 click('[data-plan-clear]','manage',async()=>{await data.choose(null);return {message:'Đã bỏ chọn trên thiết bị · chờ đồng bộ.'}});
+click('[data-plan-clear-lesson]','manage',async()=>{if(data.getState().mode!=='account')throw Object.assign(Error('source_unavailable'),{code:'source_unavailable'});await data.chooseLesson(null);return {message:'Đã bỏ chọn bài Học viện trên thiết bị · chờ đồng bộ.'}});
+$('[data-plan-restore-selection]').addEventListener('click',()=>{const stamp=data.token(),s=data.getState(),r=s.snapshot?.records.find(x=>x.kind==='user_selections'&&x.id==='self');if(!r||!confirm('Khôi phục lựa chọn trống? Cả bài Học viện và giáo án cá nhân sẽ không được chọn; thay đổi còn chờ đồng bộ.')||stamp!==data.token())return;task('manage',async()=>{await data.controller().restoreEntity({kind:r.kind,id:r.id,operationId:crypto.randomUUID(),expectedLocalRevision:r.localRevision,value:{selected_personal_plan_id:null,selected_academy_lesson_id:null}});return {message:'Đã khôi phục lựa chọn trống trên thiết bị · chờ đồng bộ.'}})});
 document.addEventListener('pickleup:plan-data',render);data.ready.then(render);render();
 })();

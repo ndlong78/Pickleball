@@ -1,6 +1,6 @@
 # PickleUp V6 — data dictionary và legacy inventory
 
-**Trạng thái 03/11/2026:** main `1a4fccd` / V5.7.0 sau #28. [PR5b1c/V5.8.0](PLAN_UI_PR5B1C.md) nối UI giáo án và personal selection qua facade/consent/queue/review; chưa merge/deploy. Năm flags vẫn tắt, URL/key rỗng. Nhật ký tập và bài Học viện gần nhất vẫn device-only; timer account chỉ phiên trang. [Tiến độ/evidence và gates](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
+**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md).
 
 ## 1. Toàn bộ storage keys hiện có
 
@@ -98,3 +98,5 @@ PR5a2c nối [self/stage/advanced và matches](ASSESSMENT_MATCH_PR5A2C.md) vào 
 PR5b1b thêm metadata `plans-selections-consent-1`, cursor slot `plans-selections-1`, lease `planSenderLease` trên schema1 hiện hữu. Outbox lưu planDependencies/requiresPlan để chờ ACK, selection/plan result overlay giữ immutable content. Full-preview review giữ dependency context và requests cũ; export `plans-selections-cache-v1` riêng, chưa round-trip/toàn account. [Hợp đồng client](PLAN_CLIENT_PR5B1B.md).
 
 [PR5a2d](TRAINING_ACCOUNT_PR5A2D.md): training source không đổi schema/cột/18 keys. New UI writes có trainingPlan proof (plan localRevision/consentRevision/epoch) kiểm trong transaction với activity consent và own canonical live plan, không lưu secret hoặc mirror legacy. Raw account history phân trang giữ unknown/future/orphan; projection phân tích giữ timestamp/plan reference, không trim1000 hoặc tạo ngày giả.
+
+[PR5b2a](ACADEMY_SELECTION_PR5B2A.md): selected_academy_lesson_id dùng nguồn plan consent hiện hữu, sparse CAS giữ selected_personal_plan_id. Không đổi IDB/SQL/18 keys. Account checklist/focus/timer tạm RAM phiên trang, chưa persist device_state hoặc full backup; guest giữ key định dạng cũ.

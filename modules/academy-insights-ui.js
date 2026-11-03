@@ -71,12 +71,6 @@ level.addEventListener("change",()=>chooseSkill(false));
 skill.addEventListener("change",()=>chooseLesson(false));
 lesson.addEventListener("change",()=>draw());
 byId("aiRefresh").addEventListener("click",()=>chooseSkill(true));
-byId("aiOpenLesson").addEventListener("click",()=>{
- const id=byId("aiOpenLesson").dataset.lessonId;
- if(!id)return;
- try{localStorage.setItem("pickleup_academy_last_lesson_v4",id)}catch(_){}
- document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
-});
 window.addEventListener("storage",event=>{if([historyKey,scoresKey].includes(event.key))chooseSkill(true)});
 document.addEventListener("pickleup:score-saved",()=>chooseSkill(true));
 document.addEventListener("pickleup:activity-data",()=>chooseSkill(true));

@@ -1,7 +1,10 @@
 (function(){
 const data=window.PICKLEUP_CURRICULUM||[];
 const level=document.getElementById('academyLevel'),weeks=document.getElementById('academyWeek'),detail=document.getElementById('academyDetail'),score=document.getElementById('academyScore'),status=document.getElementById('academyStatus');
-const activity=window.PICKLEUP_ACTIVITY;
+const activity=window.PICKLEUP_ACTIVITY,plans=window.PICKLEUP_PLANS;
+const privatePractice=()=>plans?.isAccount()||activity?.isAccount();
+let seedGuest=true,planToken=plans?.token(),remembering=false,selectionId=plans?.academySelection().id;
+function scoreUnavailable(){return activity?.isAccount()&&(activity.getView().mode!=="account"||plans?.isAccount()&&plans.getState().owner!==activity.getView().owner)}
 let records={};try{records=activity?activity.records():JSON.parse(localStorage.getItem('pickleup_academy_v2')||'{}')}catch(e){}
 const trends=window.PICKLEUP_ACADEMY_TRENDS;
 const historyKey='pickleup_academy_history_v44';
@@ -13,12 +16,13 @@ function feedback(text){status.textContent=text;feedbackVersion=statusVersion()}
 score.addEventListener('input',()=>{dirty=true});
 function paintScore(){
  const x=get();if(!x)return;
- if(activity?.isAccount()&&activity.getView().mode!=='account'){score.value='';status.textContent=activity.notice();return}
+ if(scoreUnavailable()){score.value='';status.textContent=activity.notice();return}
  if(!dirty)score.value=records[x.id]?.score??x.assessment.target;
  if(!dirty&&!saving&&(feedbackVersion===null||feedbackVersion!==statusVersion())){feedbackVersion=null;status.textContent=records[x.id]?(activity?.isAccount()?'Kho tài khoản · ':'Đã lưu: ')+records[x.id].score+'/20 · '+new Date(records[x.id].date).toLocaleDateString('vi-VN')+(records[x.id].pending?' · chờ đồng bộ':''):''}
 }
 function controls(){
- const blocked=saving||activity&&!activity.canWrite();score.disabled=!!blocked;document.getElementById('academySave').disabled=!!blocked;
+ const blocked=saving||scoreUnavailable()||activity&&!activity.canWrite();
+ document.getElementById('academyRemember').disabled=remembering||!!plans&&!plans.canSelectLesson();level.disabled=weeks.disabled=remembering;score.disabled=!!blocked;document.getElementById('academySave').disabled=!!blocked;
  document.getElementById('academyConditions').hidden=!activity?.isAccount();for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).disabled=!!blocked;
 }
 function renderAttempts(){
@@ -40,31 +44,31 @@ function renderAttempts(){
    if(saving||renderedToken!==activity.token())return;
    if(!confirm('Xóa riêng lượt kiểm tra này? Thay đổi sẽ chờ đồng bộ; sự kiện đã xóa không có thao tác khôi phục.'))return;
    if(renderedToken!==activity.token())return;
-   const stamp=renderedToken;saving=true;feedbackVersion=null;controls();button.disabled=true;
-   try{await activity.deleteAttempt(event.id,row.localRevision);if(stamp===activity.token())feedback('Đã lưu thao tác xóa trên thiết bị · chờ đồng bộ.')}
-   catch(_){if(stamp===activity.token())feedback('Chưa xóa được. Đọc lại hoặc xem mục cần xử lý trong Dữ liệu.')}
-   finally{saving=false;controls();renderAttempts()}
+   const stamp=renderedToken,selectionStamp=plans?.token();saving=true;feedbackVersion=null;controls();button.disabled=true;
+   try{await activity.deleteAttempt(event.id,row.localRevision);if(stamp===activity.token()&&selectionStamp===plans?.token())feedback('Đã lưu thao tác xóa trên thiết bị · chờ đồng bộ.')}
+   catch(_){if(stamp===activity.token()&&selectionStamp===plans?.token())feedback('Chưa xóa được. Đọc lại hoặc xem mục cần xử lý trong Dữ liệu.')}
+   finally{if(stamp===activity.token()&&selectionStamp===plans?.token()){saving=false;controls();renderAttempts()}}
   });item.append(text,button);fragment.append(item);
  }list.replaceChildren(fragment);
 }
 for(const [id,delta]of [['academyHistoryPrev',-1],['academyHistoryNext',1]])document.getElementById(id).addEventListener('click',()=>{historyPage+=delta;renderAttempts()});
 document.addEventListener('pickleup:activity-data',()=>{
- const next=activity?.token();if(next!==sourceToken){sourceToken=next;dirty=false;saving=false;feedbackVersion=null;status.textContent='';historyPage=0;for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value=''}
+ const next=activity?.token();if(next!==sourceToken){sourceToken=next;resetPracticeSource();dirty=false;saving=false;feedbackVersion=null;status.textContent='';historyPage=0;const lesson=get();if(lesson)drawSteps(lesson);for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value=''}
  records=activity.records();history=activity.history();refreshLearning();paintScore();controls();renderAttempts();
 });
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function get(){return data.find(x=>x.id===weeks.value)}
 const selectionKey='pickleup_academy_last_lesson_v4';
 let resumedId=null;
-try{resumedId=localStorage.getItem(selectionKey)}catch(_){}
+try{resumedId=plans?plans.academySelection().id:localStorage.getItem(selectionKey)}catch(_){}
 function completedIds(){return new Set(Object.keys(records).filter(id=>data.some(x=>x.id===id)&&Number.isInteger(records[id]?.score)&&records[id].score>=0&&records[id].score<=20))}
 function refreshLearning(){
  const complete=completedIds(),total=data.length;
  const progress=document.getElementById('academyProgressText'),resume=document.getElementById('academyResumeText'),next=document.getElementById('academyNext'),resumeButton=document.getElementById('academyResume');
- const unavailable=activity?.isAccount()&&activity.getView().mode!=='account';
+ const unavailable=scoreUnavailable();
  progress.textContent=unavailable?'Chưa đọc được tiến độ tài khoản.':'Đã ghi kết quả '+complete.size+'/'+total+' bài học';
  const last=data.find(x=>x.id===resumedId);
- resume.textContent=last?'Bài gần nhất: Tuần '+last.week+' · '+last.title:'Bạn chưa chọn bài học trước đó.';
+ resume.textContent=plans?.isAccount()&&['loading','error','needs_review','deleted'].includes(plans.academySelection().status)?plans.selectionNotice():last?'Bài gần nhất: Tuần '+last.week+' · '+last.title:'Bạn chưa chọn bài học trước đó.';
  resumeButton.disabled=!last;
  next.disabled=unavailable||complete.size>=total;
  updateRecommendation();
@@ -74,7 +78,7 @@ function recommendedLesson(){
  return trends.recommend(data,records,history,scope);
 }
 function updateRecommendation(){
- if(activity?.isAccount()&&activity.getView().mode!=='account'){document.getElementById('academyRecommendReason').textContent=activity.notice();document.getElementById('academyTrendText').textContent='Chưa có nguồn để phân tích.';document.getElementById('academyRecommendLesson').textContent='Chưa đọc được kết quả.';document.getElementById('academyRecommendOpen').disabled=true;return}
+ if(scoreUnavailable()){document.getElementById('academyRecommendReason').textContent=activity.notice();document.getElementById('academyTrendText').textContent='Chưa có nguồn để phân tích.';document.getElementById('academyRecommendLesson').textContent='Chưa đọc được kết quả.';document.getElementById('academyRecommendOpen').disabled=true;return}
  const result=recommendedLesson();
  document.getElementById('academyRecommendReason').textContent=result.reason;
  document.getElementById('academyTrendText').textContent=result.trend;
@@ -82,20 +86,21 @@ function updateRecommendation(){
  document.getElementById('academyRecommendOpen').disabled=!result.lesson;
 }
 document.getElementById('academyRecommendOpen').addEventListener('click',()=>{const x=recommendedLesson().lesson;if(x)visitLesson(x.id)});
-function visitLesson(id){
+function visitLesson(id,persist=true){
  const lesson=data.find(x=>x.id===id);
  if(!lesson)return;
  level.value='all';
  choose();
  weeks.value=id;
- show(true);
+ show(persist);
 }
-document.addEventListener('pickleup:academy-request-lesson',event=>{const id=event.detail?.id;if(data.some(x=>x.id===id))visitLesson(id)});
+document.addEventListener('pickleup:academy-request-lesson',event=>{const {id,sourceToken,persisted}=event.detail||{};if(sourceToken!==undefined&&sourceToken!==plans?.token())return;if(data.some(x=>x.id===id))visitLesson(id,!persisted)});
 const stepsKey='pickleup_academy_steps_v41';
 let stepRecords={};
-try{const v=JSON.parse(localStorage.getItem(stepsKey)||'{}');if(v&&typeof v==='object'&&!Array.isArray(v))stepRecords=v}catch(_){}
+function readPractice(key){if(privatePractice())return {};try{const v=JSON.parse(localStorage.getItem(key)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch(_){return {}}}
+stepRecords=readPractice(stepsKey);
 const focusKey='pickleup_academy_focus_v42';
-let focusPositions={};try{const saved=JSON.parse(localStorage.getItem(focusKey)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))focusPositions=saved}catch(_){}
+let focusPositions=readPractice(focusKey);
 let focusEnabled=false;
 let focusTimer=null,timerInterval=null;
 function stageSeconds(x){const i=currentFocusIndex(x);return (i===0?10:i===4?6:i===5?5:Math.max(1,Number(x.drills[i-1]?.minutes)||10))*60}
@@ -138,7 +143,7 @@ function showFocus(x){
  document.getElementById('academyFocusDone').textContent=done?'Bỏ đánh dấu':'Đánh dấu đã tập';
  timerView();
 }
-function moveFocus(delta){const x=get();if(!x)return;stopTick();focusTimer=null;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
+function moveFocus(delta){const x=get();if(!x)return;stopTick();focusTimer=null;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{if(!privatePractice())localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
 document.getElementById('academyFocusToggle').addEventListener('click',()=>{if(focusEnabled)pauseTimer();focusEnabled=!focusEnabled;showFocus(get())});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&focusTimer?.endsAt!==null){pauseTimer();timerView()}});
 document.getElementById('academyFocusPrev').addEventListener('click',()=>moveFocus(-1));
@@ -148,7 +153,7 @@ document.getElementById('academyFocusDone').addEventListener('click',()=>{
  const i=currentFocusIndex(x),done=new Set(Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[]);
  if(done.has(i))done.delete(i);else done.add(i);
  stepRecords[x.id]=[...done].sort((a,b)=>a-b);
- try{localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
 function drawSteps(x){
@@ -174,12 +179,12 @@ document.getElementById('academyStepList').addEventListener('change',event=>{
  const index=Number(input.dataset.step);
  if(input.checked)done.add(index);else done.delete(index);
  stepRecords[x.id]=[...done].sort((a,b)=>a-b);
- try{localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
 document.getElementById('academyResetSteps').addEventListener('click',()=>{
  const x=get();if(!x)return;
- delete stepRecords[x.id];try{localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ delete stepRecords[x.id];try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
 let selectedLevel=null;
@@ -196,15 +201,15 @@ function choose(){
   weeks.replaceChildren(cachedOptions.get(selected).cloneNode(true));
   selectedLevel=selected;
  }
- if([...weeks.options].some(x=>x.value===previous))weeks.value=previous;
+ if([...weeks.options].some(x=>x.value===previous))weeks.value=previous;else weeks.value=weeks.options[0]?.value||'';
  show();
 }
 let lastDrawnId=null;
 function show(persistSelection=false){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
 if(formLesson!==x.id){formLesson=x.id;dirty=false;feedbackVersion=null}
 if(focusTimer&&focusTimer.lessonId!==x.id){stopTick();focusTimer=null}
-resumedId=x.id;
-if(!activity?.isAccount()||persistSelection===true)try{localStorage.setItem(selectionKey,x.id)}catch(_){}
+if(!privatePractice()&&seedGuest){resumedId=x.id;try{if(plans)plans.rememberGuestLesson(x.id);else localStorage.setItem(selectionKey,x.id)}catch(_){}}
+if(persistSelection)rememberLesson(x.id);
 refreshLearning();
 drawSteps(x);
 if(lastDrawnId===x.id){paintScore();return}
@@ -212,7 +217,7 @@ lastDrawnId=x.id;
 const court=x.advanced?(window.PICKLEUP_ADVANCED_COURT?window.PICKLEUP_ADVANCED_COURT(x):''):(window.PICKLEUP_COURT?window.PICKLEUP_COURT(x):'');
 detail.innerHTML='<h3>Tuần '+x.week+' · '+esc(x.title)+'</h3><p class="sub">Cấp độ '+esc(x.level)+' · '+esc(x.goal)+'</p><p class="sub"><b>Chuẩn bị:</b> '+esc(x.setup||'Hai người chơi, bóng và sân.')+'</p>'+court+'<p class="sub"><b>Vùng mục tiêu:</b> '+esc(x.zone||'Trong sân đối phương')+' · Vùng tô sáng là minh họa kỹ năng; thực hiện theo hướng dẫn và quy tắc sân thực tế.</p><div class="block"><div class="minute">10<small>phút</small></div><div><h4>Khởi động</h4><p>Di chuyển nhẹ, xoay khớp và đánh bóng làm quen.</p></div></div>'+x.drills.map((d,i)=>'<div class="block"><div class="minute">'+d.minutes+'<small>phút</small></div><div><h4>Bài '+(i+1)+': '+esc(d.name)+'</h4><p>'+esc(d.instruction)+'</p><em>'+esc(d.check)+'</em></div></div>').join('')+'<div class="block"><div class="minute">6<small>phút</small></div><div><h4>Kiểm tra</h4><p>'+esc(x.assessment.instruction)+' Mục tiêu tham khảo: '+x.assessment.target+'/20.</p></div></div><div class="block"><div class="minute">5<small>phút</small></div><div><h4>Thả lỏng</h4><p>Đi bộ nhẹ, thả lỏng vai và chân, uống nước.</p></div></div><h4>Cần tránh</h4><ul class="noteList">'+x.mistakes.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><h4>Điểm cần nhớ</h4><ul class="noteList">'+(x.cues||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p class="sub">Giáo án và ngưỡng kiểm tra là tham khảo; xếp hạng 3.0/4.0 cần kiểm chứng trong thi đấu thực tế.</p>';
 paintScore()}
-level.addEventListener('change',choose);weeks.addEventListener('change',()=>show(true));
+level.addEventListener('change',()=>{choose();const x=get();if(x)rememberLesson(x.id)});weeks.addEventListener('change',()=>show(true));
 document.getElementById('academyResume').addEventListener('click',()=>{if(resumedId)visitLesson(resumedId)});
 document.getElementById('academyNext').addEventListener('click',()=>{
  const complete=completedIds();
@@ -227,10 +232,10 @@ document.getElementById('academySave').addEventListener('click',async()=>{
  if(activity?.isAccount()){
   const values=['academyFeed','academyPace','academyTarget'].map(id=>document.getElementById(id).value);
   if(values.some(Boolean)&&!values.every(Boolean)){status.textContent='Ghi đủ ba điều kiện hoặc để tất cả là chưa rõ.';return}
-  const conditions=values.every(Boolean)?{feed:values[0],pace:values[1],target:values[2]}:null,stamp=activity.token();saving=true;feedbackVersion=null;controls();
-  try{await activity.saveAttempt(x,v,conditions);if(stamp===activity.token()&&get()?.id===x.id){dirty=false;feedback('Đã lưu '+v+'/20 trong kho tài khoản trên thiết bị · chờ đồng bộ. Không tự xác nhận buổi tập.')}}
-  catch(error){if(stamp===activity.token())feedback(error.code==='quota_exceeded'?'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.':'Chưa lưu được. Kiểm tra nguồn dữ liệu hoặc mục cần xử lý trong Dữ liệu.')}
-  finally{saving=false;controls();renderAttempts()}
+  const conditions=values.every(Boolean)?{feed:values[0],pace:values[1],target:values[2]}:null,stamp=activity.token(),selectionStamp=plans?.token();saving=true;feedbackVersion=null;controls();
+  try{await activity.saveAttempt(x,v,conditions);if(stamp===activity.token()&&selectionStamp===plans?.token()&&get()?.id===x.id){dirty=false;feedback('Đã lưu '+v+'/20 trong kho tài khoản trên thiết bị · chờ đồng bộ. Không tự xác nhận buổi tập.')}}
+  catch(error){if(stamp===activity.token()&&selectionStamp===plans?.token())feedback(error.code==='quota_exceeded'?'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.':'Chưa lưu được. Kiểm tra nguồn dữ liệu hoặc mục cần xử lý trong Dữ liệu.')}
+  finally{if(stamp===activity.token()&&selectionStamp===plans?.token()){saving=false;controls();renderAttempts()}}
   return;
  }
  const date=new Date().toISOString(),nextRecord={score:v,date,skill:x.skill,level:x.level};
@@ -249,11 +254,27 @@ document.getElementById('academySave').addEventListener('click',async()=>{
  refreshLearning();
  status.textContent='Đã lưu '+v+'/20 · '+(v>=x.assessment.target?'Đạt mục tiêu tuần này.':'Tiếp tục luyện kỹ thuật tuần này.')+(historySaved?'':' Điểm đã lưu, nhưng lịch sử lần tập chưa lưu được.');
 });
+function resetPracticeSource(){
+ seedGuest=false;stopTick();focusTimer=null;focusEnabled=false;stepRecords=readPractice(stepsKey);focusPositions=readPractice(focusKey);dirty=false;saving=false;remembering=false;feedbackVersion=null;status.textContent='';
+ for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value='';score.value='';
+}
+async function rememberLesson(id){
+ if(remembering)return;const stamp=plans?.token();remembering=true;controls();
+ try{if(plans)await plans.chooseLesson(id);else localStorage.setItem(selectionKey,id);if(stamp===plans?.token()){resumedId=id;selectionId=id;refreshLearning()}}
+ catch(_){}finally{if(stamp===plans?.token()){remembering=false;controls()}}
+}
+document.getElementById('academyRemember').addEventListener('click',()=>{const x=get();if(x)rememberLesson(x.id)});
+document.addEventListener('pickleup:plan-data',()=>{
+ const next=plans?.token(),s=plans?.academySelection();if(!s)return;const changed=next!==planToken;
+ if(changed){planToken=next;resetPracticeSource();level.value='all';selectionId=null;resumedId=null;weeks.value='';choose()}
+ if(changed||s.id!==selectionId){selectionId=s.id;resumedId=s.id;if(s.id&&get()?.id!==s.id)visitLesson(s.id,false)}
+ refreshLearning();paintScore();controls();
+});
 const initialLesson=resumedId;
 choose();
-if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson);
+if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson,false);
 refreshLearning();
 // The fragment can become visible before this lazy-loaded script arrives.
 // Enable score editing only after initial values and save listeners are ready.
-controls();renderAttempts();
+seedGuest=false;controls();renderAttempts();
 })();
