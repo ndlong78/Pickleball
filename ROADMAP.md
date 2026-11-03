@@ -8,8 +8,8 @@ Cập nhật: **03/11/2026** — main `6edb8f2` sau #31/app5.10.0, backend/UI/Pa
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|
 | Đã merge #24–#26 | Lifecycle/repair, Academy, assessments và matches UI | Source rõ, stable UUID/frozen requests, review và Auth thật; không dual-write/attendance |
-| Đã merge #29 | [PR5b1c/V5.8.0: UI giáo án/lựa chọn cá nhân](docs/PLAN_UI_PR5B1C.md) | Basic/advanced Coach, Journey/Court, manual sync/review/delete/restore; cần sửa fixture backend sau merge |
-| Đã merge #30 | [PR5a2d/V5.9.0: nhật ký tập tài khoản](docs/TRAINING_ACCOUNT_PR5A2D.md) | Own plan ACK, manual send/review; cần sửa readiness fixture sync-ui sau merge |
+| Đã merge #29 | [PR5b1c/V5.8.0: UI giáo án/lựa chọn cá nhân](docs/PLAN_UI_PR5B1C.md) | Basic/advanced Coach, Journey/Court, manual sync/review/delete/restore; fixture backend đã sửa ở #30 |
+| Đã merge #30 | [PR5a2d/V5.9.0: nhật ký tập tài khoản](docs/TRAINING_ACCOUNT_PR5A2D.md) | Own plan ACK, manual send/review; readiness fixture sync-ui đã sửa ở #31 |
 | Đã merge #31 | [PR5b2a/V5.10.0: Academy account selection](docs/ACADEMY_SELECTION_PR5B2A.md) | Một nguồn choice, sparse CAS giữ personal plan, route/A→B/privacy, clean PR và main CI; đã merge/deploy |
 | Đang triển khai | [PR5b2b1/V5.11.0: checklist/bước tập trung account/browser](docs/ACADEMY_DEVICE_STATE_PR5B2B1.md) | Atomic local patches, reload/offline/two tabs/A→B/quota/corrupt; timer/backup/purge chưa thuộc lát cắt này |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |

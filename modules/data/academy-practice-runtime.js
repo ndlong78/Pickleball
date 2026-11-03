@@ -26,7 +26,7 @@ async function read(){
   const repositoryDb=await repository();guard(stamp);scope||=repositoryDb.scope('user:'+current.owner);
   const row=await scope.getAcademyPractice(current.fence);guard(stamp);if(version!==readVersion)return;
   if(!state.row||BigInt(row.localRevision)>=BigInt(state.row.localRevision)){state={...state,mode:'account',owner:current.owner,error:failed?state.error:null,row};emit()}
- }catch(error){if(stamp===generation){state={...state,mode:'error',busy:false,error:error.code||'storage_unavailable',row:null};emit()}}
+ }catch(error){if(stamp===generation&&version===readVersion){state={...state,mode:'error',busy:false,error:error.code||'storage_unavailable',row:null};emit()}}
 }
 function adopt(){
  const nextTag=tag();if(sourceTag===nextTag)return;

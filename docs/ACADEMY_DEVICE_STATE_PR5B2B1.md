@@ -30,7 +30,7 @@ Controls disable khi đọc/ghi/lỗi nguồn; chỉ báo đã lưu sau transact
 
 ## Kiểm chứng và giới hạn
 
-Unit fake-IDB kiểm merge hai connections/reopen/isolation/no queue, hai consent revisions, quota rollback/retry, schema/credential/corrupt và close in-flight. Browser native-IDB/mock Auth/RPC kiểm4 viewport390/820/1180/1440, reload/tám route/offline, two tabs, quota/corrupt, A→B/late read/write và hai nguồn consent. Mock transport không chứng minh Auth/RLS thật.
+Unit VM kiểm lỗi đọc cũ không ghi đè lần lưu mới trong cùng account (fail trước/pass sau guard readVersion). Unit fake-IDB kiểm merge hai connections/reopen/isolation/no queue, hai consent revisions, quota rollback/retry, schema/credential/corrupt và close in-flight. Browser native-IDB/mock Auth/RPC kiểm4 viewport390/820/1180/1440, reload/tám route/offline, two tabs, quota/corrupt, A→B/late read/write và hai nguồn consent. Mock transport không chứng minh Auth/RLS thật.
 
 Harness Auth thật local giữ OTP/email capture/session/private RPC và các regression cũ, đổi expectation reload Academy sang checklist/focus đã lưu và timer dừng. CI Chromium/WebKit và pgTAP/REST phải kiểm đúng HEAD; counts/fail/flaky/retry ở PR. PWA kiểm upgrade5.10, cache lazy module mới và visited Academy guest offline dưới `/Pickleball/`; không cache Auth/API hoặc ghi credentials vào artifact.
 

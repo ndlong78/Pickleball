@@ -290,7 +290,7 @@ function acceptPractice(){
   if(old!==currentFocusIndex(get()||{})){stopTick();focusTimer=null}
  }
  const x=get();if(x)drawSteps(x);else practiceControls();
- if(!practiceState?.busy&&practiceFocus){if(document.activeElement===document.body&&practiceFocus.isConnected&&!practiceFocus.disabled)practiceFocus.focus({preventScroll:true});practiceFocus=null}
+ if(!practiceState?.busy&&practiceFocus){if(document.hasFocus()&&document.activeElement===document.body&&practiceFocus.isConnected&&!practiceFocus.disabled)practiceFocus.focus({preventScroll:true});practiceFocus=null}
 }
 document.addEventListener('pickleup:academy-practice-data',acceptPractice);
 document.getElementById('academyPracticeRetry')?.addEventListener('click',()=>practice?.retry());
