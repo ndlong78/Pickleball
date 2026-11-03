@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-Runbook khởi đầu từ PR0, cập nhật trạng thái sau #25 / main `c9afa50` / V5.6.0 tại [bản rà soát](V6_PROGRESS_REVIEW.md). Local backend/Auth/importer, UI mục tiêu/check-in, event lifecycle và Academy account đã merge; Auth/import/sync/activity flags vẫn tắt. Các bước provisioning/backup/restore/delete chưa có evidence vận hành. Dùng [policy pilot](PILOT_OPERATING_POLICY.md) cho quyền tự chủ/Free tier/Auth/retention đã được giao; không hỏi duyệt lại các quyết định đó, không dùng production. Đọc [dictionary](DATA_DICTIONARY.md) và [threat model](THREAT_MODEL.md).
+**Trạng thái 03/11/2026:** main `ddcb9f2` / V5.7.0 sau #26, assessments/matches UI đã merge. [PR5b1a](PLAN_RPC_PR5B1A.md) bổ sung `apply_plan_operation` và Auth adapter capability riêng cho plans/selections; chưa repository/sender/review hoặc nguồn account UI của các domain này. Bốn flags vẫn tắt, URL/key rỗng. [Tiến độ/evidence và gates staging/backup/pilot](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
 
 ## 1. Rủi ro restore hiện tại cần thiết kế bù
 

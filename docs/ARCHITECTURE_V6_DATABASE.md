@@ -1,6 +1,6 @@
 # PickleUp V6 — kiến trúc database, auth và offline sync
 
-**Trạng thái 02/11/2026:** main `c9afa50` / V5.6.0 sau #25. Backend/Auth/importer, UI mục tiêu/check-in, event lifecycle/repair và Academy account UI đã merge. PR5a2c/V5.7.0 nối assessments/matches, đang review. Bốn flags vẫn tắt; plans/selections→training, full backup/purge và vận hành pilot còn lại. [Tiến độ và evidence](V6_PROGRESS_REVIEW.md).
+**Trạng thái 03/11/2026:** main `ddcb9f2` / V5.7.0 sau #26, assessments/matches UI đã merge. [PR5b1a](PLAN_RPC_PR5B1A.md) bổ sung `apply_plan_operation` và Auth adapter capability riêng cho plans/selections; chưa repository/sender/review hoặc nguồn account UI của các domain này. Bốn flags vẫn tắt, URL/key rỗng. [Tiến độ/evidence và gates staging/backup/pilot](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
 
 ADR/baseline PR0 bên dưới giữ bối cảnh thiết kế; hợp đồng từng PR mô tả hiện thực. [Policy](PILOT_OPERATING_POLICY.md) ghi owner đã duyệt Managed Free/CAS và ủy quyền chi tiết Auth/chính sách dữ liệu. Ngân sách tự động 0 USD; quyền staging không suy thành quyền production, không tự merge. Blueprint là đầu vào thiết kế, không tự cấp quyền triển khai.
 
