@@ -2,7 +2,7 @@
 
 **Căn cứ:** [`../AGENTS.md`](../AGENTS.md), [`PRODUCT_SPEC.md`](PRODUCT_SPEC.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md). Quy trình này áp dụng cho feature, bugfix, performance và thay đổi tài liệu. **Đừng tự tuyên bố Stable từ việc code đã viết hoặc workflow có trạng thái xanh nhưng còn flaky.**
 
-**V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #22 có UI hai mutable domains và nền sự kiện, flags vẫn tắt. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
+**V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #27 có UI mục tiêu/check-in/Academy/assessments/matches và RPC plans/selections, flags vẫn tắt; client PR5b1b chưa nối UI giáo án. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
 
 ## 1. Trước mỗi nhiệm vụ: evidence thực tế
 

@@ -4,14 +4,14 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 ## Trạng thái hiện tại — 03/11/2026
 
-**V5.7.0 đã merge [PR #26](https://github.com/ndlong78/Pickleball/pull/26)**, main `ddcb9f2`; regression/backend và Pages sạch tại cùng merge SHA. Evidence tại [tiến độ V6](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md). [PR5b1a](docs/PLAN_RPC_PR5B1A.md) bổ sung nền RPC giáo án/lựa chọn, chưa nối UI.
+**V5.7.0, nền RPC đã merge [PR #27](https://github.com/ndlong78/Pickleball/pull/27)**, main `df22337`; regression/backend và Pages sạch tại cùng merge SHA. Evidence tại [tiến độ V6](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md). [PR5b1b](docs/PLAN_CLIENT_PR5B1B.md) bổ sung client/queue/review giáo án và lựa chọn, chưa nối UI.
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám trang,80 bài1.0–4.0; nội dung đến5.0 vẫn là định hướng.
 - Guest là mặc định. **Cả bốn flags Auth/import/sync/activity vẫn tắt**, URL/key rỗng; chưa cloud pilot/public signup. Login không tự nhập hoặc gửi dữ liệu thiết bị.
 - Academy, self/stage/advanced assessments và trận đấu đã có account source/UI trong mã; chỉ dùng khi cấu hình pilot riêng. Giáo án, lựa chọn, nhật ký tập, timer và checklist trên UI vẫn thuộc thiết bị. RPC mới chưa thay nguồn này; không tự chép private points/insights sang giáo án khách.
 - Trước xóa trình duyệt/chuyển máy, giữ backup V5/raw rescue và tệp cache riêng ngoài browser. Hai cache export mục tiêu/check-in và bốn hoạt động **chưa round-trip hoặc backup toàn account**. Chưa purge/xóa account hay vận hành backup/restore.
 
-Các mục phiên bản bên dưới là lịch sử tính năng. Tiếp theo repository/sender/review và UI plans/selections, rồi PR5a2d training; pilot gates vẫn đóng.
+Các mục phiên bản bên dưới là lịch sử tính năng. Tiếp theo UI plans/selections trên nền client mới, rồi PR5a2d training; pilot gates vẫn đóng.
 
 ## Phiên bản 1.1
 

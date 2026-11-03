@@ -1,6 +1,6 @@
 # PickleUp V6 — data dictionary và legacy inventory
 
-**Trạng thái 03/11/2026:** main `ddcb9f2` / V5.7.0 sau #26, assessments/matches UI đã merge. [PR5b1a](PLAN_RPC_PR5B1A.md) bổ sung `apply_plan_operation` và Auth adapter capability riêng cho plans/selections; chưa repository/sender/review hoặc nguồn account UI của các domain này. Bốn flags vẫn tắt, URL/key rỗng. [Tiến độ/evidence và gates staging/backup/pilot](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
+**Trạng thái 03/11/2026:** main `df22337` / V5.7.0 sau #27. RPC plans/selections đã merge; [PR5b1b](PLAN_CLIENT_PR5B1B.md) thêm typed client, consent/cursor/lease riêng, dependency ACK, frozen sender và review API. Chưa nối runtime/source UI giáo án hoặc training. Bốn flags vẫn tắt, URL/key rỗng. [Tiến độ/evidence và gates staging/backup/pilot](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
 
 ## 1. Toàn bộ storage keys hiện có
 
@@ -94,3 +94,5 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).
 
 PR5a2c nối [self/stage/advanced và matches](ASSESSMENT_MATCH_PR5A2C.md) vào activity facade khi opt-in: raw history không capped200/300/500, projection đồng bộ cho reader giữ scale/metrics/nullable dates và UUID. Không đổi bảng/cột,18 khóa hoặc định dạng backup V5; backup/importer vẫn đọc legacy trực tiếp.
+
+PR5b1b thêm metadata `plans-selections-consent-1`, cursor slot `plans-selections-1`, lease `planSenderLease` trên schema1 hiện hữu. Outbox lưu planDependencies/requiresPlan để chờ ACK, selection/plan result overlay giữ immutable content. Full-preview review giữ dependency context và requests cũ; export `plans-selections-cache-v1` riêng, chưa round-trip/toàn account. [Hợp đồng client](PLAN_CLIENT_PR5B1B.md).

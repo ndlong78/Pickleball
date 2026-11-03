@@ -49,6 +49,6 @@ Free không được coi là có automatic DB backup/PITR/SLA. Mục tiêu pilot
 
 ## 5. Thứ tự triển khai và readiness
 
-PR1a–PR4c và PR5a1 đã merge. Tiếp theo là lifecycle/repair/consent sự kiện và lát cắt Academy; plans/selections phải sẵn sàng trước tạo training account mới, sau đó full V6 backup/purge và hardening. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
+PR1a–PR4c, PR5a1/PR5a2a/b/c và RPC PR5b1a/#27 đã merge. Tiếp theo là client/queue/review PR5b1b rồi UI giáo án/lựa chọn; plans/selections phải sẵn sàng trước tạo training account mới, sau đó full V6 backup/purge và hardening. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
 
 Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nhận region/quota, SMTP hoạt động, backup destination/job và restore drill đạt, privacy/export/delete được kiểm thử, CI đúng HEAD, feature flag opt-in. Owner đã ủy quyền lựa chọn kỹ thuật; thiếu quyền truy cập/cấu hình thực tế là công việc còn lại, không phải quyết định kỹ thuật cần hỏi lại.

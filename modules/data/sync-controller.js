@@ -5,17 +5,19 @@
 class SyncError extends Error{constructor(code){super(code);this.name='SyncError';this.code=code}}
 const fail=code=>{throw new SyncError(code)};
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-function create({auth,repository,owner,pullFactory=root.PickleUpPullController,enabled=()=>false,online=()=>root.navigator?.onLine!==false,now=()=>Date.now(),random=()=>Math.random(),instanceId=root.crypto.randomUUID(),budget=25,policy='preferences-checkins-1',activityCore=root.PickleUpActivityCore,activityConsentRevision=null}){
- const events=policy==='activity-events-1',eventKinds=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
+function create({auth,repository,owner,pullFactory=root.PickleUpPullController,enabled=()=>false,online=()=>root.navigator?.onLine!==false,now=()=>Date.now(),random=()=>Math.random(),instanceId=root.crypto.randomUUID(),budget=25,policy='preferences-checkins-1',activityCore=root.PickleUpActivityCore,activityConsentRevision=null,planCore=root.PickleUpPlanCore,planConsentRevision=null}){
+ const plans=policy==='plans-selections-1',events=policy==='activity-events-1',eventKinds=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
+ if(plans&&(repository.planLifecycle!==1||pullFactory.PLAN_LIFECYCLE!==1||typeof auth.planRpc!=='function'||!planCore))fail('upgrade_required');
+ if(plans&&(typeof planConsentRevision!=='string'||! /^[1-9][0-9]{0,18}$/.test(planConsentRevision))||!plans&&planConsentRevision!==null)fail('invalid_options');
  if(events&&(!repository.policies?.includes(policy)||!pullFactory.POLICIES?.includes(policy))||activityConsentRevision!==null&&(repository.activityLifecycle!==1||pullFactory.ACTIVITY_LIFECYCLE!==1))fail('upgrade_required');
  if(activityConsentRevision!==null&&(!events||typeof activityConsentRevision!=='string'||! /^[1-9][0-9]{0,18}$/.test(activityConsentRevision)))fail('invalid_options');
- if(!['preferences-checkins-1','activity-events-1'].includes(policy)||events&&(!activityCore||typeof auth.eventRpc!=='function'))fail('invalid_options');
+ if(!['preferences-checkins-1','activity-events-1','plans-selections-1'].includes(policy)||events&&(!activityCore||typeof auth.eventRpc!=='function'))fail('invalid_options');
  if(!UUID.test(owner)||!UUID.test(instanceId)||typeof enabled!=='function'||typeof online!=='function'||!Number.isInteger(budget)||budget<1||budget>100)fail('invalid_options');
- const scope=repository.scope('user:'+owner),reader=pullFactory.create({auth,repository,owner,enabled,policy,activityCore,activityConsentRevision});let active=true,busy=false;
+ const scope=repository.scope('user:'+owner),reader=pullFactory.create({auth,repository,owner,enabled,policy,activityCore,activityConsentRevision,planCore,planConsentRevision});let active=true,busy=false;
  const unsubscribe=auth.subscribe(state=>{if(state.user?.id!==owner){active=false;scope.close();reader.close()}});if(!active)unsubscribe();
  function guard(){if(!active)fail('account_changed');if(enabled()!==true)fail('pilot_disabled');if(online()!==true)fail('offline')}
- async function rpc(method,args){guard();const response=await auth[events?'eventRpc':'syncRpc'](owner,method,args);guard();return response}
- async function summary(){const all=await scope.listOutbox(),operations=events?all.filter(op=>eventKinds.has(op.kind)):all;return {pending:operations.filter(o=>['pending','deferred','sending'].includes(o.state)).length,conflicts:operations.filter(o=>['conflict','blocked'].includes(o.state)).length,...(events?{otherPending:all.filter(op=>!eventKinds.has(op.kind)&&['pending','deferred','sending'].includes(op.state)).length}:{})}}
+ async function rpc(method,args){guard();const response=await auth[plans?'planRpc':events?'eventRpc':'syncRpc'](owner,method,args);guard();return response}
+ async function summary(){const all=await scope.listOutbox(),kinds=plans?new Set(['personal_plans','user_selections']):eventKinds,operations=events||plans?all.filter(op=>kinds.has(op.kind)):all;return {pending:operations.filter(o=>['pending','deferred','sending'].includes(o.state)).length,conflicts:operations.filter(o=>['conflict','blocked'].includes(o.state)).length,...(events||plans?{otherPending:all.filter(op=>!kinds.has(op.kind)&&['pending','deferred','sending'].includes(op.state)).length}:{})}}
  return {
   policy,
   async sync({forceRetry=false}={}){
@@ -29,13 +31,15 @@ function create({auth,repository,owner,pullFactory=root.PickleUpPullController,e
     let delivered=0;
     for(;delivered<budget;delivered++){
      guard();if(!await scope.acquireLease(instanceId,now(),15000,policy))return {status:'busy',...await summary()};
-     const claim=await scope.claimSync({leaseOwner:instanceId,epoch:head.epoch,now:now(),forceRetry,policy,activityConsentRevision});guard();
+     const claim=await scope.claimSync({leaseOwner:instanceId,epoch:head.epoch,now:now(),forceRetry,policy,activityConsentRevision,planConsentRevision});guard();
      if(claim.status==='retry_wait')return {...claim,...await summary()};
      if(claim.status==='idle')break;
      const op=claim.operation,body=op.request;let result;
      try{
+      // A retry may already have committed; its frozen request must reach the receipt.
+      if(plans&&op.attempts===1){try{planCore.payload(op.kind,body.p_payload,{action:body.p_action,revision:body.p_expected_revision})}catch(_){result={status:'invalid',epoch:body.p_epoch}}}
       if(events){try{if(body.p_action==='put'){if(body.p_expected_revision!=='0')throw Error();activityCore.payload(op.kind,body.p_payload)}}catch(_){result={status:'invalid',epoch:body.p_epoch}}}
-      if(!result)result=await rpc(events?'apply_event_operation':'apply_sync_operation',body);
+      if(!result)result=await rpc(plans?'apply_plan_operation':events?'apply_event_operation':'apply_sync_operation',body);
      }catch(error){if(['account_changed','pilot_disabled','offline','consent_changed'].includes(error.code))throw error;result={status:'network_error'}}
      const transient=['network_error','auth_required','stale','unavailable','limit_exceeded','upgrade_required'].includes(result?.status);
      if(transient||!result){
@@ -43,7 +47,7 @@ function create({auth,repository,owner,pullFactory=root.PickleUpPullController,e
       await scope.deferSync(op.operationId,body,{code,policy,nextAttemptAt:now()+Math.round(delay)});guard();return {status:code,...await summary()};
      }
      let outcome;
-     try{if(events&&['applied','conflict'].includes(result?.status)&&result.row)try{activityCore.row(op.kind,result.row,{owner,id:op.id})}catch(_){fail('invalid_response')}outcome=await scope.completeSync(op.operationId,body,result,{policy,activityConsentRevision})}catch(error){if(error.code!=='invalid_response')throw error;await scope.deferSync(op.operationId,body,{code:'invalid_response',policy,nextAttemptAt:now()+60000});return {status:'invalid_response',...await summary()}}
+     try{if((events||plans)&&['applied','conflict'].includes(result?.status)&&result.row)try{(plans?planCore:activityCore).row(op.kind,result.row,{owner,id:op.id})}catch(_){fail('invalid_response')}outcome=await scope.completeSync(op.operationId,body,result,{policy,activityConsentRevision,planConsentRevision})}catch(error){if(error.code!=='invalid_response')throw error;await scope.deferSync(op.operationId,body,{code:'invalid_response',policy,nextAttemptAt:now()+60000});return {status:'invalid_response',...await summary()}}
      guard();if(outcome.status==='reset_required'){await reader.pull({forceReset:true});guard();return {status:'needs_review',...await summary()}}
     }
     await reader.pull();guard();const counts=await summary();guard();return {status:counts.conflicts?'needs_review':counts.pending?'pending':'synced',delivered,...counts};
@@ -52,5 +56,5 @@ function create({auth,repository,owner,pullFactory=root.PickleUpPullController,e
   close(){active=false;unsubscribe();reader.close();scope.close()}
  };
 }
-const api={create,SyncError,ACTIVITY_LIFECYCLE:1,POLICIES:Object.freeze(['preferences-checkins-1','activity-events-1'])};if(typeof module!=='undefined')module.exports=api;else root.PickleUpSyncController=api;
+const api={create,SyncError,ACTIVITY_LIFECYCLE:1,PLAN_LIFECYCLE:1,POLICIES:Object.freeze(['preferences-checkins-1','activity-events-1','plans-selections-1'])};if(typeof module!=='undefined')module.exports=api;else root.PickleUpSyncController=api;
 })(typeof window==='undefined'?globalThis:window);
