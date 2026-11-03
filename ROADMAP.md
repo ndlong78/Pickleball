@@ -1,19 +1,20 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **03/11/2026** — main `411df63` sau #29/app5.8.0, UI/Pages success; backend sau merge fail fixture Auth dependency, chưa clean.
+Cập nhật: **03/11/2026** — main `a2df905` sau #30/app5.9.0, backend/Pages success; UI sau merge có1 flaky, chưa clean.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c đã merge. Năm flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Năm flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
 
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|
 | Đã merge #24–#26 | Lifecycle/repair, Academy, assessments và matches UI | Source rõ, stable UUID/frozen requests, review và Auth thật; không dual-write/attendance |
 | Đã merge #29 | [PR5b1c/V5.8.0: UI giáo án/lựa chọn cá nhân](docs/PLAN_UI_PR5B1C.md) | Basic/advanced Coach, Journey/Court, manual sync/review/delete/restore; cần sửa fixture backend sau merge |
-| Đang triển khai | [PR5a2d/V5.9.0: nhật ký tập tài khoản](docs/TRAINING_ACCOUNT_PR5A2D.md) | Own plan ACK + transaction fence, mọi reader cùng nguồn, manual send/delete/review, CI sạch; chưa merge/deploy |
-| Phục hồi | PR5b2 Academy lesson selection/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
+| Đã merge #30 | [PR5a2d/V5.9.0: nhật ký tập tài khoản](docs/TRAINING_ACCOUNT_PR5A2D.md) | Own plan ACK, manual send/review; cần sửa readiness fixture sync-ui sau merge |
+| Đang triển khai | [PR5b2a/V5.10.0: Academy account selection](docs/ACADEMY_SELECTION_PR5B2A.md) | Một nguồn choice, sparse CAS giữ personal plan, route/A→B/privacy, clean HEAD CI; chưa merge/deploy |
+| Phục hồi | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
-Các bước sau PR5a2d là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Main đã có giáo án tài khoản, nhật ký tập đang chuyển ở PR5a2d; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
+Các bước sau PR5b2a là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Main đã có giáo án/nhật ký tài khoản; Academy choice đang chuyển ở PR5b2a; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
 
 ## Lịch sử roadmap V1–V5
 

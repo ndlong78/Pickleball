@@ -66,10 +66,6 @@ el("wpSave").addEventListener("click",async()=>{
  }catch(_){if(stamp===sourceTag)el("wpStatus").textContent="Không lưu được lịch tập; hãy kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ."}
 });
 el("wpRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate();document.dispatchEvent(new Event("pickleup:discard-checkin-drafts"))}draw()});
-el("wpDays").addEventListener("click",event=>{
- const a=event.target.closest?.("a[data-lesson-id]");if(!a)return;
- try{localStorage.setItem("pickleup_academy_last_lesson_v4",a.dataset.lessonId)}catch(_){}
-});
 document.addEventListener("pickleup:activity-data",draw);
 document.addEventListener("pickleup:score-saved",draw);
 document.addEventListener("pickleup:training-log-updated",draw);

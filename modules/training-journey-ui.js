@@ -5,7 +5,7 @@ const j=window.PICKLEUP_JOURNEY,g=window.PICKLEUP_WEEKLY_GOALS,p=window.PICKLEUP
 const $=id=>document.getElementById(id),lessons=window.PICKLEUP_CURRICULUM||[];
 if(!j||!g||!p||!c||!$("jRefresh"))return;
 const data=window.PICKLEUP_DATA;
-function raw(key){try{if(["pickleup_selected_plan_v31","pickleup_plans_v24","pickleup_advanced_plans_v31"].includes(key)&&window.PICKLEUP_PLANS)return window.PICKLEUP_PLANS.raw(key);return ["pickleup_academy_v2","pickleup_academy_history_v44","pickleup_stage_checks_v23"].includes(key)&&window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
+function raw(key){try{if(["pickleup_academy_last_lesson_v4","pickleup_selected_plan_v31","pickleup_plans_v24","pickleup_advanced_plans_v31"].includes(key)&&window.PICKLEUP_PLANS)return window.PICKLEUP_PLANS.raw(key);return ["pickleup_academy_v2","pickleup_academy_history_v44","pickleup_stage_checks_v23"].includes(key)&&window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):data?data.raw(key):localStorage.getItem(key)}catch(_){return null}}
 function parse(key,fallback){try{const v=JSON.parse(raw(key)||"null");return v===null?fallback:v}catch(_){return fallback}}
 function snapshot(){
  const goal=g.readSettings(raw(g.KEY)),prefs=p.readSettings(raw(p.KEY));
@@ -60,11 +60,6 @@ function redraw(){
  for(const id of ['jTodayMinutes','jDone','jSkipped','jClear'])$(id).disabled=data?!data.canWrite('practice_checkins',c.today()):false;
  $("jCheckStatus").textContent=(data?.isAccount()&&data.pending("practice_checkins",c.today())?"Kho tài khoản trên thiết bị · chờ đồng bộ. ":"")+(entry?.status==="done"?"Đã lưu "+entry.minutes+" phút tập thực tế hôm nay.":entry?.status==="skipped"?"Hôm nay đã đánh dấu bỏ qua.":"");
 }
-$("jLessonOpen").addEventListener("click",()=>{
- const id=$("jLessonOpen").dataset.lessonId;if(!id)return;
- try{localStorage.setItem("pickleup_academy_last_lesson_v4",id)}catch(_){}
- document.dispatchEvent(new CustomEvent("pickleup:academy-request-lesson",{detail:{id}}));
-});
 async function checkin(status){
  const source=data?.getView(),stamp=source?source.owner+":"+source.mode:"guest",day=c.today(),revision=viewRevision;
  const minutes=status==="done"?Number($("jTodayMinutes").value):null;

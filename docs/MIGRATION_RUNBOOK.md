@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-**Trạng thái 03/11/2026:** main `411df63` / V5.8.0 sau #29 đã có UI giáo án/personal selection. UI/Pages success; backend sau merge fail fixture Auth dependency, chưa clean. [PR5a2d/V5.9.0](TRAINING_ACCOUNT_PR5A2D.md) đang nối nhật ký tập qua activity facade, own plan ACK và transaction fence; chưa merge/deploy. Năm flags vẫn tắt, URL/key rỗng. Bài Học viện gần nhất/checklist vẫn device-only; timer account chỉ RAM phiên trang. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
+**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md).
 
 ## 1. Rủi ro restore hiện tại cần thiết kế bù
 

@@ -127,7 +127,7 @@ function ensure(page){
   const css=styles.map(loadStyle);
   const fragment=await ensureMarkup(page);
   let scripts=0;
-  for(const file of files){if(await loadScript(file))scripts++;if(file==="modules/data/domain-runtime.js")await root.PICKLEUP_DATA?.ready;if(file==="modules/data/activity-runtime.js")await root.PICKLEUP_ACTIVITY?.ready;}
+  for(const file of files){if(await loadScript(file))scripts++;if(file==="modules/data/domain-runtime.js")await root.PICKLEUP_DATA?.ready;if(file==="modules/data/activity-runtime.js")await root.PICKLEUP_ACTIVITY?.ready;if(file==="modules/data/plan-runtime.js")await root.PICKLEUP_PLANS?.ready;}
   await Promise.all(css);
   // Coach may dispatch plan-selected before the on-court module exists.
   // Replay the latest selection after its event listener is installed.

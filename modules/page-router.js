@@ -82,6 +82,7 @@ function onClick(event){
  const page=id&&sections.has(id)?sections.get(id):url.searchParams.get(pageParam);
  if(!byId.has(page))return;
  event.preventDefault();
+ if(page==="academy"&&a.dataset?.lessonId&&root.PICKLEUP_PLANS?.requestLesson){root.PICKLEUP_PLANS.requestLesson(a.dataset.lessonId);return}
  openPage(page,id&&sections.has(id)?id:null);
 }
 function restore(){

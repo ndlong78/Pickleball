@@ -4,15 +4,15 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 ## Trạng thái hiện tại — 03/11/2026
 
-Main **V5.8.0**, `411df63` sau [#29](https://github.com/ndlong78/Pickleball/pull/29), Pages đã deploy và UI CI success; backend sau merge fail fixture Auth dependency, chưa clean. **PR5a2d/V5.9.0 đang nối nhật ký tập tài khoản**, chưa merge/deploy. [Hợp đồng](docs/TRAINING_ACCOUNT_PR5A2D.md), [tiến độ/evidence](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
+Main **V5.9.0**, `a2df905` sau [#30](https://github.com/ndlong78/Pickleball/pull/30), Pages/backend success; UI sau merge có1 flaky, chưa clean. **PR5b2a/V5.10.0 đang nối lựa chọn bài Học viện tài khoản**, chưa merge/deploy. [Hợp đồng](docs/ACADEMY_SELECTION_PR5B2A.md), [tiến độ/evidence](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
 - Guest mặc định. **Năm flags Auth/import/sync/activity/plan đều tắt**, URL/key rỗng; chưa cloud pilot/signup. Login không tự nhập hoặc gửi dữ liệu.
-- Giáo án basic/advanced và lựa chọn cá nhân đã có source/UI riêng. PR mới ghi lượt tập Court bằng own plan đã ACK, manual sync/delete/review, mọi reader nhật ký cùng facade và không mirror V5/attendance.
-- Bài Học viện gần nhất/checklist vẫn device-only. Account timer chỉ giữ trong phiên trang, reset khi reload/đổi nguồn hoặc tài khoản.
+- Main có giáo án và nhật ký tài khoản; PR mới chuyển bài Học viện gần nhất qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
+- Checklist/focus/timer khi dùng tài khoản chỉ RAM phiên trang, reset reload/source/owner; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
 - Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
 
-Tiếp theo Academy account lesson selection, full backup/privacy/PR6; pilot gates vẫn đóng.
+Tiếp theo persisted account device state, full V6 backup/purge và PR6; pilot gates vẫn đóng.
 
 ## Phiên bản 1.1
 

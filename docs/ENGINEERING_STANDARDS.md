@@ -4,7 +4,7 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `411df63` / V5.8.0 sau #29, Auth/import/sync/activity/plan flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `a2df905` / V5.9.0 sau #30, Auth/import/sync/activity/plan flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
 
 **Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
 
@@ -100,3 +100,5 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 [PR5b1c/V5.8.0](PLAN_UI_PR5B1C.md) thêm plan-runtime/plan-ui và flag plan riêng. Không direct SDK UI, không mirror account→V5. Basic/advanced Coach, Journey và Court cùng facade; pending selection không chạy timer plan cũ. Account timer RAM, source change clear DOM/draft/wake lock; account result không append log khách. Bài Học viện gần nhất/nhật ký training vẫn device-only. Cache/assets bump5.8, SQL/IDB schema/RLS không đổi.
 
 [PR5a2d/V5.9.0](TRAINING_ACCOUNT_PR5A2D.md) nối training trong activity-runtime/source-core. Court nạp activity dependencies lazy; writer giữ token hai source và repository transaction fence trên consent/revision/epoch/live own-plan. Mọi reader training qua facade; capped legacy validator chỉ guest/backup. Source mismatch chặn ghi Court/auto-append guest log. Không đổi SQL/RLS/IDB schema1, không persist clock account.
+
+[PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md): last Academy lesson đi qua plan-runtime, sparse CAS user_selections; router delegate data-lesson-id links trước routing, chờ commit/module và bỏ source cũ. Loader chờ plan runtime ready. Academy reset nguồn clear DOM/timer và dùng RAM checklist/focus khi activity hoặc selection account; không mirror V5, chưa IDB device_state. Guest các key cũ giữ nguyên.
