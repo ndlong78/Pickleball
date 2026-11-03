@@ -9,7 +9,7 @@ function history(source){
  return (state.projection?.plans||[]).filter(p=>p.source===source).map(p=>({...structuredClone(p.plan),id:p.id,_pending:p.pending,_review:p.reviewRequired,_localRevision:p.localRevision})).reverse();
 }
 function selected(){
- if(state.mode==='guest'){const choice=legacy(SELECTED,null);return choice&&['basic','advanced'].includes(choice.source)?history(choice.source).find(p=>p.id===choice.id)||null:null}
+ if(state.mode==='guest'){const choice=legacy(SELECTED,null);return choice&&['basic','advanced'].includes(choice.source)?history(choice.source).find(p=>p?.id===choice.id)||null:null}
  const p=state.projection?.selectedPlan;return p?{...structuredClone(p.plan),id:p.id}:null;
 }
 function notice(){return state.mode==='guest'?'Giáo án và lựa chọn cá nhân: kho thiết bị. Đăng nhập không tự nhập hoặc gửi dữ liệu.':state.mode==='account'?'Giáo án và lựa chọn cá nhân: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Chọn giáo án và đồng bộ trước khi mở Court. Nhật ký tập và bài Học viện gần nhất vẫn trên thiết bị; điểm không tạo attendance.':state.mode==='loading'?'Đang xác định nguồn giáo án; chưa thể ghi dữ liệu.':'Chưa đọc được kho giáo án tài khoản. Đọc lại hoặc xuất cache; chưa chuyển sang ghi kho khách.'}
