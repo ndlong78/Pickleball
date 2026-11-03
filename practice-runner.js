@@ -141,7 +141,7 @@ document.addEventListener("pickleup:plan-selected",event=>loadPlan(plansSource?.
  const selected=$("pcPlan")?.dataset.planId;
  const plans=read(plansKey,[]);
  if(plansSource?.isAccount())loadPlan(plansSource.selected());else if(selected&&Array.isArray(plans))loadPlan(plans.find(p=>p.id===selected)||null);else render();
- $("pcOpenRun").addEventListener("click",()=>{window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
+ $("pcOpenRun")?.addEventListener("click",()=>{window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
  $("pcAttemptSave").addEventListener("click",saveAttempt);
  $("pcWakeToggle").addEventListener("change",toggleWake);
  $("pcRunStart").addEventListener("click",startPause);
