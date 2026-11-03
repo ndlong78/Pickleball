@@ -35,7 +35,7 @@ function chooseLesson(id){
 async function requestLesson(id){
  const stamp=token,serial=++navigation,route=root.PICKLEUP_ROUTER?.getPage?.();let saved=false;
  try{await chooseLesson(id);saved=true;if(stamp!==token||serial!==navigation||route!==root.PICKLEUP_ROUTER?.getPage?.())return;root.PICKLEUP_ROUTER?.openPage('academy');await root.PICKLEUP_PAGE_LOADER?.ensure('academy');if(stamp!==token||serial!==navigation||root.PICKLEUP_ROUTER?.getPage&&root.PICKLEUP_ROUTER.getPage()!=='academy')return;document.dispatchEvent(new CustomEvent('pickleup:academy-request-lesson',{detail:{id,sourceToken:stamp,persisted:true}}))}
- catch(error){if(stamp===token){lessonFeedback=saved?'Lựa chọn đã lưu trên thiết bị; chưa mở được nội dung. Kiểm tra mạng và mở lại.':selectionError(error);paintSelection()}}
+ catch(error){if(stamp===token&&serial===navigation){lessonFeedback=saved?'Lựa chọn đã lưu trên thiết bị; chưa mở được nội dung. Kiểm tra mạng và mở lại.':selectionError(error);paintSelection()}}
 }
 function notice(){return state.mode==='guest'?'Giáo án và lựa chọn cá nhân: kho thiết bị. Đăng nhập không tự nhập hoặc gửi dữ liệu.':state.mode==='account'?'Giáo án và lựa chọn cá nhân: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Chọn giáo án và đồng bộ trước khi mở Court. Nhật ký tập có nguồn hoạt động riêng; lựa chọn bài Học viện dùng cùng kho giáo án; điểm không tạo attendance.':state.mode==='loading'?'Đang xác định nguồn giáo án; chưa thể ghi dữ liệu.':'Chưa đọc được kho giáo án tài khoản. Đọc lại hoặc xuất cache; chưa chuyển sang ghi kho khách.'}
 function emit(changed){
