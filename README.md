@@ -4,14 +4,15 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 ## Trạng thái hiện tại — 03/11/2026
 
-**V5.7.0, nền RPC đã merge [PR #27](https://github.com/ndlong78/Pickleball/pull/27)**, main `df22337`; regression/backend và Pages sạch tại cùng merge SHA. Evidence tại [tiến độ V6](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md). [PR5b1b](docs/PLAN_CLIENT_PR5B1B.md) bổ sung client/queue/review giáo án và lựa chọn, chưa nối UI.
+Main **V5.7.0**, `1a4fccd` sau [#28](https://github.com/ndlong78/Pickleball/pull/28), CI/backend/Pages sạch cùng merge SHA. **PR5b1c/V5.8.0 đang triển khai UI giáo án tài khoản**, chưa merge/deploy. [Hợp đồng](docs/PLAN_UI_PR5B1C.md), [tiến độ/evidence](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
 
-- Website: https://ndlong78.github.io/Pickleball/ — tám trang,80 bài1.0–4.0; nội dung đến5.0 vẫn là định hướng.
-- Guest là mặc định. **Cả bốn flags Auth/import/sync/activity vẫn tắt**, URL/key rỗng; chưa cloud pilot/public signup. Login không tự nhập hoặc gửi dữ liệu thiết bị.
-- Academy, self/stage/advanced assessments và trận đấu đã có account source/UI trong mã; chỉ dùng khi cấu hình pilot riêng. Giáo án, lựa chọn, nhật ký tập, timer và checklist trên UI vẫn thuộc thiết bị. RPC mới chưa thay nguồn này; không tự chép private points/insights sang giáo án khách.
-- Trước xóa trình duyệt/chuyển máy, giữ backup V5/raw rescue và tệp cache riêng ngoài browser. Hai cache export mục tiêu/check-in và bốn hoạt động **chưa round-trip hoặc backup toàn account**. Chưa purge/xóa account hay vận hành backup/restore.
+- Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
+- Guest mặc định. **Năm flags Auth/import/sync/activity/plan đều tắt**, URL/key rỗng; chưa cloud pilot/signup. Login không tự nhập hoặc gửi dữ liệu.
+- PR mới nối basic/advanced Coach, lựa chọn cá nhân, Journey/Court và Settings review. Chọn và đồng bộ plan trước Court; result không tạo training/attendance, không mirror V5.
+- Nhật ký tập, bài Học viện gần nhất/checklist vẫn device-only. Account timer chỉ giữ trong phiên trang, reset khi reload/đổi nguồn hoặc tài khoản.
+- Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
 
-Các mục phiên bản bên dưới là lịch sử tính năng. Tiếp theo UI plans/selections trên nền client mới, rồi PR5a2d training; pilot gates vẫn đóng.
+Tiếp theo training UI với own acknowledged plan, Academy account lesson selection và full backup/privacy/PR6; pilot gates vẫn đóng.
 
 ## Phiên bản 1.1
 

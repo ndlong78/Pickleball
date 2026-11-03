@@ -1,10 +1,10 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
-Cập nhật ngày **03/11/2026 (Asia/Saigon)**. Main `df223373fd7db248ee214ff3ef668c115abd91d6` sau [#27](https://github.com/ndlong78/Pickleball/pull/27), app/build5.7.0. PR5a2a/b/c và PR5b1a đã merge. CI sau merge cùng SHA sạch: [responsive41569387410](https://github.com/ndlong78/Pickleball/actions/runs/41569387410)244 unit+394 browser+5 WebKit rescue+5 WebKit font,0 fail/flaky/retry; [backend41569387397](https://github.com/ndlong78/Pickleball/actions/runs/41569387397)275 pgTAP/45 REST và GoTrue/Mailpit/SDK/browser Auth thật Chromium/WebKit; [Pages41569386663](https://github.com/ndlong78/Pickleball/actions/runs/41569386663)success.
+Cập nhật ngày **03/11/2026 (Asia/Saigon)**. Main `1a4fccd134c56631fa94a009b5f0c9f613f38e33` sau [#28](https://github.com/ndlong78/Pickleball/pull/28), app/build5.7.0. PR5b1a/b RPC/client/consent/queue/review đã merge. [Main UI41574687398](https://github.com/ndlong78/Pickleball/actions/runs/41574687398):267 unit+406 browser+5 WebKit rescue+5 WebKit font,0 fail/flaky/retry; [backend41574687566](https://github.com/ndlong78/Pickleball/actions/runs/41574687566):275 pgTAP/45 REST và real Auth Chromium/WebKit; [Pages41574686687](https://github.com/ndlong78/Pickleball/actions/runs/41574686687)success cùng merge SHA.
 
-[PR5b1b](PLAN_CLIENT_PR5B1B.md) đang triển khai client/typed projection/consent/queue/dependency/review cho plans/selections. Chưa nối runtime hoặc nguồn account UI giáo án; RPC PR5b1a đã có, không PR mở trùng khi bắt đầu. Tiếp theo UI plans/selections và toàn bộ readers trước PR5a2d training.
+[PR5b1c/V5.8.0](PLAN_UI_PR5B1C.md) đang triển khai source/UI giáo án basic/advanced, lựa chọn cá nhân, Journey/Court và Settings review/management. Chưa merge/deploy5.8.0. Không PR mở trùng khi bắt đầu; next training UI và Academy account lesson selection.
 
-Bốn flags Auth/import/sync/activity vẫn false, URL/key rỗng. Chưa staging Supabase/SMTP hoặc vận hành dữ liệu thật. Giáo án/lựa chọn/training/timer/checklist trên UI vẫn device-only; full backup/purge và PR6 còn lại. Frontend deploy không mở cloud pilot.
+Năm flags Auth/import/sync/activity/plan đều false, URL/key rỗng. Chưa staging SMTP hoặc vận hành dữ liệu thật. Nhật ký/bài Học viện gần nhất/checklist vẫn device-only; timer account giữ RAM trong phiên, reload reset. Full backup/purge/PR6 còn lại; frontend deploy không mở pilot.
 
 **Các bảng mã nguồn và evidence ở mục1–3 dưới đây là snapshot lịch sử sau #22** (`6a59bdb622ae564a7f954584191197f9aa4c0767`, app5.5.0), không phải danh sách thiếu của HEAD hiện tại. Mục4–5 phản ánh kế hoạch tiếp theo; hợp đồng từng PR giữ phạm vi riêng.
 
@@ -58,7 +58,7 @@ Trong lần rà soát tài liệu: local Node24 chạy lại 206 unit pass/0 fai
 
 ## 4. Kế hoạch triển khai theo thứ tự phụ thuộc
 
-PR5a2a/#24, PR5a2b/#25 và PR5a2c/#26 đã merge; PR5b1a/#27 đã merge; PR5b1b client đang triển khai. Các bước sau đó là **phạm vi kế hoạch**, chưa là GitHub PR đã mở. Mỗi bước nhỏ có CI đúng HEAD và review riêng, không tự merge. Có thể tách nhỏ thêm theo reader/writer thực tế; không ấn định lịch khi phụ thuộc staging chưa sẵn sàng.
+PR5a2a/#24, PR5a2b/#25 và PR5a2c/#26 đã merge; PR5b1a/#27 đã merge; PR5b1b/#28 đã merge; PR5b1c UI cá nhân đang triển khai. Các bước sau đó là **phạm vi kế hoạch**, chưa là GitHub PR đã mở. Mỗi bước nhỏ có CI đúng HEAD và review riêng, không tự merge. Có thể tách nhỏ thêm theo reader/writer thực tế; không ấn định lịch khi phụ thuộc staging chưa sẵn sàng.
 
 | Ưu tiên / bước | Kết quả cần có | Gate để coi hoàn tất |
 |---|---|---|
@@ -73,10 +73,10 @@ Công việc staging có thể chuẩn bị với dữ liệu giả trong lúc h
 
 ## 5. Việc owner cần chuẩn bị và điểm dừng hiện tại
 
-- **Review PR5b1b/CI:** không cần credentials. Client foundation giữ app/cache5.7.0 và cả bốn flags tắt; owner tự quyết merge khi các gate đúng HEAD sạch.
+- **Review PR5b1c/CI:** không cần credentials. UI bump app/cache5.8.0 và giữ năm flags tắt; owner tự quyết merge khi các gate đúng HEAD sạch.
 - **Khi bắt đầu staging:** cung cấp quyền project đúng môi trường qua kết nối bảo mật; kiểm region Singapore nếu khả dụng, Free quota và tách staging/pilot. Frontend chỉ URL HTTPS + publishable key; DB/service-role/SMTP secrets nằm ở cấu hình vận hành an toàn, không chat/repo/client.
 - **Trước email pilot:** custom SMTP/sender/domain đã xác minh, template OTP nhập mã, expiry/rate limits và `/Pickleball/` Site URL/allowlist; kiểm delivery/spam/abuse. Flag client không thay chính sách server về signup hoặc quyền RLS.
 - **Trước dữ liệu thật:** kho backup mã hóa ngoài Supabase, job/quyền operator, restore/Auth identity drill và workflow xóa account/cache đã kiểm chứng; privacy/support và QA thiết bị thật. Target trong [policy](PILOT_OPERATING_POLICY.md) chưa thành SLA đang vận hành.
-- **Tiếp theo về code:** PR5b1b client/review rồi UI plans/selections trước PR5a2d training, giữ flags off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
+- **Tiếp theo về code:** PR5b1c UI cá nhân rồi PR5a2d training/Academy account selection, giữ flags off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
 
 Hợp đồng tham chiếu: [kiến trúc](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md), [policy](PILOT_OPERATING_POLICY.md), [threat model](THREAT_MODEL.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md).

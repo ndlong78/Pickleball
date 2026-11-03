@@ -12,7 +12,7 @@ function notice(){
  if(state.mode==='guest')return 'Hoạt động: dữ liệu khách trên thiết bị. Đăng nhập không tự nhập điểm, đánh giá hoặc trận đấu.';
  if(state.mode==='loading')return 'Học viện: đang xác định nguồn dữ liệu, chưa thể lưu điểm.';
  if(state.mode==='error')return 'Không đọc được kho hoạt động tài khoản. Chưa chuyển sang ghi dữ liệu khách; đọc lại hoặc xuất cache trong Dữ liệu.';
- return 'Học viện, đánh giá và trận đấu: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Giáo án, nhật ký tập, bài gần nhất, timer và checklist vẫn trên thiết bị. Điểm và trận đấu không phải attendance hoặc DUPR.';
+ return 'Học viện, đánh giá và trận đấu: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Giáo án và lựa chọn cá nhân có nguồn riêng trong Dữ liệu. Nhật ký tập, bài Học viện gần nhất, timer và checklist vẫn trên thiết bị. Điểm và trận đấu không phải attendance hoặc DUPR.';
 }
 function emit(){
  for(const element of document.querySelectorAll('[data-activity-notice]')){element.textContent=notice();element.dataset.source=state.mode}

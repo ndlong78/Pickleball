@@ -4,12 +4,14 @@
 const core=window.PICKLEUP_ADVANCED_COACH;if(!core)return;
 const $=id=>document.getElementById(id);
 const names=core.names,keys=core.categories.map(c=>c.key),selectionKey="pickleup_selected_plan_v31";
-let current=null;
+const plansSource=window.PICKLEUP_PLANS;
+let current=null,createIntent=null,resultDirty=false,editRevision=null,historyPage=0;
 function node(tag,text,cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(cls)el.className=cls;return el}
 function valid(n){return Number.isInteger(n)&&n>=0&&n<=20}
 function read(key,otherwise){try{return JSON.parse(localStorage.getItem(key)||"null")??otherwise}catch(_){return otherwise}}
-function history(){const list=read(core.KEY,[]);return Array.isArray(list)?list.filter(core.validPlan):[]}
+function history(){if(plansSource?.isAccount())return plansSource.history("advanced");const list=read(core.KEY,[]);return Array.isArray(list)?list.filter(core.validPlan):[]}
 function writableHistory(){
+ if(plansSource?.isAccount())return history();
  const raw=localStorage.getItem(core.KEY);
  if(raw===null)return [];
  let plans;try{plans=JSON.parse(raw)}catch(_){throw Error("Lịch sử giáo án bị lỗi JSON; hãy sao lưu trước khi ghi thêm.")}
@@ -18,6 +20,7 @@ function writableHistory(){
 }
 function status(s){$("acCoachStatus").textContent=s}
 function chooseSource(){
+ if(plansSource?.isAccount())return {scores:{},level:"3.0–3.5",label:"Giáo án dùng kho tài khoản. Nhập sáu điểm nâng cao thủ công; không tự sao chép điểm từ nguồn khác."};
  if(window.PICKLEUP_ACTIVITY?.isAccount())return {scores:{},level:"3.0–3.5",label:"Đánh giá dùng kho tài khoản. Không tự sao chép điểm tài khoản vào giáo án khách; nhập sáu điểm thủ công hoặc dùng lại kho thiết bị."};
  const checks=read("pickleup_advanced_checks_v3",[]);
  const recent=Array.isArray(checks)?checks.filter(x=>x&&core.levels.includes(x.level)&&core.validScores(x.values)).slice().sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")))[0]:null;
@@ -62,15 +65,15 @@ function planCard(target,plan,active){
  $("acCoachComplete").hidden=!active;
  if(active){
   $("acCoachResultLabel").textContent="Kết quả "+names[plan.checkpoint.skill]+" sau buổi tập /20";
-  $("acCoachResult").value=valid(plan.checkScore)?plan.checkScore:"";
+  if(!resultDirty)$("acCoachResult").value=valid(plan.checkScore)?plan.checkScore:"";
   $("acCoachSave").textContent=plan.completedAt?"Cập nhật kết quả":"Lưu kết quả buổi tập";
  }
 }
 function select(plan,activate=true){
  current=plan;
- planCard($("acCoachPlan"),plan,activate);
+ planCard($("acCoachPlan"),plan,activate||plansSource?.isAccount());
  if(!plan)return;
- if(activate){
+ if(activate&&!plansSource?.isAccount()){
   try{localStorage.setItem(selectionKey,JSON.stringify({source:"advanced",id:plan.id}))}catch(_){}
   document.dispatchEvent(new CustomEvent("pickleup:plan-selected",{detail:{plan}}));
   $("acCoachRun").disabled=false;
@@ -81,30 +84,42 @@ function showHistory(){
  const finished=plans.filter(p=>p.completedAt&&valid(p.checkScore));
  $("acCoachCount").textContent=plans.length+" giáo án";$("acCoachFinished").textContent=finished.length+" đã tập";
  if(!plans.length){container.append(node("p","Chưa có giáo án nâng cao được lưu.","sub"));return}
- const selected=read(selectionKey,null);
- plans.slice(-6).reverse().forEach(plan=>{
+ const selected=plansSource?.isAccount()?{source:"advanced",id:plansSource.selected()?.id}:read(selectionKey,null);
+ const account=plansSource?.isAccount(),ordered=plans.slice().reverse();historyPage=Math.min(historyPage,Math.max(0,Math.ceil(plans.length/6)-1));
+ (account?ordered.slice(historyPage*6,historyPage*6+6):ordered.slice(0,6)).forEach(plan=>{
   const label=(plan.completedAt?"✓ ":"○ ")+new Date(plan.createdAt).toLocaleDateString("vi-VN")+" · "+plan.level+" · "+plan.exercises.map(e=>e.skillName).join(", ");
-  const button=node("button",label,"pc-history-item");button.type="button";
+  const button=node("button",label,"pc-history-item");button.type="button";button.dataset.planId=plan.id;button.disabled=plansSource?.isAccount()&&!plansSource.canWrite(plan.id);
   if(selected?.source==="advanced"&&selected.id===plan.id)button.setAttribute("aria-current","true");
-  button.addEventListener("click",()=>{select(plan,true);showHistory();window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("acCoachPlan").scrollIntoView({behavior:"smooth",block:"start"})});
+  button.addEventListener("click",async()=>{const stamp=plansSource?.token();resultDirty=false;select(plan,true);if(plansSource?.isAccount()){try{await plansSource.choose(plan.id);if(stamp!==plansSource.token())return;status("Đã chọn trên thiết bị · đồng bộ giáo án để dùng Court.")}catch(_){if(stamp===plansSource.token())status("Chưa chọn được; đọc lại hoặc xem mục cần xử lý trong Dữ liệu.")}}showHistory();controls();window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("acCoachPlan").scrollIntoView({behavior:"smooth",block:"start"})});
   container.append(button);
  });
+ if(account&&plans.length>6){for(const [label,delta]of [["Trang trước",-1],["Trang sau",1]]){const b=node("button",label);b.type="button";b.disabled=historyPage+delta<0||historyPage+delta>=Math.ceil(plans.length/6);b.onclick=()=>{historyPage+=delta;showHistory()};container.append(b)}}
 }
-function make(){
+async function make(){
+ const operationToken=plansSource?.token();
  try{
   const scores=scoresFromInputs(),plans=writableHistory();
   const requested=$("acCoachMatchFocus").value||null;
+  if(plansSource?.isAccount()){
+   const stamp=plansSource.token(),level=$("acCoachLevel").value,signature=JSON.stringify([scores,level,requested]);
+   if(createIntent?.signature!==signature){const snapshot=core.createPlan(scores,plans,level,new Date().toISOString(),window.PICKLEUP_ADVANCED_CURRICULUM||[],{focusMetric:requested});createIntent={signature,id:crypto.randomUUID(),operationId:crypto.randomUUID(),value:{source:'advanced',schema_version:1,level_band:level,plan_snapshot:snapshot}}}
+   const {signature:ignored,...intent}=createIntent;await plansSource.create(intent);if(stamp!==plansSource.token())return;createIntent=null;resultDirty=false;select(history().find(p=>p.id===intent.id)||null,false);showHistory();controls();status('Đã tạo giáo án trong kho tài khoản trên thiết bị · chọn giáo án và bấm đồng bộ.');return;
+  }
   const plan=core.createPlan(scores,plans,$("acCoachLevel").value,new Date().toISOString(),window.PICKLEUP_ADVANCED_CURRICULUM||[],{focusMetric:requested});
   const next=plans.concat(plan).slice(-100);
   localStorage.setItem(core.KEY,JSON.stringify(next));
   select(plan,true);showHistory();
   status("Đã tạo và lưu giáo án mới. Ba ưu tiên: "+plan.exercises.map(e=>e.skillName).join(", ")+". "+(requested?"Đã áp dụng ưu tiên được bạn chọn từ nhật ký trận đấu.":"Chọn thuần theo điểm kỹ năng."));
- }catch(err){status("Không tạo được giáo án: "+err.message)}
+ }catch(err){if(operationToken!==plansSource?.token())return;status(plansSource?.isAccount()?"Chưa tạo được giáo án; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.":"Không tạo được giáo án: "+err.message)}
 }
-function complete(){
+async function complete(){
  if(!current)return;
  const str=$("acCoachResult").value.trim(),result=Number(str);
  if(!str||!valid(result)){status("Nhập kết quả nguyên từ 0 đến 20.");return}
+ if(plansSource?.isAccount()){
+  const stamp=plansSource.token(),id=current.id,revision=resultDirty?editRevision:current._localRevision;
+  try{await plansSource.complete(id,result,revision);if(stamp!==plansSource.token())return;resultDirty=false;select(history().find(p=>p.id===id)||null,true);showHistory();controls();status('Đã lưu kết quả trên thiết bị · chờ đồng bộ. Không tự tạo nhật ký tập hoặc attendance.')}catch(_){if(stamp===plansSource.token())status('Chưa lưu được; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.')}return;
+ }
  try{
   const plans=writableHistory(),idx=plans.findIndex(p=>p.id===current.id);
   if(idx<0)throw Error("Không tìm thấy giáo án đã lưu.");
@@ -121,6 +136,12 @@ function complete(){
   select(updated,true);showHistory();
   status("Đã lưu: "+result+"/20 ("+sign+note+" so với đầu vào)."+logMessage);
  }catch(err){status("Lỗi lưu kết quả: "+err.message)}
+}
+function controls(){const writable=plansSource?plansSource.canWrite(current?.id):true;for(const id of ['acCoachCreate','acCoachImport','acCoachSave'])if($(id))$(id).disabled=!writable;const chosen=plansSource?.isAccount()?plansSource.selected():read(selectionKey,null);$("acCoachRun").disabled=!current||chosen?.id!==current.id}
+function sourceUpdate(changed){
+ if(changed){current=null;createIntent=null;resultDirty=false;editRevision=null;historyPage=0;populate();$("acCoachMatchFocus").value='';$("acCoachFocusStatus").textContent='Chỉ áp dụng khi bạn chủ động chọn kỹ năng.';$("acCoachMatchSuggestion").textContent='Chưa có gợi ý trong nguồn dữ liệu này.';status('')}
+ const selected=plansSource?.selected(),plans=history(),fresh=plans.find(p=>p.id===current?.id)||(selected?.version==='3.1'?plans.find(p=>p.id===selected.id):null);
+ if(plansSource?.isAccount()||changed){select(fresh||null,false);if(!fresh){$("acCoachComplete").hidden=true;$("acCoachResult").value='';$("acCoachRun").disabled=true}else $("acCoachComplete").hidden=false}showHistory();controls();
 }
 document.addEventListener("pickleup:plan-selected",event=>{
  const chosen=event.detail?.plan;
@@ -145,14 +166,16 @@ document.addEventListener("pickleup:plan-selected",event=>{
  populate();$("acCoachImport").addEventListener("click",()=>{populate();status("Đã nạp điểm có sẵn, có thể điều chỉnh thủ công.")});
  $("acCoachCreate").addEventListener("click",make);
  $("acCoachRun").addEventListener("click",()=>{
-  const selected=read(selectionKey,null);
+  const selected=plansSource?.isAccount()?{source:"advanced",id:plansSource.selected()?.id}:read(selectionKey,null);
   if(!current||selected?.source!=="advanced"||selected.id!==current.id){status("Vui lòng chọn hoặc tạo giáo án nâng cao trước.");return}
   window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"});
  });
  $("acCoachSave").addEventListener("click",complete);
- const selected=read(selectionKey,null),plans=history(),saved=selected?.source==="advanced"?plans.find(p=>p.id===selected.id):null;
+ $("acCoachResult").addEventListener("input",()=>{if(!resultDirty)editRevision=current?._localRevision;resultDirty=true});
+ const selected=plansSource?.isAccount()?{source:plansSource.selected()?.version==="3.1"?"advanced":"basic",id:plansSource.selected()?.id}:read(selectionKey,null),plans=history(),saved=selected?.source==="advanced"?plans.find(p=>p.id===selected.id):null;
  if(saved)select(saved,true);else planCard($("acCoachPlan"),null,false);
- showHistory();
+ showHistory();controls();
+ let planToken=plansSource?.token();document.addEventListener("pickleup:plan-data",()=>{const next=plansSource?.token();sourceUpdate(next!==planToken);planToken=next});
  let activityToken=window.PICKLEUP_ACTIVITY?.token();document.addEventListener("pickleup:activity-data",()=>{const next=window.PICKLEUP_ACTIVITY?.token();if(next!==activityToken){activityToken=next;populate();focus.value="";$("acCoachFocusStatus").textContent="Chỉ áp dụng khi bạn chủ động chọn kỹ năng.";$("acCoachMatchSuggestion").textContent="Chưa có gợi ý trong nguồn dữ liệu này.";status("")}});
 });
 })();
