@@ -1,19 +1,19 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **02/11/2026 (Asia/Ho_Chi_Minh)** — nền main `c9afa50` sau #25/app5.6.0; PR5a2c/V5.7.0 đang review, chưa merge/deploy.
+Cập nhật: **03/11/2026** — main `ddcb9f2` sau #26/app5.7.0, regression/backend/Pages sạch cùng merge SHA.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1, PR5a2a và PR5a2b đã merge. [PR5a2c/V5.7.0](docs/ASSESSMENT_MATCH_PR5A2C.md) nối ba loại assessment và matches vào UI/source/review, đang review. Bốn flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c đã merge. Bốn flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
 
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|
-| Đã merge #24/#25 | Consent/lifecycle/repair và Academy | Stable UUID/frozen requests, source rõ, history/comparability, không dual-write/attendance |
-| Đang review | PR5a2c assessments/matches | Đúng thang/metric sets, mọi reader cùng nguồn, no auto-copy vào guest plans, late A→B và Auth thật |
-| Tiếp theo | PR5b1 plans/selections → PR5a2d training | Own plan đã ack trước training mới, CAS/dependency/orphan, timer local |
+| Đã merge #24–#26 | Lifecycle/repair, Academy, assessments và matches UI | Source rõ, stable UUID/frozen requests, review và Auth thật; không dual-write/attendance |
+| Đang triển khai | [PR5b1a: RPC plans/selections](docs/PLAN_RPC_PR5B1A.md) | Immutable snapshot, result CAS, own live selection, epoch/replay, RLS; chưa source/sender/UI |
+| Tiếp theo | PR5b1b repository/sender/review, rồi UI plans/selections → PR5a2d training | Dependency/orphan UX, mọi reader cùng nguồn; own plan đã ack trước training mới, timer local |
 | Phục hồi | PR5b2 đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
-Các bước sau PR5a2c là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Giáo án và nhật ký tập hiện còn device-only; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
+Các bước sau PR5b1a là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Giáo án và nhật ký tập trên UI hiện còn device-only; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
 
 ## Lịch sử roadmap V1–V5
 

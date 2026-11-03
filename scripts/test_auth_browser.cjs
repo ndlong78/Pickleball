@@ -135,6 +135,15 @@ async function runEngine(engine,name,host){
   const activityA=await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),reader=PickleUpPullController.create({auth,repository:db,owner,policy:'activity-events-1',activityCore:PickleUpActivityCore,enabled:()=>true,pageSize:2});window.PR5A_DB=db;window.PR5A_READER=reader;await reader.pull();const snapshot=await db.scope('user:'+owner).getActivitySnapshot();return {count:snapshot.records.length,own:snapshot.records.every(r=>r.base.user_id===owner)}},dataA.owner);assert.equal(activityA.count,2);assert.equal(activityA.own,true);
   await page.addScriptTag({url:host.appOrigin+'/Pickleball/modules/data/activity-controller.js'});
   await page.evaluate(async()=>{const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);window.PR5A2_LIFE=PickleUpActivityController.create({auth,repository:PR5A_DB,enabled:()=>true});await PR5A2_LIFE.ready;await PR5A2_LIFE.useAccount()});
+  phase=name+':plan_fenced_late_account_a';
+  const heldPlan=host.holdNextPlan();
+  const aPlanId=await page.evaluate(async owner=>{
+   const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),prepared=await auth.planRpc(owner,'prepare_sync',{}),id=crypto.randomUUID();
+   await PICKLEUP_PAGE_LOADER.ensure('coach');
+   const snapshot=PICKLEUP_PERSONAL_CORE.createPlan({serve:12,return:12,dink:12,volley:12,position:12,strategy:12},[],'1.0–2.0','2026-01-01T10:00:00Z');
+   window.PR5B_LATE=auth.planRpc(owner,'apply_plan_operation',{p_operation_id:crypto.randomUUID(),p_kind:'personal_plans',p_entity_key:id,p_action:'put',p_expected_revision:'0',p_epoch:prepared.epoch,p_payload:{source:'basic',schema_version:1,level_band:'1.0–2.0',plan_snapshot:snapshot},p_protocol_version:1});return id;
+  },dataA.owner);
+  assert.equal((await heldPlan.seen).status,'applied');
   phase=name+':opt_in_account_source_a';await page.locator('[data-sync-enable]').click();await hasText(page,'#syncPilot [role=status]','Đã đọc kho tài khoản');
   phase=name+':late_source_a_response';
   const changedA=await page.evaluate(async()=>{const state=PICKLEUP_DATA.getState(),auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);return auth.syncRpc(state.owner,'apply_sync_operation',{p_operation_id:crypto.randomUUID(),p_kind:'user_preferences',p_entity_key:'self',p_action:'put',p_expected_revision:state.projection.prefRow.baseRevision,p_epoch:state.snapshot.cursor.epoch,p_payload:{target_days:5},p_protocol_version:1})});assert.equal(changedA.status,'applied');
@@ -143,7 +152,7 @@ async function runEngine(engine,name,host){
   assert.equal(delayed.status,'ok');assert.ok(delayed.changes.some(change=>change.row.user_id===dataA.owner));
   await tab.locator('[data-logout]').click();await hasText(page,authStatus,'Chế độ khách');
   phase=name+':real_account_b_login';const next=await context.newPage();currentPage=next;await next.goto(url);await login(next,b);
-  await hasText(page,'[data-import-account]',b);held.release();
+  await hasText(page,'[data-import-account]',b);held.release();heldPlan.release();assert.equal((await page.evaluate(()=>PR5B_LATE)).status,'stale');
   assert.equal(await page.evaluate(()=>PR5A_READER.pull().then(()=>null,error=>error.code)),'account_changed');assert.equal(await page.evaluate(()=>PR5A2_LIFE.getState().snapshot),null);await page.evaluate(()=>{PR5A2_LIFE.close();PR5A_DB.close();delete window.PR5A2_LIFE;delete window.PR5A_DB;delete window.PR5A_READER});
   const emptyB=await canonical(next);assert.equal(emptyB.result.status,'ok');assert.deepEqual(emptyB.result.changes,[]);assert.notEqual(emptyB.owner,dataA.owner);
   assert.equal((await page.locator('[data-import-summary]').textContent()).trim(),'');assert.equal(await page.locator('#importPilot input[type=file]').inputValue(),'');
@@ -257,6 +266,31 @@ async function runEngine(engine,name,host){
   await next.evaluate(async()=>{await PICKLEUP_ROUTER.openPage('matches');await PICKLEUP_PAGE_LOADER.ensure('matches')});next.once('dialog',dialog=>dialog.accept());await next.locator('[data-activity-history="match_records"] button[data-event-id="'+matchId+'"]').click();await hasText(next,'[data-activity-history="match_records"] [role=status]','Đã lưu thao tác xóa');
   await next.evaluate(()=>PICKLEUP_ROUTER.openPage('settings'));await next.locator('[data-activity-send]').click();await hasText(next,'#activityPilot [role=status]','cần xem và xử lý');await next.locator('[data-activity-reviews] button').first().click();await hasText(next,'[data-activity-detail]','Synthetic real UI match');await next.getByLabel('Cách xử lý hoạt động').selectOption('server');await next.getByRole('button',{name:'Xác nhận xử lý hoạt động',exact:true}).click();await hasText(next,'#activityPilot [role=status]','Đã dùng bản tài khoản');
   const reviewedMatch=await next.evaluate(()=>PICKLEUP_ACTIVITY.controller().exportCache());assert.ok(reviewedMatch.conflicts.some(c=>c.id===matchId&&c.resolution?.mode==='server'));assert.equal((await canonical(next)).result.changes.filter(c=>c.entity_kind==='practice_checkins').length,checkinsBefore);assert.equal(await legacy(next),before);
+  phase=name+':plan_fenced_real_commit_loss_replay';host.state.dropNextPlan=true;
+  const planCommand=await next.evaluate(async owner=>{
+   const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG),prepared=await auth.planRpc(owner,'prepare_sync',{});
+   const snapshot=PICKLEUP_PERSONAL_CORE.createPlan({serve:12,return:12,dink:12,volley:12,position:12,strategy:12},[],'1.0–2.0','2026-01-01T10:00:00Z');
+   return {p_operation_id:crypto.randomUUID(),p_kind:'personal_plans',p_entity_key:crypto.randomUUID(),p_action:'put',p_expected_revision:'0',p_epoch:prepared.epoch,p_payload:{source:'basic',schema_version:1,level_band:'1.0–2.0',plan_snapshot:snapshot},p_protocol_version:1};
+  },dataB.owner);
+  const callPlan=(body,owner=dataB.owner)=>next.evaluate(async({owner,body})=>(await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG)).planRpc(owner,'apply_plan_operation',body),{owner,body});
+  assert.equal((await callPlan(planCommand)).status,'network_error');assert.equal(host.state.planDropCount,1);
+  const replayPlan=await callPlan(planCommand);assert.equal(replayPlan.status,'applied');assert.equal(replayPlan.replayed,true);assert.equal(replayPlan.row.revision,'1');
+  phase=name+':plan_fenced_real_cas_dependency';
+  const patch=(payload,revision,action='put',kind='personal_plans')=>({...planCommand,p_operation_id:crypto.randomUUID(),p_kind:kind,p_entity_key:kind==='user_selections'?'self':planCommand.p_entity_key,p_expected_revision:revision,p_action:action,p_payload:payload});
+  const races=await Promise.all([callPlan(patch({check_score:15},'1')),callPlan(patch({check_score:16},'1'))]);assert.deepEqual(races.map(r=>r.status).sort(),['applied','conflict']);
+  const resultPlan=races.find(r=>r.status==='applied');assert.deepEqual(resultPlan.row.plan_snapshot,planCommand.p_payload.plan_snapshot);
+  assert.equal((await callPlan(patch({plan_snapshot:planCommand.p_payload.plan_snapshot},'2'))).code,'immutable_plan_fields');
+  assert.equal((await callPlan(patch({selected_personal_plan_id:planCommand.p_entity_key},'0','put','user_selections'))).status,'applied');
+  assert.equal((await callPlan(patch({},'2','delete'))).status,'invalid');
+  assert.equal((await callPlan(patch({},'1','delete','user_selections'))).status,'applied');
+  assert.equal((await callPlan(patch({},'2','delete'))).status,'applied');
+  assert.equal((await callPlan(patch({selected_personal_plan_id:planCommand.p_entity_key},'2','restore','user_selections'))).status,'invalid');
+  assert.equal((await callPlan(patch({},'3','restore'))).status,'applied');
+  assert.equal((await callPlan(patch({selected_personal_plan_id:planCommand.p_entity_key},'2','restore','user_selections'))).status,'applied');
+  phase=name+':plan_fenced_real_account_isolation';
+  assert.equal((await callPlan(patch({},'4','delete'),dataA.owner)).status,'auth_required');
+  const foreign=await callPlan({...patch({check_score:1},'1'),p_entity_key:aPlanId});assert.equal(foreign.status,'conflict');assert.equal(foreign.row,null);
+  const afterPlans=await canonical(next);assert.ok(!afterPlans.result.changes.some(c=>c.entity_key===aPlanId));assert.equal(afterPlans.result.changes.filter(c=>c.entity_kind==='practice_checkins').length,checkinsBefore);assert.equal(await legacy(next),before);
   phase=name+':pwa_private_cache_exclusion';await next.evaluate(()=>navigator.serviceWorker.ready);
   const cacheSafe=await next.evaluate(async api=>{for(const name of await caches.keys())for(const request of await(await caches.open(name)).keys()){const u=new URL(request.url);if(u.origin===api||/[?&#](?:access_token|refresh_token|token|code)=/i.test(u.href))return false}return true},host.apiOrigin);assert.ok(cacheSafe);
   assert.ok(new URL(next.url()).pathname.startsWith('/Pickleball/'));assert.equal(new URL(next.url()).hash,'');
@@ -264,14 +298,14 @@ async function runEngine(engine,name,host){
   for(const item of [page,tab,next]){await hasText(item,authStatus,'Chế độ khách');assert.equal((await item.locator('[data-import-summary]').textContent()).trim(),'')}
   assert.equal(await next.evaluate(()=>PICKLEUP_ACTIVITY.getState().snapshot),null);assert.equal(await next.locator('#matchNotes').inputValue(),'');assert.equal(await next.evaluate(()=>PICKLEUP_ACTIVITY.events('skill_assessments').length),0);await next.evaluate(()=>{window.PR5A2_LIFE?.close();window.PR5A2_DB?.close()});
   await next.reload();await hasText(next,authStatus,'Chế độ khách');assert.equal(await legacy(next),before);
-  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, fenced sender/conflict resolution/commit replay, account source opt-in and actual preferences/check-in UI with queued reload/retry and real-server conflict preview/decision, four activity event kinds via fenced API with native reload/exact replay and independent cursor, independent event consent and archive/delete repair with real RPC conflicts and opt-out/replay, Academy product UI source/save/comparability/reload replay/delete and real conflict decision, self/stage/advanced and match product UI save/sync/restore with distinct scales, no legacy mirror or attendance, real match HTTP200 delete conflict and reviewed archive, PWA exclusion\n');
+  process.stdout.write('PASS '+name+': real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, fenced sender/conflict resolution/commit replay, account source opt-in and actual preferences/check-in UI with queued reload/retry and real-server conflict preview/decision, four activity event kinds via fenced API with native reload/exact replay and independent cursor, independent event consent and archive/delete repair with real RPC conflicts and opt-out/replay, Academy product UI source/save/comparability/reload replay/delete and real conflict decision, self/stage/advanced and match product UI save/sync/restore with distinct scales, no legacy mirror or attendance, real match HTTP200 delete conflict and reviewed archive, API-only fenced plans/selections with real commit-loss replay/CAS/dependency/restore and late A response ignored after B, PWA exclusion\n');
  }catch(error){
   const text=await currentPage?.locator(importStatus).textContent({timeout:1000}).catch(()=>null);
   // Only fixed classifications leave memory; never log UI text, identities or payloads.
   host.state.activityDiagnostic=await currentPage?.evaluate(()=>{const s=window.PICKLEUP_ACTIVITY?.getState(),status=document.querySelector('#activityPilot [role=status]')?.textContent||'',academy=document.querySelector('#academyStatus')?.textContent||'';return {mode:['guest','loading','account','error'].indexOf(s?.mode),busy:s?.busy===true,message:['Đã đồng bộ','Có hoạt động cần xem','Lỗi mạng','Chưa thực hiện được','Đã dùng bản tài khoản','Học viện:'].findIndex(x=>status.startsWith(x)),deleted:academy.startsWith('Đã lưu thao tác xóa'),pending:s?.snapshot?.outbox.filter(o=>['pending','sending','deferred'].includes(o.state)).length||0,review:s?.snapshot?.records.filter(r=>r.reviewRequired).length||0}}).catch(()=>null);
   host.state.ui=['Tệp đã đọc','Preview sẵn sàng','Lỗi mạng','Không thực hiện được','Server từ chối','Có revision mới','Vượt giới hạn','Phiên nhập đã hoàn tất','Còn mục','Cần đăng nhập','Đã dừng','Checkpoint đã khôi phục'].findIndex(prefix=>text?.startsWith(prefix));
   throw error;
- }finally{host.state.held?.release();await context?.close();await browser?.close()}
+ }finally{host.state.held?.release();host.state.heldPlan?.release();await context?.close();await browser?.close()}
 }
 async function main(){
  if(process.env.DEBUG)throw new Error('debug_output_forbidden');
@@ -279,7 +313,7 @@ async function main(){
  assert.equal(config.API_URL,'http://127.0.0.1:54321');
  const host=await start({backendURL:config.API_URL,anonKey:config.ANON_KEY});diagnostics=host.state;
  const watchdog=setTimeout(()=>{process.stderr.write('FAIL real Auth browser: bounded runtime exceeded\n');process.exit(1)},240000);watchdog.unref();
- try{for(const [name,engine]of [['Chromium',chromium],['WebKit',webkit]]){host.state.rpc.length=0;host.state.dropCount=0;host.state.syncDropCount=0;host.state.eventDropCount=0;await runEngine(engine,name,host)}}finally{clearTimeout(watchdog);await host.close()}
+ try{for(const [name,engine]of [['Chromium',chromium],['WebKit',webkit]]){host.state.rpc.length=0;host.state.dropCount=0;host.state.syncDropCount=0;host.state.eventDropCount=0;host.state.planDropCount=0;await runEngine(engine,name,host)}}finally{clearTimeout(watchdog);await host.close()}
 }
 if(require.main===module)main().catch(error=>{const kind=['AssertionError','TimeoutError','Error'].includes(error.name)?error.name:'Error';process.stderr.write('FAIL real Auth browser: '+phase+' ['+kind+'] ui='+diagnostics?.ui+' dropped='+diagnostics?.dropCount+' activity='+JSON.stringify(diagnostics?.activityDiagnostic||null)+' HTTP '+JSON.stringify(diagnostics?.http.slice(-5)||[])+'\n');process.exitCode=1});
 module.exports={until,source,verifyData};

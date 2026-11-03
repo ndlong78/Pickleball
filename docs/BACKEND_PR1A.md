@@ -96,3 +96,7 @@ PR4a bổ sung canonical cache/cursor atomic cho hai domain, không gửi outbox
 PR4b bổ sung prepare_sync/apply_sync_operation với epoch fence, immutable sender/ack/conflict API theo [SYNC_SENDER_PR4B](SYNC_SENDER_PR4B.md). Legacy RPC giữ nguyên; chưa UI/source switch hoặc rollout.
 
 PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).
+
+## Bổ sung PR5b1a — plans/selections
+
+Migration `20261103000100_plan_selection_fence.sql` thêm capability `apply_plan_operation`, giữ PR1a manual/import RPC, RLS và grants. [Hợp đồng PR5b1a](PLAN_RPC_PR5B1A.md) mô tả immutable snapshots, result CAS, own-live selection, epoch/shared ledger và adapter cách ly A→B. Backend CI thêm `005_plan_selection.test.sql` và `python3 scripts/test_plans.py` (8 REST tests). Auth browser integration kiểm API-only; chưa plan product UI hoặc sender. Local PR5b1a dùng PostgreSQL17.6/PostgREST13.0.7 cùng Auth fixture tối thiểu trong DB ephemeral riêng, không gọi đây là GoTrue/SMTP evidence. Counts/CI đúng HEAD cuối ghi tại PR.

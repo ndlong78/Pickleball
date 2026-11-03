@@ -38,6 +38,11 @@ test('network fault is injected after upstream commit and held pull can be relea
   host.state.dropNextBatch=true;
   assert.equal((await fetch(host.apiOrigin+'/rest/v1/rpc/import_batch',{method:'POST',headers,body:'{}'})).status,502);
   assert.equal(seen.length,1);assert.equal(host.state.dropCount,1);
+  host.state.dropNextPlan=true;
+  assert.equal((await fetch(host.apiOrigin+'/rest/v1/rpc/apply_plan_operation',{method:'POST',headers,body:'{}'})).status,502);
+  assert.equal(seen.length,2);assert.equal(host.state.planDropCount,1);
+  const planHeld=host.holdNextPlan(),planResponse=fetch(host.apiOrigin+'/rest/v1/rpc/apply_plan_operation',{method:'POST',headers,body:'{}'});
+  assert.deepEqual(await planHeld.seen,{status:'applied',changes:[]});planHeld.release();assert.equal((await planResponse).status,200);
   const held=host.holdNextPull();const response=fetch(host.apiOrigin+'/rest/v1/rpc/pull_changes',{method:'POST',headers,body:'{}'});
   assert.deepEqual(await held.seen,{status:'applied',changes:[]});held.release();assert.equal((await response).status,200);
  });
