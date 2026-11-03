@@ -49,16 +49,20 @@ async function task(type,work){
  }catch(error){if(stamp===serial)status.textContent=message(error.code)}
  finally{if(stamp===serial){running=false;action=null;render()}}
 }
-function summary(kind,value,deleted){
+function summary(kind,value,deleted,related=[]){
  if(!value)return 'Chưa có dữ liệu.';if(deleted)return 'Đã xóa / muốn xóa giáo án hoặc lựa chọn này.';
- if(kind==='user_selections')return value.selected_personal_plan_id?'Có giáo án cá nhân được chọn; xem nội dung trong danh sách giáo án.':'Không chọn giáo án cá nhân.';
+ if(kind==='user_selections'){
+  if(!value.selected_personal_plan_id)return 'Không chọn giáo án cá nhân.';
+  const target=related.find(r=>r.kind==='personal_plans'&&r.id===value.selected_personal_plan_id),plan=target?.overlay||target?.base;
+  return plan?.plan_snapshot?'Chọn giáo án '+plan.level_band+' · '+new Date(plan.plan_snapshot.createdAt).toLocaleString('vi-VN')+' · '+plan.plan_snapshot.exercises.map(e=>e.name).join(' · ')+' · Điểm '+(plan.check_score??'chưa có')+'/20':'Giáo án được chọn không có trong cache hiện tại; đọc lại kho trước khi quyết định.';
+ }
  const p=value.plan_snapshot;return (p?value.level_band+' · '+p.exercises.map(e=>e.name).join(' · '):'Kết quả giáo án')+' · Điểm '+(value.check_score??'chưa có')+'/20'+(value.completed_at?' · '+new Date(value.completed_at).toLocaleString('vi-VN'):'');
 }
 function show(view){
  selection={view,owner,token:data.token(),operationId:crypto.randomUUID()};detail.replaceChildren();
  detail.append(node('h4','Xem và xử lý · '+names[view.record.kind]),node('p','So sánh toàn bộ bản ban đầu, ý định đang chờ và bản tài khoản. Bản chưa chọn và yêu cầu cũ vẫn giữ trong cache. Không tự hợp nhất hoặc ghi đè nội dung giáo án.'));
  const grid=node('div','');grid.className='sync-comparison';const original=view.record.reviewBase?.row||view.conflicts[0]?.originalBase?.row;
- for(const [label,value,deleted]of [['Ban đầu',original,!!original?.deleted_at],['Bạn muốn lưu',view.record.overlay,view.record.deleted],['Trên tài khoản',view.record.base,!!view.record.base?.deleted_at]]){const card=node('div','');card.append(node('strong',label),node('p',summary(view.record.kind,value,deleted)));if(value?.plan_snapshot){const more=node('details','');more.append(node('summary','Xem nội dung và điểm đầu vào giáo án'),node('pre',JSON.stringify(value.plan_snapshot,null,2)));more.style.overflowWrap='anywhere';more.querySelector('pre').style.whiteSpace='pre-wrap';card.append(more)}grid.append(card)}detail.append(grid);
+ for(const [label,value,deleted]of [['Ban đầu',original,!!original?.deleted_at],['Bạn muốn lưu',view.record.overlay,view.record.deleted],['Trên tài khoản',view.record.base,!!view.record.base?.deleted_at]]){const card=node('div','');card.append(node('strong',label),node('p',summary(view.record.kind,value,deleted,view.relatedRecords)));if(value?.plan_snapshot){const more=node('details','');more.append(node('summary','Xem nội dung và điểm đầu vào giáo án'),node('pre',JSON.stringify(value.plan_snapshot,null,2)));more.style.overflowWrap='anywhere';more.querySelector('pre').style.whiteSpace='pre-wrap';card.append(more)}grid.append(card)}detail.append(grid);
  const action=view.record.deleted?'delete':view.record.base?.deleted_at?'restore':'put',fields=view.record.kind==='user_selections'?['selected_personal_plan_id','selected_academy_lesson_id']:view.record.base?['check_score','completed_at']:['source','schema_version','level_band','plan_snapshot','check_score','completed_at'];
  const value=action==='delete'?{}:Object.fromEntries(fields.filter(k=>Object.hasOwn(view.record.overlay||{},k)).map(k=>[k,view.record.overlay[k]]));
  const select=document.createElement('select');select.setAttribute('aria-label','Cách xử lý giáo án');select.append(new Option('Chọn cách xử lý',''),new Option('Dùng bản tài khoản, giữ bản chờ trong cache','server'));
