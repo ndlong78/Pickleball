@@ -7,10 +7,12 @@ const KINDS=new Set(['profiles','user_preferences','personal_plans','academy_att
 const EVENTS=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
 const SINGLETONS=new Set(['profiles','user_preferences','user_selections']);
 const PULL_KINDS=new Set(['user_preferences','practice_checkins']);
-const DEFAULT_POLICY='preferences-checkins-1',ACTIVITY_POLICY='activity-events-1';
+const DEFAULT_POLICY='preferences-checkins-1',ACTIVITY_POLICY='activity-events-1',PLAN_POLICY='plans-selections-1';
+const PLANS=new Set(['personal_plans','user_selections']);
 function policyConfig(policy){
  if(policy===DEFAULT_POLICY)return {slot:1,kinds:PULL_KINDS,lease:'senderLease'};
  if(policy===ACTIVITY_POLICY)return {slot:ACTIVITY_POLICY,kinds:EVENTS,lease:'activitySenderLease'};
+ if(policy===PLAN_POLICY)return {slot:PLAN_POLICY,kinds:PLANS,lease:'planSenderLease'};
  fail('invalid_policy');
 }
 const STORES={records:['namespace','kind','id'],outbox:['namespace','operationId'],conflicts:['namespace','conflictId'],sync_cursor:['namespace','protocol'],import_receipts:['namespace','fingerprint','adapterVersion'],legacy_snapshots:['installationId','snapshotId'],device_state:['namespace','deviceId','key'],metadata:['namespace','key']};
@@ -72,7 +74,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      }catch(error){try{tx.abort()}catch(_){}await done.catch(()=>{});throw storageError(error)}finally{transactions.delete(tx)}
     }
     function identity(kind,id){
-     if(!KINDS.has(kind)||typeof id!=='string'||EVENTS.has(kind)&&id!==id.toLowerCase())fail('invalid_entity');
+     if(!KINDS.has(kind)||typeof id!=='string'||(EVENTS.has(kind)||kind==='personal_plans')&&id!==id.toLowerCase())fail('invalid_entity');
      if(SINGLETONS.has(kind)?id!=='self':kind==='practice_checkins'?!/^\d{4}-\d{2}-\d{2}$/.test(id)||!Number.isFinite(Date.parse(id+'T00:00:00Z'))||new Date(id+'T00:00:00Z').toISOString().slice(0,10)!==id:!UUID.test(id))fail('invalid_entity');
     }
     const syncStores=['records','outbox','metadata','conflicts','sync_cursor'];
@@ -110,10 +112,50 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      const own=async store=>(await request(tx.objectStore(store).index('namespace').getAll(namespace))).filter(row=>row.kind===kind&&row.id===id);
      return {record,operations:(await own('outbox')).filter(op=>!['acked','resolved'].includes(op.state)),conflicts:(await own('conflicts')).filter(row=>row.state==='open'),cursor:await request(tx.objectStore('sync_cursor').get([namespace,ACTIVITY_POLICY])),consent:await activityConsent(tx)};
     }
+    async function planConsent(tx){
+     const saved=await request(tx.objectStore('metadata').get([namespace,'plans-selections-consent-1']));
+     if(!saved)return {enabled:false,localRevision:'0'};
+     if(typeof saved.enabled!=='boolean'||!revision(saved.localRevision)||saved.localRevision==='0')fail('invalid_consent');
+     return {enabled:saved.enabled,localRevision:saved.localRevision};
+    }
+    async function requirePlanConsent(tx,expected){
+     if(guest||!revision(expected)||expected==='0')fail('consent_changed');
+     const consent=await planConsent(tx);if(!consent.enabled||consent.localRevision!==expected)fail('consent_changed');
+    }
+    async function planEdges(tx,kind,id,action,payload,old){
+     const records=tx.objectStore('records'),outbox=tx.objectStore('outbox'),dependencies=[];
+     const depend=async record=>{if(record.tailOperationId){const op=await request(outbox.get([namespace,record.tailOperationId]));if(!op||!PLANS.has(op.kind)||['acked','resolved','blocked','conflict'].includes(op.state))fail('dependency_unavailable');dependencies.push(op.operationId)}};
+     let requiresPlan=null;
+     if(kind==='user_selections'&&action!=='delete'){
+      requiresPlan=({...old?.base,...old?.overlay,...payload}).selected_personal_plan_id||null;
+      if(requiresPlan){
+       const target=await request(records.get([namespace,'personal_plans',requiresPlan]));
+       if(!target||target.deleted||target.reviewRequired||!target.base&&!target.tailOperationId)fail('plan_unavailable');await depend(target);
+      }
+     }else if(kind==='personal_plans'&&action==='delete'){
+      const selected=await request(records.get([namespace,'user_selections','self']));
+      if(selected&&!selected.deleted&&({...selected.base,...selected.overlay}).selected_personal_plan_id===id)fail('plan_selected');
+      if(selected?.base&&!selected.base.deleted_at&&selected.base.selected_personal_plan_id===id)await depend(selected);
+     }
+     return {planDependencies:dependencies,requiresPlan};
+    }
+    async function planReview(tx,kind,id){
+     identity(kind,id);if(guest||!PLANS.has(kind))fail('invalid_review');
+     const own=async name=>(await request(tx.objectStore(name).index('namespace').getAll(namespace))).filter(row=>PLANS.has(row.kind));
+     const records=await own('records'),operations=(await own('outbox')).filter(o=>!['acked','resolved'].includes(o.state)),record=records.find(r=>r.kind===kind&&r.id===id);
+     if(!record)fail('entity_not_found');
+     return {record,operations:operations.filter(o=>o.kind===kind&&o.id===id),conflicts:(await own('conflicts')).filter(c=>c.state==='open'&&c.kind===kind&&c.id===id),cursor:await request(tx.objectStore('sync_cursor').get([namespace,PLAN_POLICY])),consent:await planConsent(tx),relatedRecords:records,relatedOperations:operations};
+    }
     const api={
      close(){active=false;for(const tx of transactions){try{tx.abort()}catch(_){}}scopes.delete(api)},
      getDomainSnapshot(){return domainSnapshot(DEFAULT_POLICY)},
      getActivitySnapshot(){return domainSnapshot(ACTIVITY_POLICY)},
+     getPlanSnapshot(){return domainSnapshot(PLAN_POLICY)},
+     getPlanConsent(){if(guest)fail('auth_required');return transaction(['metadata'],'readonly',planConsent)},
+     setPlanConsent(enabled,expectedLocalRevision){
+      if(guest||typeof enabled!=='boolean'||!revision(expectedLocalRevision))fail('invalid_consent');
+      return transaction(['metadata'],'readwrite',async tx=>{const prior=await planConsent(tx);if(prior.localRevision!==expectedLocalRevision)fail('local_conflict');const consent={enabled,localRevision:(BigInt(expectedLocalRevision)+1n).toString()};await request(tx.objectStore('metadata').put({namespace,key:'plans-selections-consent-1',...consent}));return consent});
+     },
      getActivityConsent(){if(guest)fail('auth_required');return transaction(['metadata'],'readonly',activityConsent)},
      setActivityConsent(enabled,expectedLocalRevision){
       if(guest||typeof enabled!=='boolean'||!revision(expectedLocalRevision))fail('invalid_consent');
@@ -132,7 +174,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      },
      read(kind,id){identity(kind,id);return transaction(['records'],'readonly',tx=>request(tx.objectStore('records').get([namespace,kind,id])))},
      listOutbox(){return transaction(['outbox'],'readonly',tx=>request(tx.objectStore('outbox').index('namespace').getAll(namespace)))},
-     async write({kind,id,value,operationId,expectedLocalRevision='0',action='put',activityConsentRevision=null}){
+     async write({kind,id,value,operationId,expectedLocalRevision='0',action='put',activityConsentRevision=null,planConsentRevision=null}){
       identity(kind,id);
       if(!UUID.test(operationId)||!revision(expectedLocalRevision)||!['put','delete','restore'].includes(action))fail('invalid_operation');
       const snapshot=copy(value);
@@ -143,6 +185,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       if(action==='delete'&&canonical(snapshot)!=='{}'&&!(kind==='practice_checkins'&&Object.keys(snapshot).length===1&&typeof snapshot.timezone_at_entry==='string'&&snapshot.timezone_at_entry.length<=80))fail('invalid_payload');
       return transaction(['records','outbox','metadata'],'readwrite',async tx=>{
        if(activityConsentRevision!==null){if(!EVENTS.has(kind))fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
+       if(planConsentRevision!==null){if(!PLANS.has(kind))fail('invalid_policy');await requirePlanConsent(tx,planConsentRevision)}
        const records=tx.objectStore('records'),outbox=tx.objectStore('outbox'),metadata=tx.objectStore('metadata');
        const receiptKey=[namespace,'operation:'+operationId];
        const prior=await request(metadata.get(receiptKey));
@@ -153,19 +196,21 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(!old?.deleted&&action==='restore')fail('not_deleted');
        if(old&&EVENTS.has(kind)&&action==='put')fail('append_only');
        const localRevision=(BigInt(expectedLocalRevision)+1n).toString();
-       const overlay=action==='delete'?null:PULL_KINDS.has(kind)?{...(old?.overlay||old?.base||{}),...snapshot}:snapshot;
+       const overlay=action==='delete'?null:PULL_KINDS.has(kind)||PLANS.has(kind)?{...(old?.overlay||old?.base||{}),...snapshot}:snapshot;
        const record={...old,namespace,kind,id,base:old?.base||null,baseRevision:old?.baseRevision||'0',overlay,deleted:action==='delete',localRevision,localUpdatedAt:new Date().toISOString(),tailOperationId:guest?null:operationId};
-       if(!guest)await request(outbox.add({namespace,operationId,kind,id,action,payload:snapshot,baseSnapshot:old?.base||null,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));
+       const edges=planConsentRevision!==null?await planEdges(tx,kind,id,action,snapshot,old):{};
+       if(!guest)await request(outbox.add({...edges,namespace,operationId,kind,id,action,payload:snapshot,baseSnapshot:old?.base||null,expectedRevision:old?.tailOperationId?null:record.baseRevision,dependsOn:old?.tailOperationId||null,state:old?.tailOperationId?'deferred':'pending',protocol:1}));
        await request(records.put(record));
        await request(metadata.add({namespace,key:receiptKey[1],signature,localRevision}));
        return {status:'saved_locally',localRevision};
       });
      },
-     claimSync({leaseOwner,epoch,now=Date.now(),forceRetry=false,policy=DEFAULT_POLICY,activityConsentRevision=null}){
+     claimSync({leaseOwner,epoch,now=Date.now(),forceRetry=false,policy=DEFAULT_POLICY,activityConsentRevision=null,planConsentRevision=null}){
       const config=policyConfig(policy);
       if(guest||!UUID.test(leaseOwner)||!UUID.test(epoch)||!Number.isSafeInteger(now)||typeof forceRetry!=='boolean')fail('invalid_sync_operation');
       return transaction(syncStores,'readwrite',async tx=>{
        if(activityConsentRevision!==null){if(policy!==ACTIVITY_POLICY)fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
+       if(policy===PLAN_POLICY)await requirePlanConsent(tx,planConsentRevision);else if(planConsentRevision!==null)fail('invalid_policy');
        const lease=await request(tx.objectStore('metadata').get([namespace,config.lease])),cursor=await request(tx.objectStore('sync_cursor').get([namespace,config.slot]));
        if(lease?.owner!==leaseOwner||lease.until<=now)fail('lease_lost');if(cursor?.epoch!==epoch)fail('reset_required');
        const store=tx.objectStore('outbox'),all=await request(store.index('namespace').getAll(namespace)),byId=new Map(all.map(o=>[o.operationId,o]));
@@ -177,6 +222,14 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
         const row=await request(tx.objectStore('records').get(rowKey(op)));if(!row)fail('invalid_sync_operation');
         if((row.baseRevision!=='0'&&row.baseEpoch!==epoch)||op.request&&op.request.p_epoch!==epoch){await block(tx,op,row,'reset_required');continue}
         if(!op.request&&row.reviewRequired){await block(tx,op,row,row.reviewReason==='reset_required'?'reset_required':'remote_changed');continue}
+        if(policy===PLAN_POLICY&&!op.request){
+         if(!op.planDependencies){try{Object.assign(op,await planEdges(tx,op.kind,op.id,op.action,op.payload,{...row,overlay:null}))}catch(_){await block(tx,op,row,'dependency_changed');continue}}
+         const deps=op.planDependencies.map(id=>byId.get(id));
+         if(deps.some(dep=>!dep||!PLANS.has(dep.kind)||['resolved','conflict','blocked'].includes(dep.state))){await block(tx,op,row,'dependency_changed');continue}
+         if(deps.some(dep=>dep.state!=='acked'))continue;
+         if(op.requiresPlan){const target=await request(tx.objectStore('records').get([namespace,'personal_plans',op.requiresPlan]));if(!target?.base||target.base.deleted_at||target.deleted||target.reviewRequired||target.baseEpoch!==epoch){await block(tx,op,row,'dependency_changed');continue}}
+         if(op.kind==='personal_plans'&&op.action==='delete'){const selected=await request(tx.objectStore('records').get([namespace,'user_selections','self']));if(selected?.base&&!selected.base.deleted_at&&selected.base.selected_personal_plan_id===op.id){await block(tx,op,row,'dependency_changed');continue}}
+        }
         if(!forceRetry&&((op.attempts||0)>=8||(op.nextAttemptAt||0)>now)){paused={status:'retry_wait',retryAt:op.nextAttemptAt||now,exhausted:(op.attempts||0)>=8};continue}
         if(!op.request){
          if(parent){if(parent.ackEpoch!==epoch){await block(tx,op,row,'reset_required');continue}op.expectedRevision=parent.ackRevision}
@@ -188,11 +241,12 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        }return paused||{status:'idle'};
       });
      },
-     completeSync(operationId,frozen,result,{policy=DEFAULT_POLICY,activityConsentRevision=null}={}){
+     completeSync(operationId,frozen,result,{policy=DEFAULT_POLICY,activityConsentRevision=null,planConsentRevision=null}={}){
       const config=policyConfig(policy);
       if(guest||!UUID.test(operationId))fail('invalid_sync_operation');const body=copy(frozen),response=copy(result);canonical(response);
       return transaction(syncStores,'readwrite',async tx=>{
        if(activityConsentRevision!==null){if(policy!==ACTIVITY_POLICY)fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
+       if(policy===PLAN_POLICY)await requirePlanConsent(tx,planConsentRevision);else if(planConsentRevision!==null)fail('invalid_policy');
        const store=tx.objectStore('outbox'),op=await request(store.get([namespace,operationId]));
        if(!op||canonical(op.request)!==canonical(body))fail('operation_mismatch');
        syncIdentity(op,policy);
@@ -203,7 +257,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        if(response.epoch!==body.p_epoch)fail('invalid_response');
        if(!['applied','conflict','invalid'].includes(response.status))fail('invalid_response');
        const remote=response.status==='conflict'?(response.row??null):response.row;
-       if(response.status!=='invalid'&&remote!==null&&(!remote||remote.user_id!==namespace.slice(5)||!revision(remote.revision)||remote.revision==='0'||BigInt(remote.revision)>9223372036854775807n||!Object.hasOwn(remote,'deleted_at')||!(remote.deleted_at===null||typeof remote.deleted_at==='string')||op.kind==='practice_checkins'&&remote.local_date!==op.id||EVENTS.has(op.kind)&&remote.id!==op.id))fail('invalid_response');
+       if(response.status!=='invalid'&&remote!==null&&(!remote||remote.user_id!==namespace.slice(5)||!revision(remote.revision)||remote.revision==='0'||BigInt(remote.revision)>9223372036854775807n||!Object.hasOwn(remote,'deleted_at')||!(remote.deleted_at===null||typeof remote.deleted_at==='string')||op.kind==='practice_checkins'&&remote.local_date!==op.id||(EVENTS.has(op.kind)||op.kind==='personal_plans')&&remote.id!==op.id))fail('invalid_response');
        if(response.status==='applied'&&(!remote||remote.revision!==(BigInt(body.p_expected_revision)+1n).toString()))fail('invalid_response');
        const newer=remote&&BigInt(remote.revision)>=BigInt(row.baseRevision);
        const current={...row,...(response.status!=='invalid'&&(newer||remote===null&&row.baseRevision==='0')?{base:remote,baseRevision:remote?.revision||'0',baseMissing:remote===null,baseEpoch:body.p_epoch}:{})};
@@ -260,6 +314,32 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
        const result={status:'resolved',localRevision,operationId,queued};await request(metadata.add({namespace,key:receiptKey[1],signature,result}));await touchCursor(tx,ACTIVITY_POLICY);return result;
       });
      },
+     inspectPlanReview(kind,id){return transaction(syncStores,'readonly',tx=>planReview(tx,kind,id))},
+     resolvePlanReview({review,mode,operationId,action='put',value={},acknowledgeEpochChange=false}){
+      if(guest||!UUID.test(operationId)||!['server','local'].includes(mode)||!['put','delete','restore'].includes(action)||typeof acknowledgeEpochChange!=='boolean')fail('invalid_resolution');
+      const preview=copy(review),payload=copy(value);if(preview?.record?.namespace!==namespace||!PLANS.has(preview.record.kind))fail('invalid_review');
+      const signature=canonical({planResolution:preview,mode,action,value:payload,acknowledgeEpochChange});if(new TextEncoder().encode(signature).length>4*1024*1024)fail('review_limit');
+      return transaction(syncStores,'readwrite',async tx=>{
+       await requirePlanConsent(tx,preview.consent?.localRevision);
+       const metadata=tx.objectStore('metadata'),receiptKey=[namespace,'operation:'+operationId],prior=await request(metadata.get(receiptKey));
+       if(prior){if(prior.signature!==signature)fail('operation_mismatch');return {...prior.result,status:'replayed'}}
+       const view=await planReview(tx,preview.record.kind,preview.record.id);if(canonical(view)!==canonical(preview))fail('local_conflict');
+       const {record:row,operations,conflicts,cursor}=view;
+       if(!cursor||!UUID.test(cursor.epoch)||!row.reviewRequired&&!conflicts.length&&!operations.some(op=>['blocked','conflict'].includes(op.state)))fail('review_not_required');
+       if(operations.some(op=>op.state==='sending'))fail('uncertain_operation');
+       if((row.reviewReason==='reset_required'||conflicts.some(c=>c.reason==='reset_required')||operations.some(op=>op.request&&op.request.p_epoch!==cursor.epoch))&&!acknowledgeEpochChange)fail('epoch_review_required');
+       const queued=mode==='local';
+       if(queued&&(row.base?.deleted_at&&action==='put'||!row.base?.deleted_at&&action==='restore'))fail('explicit_restore_required');
+       const edges=queued?await planEdges(tx,row.kind,row.id,action,payload,{...row,overlay:null}):{};
+       const store=tx.objectStore('outbox'),archive=tx.objectStore('conflicts');if(await request(store.get([namespace,operationId]))||await request(archive.get([namespace,operationId])))fail('operation_mismatch');
+       const localRevision=(BigInt(row.localRevision)+1n).toString();
+       await request(archive.add({namespace,conflictId:operationId,kind:row.kind,id:row.id,state:'resolved',reason:row.reviewReason||conflicts[0]?.reason||'needs_review',resolution:{mode,operationId,action,value:copy(payload),epoch:cursor.epoch,revision:row.baseRevision,originalBase:row.reviewBase||conflicts[0]?.originalBase||null,local:copy(row.overlay),deleted:row.deleted,remote:copy(row.base),operations:copy(operations),consent:copy(view.consent),relatedRecords:copy(view.relatedRecords),relatedOperations:copy(view.relatedOperations)}}));
+       for(const old of operations)await request(store.put({...old,state:'resolved',resolutionId:operationId}));for(const conflict of conflicts)await request(archive.put({...conflict,state:'resolved',resolutionId:operationId}));
+       if(queued)await request(store.add({...edges,namespace,operationId,kind:row.kind,id:row.id,action,payload,baseSnapshot:copy(row.base),expectedRevision:row.baseRevision,dependsOn:null,state:'pending',protocol:1}));
+       await request(tx.objectStore('records').put({...row,localRevision,overlay:queued&&action!=='delete'?{...row.base,...payload}:null,deleted:queued?action==='delete':!!row.base?.deleted_at,tailOperationId:queued?operationId:null,reviewRequired:false,reviewBase:null,reviewReason:null}));
+       const result={status:'resolved',localRevision,operationId,queued};await request(metadata.add({namespace,key:receiptKey[1],signature,result}));await touchCursor(tx,PLAN_POLICY);return result;
+      });
+     },
      resolveSyncConflict({conflictId,expectedLocalRevision,expectedRemoteRevision,epoch,mode,operationId,action='put',value={},acknowledgeEpochChange=false}){
       if(guest||!UUID.test(conflictId)||!revision(expectedLocalRevision)||!revision(expectedRemoteRevision)||!UUID.test(epoch)||!['server','local'].includes(mode)||!UUID.test(operationId)||!['put','delete','restore'].includes(action))fail('invalid_resolution');
       const snapshot=copy(value);if(!snapshot||Object.getPrototypeOf(snapshot)!==Object.prototype||new TextEncoder().encode(canonical(snapshot)).length>256*1024)fail('invalid_payload');
@@ -286,7 +366,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      getSyncCursor(policy=DEFAULT_POLICY){return transaction(['sync_cursor'],'readonly',tx=>request(tx.objectStore('sync_cursor').get([namespace,policyConfig(policy).slot])))},
      // PR4a commits a complete bounded pull cycle, never a partial bootstrap.
      // A reset replaces server bases only; pending requests/overlays survive.
-     async applyCanonicalSnapshot({rows,afterRevision,epoch,expectedLocalVersion='0',reset=false,policy=DEFAULT_POLICY,activityConsentRevision=null}){
+     async applyCanonicalSnapshot({rows,afterRevision,epoch,expectedLocalVersion='0',reset=false,policy=DEFAULT_POLICY,activityConsentRevision=null,planConsentRevision=null}){
       const config=policyConfig(policy);
       if(guest)fail('auth_required');
       if(!Array.isArray(rows)||rows.length>10050||rows.length>0&&afterRevision==='0'||!revision(afterRevision)||BigInt(afterRevision)>9223372036854775807n||!revision(expectedLocalVersion)||typeof reset!=='boolean'||!(epoch===null||UUID.test(epoch))||afterRevision!=='0'&&epoch===null)fail('invalid_snapshot');
@@ -295,10 +375,11 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       for(const item of snapshot){
        if(!config.kinds.has(item.kind))fail('invalid_snapshot');identity(item.kind,item.id);
        const tag=item.kind+':'+item.id,row=item.row;
-       if(unique.has(tag)||!row||row.user_id!==namespace.slice(5)||!revision(row.revision)||row.revision==='0'||BigInt(row.revision)>9223372036854775807n||!Object.hasOwn(row,'deleted_at')||!(row.deleted_at===null||typeof row.deleted_at==='string')||item.kind==='practice_checkins'&&row.local_date!==item.id||EVENTS.has(item.kind)&&row.id!==item.id)fail('invalid_snapshot');unique.add(tag);
+       if(unique.has(tag)||!row||row.user_id!==namespace.slice(5)||!revision(row.revision)||row.revision==='0'||BigInt(row.revision)>9223372036854775807n||!Object.hasOwn(row,'deleted_at')||!(row.deleted_at===null||typeof row.deleted_at==='string')||item.kind==='practice_checkins'&&row.local_date!==item.id||(EVENTS.has(item.kind)||item.kind==='personal_plans')&&row.id!==item.id)fail('invalid_snapshot');unique.add(tag);
       }
-      return transaction(['records','sync_cursor',...(activityConsentRevision!==null?['metadata']:[])],'readwrite',async tx=>{
+      return transaction(['records','sync_cursor',...(activityConsentRevision!==null||policy===PLAN_POLICY?['metadata']:[])],'readwrite',async tx=>{
        if(activityConsentRevision!==null){if(policy!==ACTIVITY_POLICY)fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
+       if(policy===PLAN_POLICY)await requirePlanConsent(tx,planConsentRevision);else if(planConsentRevision!==null)fail('invalid_policy');
        const cursors=tx.objectStore('sync_cursor'),store=tx.objectStore('records'),prior=await request(cursors.get([namespace,config.slot]));
        if((prior?.localVersion||'0')!==expectedLocalVersion)fail('cursor_conflict');
        if(!reset&&prior&&(prior.policy!==policy||prior.epoch!==epoch||BigInt(afterRevision)<BigInt(prior.afterRevision)))fail('reset_required');
@@ -356,7 +437,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
     };
     scopes.add(api);return api;
    }
-   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY]),activityLifecycle:1});
+   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY,PLAN_POLICY]),activityLifecycle:1,planLifecycle:1});
   };
  });
 }

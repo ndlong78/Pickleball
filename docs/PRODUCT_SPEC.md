@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Status 02/11/2026:** ứng dụng main V5.6.0, `c9afa50` sau #25; PR5a2c/V5.7.0 đang review. Giữ hợp đồng sản phẩm V5 bên dưới; V6 đã có backend/Auth/importer, UI mục tiêu/check-in và nền sự kiện, flags vẫn tắt. [Tiến độ và giới hạn hiện hành](V6_PROGRESS_REVIEW.md); baseline V5.1/PR0 trong kiến trúc là lịch sử. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+**Status 03/11/2026:** ứng dụng main V5.7.0, `df22337` sau #27; assessments/matches và RPC plans/selections đã merge. PR5b1b client chưa nối UI giáo án. Giữ hợp đồng sản phẩm V5 bên dưới; V6 đã có backend/Auth/importer, UI mục tiêu/check-in và nền sự kiện, flags vẫn tắt. [Tiến độ và giới hạn hiện hành](V6_PROGRESS_REVIEW.md); baseline V5.1/PR0 trong kiến trúc là lịch sử. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 

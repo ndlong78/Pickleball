@@ -1,19 +1,19 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **03/11/2026** — main `ddcb9f2` sau #26/app5.7.0, regression/backend/Pages sạch cùng merge SHA.
+Cập nhật: **03/11/2026** — main `df22337` sau #27/app5.7.0, regression/backend/Pages sạch cùng merge SHA.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c đã merge. Bốn flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a đã merge. Bốn flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
 
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|
 | Đã merge #24–#26 | Lifecycle/repair, Academy, assessments và matches UI | Source rõ, stable UUID/frozen requests, review và Auth thật; không dual-write/attendance |
-| Đang triển khai | [PR5b1a: RPC plans/selections](docs/PLAN_RPC_PR5B1A.md) | Immutable snapshot, result CAS, own live selection, epoch/replay, RLS; chưa source/sender/UI |
-| Tiếp theo | PR5b1b repository/sender/review, rồi UI plans/selections → PR5a2d training | Dependency/orphan UX, mọi reader cùng nguồn; own plan đã ack trước training mới, timer local |
+| Đang triển khai | [PR5b1b: client plans/selections](docs/PLAN_CLIENT_PR5B1B.md) | Consent/cursor riêng, dependency ACK, immutable requests, projection và review; chưa runtime/UI |
+| Tiếp theo | UI plans/selections → PR5a2d training | Dependency/orphan UX, mọi reader cùng nguồn; own plan đã ack trước training mới, timer local |
 | Phục hồi | PR5b2 đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
-Các bước sau PR5b1a là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Giáo án và nhật ký tập trên UI hiện còn device-only; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
+Các bước sau PR5b1b là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Giáo án và nhật ký tập trên UI hiện còn device-only; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
 
 ## Lịch sử roadmap V1–V5
 
