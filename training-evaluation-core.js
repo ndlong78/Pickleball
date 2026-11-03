@@ -7,7 +7,7 @@ const VALID_LEVELS=["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0"]
 function evaluate(attempts=[],level="3.0–3.5"){
  if(!VALID_LEVELS.includes(level))throw Error("Cấp độ không hợp lệ.");
  const log=root.PICKLEUP_TRAINING_LOG;
- const rows=Array.isArray(attempts)&&log?attempts.filter(r=>(r.account||log.isEntry(r))&&r.level===level):[];
+ const rows=Array.isArray(attempts)&&log?attempts.filter(r=>log.isEntry(r,{account:r?.account===true})&&r.level===level):[];
  const measured=rows.filter(r=>cond.valid(r.conditions)&&(!r.account||!!r.planId)),unknown=rows.length-measured.length;
  const groups=new Map();
  for(const r of measured){
