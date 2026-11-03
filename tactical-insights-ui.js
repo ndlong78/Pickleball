@@ -54,7 +54,7 @@ function report(){
    item.append(line,e("p",row.count+" lần đo · đầu "+row.first+"/20 → gần nhất "+row.last+"/20","sub"));comparisons.append(item)
   });
  }
- $("tacticalNotice").textContent=(window.PICKLEUP_ACTIVITY?.isAccount()?"Trận đấu từ kho tài khoản; lượt đo luyện tập vẫn trên thiết bị. ":"Dữ liệu trên thiết bị này. ")+" Trọng tâm sau trận là nhận xét định tính, không tương đương điểm 0–20. Chỉ so sánh bài cùng mã, cấp độ và loại kiểm tra; điều kiện thực tế vẫn có thể khác nhau.";
+ $("tacticalNotice").textContent=(window.PICKLEUP_ACTIVITY?.isAccount()?"Trận đấu và lượt đo từ kho hoạt động tài khoản. ":"Dữ liệu trên thiết bị này. ")+" Trọng tâm sau trận là nhận xét định tính, không tương đương điểm 0–20. Chỉ so sánh bài cùng mã, cấp độ và loại kiểm tra; điều kiện thực tế vẫn có thể khác nhau.";
  const summary=$("acCoachMatchSuggestion");
  if(summary)summary.textContent=info.suggested?"Nhật ký gợi ý: "+coach.names[info.suggested]+" ("+info.votes[info.suggested]+"/"+info.matchCount+" trận). Chỉ áp dụng khi bạn chọn.":"Chưa có gợi ý dựa trên nhật ký trận đấu.";
 }

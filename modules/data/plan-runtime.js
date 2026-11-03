@@ -12,7 +12,7 @@ function selected(){
  if(state.mode==='guest'){const choice=legacy(SELECTED,null);return choice&&['basic','advanced'].includes(choice.source)?history(choice.source).find(p=>p?.id===choice.id)||null:null}
  const p=state.projection?.selectedPlan;return p?{...structuredClone(p.plan),id:p.id}:null;
 }
-function notice(){return state.mode==='guest'?'Giáo án và lựa chọn cá nhân: kho thiết bị. Đăng nhập không tự nhập hoặc gửi dữ liệu.':state.mode==='account'?'Giáo án và lựa chọn cá nhân: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Chọn giáo án và đồng bộ trước khi mở Court. Nhật ký tập và bài Học viện gần nhất vẫn trên thiết bị; điểm không tạo attendance.':state.mode==='loading'?'Đang xác định nguồn giáo án; chưa thể ghi dữ liệu.':'Chưa đọc được kho giáo án tài khoản. Đọc lại hoặc xuất cache; chưa chuyển sang ghi kho khách.'}
+function notice(){return state.mode==='guest'?'Giáo án và lựa chọn cá nhân: kho thiết bị. Đăng nhập không tự nhập hoặc gửi dữ liệu.':state.mode==='account'?'Giáo án và lựa chọn cá nhân: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Chọn giáo án và đồng bộ trước khi mở Court. Nhật ký tập có nguồn hoạt động riêng; bài Học viện gần nhất vẫn trên thiết bị; điểm không tạo attendance.':state.mode==='loading'?'Đang xác định nguồn giáo án; chưa thể ghi dữ liệu.':'Chưa đọc được kho giáo án tài khoản. Đọc lại hoặc xuất cache; chưa chuyển sang ghi kho khách.'}
 function emit(changed){
  for(const el of document.querySelectorAll('[data-plan-notice]')){el.textContent=notice();el.dataset.source=state.mode}
  document.dispatchEvent(new Event('pickleup:plan-data'));

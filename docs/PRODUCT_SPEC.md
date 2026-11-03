@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Status 03/11/2026:** ứng dụng main V5.7.0, `1a4fccd` sau #28; assessments/matches và RPC plans/selections đã merge. PR5b1c/V5.8.0 nối UI giáo án cá nhân, chưa merge/deploy. Giữ hợp đồng sản phẩm V5 bên dưới; V6 đã có backend/Auth/importer, UI mục tiêu/check-in và nền sự kiện, flags vẫn tắt. [Tiến độ và giới hạn hiện hành](V6_PROGRESS_REVIEW.md); baseline V5.1/PR0 trong kiến trúc là lịch sử. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+**Status 03/11/2026:** main V5.8.0, `411df63` sau #29 có UI plans/selections; backend sau merge fail fixture Auth dependency, chưa clean. PR5a2d/V5.9.0 đang nối nhật ký tài khoản, chưa merge/deploy. Năm flags vẫn tắt. [Tiến độ và giới hạn](V6_PROGRESS_REVIEW.md). **Đọc cùng:** [AGENTS](../AGENTS.md), [engineering](ENGINEERING_STANDARDS.md), [release gates](RELEASE_CHECKLIST.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 
@@ -102,3 +102,5 @@ PR5a2b / V5.6.0 thêm source hoạt động opt-in, UI lưu/xóa lượt Academy
 PR5a2c / V5.7.0 nối ba loại đánh giá và matches vào kho hoạt động hiện hữu. Self0–2 không là stage/advanced0–20; metric sets riêng, không tự đổi level/DUPR/attendance. Journey nhận mốc account tùy chọn, báo cáo trận theo source; history raw phân trang giữ unknown/future ngoài thống kê. Draft/status cũ clear theo source token, quota giữ input, không mirror hoặc tự copy sang plans khách. [Hợp đồng/cấu hình/giới hạn](ASSESSMENT_MATCH_PR5A2C.md). Flags vẫn tắt; giáo án/training còn device-only.
 
 PR5b1c/V5.8.0: người dùng chọn riêng nguồn giáo án, tạo basic/advanced snapshot từ điểm nhập thủ công, chọn và đồng bộ trước Court. Result CAS không tạo attendance/training. Nút read/send/retry/review/delete/restore rõ, guest giữ nguyên. Account timer không resume sau reload; nhật ký/bài Học viện gần nhất vẫn trên thiết bị. [Hợp đồng và giới hạn](PLAN_UI_PR5B1C.md).
+
+PR5a2d/V5.9.0: Court ghi drill hoặc lượt kiểm tra riêng vào activity source khi own plan đã ACK và cùng nguồn. Điểm plan/timer không tự sinh training/attendance. History/evaluation/Journey/planner/tactical dùng cùng nguồn, account không trim1000; so sánh tách plan/bài/level/kind/conditions, orphan/null/future không bị dựng dữ liệu. [Hợp đồng và giới hạn](TRAINING_ACCOUNT_PR5A2D.md).

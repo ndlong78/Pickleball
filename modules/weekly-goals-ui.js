@@ -23,7 +23,7 @@ function redraw(){
  const saved=(()=>{try{return core.readSettings(goalRaw())}catch(_){return {...core.DEFAULT}}})();
  const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore?.readHistory(JSON.stringify(readJson("pickleup_academy_history_v44",[])))||[];
  const records=readJson("pickleup_academy_v2",{});
- const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
+ const log=(()=>{try{return window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.training():logCore?.read(localStorage)||[]}catch(_){return []}})();
  const report=core.summarize(lessons,records,history,log,saved);
  byId("wgCurrent").textContent=report.currentCount+"/"+report.target;
  byId("wgRecorded").textContent=String(report.totalDays);

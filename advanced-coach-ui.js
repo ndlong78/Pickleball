@@ -127,7 +127,7 @@ async function complete(){
   plans[idx]=updated;localStorage.setItem(core.KEY,JSON.stringify(plans));
   const note=result-before.checkpoint.baseline, sign=note>0?"+":"";
   let logMessage="";
-  if(!before.completedAt&&window.PICKLEUP_TRAINING_LOG){
+  if(!before.completedAt&&!window.PICKLEUP_ACTIVITY?.isAccount()&&window.PICKLEUP_TRAINING_LOG){
    try{const e=updated.exercises[0];window.PICKLEUP_TRAINING_LOG.record(localStorage,{planId:updated.id,exerciseId:e.id,skill:e.skill,level:updated.level,kind:"assessment",hits:result,note:"Kiểm tra V3.1: "+names[updated.checkpoint.skill]});document.dispatchEvent(new Event("pickleup:training-log-updated"))}
    catch(err){logMessage=" Nhật ký bài tập chưa lưu được: "+err.message}
   }

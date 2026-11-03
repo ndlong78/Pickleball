@@ -5,7 +5,8 @@ const clock=window.PICKLEUP_PRACTICE_CLOCK,draw=window.PICKLEUP_DRILL_DIAGRAM;
 if(!clock)return;
 const storageKey="pickleup_practice_state_v25",plansKey="pickleup_plans_v24",$=id=>document.getElementById(id);
 let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false,renderedDrillKey=null;
-const plansSource=window.PICKLEUP_PLANS;
+const plansSource=window.PICKLEUP_PLANS,activity=window.PICKLEUP_ACTIVITY;
+let attemptBusy=false,activityToken=activity?.token();
 let planToken=plansSource?.token();
 const logApi=window.PICKLEUP_TRAINING_LOG,conditionsApi=window.PICKLEUP_PRACTICE_CONDITIONS;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
@@ -57,13 +58,14 @@ function render(){
  const items=$("pcRunSegments");items.replaceChildren();
  clock.stages.forEach((s,i)=>{const el=document.createElement("span");el.className="pc-run-segment"+(i===state.index?" is-active":"")+(i<state.index?" is-done":"");el.textContent=(i+1)+". "+s.title;items.append(el)});
  $("pcRunScore").hidden=!done&&state.index!==4;
- const active=state.index>=1&&state.index<=3;
- $("pcAttemptArea").hidden=!active;$("pcAttemptSave").disabled=plansSource?.isAccount()===true;
+ const active=state.index>=1&&state.index<=3||state.index===4&&plansSource?.isAccount();
+ for(const id of ["pcAttemptHits","pcAttemptNote","pcAttemptFeed","pcAttemptPace","pcAttemptTarget"])$(id).disabled=attemptBusy;
+ $("pcAttemptArea").hidden=!active;$("pcAttemptSave").disabled=attemptBusy||(plansSource?.isAccount()? !activity?.canTrain(plan.id):activity?.isAccount()===true);
  if(active){
-  const drill=plan.exercises[state.index-1],drillKey=plan.id+"|"+drill.id;
+  const drill=plan.exercises[state.index===4?0:state.index-1],drillKey=plan.id+"|"+drill.id+"|"+(state.index===4?"assessment":"drill");
   if(renderedDrillKey!==drillKey){$("pcAttemptHits").value="";$("pcAttemptNote").value="";renderedDrillKey=drillKey}
-  $("pcAttemptName").textContent="Ghi một lần tập: "+drill.skillName+" — "+drill.name;
-  $("pcAttemptHint").textContent=plansSource?.isAccount()?"Nhật ký tập tài khoản chưa nối UI; chưa ghi lượt này vào kho khách. Đồng hồ giữ trong phiên đang mở, reload sẽ đặt lại.":"Sau phần luyện kỹ thuật, kiểm tra 20 lượt với cùng mục tiêu, cùng cấp độ và ghi số lần đúng. Mục tiêu 20 lượt này riêng với các hiệp trong hướng dẫn.";
+  $("pcAttemptName").textContent=(state.index===4?"Ghi một lượt kiểm tra riêng: ":"Ghi một lần tập: ")+drill.skillName+" — "+drill.name;
+  $("pcAttemptHint").textContent=plansSource?.isAccount()?(activity?.canTrain(plan.id)?"Kho hoạt động tài khoản · lưu một lượt mới trên thiết bị, gửi khi bấm đồng bộ hoạt động. Không sửa điểm giáo án hoặc xác nhận buổi tập.":"Để ghi lượt tập, chọn kho hoạt động cùng tài khoản trong Dữ liệu và đồng bộ giáo án đã chọn. Chưa ghi vào kho khách."):activity?.isAccount()?"Nhật ký đang dùng kho tài khoản. Chọn và đồng bộ giáo án tài khoản trong Dữ liệu trước khi ghi lượt tập.":"Sau phần luyện kỹ thuật, kiểm tra 20 lượt với cùng mục tiêu, cùng cấp độ và ghi số lần đúng. Mục tiêu 20 lượt này riêng với các hiệp trong hướng dẫn.";
  }else renderedDrillKey=null;
 }
 function advance(direction){
@@ -81,19 +83,24 @@ function reset(){
  if(!state||!confirm("Đặt lại đồng hồ về phần khởi động của kế hoạch này?"))return;
  state=clock.reset(state);save();lastExpired=-1;render();message("Đã đặt lại đồng hồ.");
 }
-function saveAttempt(){
- if(plansSource?.isAccount()){message("Nhật ký tập tài khoản chưa bật; không ghi vào dữ liệu khách.");return}
- if(!plan||!state||state.index<1||state.index>3||!logApi)return;
- const drill=plan.exercises[state.index-1],input=$("pcAttemptHits"),value=input.value.trim(),hits=Number(value);
+async function saveAttempt(){
+ if(attemptBusy||!plan||!state||state.index<1||state.index>4||!logApi)return;
+ const account=plansSource?.isAccount()===true,sourceStamp=plansSource?.token(),activityStamp=activity?.token(),key=renderedDrillKey;
+ if(account?!activity?.canTrain(plan.id):activity?.isAccount()){message("Chọn cùng nguồn giáo án và hoạt động trước khi ghi lượt tập; chưa ghi vào kho khách.");return}
+ const drill=plan.exercises[state.index===4?0:state.index-1],input=$("pcAttemptHits"),value=input.value.trim(),hits=Number(value);
  if(!value||!Number.isInteger(hits)||hits<0||hits>20){message("Vui lòng nhập số nguyên từ 0 đến 20 cho bài tập.");return}
  try{
   const conditions=conditionsApi?.fromSelect({feed:$("pcAttemptFeed").value,pace:$("pcAttemptPace").value,target:$("pcAttemptTarget").value});
   if(!conditions)throw Error("Hãy chọn đủ cách cấp bóng, tốc độ và vùng mục tiêu để ghi lượt tập có thể so sánh.");
-  logApi.record(localStorage,{planId:plan.id,exerciseId:drill.id,skill:drill.skill,level:plan.level,kind:"drill",hits,note:$("pcAttemptNote").value,conditions});
+  const value={planId:plan.id,exerciseId:drill.id,skill:drill.skill,level:plan.level,kind:state.index===4?"assessment":"drill",hits,note:$("pcAttemptNote").value,conditions};
+  attemptBusy=true;render();message("Đang lưu lượt tập…");
+  if(account)await activity.saveTraining(value);else logApi.record(localStorage,value);
+  if(sourceStamp!==plansSource?.token()||activityStamp!==activity?.token()||key!==renderedDrillKey)return;
   input.value="";$("pcAttemptNote").value="";
-  message("Đã lưu "+hits+"/20 cho "+drill.skillName+". Có thể ghi thêm lần tập khác.");
+  message((account?"Đã lưu trong kho tài khoản trên thiết bị · chờ đồng bộ hoạt động. ":"")+"Đã lưu "+hits+"/20 cho "+drill.skillName+". Có thể ghi thêm lần tập khác.");
   document.dispatchEvent(new Event("pickleup:training-log-updated"));
- }catch(e){message("Không thể lưu lần tập: "+e.message)}
+ }catch(e){if(sourceStamp===plansSource?.token()&&activityStamp===activity?.token()&&key===renderedDrillKey)message(account?(window.PickleUpActivityHistory?.error(e)||"Chưa lưu được. Giữ dữ liệu nhập và kiểm tra Dữ liệu."):"Không thể lưu lần tập: "+e.message)}
+ finally{if(sourceStamp===plansSource?.token()&&activityStamp===activity?.token()){attemptBusy=false;render()}}
 }
 async function toggleWake(){
  const sourceStamp=plansSource?.token();
@@ -122,9 +129,10 @@ function pulse(){
  }
 }
 document.addEventListener("pickleup:plan-data",()=>{
- const next=plansSource?.token();if(next!==planToken){planToken=next;plan=null;state=null;lastExpired=-1;renderedDrillKey=null;wakeWanted=false;wakeLock?.release().catch(()=>{});wakeLock=null;
+ const next=plansSource?.token();if(next!==planToken){planToken=next;attemptBusy=false;plan=null;state=null;lastExpired=-1;renderedDrillKey=null;wakeWanted=false;wakeLock?.release().catch(()=>{});wakeLock=null;
  for(const id of ['pcAttemptHits','pcAttemptNote','pcAttemptFeed','pcAttemptPace','pcAttemptTarget'])if($(id))$(id).value='';if($("pcWakeToggle"))$("pcWakeToggle").checked=false;message('');loadPlan(plansSource?.selected()||null)}
 });
+document.addEventListener("pickleup:activity-data",()=>{const next=activity?.token();if(next!==activityToken){activityToken=next;attemptBusy=false;for(const id of ["pcAttemptHits","pcAttemptNote","pcAttemptFeed","pcAttemptPace","pcAttemptTarget"])if($(id))$(id).value="";message("")}render()});
 document.addEventListener("pickleup:plan-selected",event=>loadPlan(plansSource?.isAccount()?plansSource.selected():event.detail?.plan||null));
 (window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  const cond=window.PICKLEUP_PRACTICE_CONDITIONS;

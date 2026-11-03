@@ -174,22 +174,29 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      },
      read(kind,id){identity(kind,id);return transaction(['records'],'readonly',tx=>request(tx.objectStore('records').get([namespace,kind,id])))},
      listOutbox(){return transaction(['outbox'],'readonly',tx=>request(tx.objectStore('outbox').index('namespace').getAll(namespace)))},
-     async write({kind,id,value,operationId,expectedLocalRevision='0',action='put',activityConsentRevision=null,planConsentRevision=null}){
+     async write({kind,id,value,operationId,expectedLocalRevision='0',action='put',activityConsentRevision=null,planConsentRevision=null,trainingPlan=null}){
       identity(kind,id);
       if(!UUID.test(operationId)||!revision(expectedLocalRevision)||!['put','delete','restore'].includes(action))fail('invalid_operation');
+      trainingPlan=copy(trainingPlan);
       const snapshot=copy(value);
       if(!snapshot||Object.getPrototypeOf(snapshot)!==Object.prototype)fail('invalid_payload');
-      const signature=canonical({kind,id,value:snapshot,operationId,expectedLocalRevision,action});
+      const signature=canonical({kind,id,value:snapshot,operationId,expectedLocalRevision,action,...(trainingPlan?{trainingPlan}: {})});
       if(new TextEncoder().encode(signature).length>256*1024)fail('payload_too_large');
       if(action==='restore'&&EVENTS.has(kind))fail('append_only');
       if(action==='delete'&&canonical(snapshot)!=='{}'&&!(kind==='practice_checkins'&&Object.keys(snapshot).length===1&&typeof snapshot.timezone_at_entry==='string'&&snapshot.timezone_at_entry.length<=80))fail('invalid_payload');
-      return transaction(['records','outbox','metadata'],'readwrite',async tx=>{
+      return transaction(['records','outbox','metadata','sync_cursor'],'readwrite',async tx=>{
        if(activityConsentRevision!==null){if(!EVENTS.has(kind))fail('invalid_policy');await requireActivityConsent(tx,activityConsentRevision)}
        if(planConsentRevision!==null){if(!PLANS.has(kind))fail('invalid_policy');await requirePlanConsent(tx,planConsentRevision)}
        const records=tx.objectStore('records'),outbox=tx.objectStore('outbox'),metadata=tx.objectStore('metadata');
        const receiptKey=[namespace,'operation:'+operationId];
        const prior=await request(metadata.get(receiptKey));
        if(prior){if(prior.signature!==signature)fail('operation_mismatch');return {status:'replayed',localRevision:prior.localRevision}}
+       if(trainingPlan!==null){
+        if(kind!=='training_entries'||action!=='put'||activityConsentRevision===null)fail('invalid_policy');
+        await requirePlanConsent(tx,trainingPlan.consentRevision);
+        const target=await request(records.get([namespace,'personal_plans',snapshot.plan_id])),cursor=await request(tx.objectStore('sync_cursor').get([namespace,PLAN_POLICY])),activityCursor=await request(tx.objectStore('sync_cursor').get([namespace,ACTIVITY_POLICY]));
+        if(!target?.base||target.base.user_id!==namespace.slice(5)||target.base.id!==snapshot.plan_id||target.base.deleted_at||target.deleted||target.reviewRequired||target.localRevision!==trainingPlan.localRevision||target.baseEpoch!==trainingPlan.epoch||cursor?.epoch!==trainingPlan.epoch||activityCursor?.epoch!==trainingPlan.epoch||target.base.level_band!==snapshot.level_band||!target.base.plan_snapshot?.exercises?.some(x=>x.id===snapshot.exercise_id&&x.skill===snapshot.skill))fail('plan_unavailable');
+       }
        const key=[namespace,kind,id],old=await request(records.get(key));
        if((old?.localRevision||'0')!==expectedLocalRevision)fail('local_conflict');
        if(old?.deleted&&action==='put')fail('explicit_restore_required');
@@ -437,7 +444,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
     };
     scopes.add(api);return api;
    }
-   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY,PLAN_POLICY]),activityLifecycle:1,planLifecycle:1});
+   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY,PLAN_POLICY]),activityLifecycle:1,planLifecycle:1,trainingLifecycle:1});
   };
  });
 }

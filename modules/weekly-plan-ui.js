@@ -25,7 +25,7 @@ function draw(){
  const config=storedPlan(),target=storedGoal();
  const records=json("pickleup_academy_v2",{});
  const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore?.readHistory(JSON.stringify(json("pickleup_academy_history_v44",[])))||[];
- const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
+ const log=(()=>{try{return window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.training():logCore?.read(localStorage)||[]}catch(_){return []}})();
  const week=planner.buildWeek(lessons,records,history,log,target,config);
  el("wpSummary").textContent="Tuần "+week.start+" đến "+week.end+" · "+week.scheduled+" ngày tập đề xuất, "+week.rest+" ngày hồi phục · "+week.totalMinutes+" phút dự kiến. Cấp độ: "+week.level+".";
  el("wpCaution").textContent=week.gentle
