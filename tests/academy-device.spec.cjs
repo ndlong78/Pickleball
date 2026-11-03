@@ -45,5 +45,5 @@ test('native device state/mock Auth: either account source owns practice, both o
 });
 test('native device state/mock Auth: missing BroadcastChannel uses focus reread without auto RPC',async({page,context})=>{
  const f=await setup(context);await context.addInitScript(()=>{window.BroadcastChannel=undefined});await enable(page);await open(page);const tab=await context.newPage();await tab.goto('/Pickleball/?page=academy');await expect(tab.locator(notice)).toContainText('đã lưu theo tài khoản');await tab.locator('#academyWeek').selectOption('PU-037');const count=f.calls.length;
- await tab.locator(first).check();await expect(tab.locator(notice)).toContainText('đã lưu theo tài khoản');await page.bringToFront();await expect(page.locator(first)).toBeChecked();expect(f.calls.length).toBe(count);
+ await tab.locator(first).check();await expect(tab.locator(notice)).toContainText('đã lưu theo tài khoản');await page.bringToFront();/* Headless bringToFront need not produce an OS focus event. Exercise the fallback signal explicitly. */await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect(page.locator(first)).toBeChecked();expect(f.calls.length).toBe(count);
 });
