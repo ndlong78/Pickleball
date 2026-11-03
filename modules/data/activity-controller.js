@@ -8,19 +8,20 @@ const clone=value=>structuredClone(value);
 function create({auth,repository,core=root.PickleUpActivityCore,pullFactory=root.PickleUpPullController,syncFactory=root.PickleUpSyncController,enabled=()=>false,onChange=()=>{},now=()=>new Date(),channelFactory=name=>root.document&&typeof root.BroadcastChannel==='function'?new root.BroadcastChannel(name):null}={}){
  if(repository?.activityLifecycle!==1||pullFactory?.ACTIVITY_LIFECYCLE!==1||syncFactory?.ACTIVITY_LIFECYCLE!==1)fail('upgrade_required');
  if(!core||typeof auth?.eventRpc!=='function'||typeof enabled!=='function')fail('invalid_options');
- let generation=0,owner=null,scope=null,reader=null,sender=null,closed=false,initial,api;
+ let loadVersion=0,generation=0,owner=null,scope=null,reader=null,sender=null,closed=false,initial,api;
  const blank=(mode,who)=>({mode,owner:who,busy:false,error:null,consent:{enabled:false,localRevision:'0'},snapshot:null,projection:null});
  let state=blank('loading',null);
  const channel=enabled()===true?channelFactory('pickleup-activity-1'):null;
  function emit(){onChange(clone(state))}
- function stop(){scope?.close();reader?.close();sender?.close();scope=reader=sender=null}
+ function stop(){loadVersion++;scope?.close();reader?.close();sender?.close();scope=reader=sender=null}
  function guard(stamp=generation){if(closed||stamp!==generation)fail('account_changed');if(enabled()!==true)fail('pilot_disabled')}
  function notify(){if(!closed&&owner)channel?.postMessage({type:'changed',owner})}
  function account(){guard();if(!owner)fail('auth_required');if(state.mode!=='account'||!state.consent.enabled)fail('source_unavailable')}
  async function load(stamp){
-  const own=scope,consent=state.consent;
+  const ticket=++loadVersion,own=scope,consent=state.consent;
   const snapshot=await own.getActivitySnapshot();guard(stamp);
   const current=await own.getActivityConsent();guard(stamp);
+  if(ticket!==loadVersion)return;
   if(!current.enabled||current.localRevision!==consent.localRevision)fail('consent_changed');
   let projection;
   try{projection=core.project(snapshot,{owner,now:now()})}
@@ -132,9 +133,9 @@ function create({auth,repository,core=root.PickleUpActivityCore,pullFactory=root
     finally{guard(stamp);await load(stamp);notify()}
    });
   },
-  async createEvent({kind,id,operationId,value}){
+  async createEvent({kind,id,operationId,value,trainingPlan=null}){
    writable(kind,id,'0',operationId);const payload=core.payload(kind,value);
-   return task(async stamp=>{const result=await scope.write({kind,id,operationId,value:payload,activityConsentRevision:state.consent.localRevision});guard(stamp);await load(stamp);notify();return result});
+   return task(async stamp=>{const result=await scope.write({kind,id,operationId,value:payload,trainingPlan,activityConsentRevision:state.consent.localRevision});guard(stamp);await load(stamp);notify();return result});
   },
   async deleteEvent({kind,id,operationId,expectedLocalRevision}){
    const {row,replay}=writable(kind,id,expectedLocalRevision,operationId);if(!row)fail('entity_not_found');if(row.deleted&&!replay)fail('already_deleted');
@@ -165,5 +166,5 @@ function create({auth,repository,core=root.PickleUpActivityCore,pullFactory=root
  };
  return api;
 }
-const api={create,ActivityError,POLICY};if(typeof module!=='undefined')module.exports=api;else root.PickleUpActivityController=api;
+const api={create,ActivityError,POLICY,TRAINING_LIFECYCLE:1};if(typeof module!=='undefined')module.exports=api;else root.PickleUpActivityController=api;
 })(typeof window==='undefined'?globalThis:window);

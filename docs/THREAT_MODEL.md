@@ -2,7 +2,7 @@
 
 Phạm vi: một người dùng nhiều thiết bị, private training/match data, Supabase Auth/Postgres/RPC/RLS, IndexedDB và GitHub Pages. Chưa mở sharing/coach/admin CMS. Thiết kế kiểm soát chưa phải kết quả pentest hoặc bằng chứng RLS đã được triển khai. Đọc [architecture](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md).
 
-**Cập nhật sau #28 (03/11/2026):** schema/RLS/RPC, Auth, importer, source UI mục tiêu/check-in, event lifecycle/repair và Academy đã có cùng tests local; Auth/import/sync/activity/plan flags vẫn tắt. [Rà soát tiến độ/rủi ro](V6_PROGRESS_REVIEW.md) ghi đúng merge SHA/evidence. Bảng dưới là yêu cầu kiểm soát, không phải mọi ô đều đã hoàn tất. Chưa Managed staging/SMTP, đủ domain source UI, full V6 backup/purge/account deletion, restore drill hoặc pentest độc lập; client cache không mã hóa và main protection chưa bật tại snapshot.
+**Cập nhật sau #29 (03/11/2026):** schema/RLS/RPC, Auth, importer, source UI mục tiêu/check-in, event lifecycle/repair và Academy đã có cùng tests local; Auth/import/sync/activity/plan flags vẫn tắt. [Rà soát tiến độ/rủi ro](V6_PROGRESS_REVIEW.md) ghi đúng merge SHA/evidence. Bảng dưới là yêu cầu kiểm soát, không phải mọi ô đều đã hoàn tất. Chưa Managed staging/SMTP, đủ domain source UI, full V6 backup/purge/account deletion, restore drill hoặc pentest độc lập; client cache không mã hóa và main protection chưa bật tại snapshot.
 
 ## 1. Tài sản, tác nhân và trust boundaries
 
@@ -55,3 +55,5 @@ Operator có quyền database vẫn là trust boundary đặc quyền: access í
 - Trước production: owner phê duyệt privacy/cost/region, RLS review và allow/deny tests, staging restore RPO/RTO, clean CI đúng SHA, QA thật và hỗ trợ người dùng. PR0 không tuyên bố các gate này đã đạt.
 
 PR5b1c: personal plan UI dùng source token cho DOM/draft/pending Court callback; optimistic metadata owner/entity bị kiểm trước projection. Clock account chỉ RAM, không chép plan UUID/private notes sang timer/log V5. Quota/CAS/review giữ intent và không auto-copy account points. Tests phân biệt mocks/native IDB, real Auth local CI, Managed staging và physical QA; pilot/backup/privacy gates vẫn chưa mở.
+
+PR5a2d: training UI fence cả nguồn hoạt động và giáo án, kiểm lại plan consent/revision/epoch/live owner trong transaction. Quota giữ input, stale A response không cập nhật B; mismatched sources không ghi khách. Note/history/review dùng textContent; Auth integration không xuất private payload/log/artifact. Main backend #29 fail fixture sequencing được ghi rõ tại tiến độ, không coi Pages là release gate đầy đủ.

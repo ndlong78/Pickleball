@@ -21,13 +21,14 @@ function analyze(matches=[],attempts=[],level="3.0–3.5"){
  const records=Array.isArray(attempts)?attempts.filter(r=>isAttempt(r)&&r.level===level):[];
  const groups=new Map();
  for(const a of records){
-  const key=a.exerciseId+"|"+a.kind;
+  const context=a.account?root.PICKLEUP_PRACTICE_CONDITIONS?.signature(a.conditions):null;if(a.account&&(!context||!a.planId))continue;
+  const key=a.exerciseId+'|'+a.kind+(a.account?'|'+a.planId+'|'+context:'');
   if(!groups.has(key))groups.set(key,[]);
   groups.get(key).push(a);
  }
  const comparable=[];
  for(const [key,group] of groups){
-  const sorted=group.slice().sort((a,b)=>a.date.localeCompare(b.date)||String(a.id).localeCompare(String(b.id)));
+  const sorted=group.slice().sort((a,b)=>a.account&&b.account?b.accountOrder-a.accountOrder:a.date.localeCompare(b.date)||String(a.id).localeCompare(String(b.id)));
   if(sorted.length<2)continue;
   const first=sorted[0],last=sorted[sorted.length-1];
   comparable.push({exerciseId:first.exerciseId,kind:first.kind,count:sorted.length,first:first.hits,last:last.hits,delta:last.hits-first.hits});

@@ -14,7 +14,7 @@ function redraw(){
  const prefs=planner.readSettings(JSON.stringify(json(planner.KEY,null)));
  const records=json("pickleup_academy_v2",{});
  const history=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.history():historyCore?.readHistory(JSON.stringify(json("pickleup_academy_history_v44",[])))||[];
- const log=(()=>{try{return logCore?.read(localStorage)||[]}catch(_){return []}})();
+ const log=(()=>{try{return window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.training():logCore?.read(localStorage)||[]}catch(_){return []}})();
  const week=planner.buildWeek(window.PICKLEUP_CURRICULUM||[],records,history,log,settings,prefs);
  const actual=checkins.read(JSON.stringify(json(checkins.KEY,null)));
  const r=reality.analyze(week,actual);

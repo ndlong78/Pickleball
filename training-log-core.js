@@ -47,9 +47,9 @@ function record(storage,input){
  const next=append(previous,item);
  storage.setItem(KEY,JSON.stringify(next));return item;
 }
-function matching(rows,{skill,exerciseId,level,kind="drill",conditionsKey=undefined}){
- return rows.filter(r=>r.skill===skill&&r.exerciseId===exerciseId&&r.level===level&&r.kind===kind&&(conditionsKey===undefined||(root.PICKLEUP_PRACTICE_CONDITIONS?.signature(r.conditions)||"legacy")===conditionsKey))
- .slice().sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+function matching(rows,{skill,exerciseId,level,kind="drill",conditionsKey=undefined,planId=undefined}){
+ return rows.filter(r=>r.skill===skill&&r.exerciseId===exerciseId&&r.level===level&&r.kind===kind&&(planId===undefined||r.planId===planId)&&(conditionsKey===undefined||(root.PICKLEUP_PRACTICE_CONDITIONS?.signature(r.conditions)||"legacy")===conditionsKey))
+ .slice().sort((a,b)=>a.account&&b.account?b.accountOrder-a.accountOrder:a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
 }
 function compare(rows,filter){
  const group=matching(rows,filter);

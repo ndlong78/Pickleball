@@ -121,7 +121,7 @@ async function complete(){
   plans[i]=updated;localStorage.setItem(storageKey,JSON.stringify(plans));
   // Append the first measured checkpoint only; editing an earlier score is not a new attempt.
   let logWarning="";
-  if(!wasCompleted&&window.PICKLEUP_TRAINING_LOG){
+  if(!wasCompleted&&!window.PICKLEUP_ACTIVITY?.isAccount()&&window.PICKLEUP_TRAINING_LOG){
    try{
     const e=updated.exercises[0];
     window.PICKLEUP_TRAINING_LOG.record(localStorage,{planId:updated.id,exerciseId:e.id,skill:e.skill,level:updated.level,kind:"assessment",hits:score,note:"Kiểm tra cuối buổi"});

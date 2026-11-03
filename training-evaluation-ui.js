@@ -12,7 +12,7 @@ function draw(){
  const result=api.evaluate(read("pickleup_training_log_v26"),level);
  const doubles=api.doubles(read("pickleup_match_journal_v3"));
  $("evalTotals").textContent=result.measured+"/"+result.total+" lượt có đủ điều kiện · "+result.comparable.length+" nhóm so sánh được";
- $("evalUnknown").textContent=result.unknown?"Còn "+result.unknown+" lượt cũ hoặc lượt kiểm tra cuối buổi chưa ghi điều kiện: vẫn lưu, nhưng không đưa vào phép so sánh đủ điều kiện.":"Tất cả lượt trong nhóm đã chọn đều có điều kiện ghi nhận.";
+ $("evalUnknown").textContent=result.unknown?"Còn "+result.unknown+" lượt chưa đủ điều kiện hoặc liên kết giáo án: vẫn lưu, nhưng không đưa vào phép so sánh đủ điều kiện.":"Tất cả lượt trong nhóm đã chọn đều có điều kiện ghi nhận.";
  const list=$("evalComparison");list.replaceChildren();
  if(!result.comparable.length)list.append(el("p","Chưa có ít nhất hai lượt cùng bài, cấp độ, loại kiểm tra và ba điều kiện. Hãy luyện lại cùng bài trong điều kiện tương tự.","sub"));
  for(const entry of result.comparable.slice(0,12)){

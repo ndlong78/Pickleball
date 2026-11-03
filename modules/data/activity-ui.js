@@ -53,7 +53,7 @@ function summary(kind,value,deleted){
  const date=value.occurred_at?new Date(value.occurred_at).toLocaleString('vi-VN'):'Chưa rõ ngày';
  if(kind==='academy_attempts')return value.lesson_id+' · '+value.score+'/20 · '+date+' · '+(value.conditions?'Đã ghi điều kiện':'Điều kiện chưa rõ');
  if(kind==='skill_assessments')return ({self:'Tự đánh giá',stage:'Kiểm tra cơ bản',advanced:'Kiểm tra nâng cao'})[value.assessment_type]+' · '+(value.level_band||'Thang tự đánh giá')+' · '+date+' · '+Object.entries(value.scores).map(([key,score])=>PickleUpActivitySourceCore.NAMES[key]+': '+score+'/'+value.scale).join(' · ');
- if(kind==='training_entries')return value.exercise_id+' · '+value.hits+'/20 · '+date;
+ if(kind==='training_entries')return value.exercise_id+' · '+value.level_band+' · '+value.kind+' · '+value.hits+'/20 · '+date+' · '+(value.plan_id?'Giáo án: '+value.plan_id:'Giáo án cũ: '+value.legacy_plan_id)+' · '+(window.PICKLEUP_PRACTICE_CONDITIONS?.describe(value.conditions)||'Chưa rõ điều kiện')+(value.note?' · '+value.note:'');
  return value.ours+'–'+value.theirs+' · '+(value.mode==='doubles'?'Đánh đôi':'Đánh đơn')+' · '+date+' · '+PickleUpActivitySourceCore.FOCUS_LABELS[value.focus]+(value.doubles_issue?' · '+(window.PICKLEUP_PRACTICE_CONDITIONS?.DOUBLES[value.doubles_issue]||value.doubles_issue):'')+(value.note?' · '+value.note:'');
 }
 function show(view){

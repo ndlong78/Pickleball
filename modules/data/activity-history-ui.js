@@ -4,7 +4,7 @@
 const data=root.PICKLEUP_ACTIVITY,core=root.PickleUpActivitySourceCore;
 const names=core.NAMES;
 const node=(tag,text)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el};
-function error(e){return ({quota_exceeded:'Không đủ dung lượng. Chưa lưu; hãy giữ dữ liệu nhập và xuất cache đang có.',account_changed:'Tài khoản hoặc nguồn đã đổi. Dữ liệu cũ giữ riêng.',local_conflict:'Dữ liệu đã đổi. Đọc lại và xem mục cần xử lý.',needs_review:'Cần xem và xử lý trong Dữ liệu.',invalid_activity:'Dữ liệu không hợp lệ. Kiểm tra lại trước khi lưu.',source_unavailable:'Chưa thể lưu vào nguồn này. Kiểm tra kho hoạt động trong Dữ liệu.'})[e?.code]||'Chưa lưu được. Giữ dữ liệu nhập và kiểm tra kho hoạt động trong Dữ liệu.'}
+function error(e){return ({quota_exceeded:'Không đủ dung lượng. Chưa lưu; hãy giữ dữ liệu nhập và xuất cache đang có.',account_changed:'Tài khoản hoặc nguồn đã đổi. Dữ liệu cũ giữ riêng.',local_conflict:'Dữ liệu đã đổi. Đọc lại và xem mục cần xử lý.',needs_review:'Cần xem và xử lý trong Dữ liệu.',plan_unavailable:'Chọn giáo án tài khoản đã đồng bộ, cùng nguồn hoạt động trước khi ghi lượt tập.',invalid_activity:'Dữ liệu không hợp lệ. Kiểm tra lại trước khi lưu.',source_unavailable:'Chưa thể lưu vào nguồn này. Kiểm tra kho hoạt động trong Dữ liệu.'})[e?.code]||'Chưa lưu được. Giữ dữ liệu nhập và kiểm tra kho hoạt động trong Dữ liệu.'}
 function mount(legacyHost,{kind,type=null}={}){
  const host=node('div');host.dataset.activityHistory=type||kind;legacyHost.after(host);
  let page=0,busy=false,token=data.token();const status=node('p',''),count=node('p',''),navigation=node('div'),prev=node('button','Trước'),next=node('button','Sau'),position=node('span'),list=node('ul');
@@ -18,9 +18,10 @@ function mount(legacyHost,{kind,type=null}={}){
   const records=new Map(data.getState().snapshot.records.filter(r=>r.kind===kind).map(r=>[r.id,r]));list.replaceChildren();
   for(const event of events.slice(page*20,(page+1)*20)){
    const item=node('li'),date=event.occurred_at===null?'Chưa rõ ngày':new Date(event.occurred_at).toLocaleString('vi-VN'),future=event.occurred_at!==null&&Date.parse(event.occurred_at)>Date.now();
-   const title=kind==='match_records'?(event.mode==='doubles'?'Đánh đôi':'Đánh đơn')+' · '+event.ours+'–'+event.theirs:(event.assessment_type==='self'?'Tự đánh giá 0–2':event.assessment_type==='stage'?'Kiểm tra cơ bản /20':'Kiểm tra nâng cao /20')+(event.level_band?' · '+event.level_band:'');
+   const title=kind==='training_entries'?event.exercise_id+' · '+event.hits+'/20 · '+event.level_band:kind==='match_records'?(event.mode==='doubles'?'Đánh đôi':'Đánh đơn')+' · '+event.ours+'–'+event.theirs:(event.assessment_type==='self'?'Tự đánh giá 0–2':event.assessment_type==='stage'?'Kiểm tra cơ bản /20':'Kiểm tra nâng cao /20')+(event.level_band?' · '+event.level_band:'');
    item.append(node('strong',title),node('p',date+(records.get(event.id)?.reviewRequired?' · cần xử lý trong Dữ liệu':event.pending?' · chờ đồng bộ':'')+(future?' · ngày tương lai, chưa phân tích':'')));
    if(kind==='skill_assessments')item.append(node('p',Object.entries(event.scores).map(([key,value])=>(names[key]||key)+': '+value+'/'+event.scale).join(' · ')));
+   else if(kind==='training_entries'){item.append(node('p',(event.kind==='assessment'?'Kiểm tra':'Luyện kỹ thuật')+' · '+(event.plan_id?'Giáo án: '+event.plan_id:'Giáo án cũ chưa liên kết: '+event.legacy_plan_id)));item.append(node('p',root.PICKLEUP_PRACTICE_CONDITIONS?.describe(event.conditions)||'Chưa rõ điều kiện'));if(event.note)item.append(node('p',event.note))}
    else{item.append(node('p','Trọng tâm: '+(core.FOCUS_LABELS[event.focus]||event.focus)+(event.doubles_issue?' · Đánh đôi: '+(root.PICKLEUP_PRACTICE_CONDITIONS?.DOUBLES[event.doubles_issue]||event.doubles_issue):'')));if(event.note)item.append(node('p',event.note))}
    const row=records.get(event.id),stamp=token,remove=node('button','Xóa lượt này');remove.type='button';remove.dataset.eventId=event.id;remove.disabled=busy||!data.canWrite()||!row||row.reviewRequired;
    remove.addEventListener('click',async()=>{

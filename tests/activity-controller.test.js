@@ -147,3 +147,6 @@ test('cache corruption discovered after a local save blocks edits while retainin
   const cache=await c.exportCache();assert.equal(cache.records.length,2);assert.equal(cache.outbox.length,1);assert.equal(cache.outbox[0].operationId,good.operationId);assert.equal(cache.outbox[0].state,'pending');assert.equal(cache.outbox[0].payload.client_event_id,good.value.client_event_id);
  }finally{f.close()}
 });
+test('an older activity cache read cannot replace a newer local event or revision',async()=>{
+ const f=await fixture();let hold=false,reached,release;const seen=new Promise(r=>reached=r),wrapped={...f.db,scope(namespace){const own=f.db.scope(namespace);return {...own,async getActivitySnapshot(){const value=await own.getActivitySnapshot();if(hold){hold=false;reached();await new Promise(r=>release=r)}return value}}}};const c=f.make({repository:wrapped});try{await c.ready;await c.useAccount();hold=true;const reading=c.refreshLocal();await seen;const cmd=command();await c.createEvent(cmd);const snapshot=c.getState().snapshot;assert.equal(c.getState().projection.events.academy_attempts.length,1);release();await reading;assert.deepEqual(c.getState().snapshot,snapshot)}finally{release?.();f.close()}
+});

@@ -7,17 +7,17 @@ const VALID_LEVELS=["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0"]
 function evaluate(attempts=[],level="3.0–3.5"){
  if(!VALID_LEVELS.includes(level))throw Error("Cấp độ không hợp lệ.");
  const log=root.PICKLEUP_TRAINING_LOG;
- const rows=Array.isArray(attempts)&&log?attempts.filter(r=>log.isEntry(r)&&r.level===level):[];
- const measured=rows.filter(r=>cond.valid(r.conditions)),unknown=rows.length-measured.length;
+ const rows=Array.isArray(attempts)&&log?attempts.filter(r=>(r.account||log.isEntry(r))&&r.level===level):[];
+ const measured=rows.filter(r=>cond.valid(r.conditions)&&(!r.account||!!r.planId)),unknown=rows.length-measured.length;
  const groups=new Map();
  for(const r of measured){
-  const context=cond.signature(r.conditions),key=[r.exerciseId,r.level,r.kind,context].join("::");
+  const context=cond.signature(r.conditions),key=[r.exerciseId,r.level,r.kind,context,...(r.account?[r.planId]:[])].join("::");
   if(!groups.has(key))groups.set(key,[]);
   groups.get(key).push(r);
  }
  const comparable=[];
  for(const row of groups.values()){
-  row.sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+  row.sort((a,b)=>a.account&&b.account?b.accountOrder-a.accountOrder:a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   if(row.length<2)continue;
   const first=row[0],last=row[row.length-1];
   comparable.push({exerciseId:first.exerciseId,level:first.level,kind:first.kind,

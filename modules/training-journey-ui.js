@@ -13,7 +13,7 @@ function snapshot(){
  const plans=parse("pickleup_selected_plan_v31",null);
  const stored=plans?.source==="basic"?parse("pickleup_plans_v24",[]):plans?.source==="advanced"?parse("pickleup_advanced_plans_v31",[]):[];
  const ready=Array.isArray(stored)&&stored.some(x=>x?.id===plans?.id&&Array.isArray(x.exercises)&&x.exercises.length===3);
- let trainingLog=[];try{trainingLog=window.PICKLEUP_TRAINING_LOG?.read(localStorage)||[]}catch(_){}
+ let trainingLog=[];try{trainingLog=window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.training():window.PICKLEUP_TRAINING_LOG?.read(localStorage)||[]}catch(_){}
  return j.build({lessons,goal,planPrefs:prefs,checkins:c.read(raw(c.KEY)),history,records:parse("pickleup_academy_v2",{}),
  trainingLog,stageChecks:parse("pickleup_stage_checks_v23",[]),selfAssessment:window.PICKLEUP_ACTIVITY?.isAccount()?window.PICKLEUP_ACTIVITY.assessments("self")[0]||null:null,advancedChecks:window.PICKLEUP_ACTIVITY?.isAccount()?window.PICKLEUP_ACTIVITY.assessments("advanced"):[],goalConfigured:data?.isAccount()?data.getView().goalConfigured===true:g.validSettings(parse(g.KEY,null)),
  selectedLessonId:raw("pickleup_academy_last_lesson_v4"),selectedPersonalPlan:ready});

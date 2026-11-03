@@ -58,7 +58,7 @@
 <p role="status" aria-live="polite">Kho hoạt động pilot chưa bật.</p>
 <div data-activity-body hidden>
 <p data-activity-account></p>
-<p>Kho hoạt động gồm lượt Học viện, đánh giá, nhật ký tập và trận đấu. Bản này chuyển giao diện Học viện, tự đánh giá, kiểm tra cơ bản/nâng cao và trận đấu. Nhật ký tập vẫn dùng kho thiết bị; giáo án có lựa chọn nguồn riêng bên dưới. Lựa chọn này độc lập với mục tiêu/check-in.</p>
+<p>Kho hoạt động gồm lượt Học viện, đánh giá, nhật ký tập và trận đấu. Nguồn này áp dụng cho Học viện, tự đánh giá, kiểm tra cơ bản/nâng cao, nhật ký tập và trận đấu. Ghi lượt tập tài khoản cần giáo án cùng tài khoản đã đồng bộ; giáo án có lựa chọn nguồn riêng bên dưới. Lựa chọn này độc lập với mục tiêu/check-in.</p>
 <p>Không tự nhập dữ liệu khách. Mở kho chỉ đọc; lưu điểm, đánh giá hoặc trận đấu tạo lượt riêng trong kho tài khoản trên thiết bị. Chỉ gửi các thay đổi đã xếp hàng khi bạn bấm đồng bộ; đăng xuất giữ cache riêng, chưa mã hóa hoặc tự xóa.</p>
 <label><input type="checkbox" data-activity-consent> Tôi chọn kho hoạt động của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
 <div class="sync-actions"><button type="button" data-activity-enable>Dùng kho hoạt động tài khoản</button><button type="button" data-activity-device>Dùng lại hoạt động trên thiết bị</button><button type="button" data-activity-read>Đọc hoạt động tài khoản</button><button type="button" data-activity-send>Đồng bộ hoạt động</button><button type="button" data-activity-retry hidden>Thử lại yêu cầu hoạt động đang chờ</button><button type="button" data-activity-export>Xuất cache hoạt động</button></div>
@@ -68,7 +68,7 @@
 <div class="card sync-panel" id="planPilot">
 <h3>Giáo án và lựa chọn cá nhân tài khoản</h3><p role="status" aria-live="polite">Kho giáo án pilot chưa bật.</p><div data-plan-body hidden>
 <p data-plan-account></p><p>Chọn riêng kho giáo án cơ bản/nâng cao và lựa chọn cá nhân. Không tự nhập dữ liệu khách. Lưu tạo thay đổi trên thiết bị; chỉ gửi khi bấm đồng bộ. Chọn và đồng bộ giáo án trước khi mở Court. Điểm giáo án không tự tạo nhật ký tập hay attendance.</p>
-<p>Nhật ký tập, bài Học viện gần nhất và checklist vẫn trên thiết bị. Đồng hồ của giáo án tài khoản chỉ giữ trong phiên trang đang mở, đặt lại khi reload hoặc đổi tài khoản; không gửi lên cloud.</p>
+<p>Bài Học viện gần nhất và checklist vẫn trên thiết bị. Nhật ký tập thuộc kho hoạt động riêng; điểm giáo án không tự tạo lượt tập. Đồng hồ của giáo án tài khoản chỉ giữ trong phiên trang đang mở, đặt lại khi reload hoặc đổi tài khoản; không gửi lên cloud.</p>
 <label><input type="checkbox" data-plan-consent> Tôi chọn kho giáo án của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
 <div class="sync-actions"><button type="button" data-plan-enable>Dùng kho giáo án tài khoản</button><button type="button" data-plan-device>Dùng lại giáo án trên thiết bị</button><button type="button" data-plan-read>Đọc giáo án tài khoản</button><button type="button" data-plan-send>Đồng bộ giáo án</button><button type="button" data-plan-retry hidden>Thử lại yêu cầu giáo án đang chờ</button><button type="button" data-plan-export>Xuất cache giáo án</button><button type="button" data-plan-clear>Bỏ chọn giáo án cá nhân</button></div>
 <p data-plan-count></p><div data-plan-reviews></div><div data-plan-detail></div><h4>Quản lý giáo án tài khoản</h4><div data-plan-manage></div>
