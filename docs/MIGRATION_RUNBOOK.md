@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-**Trạng thái 03/11/2026:** main `df22337` / V5.7.0 sau #27. RPC plans/selections đã merge; [PR5b1b](PLAN_CLIENT_PR5B1B.md) thêm typed client, consent/cursor/lease riêng, dependency ACK, frozen sender và review API. Chưa nối runtime/source UI giáo án hoặc training. Bốn flags vẫn tắt, URL/key rỗng. [Tiến độ/evidence và gates staging/backup/pilot](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
+**Trạng thái 03/11/2026:** main `1a4fccd` / V5.7.0 sau #28. [PR5b1c/V5.8.0](PLAN_UI_PR5B1C.md) nối UI giáo án và personal selection qua facade/consent/queue/review; chưa merge/deploy. Năm flags vẫn tắt, URL/key rỗng. Nhật ký tập và bài Học viện gần nhất vẫn device-only; timer account chỉ phiên trang. [Tiến độ/evidence và gates](V6_PROGRESS_REVIEW.md); không production hoặc tự merge.
 
 ## 1. Rủi ro restore hiện tại cần thiết kế bù
 

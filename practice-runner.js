@@ -5,9 +5,11 @@ const clock=window.PICKLEUP_PRACTICE_CLOCK,draw=window.PICKLEUP_DRILL_DIAGRAM;
 if(!clock)return;
 const storageKey="pickleup_practice_state_v25",plansKey="pickleup_plans_v24",$=id=>document.getElementById(id);
 let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false,renderedDrillKey=null;
+const plansSource=window.PICKLEUP_PLANS;
+let planToken=plansSource?.token();
 const logApi=window.PICKLEUP_TRAINING_LOG,conditionsApi=window.PICKLEUP_PRACTICE_CONDITIONS;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
-function save(){try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
+function save(){if(plansSource?.isAccount())return;try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
 function message(value){$("pcRunMessage").textContent=value}
 function phaseInfo(index){
  if(!plan||index>=clock.stages.length)return null;
@@ -18,15 +20,15 @@ function phaseInfo(index){
  return {name:step.title+" · "+(window.PICKLEUP_ADVANCED_COACH?.names[c.skill]||window.PICKLEUP_PERSONAL_CORE?.names[c.skill]||c.skill),minutes:6,info:"Thực hiện 20 lượt kiểm tra kỹ năng ưu tiên số một. Mốc trước tập "+c.baseline+"/20, mục tiêu tham khảo "+c.target+"/20. Chỉ tính lượt hợp lệ đúng mục tiêu.",skill:c.skill,exercise:plan.exercises[0]};
 }
 function loadPlan(p){
- if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;renderedDrillKey=null;render();return}
- const old=read(storageKey,null),changing=plan?.id!==p.id;
+ if(!p||!p.id||!Array.isArray(p.exercises)||p.exercises.length!==3){plan=null;state=null;renderedDrillKey=null;wakeWanted=false;wakeLock?.release().catch(()=>{});wakeLock=null;if($("pcWakeToggle"))$("pcWakeToggle").checked=false;render();return}
+ const old=plansSource?.isAccount()?null:read(storageKey,null),changing=plan?.id!==p.id;
  plan=p;if(changing){state=clock.readStored(old,plan.id);lastExpired=-1}
  render();
 }
 function render(){
  const enabled=!!plan;
  $("pcRunEmpty").hidden=enabled;$("pcRunPlayer").hidden=!enabled;
- if(!enabled)return;
+ if(!enabled){$("pcRunGuide").replaceChildren();$("pcRunDiagram").replaceChildren();$("pcRunSegments").replaceChildren();$("pcRunTitle").textContent="";$("pcRunStep").textContent="";$("pcRunClock").textContent="00:00";return;}
  if(!state)state=clock.create(plan.id);
  const done=state.index>=clock.stages.length;
  const info=phaseInfo(state.index);
@@ -56,12 +58,12 @@ function render(){
  clock.stages.forEach((s,i)=>{const el=document.createElement("span");el.className="pc-run-segment"+(i===state.index?" is-active":"")+(i<state.index?" is-done":"");el.textContent=(i+1)+". "+s.title;items.append(el)});
  $("pcRunScore").hidden=!done&&state.index!==4;
  const active=state.index>=1&&state.index<=3;
- $("pcAttemptArea").hidden=!active;
+ $("pcAttemptArea").hidden=!active;$("pcAttemptSave").disabled=plansSource?.isAccount()===true;
  if(active){
   const drill=plan.exercises[state.index-1],drillKey=plan.id+"|"+drill.id;
   if(renderedDrillKey!==drillKey){$("pcAttemptHits").value="";$("pcAttemptNote").value="";renderedDrillKey=drillKey}
   $("pcAttemptName").textContent="Ghi một lần tập: "+drill.skillName+" — "+drill.name;
-  $("pcAttemptHint").textContent="Sau phần luyện kỹ thuật, kiểm tra 20 lượt với cùng mục tiêu, cùng cấp độ và ghi số lần đúng. Mục tiêu 20 lượt này riêng với các hiệp trong hướng dẫn.";
+  $("pcAttemptHint").textContent=plansSource?.isAccount()?"Nhật ký tập tài khoản chưa nối UI; chưa ghi lượt này vào kho khách. Đồng hồ giữ trong phiên đang mở, reload sẽ đặt lại.":"Sau phần luyện kỹ thuật, kiểm tra 20 lượt với cùng mục tiêu, cùng cấp độ và ghi số lần đúng. Mục tiêu 20 lượt này riêng với các hiệp trong hướng dẫn.";
  }else renderedDrillKey=null;
 }
 function advance(direction){
@@ -80,6 +82,7 @@ function reset(){
  state=clock.reset(state);save();lastExpired=-1;render();message("Đã đặt lại đồng hồ.");
 }
 function saveAttempt(){
+ if(plansSource?.isAccount()){message("Nhật ký tập tài khoản chưa bật; không ghi vào dữ liệu khách.");return}
  if(!plan||!state||state.index<1||state.index>3||!logApi)return;
  const drill=plan.exercises[state.index-1],input=$("pcAttemptHits"),value=input.value.trim(),hits=Number(value);
  if(!value||!Number.isInteger(hits)||hits<0||hits>20){message("Vui lòng nhập số nguyên từ 0 đến 20 cho bài tập.");return}
@@ -93,6 +96,7 @@ function saveAttempt(){
  }catch(e){message("Không thể lưu lần tập: "+e.message)}
 }
 async function toggleWake(){
+ const sourceStamp=plansSource?.token();
  if(!("wakeLock" in navigator)){
   $("pcWakeToggle").checked=false;
   message("Trình duyệt này chưa hỗ trợ giữ màn hình sáng. Hãy điều chỉnh thời gian khóa màn hình trên điện thoại.");
@@ -101,10 +105,11 @@ async function toggleWake(){
  wakeWanted=$("pcWakeToggle").checked;
  if(!wakeWanted){try{if(wakeLock)await wakeLock.release()}catch(_){}wakeLock=null;return}
  try{
-  wakeLock=await navigator.wakeLock.request("screen");
-  wakeLock.addEventListener?.("release",()=>{wakeLock=null});
+  const acquired=await navigator.wakeLock.request("screen");
+  if(sourceStamp!==plansSource?.token()||!wakeWanted){await acquired.release();return}
+  wakeLock=acquired;wakeLock.addEventListener?.("release",()=>{if(wakeLock===acquired)wakeLock=null});
   message("Đã yêu cầu giữ màn hình sáng. Tính năng có thể tự ngắt khi khóa màn hình hoặc tiết kiệm pin.");
- }catch(e){wakeWanted=false;$("pcWakeToggle").checked=false;message("Không bật được giữ màn hình sáng trên thiết bị này.")}
+ }catch(e){if(sourceStamp!==plansSource?.token())return;wakeWanted=false;$("pcWakeToggle").checked=false;message("Không bật được giữ màn hình sáng trên thiết bị này.")}
 }
 function pulse(){
  if(!state||!state.running)return;
@@ -116,7 +121,11 @@ function pulse(){
   if(lastExpired!==state.index){lastExpired=state.index;message("Đã hết thời gian phần này. Chọn Phần tiếp theo khi sẵn sàng.")}
  }
 }
-document.addEventListener("pickleup:plan-selected",event=>loadPlan(event.detail?.plan||null));
+document.addEventListener("pickleup:plan-data",()=>{
+ const next=plansSource?.token();if(next!==planToken){planToken=next;plan=null;state=null;lastExpired=-1;renderedDrillKey=null;wakeWanted=false;wakeLock?.release().catch(()=>{});wakeLock=null;
+ for(const id of ['pcAttemptHits','pcAttemptNote','pcAttemptFeed','pcAttemptPace','pcAttemptTarget'])if($(id))$(id).value='';if($("pcWakeToggle"))$("pcWakeToggle").checked=false;message('');loadPlan(plansSource?.selected()||null)}
+});
+document.addEventListener("pickleup:plan-selected",event=>loadPlan(plansSource?.isAccount()?plansSource.selected():event.detail?.plan||null));
 (window.PICKLEUP_READY || (fn=>document.addEventListener("DOMContentLoaded",fn)))(()=>{
  const cond=window.PICKLEUP_PRACTICE_CONDITIONS;
  if(cond){
@@ -131,15 +140,15 @@ document.addEventListener("pickleup:plan-selected",event=>loadPlan(event.detail?
  if(!$("pcOnCourt"))return;
  const selected=$("pcPlan")?.dataset.planId;
  const plans=read(plansKey,[]);
- if(selected&&Array.isArray(plans))loadPlan(plans.find(p=>p.id===selected)||null);else render();
- $("pcOpenRun").addEventListener("click",()=>{window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
+ if(plansSource?.isAccount())loadPlan(plansSource.selected());else if(selected&&Array.isArray(plans))loadPlan(plans.find(p=>p.id===selected)||null);else render();
+ $("pcOpenRun")?.addEventListener("click",()=>{window.PICKLEUP_ROUTER?.openSection("pcOnCourt")||$("pcOnCourt").scrollIntoView({behavior:"smooth",block:"start"})});
  $("pcAttemptSave").addEventListener("click",saveAttempt);
  $("pcWakeToggle").addEventListener("change",toggleWake);
  $("pcRunStart").addEventListener("click",startPause);
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
  $("pcRunReset").addEventListener("click",reset);
- $("pcRunScore").addEventListener("click",()=>{if(plan?.version==="3.1"){window.PICKLEUP_ROUTER?.openSection("advancedCoach")||$("acCoachComplete").scrollIntoView({behavior:"smooth",block:"center"});$("acCoachResult").focus()}else{window.PICKLEUP_ROUTER?.openSection("personalCoach")||$("pcCompletion").scrollIntoView({behavior:"smooth",block:"center"});$("pcPostScore").focus()}});
+ $("pcRunScore").addEventListener("click",async()=>{if(!plan)return;const id=plan.id,version=plan.version,stamp=plansSource?.token();window.PICKLEUP_ROUTER?.openSection(version==='3.1'?'advancedCoach':'personalCoach');try{await window.PICKLEUP_PAGE_LOADER?.ensure('coach');if(stamp!==plansSource?.token()||plan?.id!==id)return;document.dispatchEvent(new CustomEvent('pickleup:plan-score-request',{detail:{id,version}}));$(version==='3.1'?'acCoachResult':'pcPostScore')?.focus()}catch(_){if(stamp===plansSource?.token())message('Chưa mở được phần kết quả; thử lại khi có mạng.')}});
  // Wall-clock deadlines recover from mobile background throttling without incorrectly skipping stages.
  setInterval(pulse,350);
  document.addEventListener("visibilitychange",()=>{

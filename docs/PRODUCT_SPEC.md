@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Status 03/11/2026:** ứng dụng main V5.7.0, `df22337` sau #27; assessments/matches và RPC plans/selections đã merge. PR5b1b client chưa nối UI giáo án. Giữ hợp đồng sản phẩm V5 bên dưới; V6 đã có backend/Auth/importer, UI mục tiêu/check-in và nền sự kiện, flags vẫn tắt. [Tiến độ và giới hạn hiện hành](V6_PROGRESS_REVIEW.md); baseline V5.1/PR0 trong kiến trúc là lịch sử. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+**Status 03/11/2026:** ứng dụng main V5.7.0, `1a4fccd` sau #28; assessments/matches và RPC plans/selections đã merge. PR5b1c/V5.8.0 nối UI giáo án cá nhân, chưa merge/deploy. Giữ hợp đồng sản phẩm V5 bên dưới; V6 đã có backend/Auth/importer, UI mục tiêu/check-in và nền sự kiện, flags vẫn tắt. [Tiến độ và giới hạn hiện hành](V6_PROGRESS_REVIEW.md); baseline V5.1/PR0 trong kiến trúc là lịch sử. **Đọc cùng:** [`../AGENTS.md`](../AGENTS.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md), [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 
@@ -100,3 +100,5 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 PR5a2b / V5.6.0 thêm source hoạt động opt-in, UI lưu/xóa lượt Academy và review; cùng nguồn điểm/history trên Academy/Journey/Progress, không mirror V5. Xu hướng chỉ cùng bài/nội dung/điều kiện biết rõ; unknown/future không thành ngày tập. Coach chưa nạp account points vào giáo án khách. Bốn flags vẫn false, source UI ba nhóm sự kiện khác chưa chuyển. [Hợp đồng và giới hạn](ACADEMY_ACCOUNT_PR5A2B.md).
 
 PR5a2c / V5.7.0 nối ba loại đánh giá và matches vào kho hoạt động hiện hữu. Self0–2 không là stage/advanced0–20; metric sets riêng, không tự đổi level/DUPR/attendance. Journey nhận mốc account tùy chọn, báo cáo trận theo source; history raw phân trang giữ unknown/future ngoài thống kê. Draft/status cũ clear theo source token, quota giữ input, không mirror hoặc tự copy sang plans khách. [Hợp đồng/cấu hình/giới hạn](ASSESSMENT_MATCH_PR5A2C.md). Flags vẫn tắt; giáo án/training còn device-only.
+
+PR5b1c/V5.8.0: người dùng chọn riêng nguồn giáo án, tạo basic/advanced snapshot từ điểm nhập thủ công, chọn và đồng bộ trước Court. Result CAS không tạo attendance/training. Nút read/send/retry/review/delete/restore rõ, guest giữ nguyên. Account timer không resume sau reload; nhật ký/bài Học viện gần nhất vẫn trên thiết bị. [Hợp đồng và giới hạn](PLAN_UI_PR5B1C.md).

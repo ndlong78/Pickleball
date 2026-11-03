@@ -53,13 +53,14 @@ function project(data,{owner}={}){
   if(!KINDS.includes(record.kind)||record.namespace!=='user:'+owner)fail('invalid_plan');if(record.base)row(record.kind,record.base,{owner,id:record.id});
   if(record.kind==='user_selections'){selectionRecord=record;if(!record.deleted)selection={selected_personal_plan_id:null,selected_academy_lesson_id:null,...record.base,...record.overlay};continue}
   if(record.deleted)continue;
-  const value={...record.base,...record.overlay};if(!value.plan_snapshot)continue;
+  const value={...record.base,...record.overlay};if(value.user_id!=null&&value.user_id!==owner||value.id!=null&&value.id!==record.id)fail('invalid_plan');if(!value.plan_snapshot)continue;
   payload(record.kind,Object.fromEntries([...CONTENT,...RESULTS].filter(k=>Object.hasOwn(value,k)).map(k=>[k,value[k]])));
   const plan={...clone(value),id:record.id,pending:!!record.tailOperationId,reviewRequired:!!record.reviewRequired,acknowledged:!!record.base&&!record.base.deleted_at&&!record.deleted&&!record.reviewRequired,localRevision:record.localRevision};
   // Derived presentation gets current results; immutable content remains in plan_snapshot.
   plan.plan={...clone(value.plan_snapshot),checkScore:value.check_score??null,completedAt:value.completed_at??null};plans.push(plan);byId.set(record.id,plan);
  }
  plans.sort((a,b)=>Date.parse(b.plan_snapshot.createdAt)-Date.parse(a.plan_snapshot.createdAt)||a.id.localeCompare(b.id));
+ if(selection?.user_id!=null&&selection.user_id!==owner)fail('invalid_plan');
  if(selection)payload('user_selections',Object.fromEntries(SELECTION.map(k=>[k,selection[k]])));
  const selected=selection?.selected_personal_plan_id?byId.get(selection.selected_personal_plan_id):null;
  const selectionStatus=selectionRecord?.reviewRequired?'needs_review':!selection?.selected_personal_plan_id?'none':!selected?'unavailable':!selected.acknowledged?'pending_plan':selectionRecord?.tailOperationId?'pending_selection':'ready';

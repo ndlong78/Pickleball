@@ -8,19 +8,19 @@ const clone=value=>structuredClone(value);
 function create({auth,repository,core=root.PickleUpPlanCore,pullFactory=root.PickleUpPullController,syncFactory=root.PickleUpSyncController,enabled=()=>false,onChange=()=>{},now=()=>new Date(),channelFactory=name=>root.document&&typeof root.BroadcastChannel==='function'?new root.BroadcastChannel(name):null}={}){
  if(repository?.planLifecycle!==1||pullFactory?.PLAN_LIFECYCLE!==1||syncFactory?.PLAN_LIFECYCLE!==1)fail('upgrade_required');
  if(!core||typeof auth?.planRpc!=='function'||typeof enabled!=='function')fail('invalid_options');
- let generation=0,owner=null,scope=null,reader=null,sender=null,closed=false,initial,api;
+ let generation=0,loadVersion=0,owner=null,scope=null,reader=null,sender=null,closed=false,initial,api;
  const blank=(mode,who)=>({mode,owner:who,busy:false,error:null,consent:{enabled:false,localRevision:'0'},snapshot:null,projection:null});
  let state=blank('loading',null);
  const channel=enabled()===true?channelFactory('pickleup-plans-1'):null;
  function emit(){onChange(clone(state))}
- function stop(){scope?.close();reader?.close();sender?.close();scope=reader=sender=null}
+ function stop(){loadVersion++;scope?.close();reader?.close();sender?.close();scope=reader=sender=null}
  function guard(stamp=generation){if(closed||stamp!==generation)fail('account_changed');if(enabled()!==true)fail('pilot_disabled')}
  function notify(){if(!closed&&owner)channel?.postMessage({type:'changed',owner})}
  function account(){guard();if(!owner)fail('auth_required');if(state.mode!=='account'||!state.consent.enabled)fail('source_unavailable')}
  async function load(stamp){
-  const own=scope,consent=state.consent;
-  const snapshot=await own.getPlanSnapshot();guard(stamp);
-  const current=await own.getPlanConsent();guard(stamp);
+  const own=scope,consent=state.consent,version=++loadVersion;
+  const snapshot=await own.getPlanSnapshot();guard(stamp);if(version!==loadVersion)return;
+  const current=await own.getPlanConsent();guard(stamp);if(version!==loadVersion)return;
   if(!current.enabled||current.localRevision!==consent.localRevision)fail('consent_changed');
   let projection;
   try{projection=core.project(snapshot,{owner,now:now()})}

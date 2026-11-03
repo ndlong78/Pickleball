@@ -26,20 +26,20 @@ function report(){
  const recommendation=$("tacticalRecommendation");recommendation.replaceChildren();
  if(info.suggested){
   recommendation.append(e("p","Trọng tâm xuất hiện nhiều nhất trong "+info.matchCount+" trận gần nhất: "+coach.names[info.suggested]+" ("+info.votes[info.suggested]+" lần)."));
-  if(window.PICKLEUP_ACTIVITY?.isAccount()){recommendation.append(e("p","Chưa tự chuyển trọng tâm tài khoản sang giáo án trên thiết bị. Giáo án tài khoản sẽ được tích hợp riêng."));}
+  if(window.PICKLEUP_ACTIVITY?.isAccount()){recommendation.append(e("p","Chưa tự chuyển trọng tâm tài khoản sang giáo án trên thiết bị. Giáo án có lựa chọn nguồn riêng trong Dữ liệu; nhập điểm và chọn trọng tâm thủ công."));}
   else{const btn=e("button","Đưa trọng tâm này vào HLV nâng cao","pc-alt");btn.type="button";
   btn.addEventListener("click",()=>{
-   const priority=info.suggested,sourceToken=window.PICKLEUP_ACTIVITY?.token();
+   const priority=info.suggested,sourceToken=window.PICKLEUP_ACTIVITY?.token(),planToken=window.PICKLEUP_PLANS?.token();
    window.PICKLEUP_ROUTER?.openSection("advancedCoach");
    const ready=window.PICKLEUP_PAGE_LOADER?.ensure("coach")||Promise.resolve();
    ready.then(()=>{
-    if(sourceToken!==window.PICKLEUP_ACTIVITY?.token()||window.PICKLEUP_ACTIVITY?.isAccount())return;
+    if(sourceToken!==window.PICKLEUP_ACTIVITY?.token()||planToken!==window.PICKLEUP_PLANS?.token()||window.PICKLEUP_ACTIVITY?.isAccount())return;
     const target=$("acCoachMatchFocus");if(!target)return;
     target.value=priority;
     target.dispatchEvent(new Event("change"));
     $("acCoachFocusStatus").textContent="Đã chọn ưu tiên "+coach.names[priority]+". Điểm kiểm tra gốc không thay đổi.";
     $("advancedCoach").scrollIntoView({behavior:"smooth",block:"start"});
-   }).catch(()=>{if(sourceToken===window.PICKLEUP_ACTIVITY?.token()&&!window.PICKLEUP_ACTIVITY?.isAccount())$("acCoachFocusStatus").textContent="Không tải được HLV nâng cao. Hãy kiểm tra mạng và thử lại."});
+   }).catch(()=>{if(sourceToken===window.PICKLEUP_ACTIVITY?.token()&&planToken===window.PICKLEUP_PLANS?.token()&&!window.PICKLEUP_ACTIVITY?.isAccount())$("acCoachFocusStatus").textContent="Không tải được HLV nâng cao. Hãy kiểm tra mạng và thử lại."});
   });
   recommendation.append(btn);}
  }else recommendation.append(e("p","Chưa có trọng tâm sau trận để đề xuất. Hãy ghi nhận trận đấu trước."));

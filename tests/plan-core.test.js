@@ -23,3 +23,8 @@ test('projection retains over 100 plans, immutable content and current results w
  const result=core.project({records},{owner:A});assert.equal(result.plans.length,120);assert.equal(result.selectedPlan.plan.checkScore,17);assert.equal(result.selectedPlan.plan_snapshot.checkScore,null);
  records.at(-1).tailOperationId=crypto.randomUUID();assert.equal(core.project({records},{owner:A}).selectionStatus,'pending_selection');records[0].deleted=true;assert.equal(core.project({records},{owner:A}).selectionStatus,'unavailable');assert.equal(core.project({records},{owner:A}).selectedPlan,null);
 });
+
+test('optimistic plan and selection metadata cannot introduce a different owner into the UI projection',()=>{
+ const plan={namespace:'user:'+A,kind:'personal_plans',id:ID,base:row(),overlay:{user_id:ID},tailOperationId:crypto.randomUUID()};assert.throws(()=>core.project({records:[plan]},{owner:A}),{code:'invalid_plan'});plan.overlay={id:A};assert.throws(()=>core.project({records:[plan]},{owner:A}),{code:'invalid_plan'});
+ const selection={namespace:'user:'+A,kind:'user_selections',id:'self',overlay:{user_id:ID,selected_personal_plan_id:null}};assert.throws(()=>core.project({records:[selection]},{owner:A}),{code:'invalid_plan'});
+});

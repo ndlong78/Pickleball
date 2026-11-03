@@ -4,7 +4,7 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `df22337` / V5.7.0 sau #27, Auth/import/sync/activity flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `1a4fccd` / V5.7.0 sau #28, Auth/import/sync/activity flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
 
 **Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
 
@@ -96,3 +96,5 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 [PR5a2c](ASSESSMENT_MATCH_PR5A2C.md) thêm projection assessment/match trong activity facade, tách self UI khỏi raw backup, nối mọi reader và generic history/delete. Advanced/match UI phải khởi tạo idempotent khi fragment đến sau validator Settings. Latest/statistics chỉ ngày biết rõ/past, thứ tự microsecond/timezone; giữ mọi raw identity và không dùng capped legacy validators cho account. Source token guard writer/DOM/delayed Coach callback; không auto-copy private data vào plan guest. Build/assets/cache5.7.0, cùng RPC/IDB schema/RLS, không SQL changes.
 
 [PR5b1b](PLAN_CLIENT_PR5B1B.md) thêm standalone plan core/controller, chưa page-loader/runtime/UI. Shared repository/pull/sender kiểm capability planLifecycle, policy/cursor/lease và consent riêng; claim chờ dependency ACK, typed row validation, whole-preview review/archive. Không đổi IDB schema/SQL/app cache5.7.0 hoặc18 khóa V5; tích hợp UI sau phải bump cache và chuyển đồng bộ mọi reader/writer.
+
+[PR5b1c/V5.8.0](PLAN_UI_PR5B1C.md) thêm plan-runtime/plan-ui và flag plan riêng. Không direct SDK UI, không mirror account→V5. Basic/advanced Coach, Journey và Court cùng facade; pending selection không chạy timer plan cũ. Account timer RAM, source change clear DOM/draft/wake lock; account result không append log khách. Bài Học viện gần nhất/nhật ký training vẫn device-only. Cache/assets bump5.8, SQL/IDB schema/RLS không đổi.

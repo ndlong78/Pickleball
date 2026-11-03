@@ -100,3 +100,7 @@ test('a changed local validator cannot turn an unknown server commit into a term
  const {f,c}=await fresh(),cmd=command(),validate=core.payload;try{const frozen=await lost(f,c,cmd);core.payload=()=>{throw Error('synthetic validator change')};assert.equal((await c.sync({forceRetry:true})).status,'synced');assert.deepEqual(f.calls.filter(x=>x.name==='apply_plan_operation').map(x=>x.args),[frozen,frozen]);assert.equal(f.servers.get(A).changes.length,1);
  }finally{core.payload=validate;f.close()}
 });
+test('a delayed cache refresh cannot replace a newer local result or its edit revision',async()=>{
+ const f=await fixture();let hold=false,reached,release;const seen=new Promise(resolve=>reached=resolve),wrapped={...f.db,scope(namespace){const s=f.db.scope(namespace);return {...s,async getPlanSnapshot(){const value=await s.getPlanSnapshot();if(hold){hold=false;reached();await new Promise(resolve=>release=resolve)}return value}}}};const c=f.make({repository:wrapped});try{await c.ready;await c.useAccount();const cmd=await create(c);await c.sync();hold=true;const pending=c.refreshLocal();await seen;await c.updateResult({id:cmd.id,operationId:uid(),expectedLocalRevision:row(c,cmd.id).localRevision,value:{check_score:15}});const revision=row(c,cmd.id).localRevision;assert.equal(c.getState().projection.plans[0].plan.checkScore,15);release();await pending;assert.equal(c.getState().projection.plans[0].plan.checkScore,15);assert.equal(row(c,cmd.id).localRevision,revision);
+ }finally{release?.();f.close()}
+});
