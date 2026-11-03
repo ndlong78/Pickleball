@@ -1,6 +1,6 @@
 # V6 — quyết định pilot và chính sách vận hành
 
-Quyết định ngày 29/10/2026; cập nhật tiến độ **03/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #30 là `a2df905`, ứng dụng5.9.0. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
+Quyết định ngày 29/10/2026; cập nhật tiến độ **03/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #31 là `6edb8f2`, ứng dụng5.10.0. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
 
 Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in, event lifecycle và Academy account đã merge/kiểm chứng local; Auth/import/sync/activity/plan flags đều tắt. Chưa có bằng chứng cloud/SMTP staging được cấu hình, backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
 
@@ -49,6 +49,6 @@ Free không được coi là có automatic DB backup/PITR/SLA. Mục tiêu pilot
 
 ## 5. Thứ tự triển khai và readiness
 
-PR1a–PR4c, PR5a1/PR5a2a/b/c và RPC PR5b1a/#27 đã merge. Client/queue/review PR5b1b đã merge; PR5b1c/#29 đã nối UI giáo án/lựa chọn cá nhân; PR5a2d/#30 đã nối nhật ký own plan ACK. PR5b2a nối Academy selection; persisted device state, full V6 backup/purge và hardening còn lại. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
+PR1a–PR4c, PR5a1/PR5a2a/b/c và RPC PR5b1a/#27 đã merge. Client/queue/review PR5b1b đã merge; PR5b1c/#29 đã nối UI giáo án/lựa chọn cá nhân; PR5a2d/#30 đã nối nhật ký own plan ACK. PR5b2a/#31 đã nối Academy selection; PR5b2b1 persist local Academy checklist/focus, full device state/V6 backup/purge và hardening còn lại. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
 
 Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nhận region/quota, SMTP hoạt động, backup destination/job và restore drill đạt, privacy/export/delete được kiểm thử, CI đúng HEAD, feature flag opt-in. Owner đã ủy quyền lựa chọn kỹ thuật; thiếu quyền truy cập/cấu hình thực tế là công việc còn lại, không phải quyết định kỹ thuật cần hỏi lại.

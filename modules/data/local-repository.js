@@ -122,6 +122,31 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      if(guest||!revision(expected)||expected==='0')fail('consent_changed');
      const consent=await planConsent(tx);if(!consent.enabled||consent.localRevision!==expected)fail('consent_changed');
     }
+    async function practiceFence(tx,fence){
+     if(guest||!fence||!['plan','activity'].some(k=>fence[k]?.enabled===true))fail('source_unavailable');
+     for(const [key,read] of [['plan',planConsent],['activity',activityConsent]]){
+      const expected=fence[key];if(expected===null)continue;
+      if(!expected||typeof expected.enabled!=='boolean'||!revision(expected.localRevision))fail('invalid_consent');
+      const current=await read(tx);if(current.enabled!==expected.enabled||current.localRevision!==expected.localRevision)fail('consent_changed');
+     }
+    }
+    function practiceValue(value){
+     canonical(value);
+     if(!value||value.schemaVersion!==1||Object.keys(value).sort().join(',')!=='lessons,schemaVersion'||!value.lessons||Object.getPrototypeOf(value.lessons)!==Object.prototype)fail('invalid_device_state');
+     if(Object.keys(value.lessons).length>80)fail('invalid_device_state');
+     for(const [id,lesson] of Object.entries(value.lessons)){
+      if(!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(id)||!lesson||Object.keys(lesson).sort().join(',')!=='checked,focus'||!Number.isInteger(lesson.focus)||lesson.focus<0||lesson.focus>5||!Array.isArray(lesson.checked)||lesson.checked.length>6||new Set(lesson.checked).size!==lesson.checked.length||lesson.checked.some(i=>!Number.isInteger(i)||i<0||i>5))fail('invalid_device_state');
+     }
+     return value;
+    }
+    async function practiceRow(tx){
+     const metadata=tx.objectStore('metadata'),identity=await request(metadata.get([namespace,'academy-device-id-1']));
+     const deviceId=identity?identity.value:root.crypto.randomUUID();if(!UUID.test(deviceId))fail('invalid_device_state');
+     if(!identity)await request(metadata.put({namespace,key:'academy-device-id-1',value:deviceId}));
+     const row=await request(tx.objectStore('device_state').get([namespace,deviceId,'academy-practice-1']));
+     if(row&&(!revision(row.localRevision)||row.localRevision==='0'))fail('invalid_device_state');
+     return {namespace,deviceId,key:'academy-practice-1',localRevision:row?.localRevision||'0',value:practiceValue(row?row.value:{schemaVersion:1,lessons:{}})};
+    }
     async function planEdges(tx,kind,id,action,payload,old){
      const records=tx.objectStore('records'),outbox=tx.objectStore('outbox'),dependencies=[];
      const depend=async record=>{if(record.tailOperationId){const op=await request(outbox.get([namespace,record.tailOperationId]));if(!op||!PLANS.has(op.kind)||['acked','resolved','blocked','conflict'].includes(op.state))fail('dependency_unavailable');dependencies.push(op.operationId)}};
@@ -430,6 +455,19 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       return transaction(['device_state'],'readwrite',tx=>request(tx.objectStore('device_state').put({namespace,deviceId,key,value:snapshot})))
      },
      getDeviceState(deviceId,key){return transaction(['device_state'],'readonly',tx=>request(tx.objectStore('device_state').get([namespace,deviceId,key])))},
+     getAcademyPractice(fence){const captured=copy(fence);return transaction(['metadata','device_state'],'readwrite',async tx=>{await practiceFence(tx,captured);return practiceRow(tx)})},
+     changeAcademyPractice(patch,fence){
+      const intent=copy(patch),captured=copy(fence);canonical(intent);
+      if(!intent||!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(intent.lessonId)||!['check','focus','reset'].includes(intent.action)||Object.keys(intent).sort().join(',')!==({check:'action,checked,index,lessonId',focus:'action,index,lessonId',reset:'action,lessonId'})[intent.action]||intent.action!=='reset'&&(!Number.isInteger(intent.index)||intent.index<0||intent.index>5)||intent.action==='check'&&typeof intent.checked!=='boolean')fail('invalid_device_state');
+      return transaction(['metadata','device_state'],'readwrite',async tx=>{
+       await practiceFence(tx,captured);const row=await practiceRow(tx),lesson=row.value.lessons[intent.lessonId]||{checked:[],focus:0};
+       if(intent.action==='focus')lesson.focus=intent.index;
+       else if(intent.action==='reset')lesson.checked=[];
+       else{const checked=new Set(lesson.checked);if(intent.checked)checked.add(intent.index);else checked.delete(intent.index);lesson.checked=[...checked].sort((a,b)=>a-b)}
+       row.value.lessons[intent.lessonId]=lesson;row.localRevision=(BigInt(row.localRevision)+1n).toString();
+       await request(tx.objectStore('device_state').put(row));return row;
+      });
+     },
      // Advisory cross-tab lease only; a future sender must still use RPC receipts.
      acquireLease(owner,now=Date.now(),duration=15000,policy=DEFAULT_POLICY){
       const config=policyConfig(policy);
