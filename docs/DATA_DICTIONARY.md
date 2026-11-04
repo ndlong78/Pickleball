@@ -100,3 +100,5 @@ PR5b1b thêm metadata `plans-selections-consent-1`, cursor slot `plans-selection
 [PR5a2d](TRAINING_ACCOUNT_PR5A2D.md): training source không đổi schema/cột/18 keys. New UI writes có trainingPlan proof (plan localRevision/consentRevision/epoch) kiểm trong transaction với activity consent và own canonical live plan, không lưu secret hoặc mirror legacy. Raw account history phân trang giữ unknown/future/orphan; projection phân tích giữ timestamp/plan reference, không trim1000 hoặc tạo ngày giả.
 
 [PR5b2a](ACADEMY_SELECTION_PR5B2A.md): selected_academy_lesson_id dùng nguồn plan consent hiện hữu, sparse CAS giữ selected_personal_plan_id. Không đổi IDB/SQL/18 keys. Account checklist/focus/timer tạm RAM phiên trang, chưa persist device_state hoặc full backup; guest giữ key định dạng cũ.
+
+[PR5b2b1/V5.11.0](ACADEMY_DEVICE_STATE_PR5B2B1.md) persist checklist và bước tập trung Học viện trong device_state account/browser, cùng schema1. Typed atomic patches kiểm cả hai consent revisions, namespace/late-response guards và thông báo quota/corrupt; không RPC/outbox/guest mirror. Timer vẫn RAM, state mới chưa nằm trong export hiện tại; full device state/backup/purge còn gate.

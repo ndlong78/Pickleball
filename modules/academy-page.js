@@ -3,6 +3,8 @@ const data=window.PICKLEUP_CURRICULUM||[];
 const level=document.getElementById('academyLevel'),weeks=document.getElementById('academyWeek'),detail=document.getElementById('academyDetail'),score=document.getElementById('academyScore'),status=document.getElementById('academyStatus');
 const activity=window.PICKLEUP_ACTIVITY,plans=window.PICKLEUP_PLANS;
 const privatePractice=()=>plans?.isAccount()||activity?.isAccount();
+const practice=window.PICKLEUP_ACADEMY_PRACTICE;
+let practiceFocus=null;
 let seedGuest=true,planToken=plans?.token(),remembering=false,selectionId=plans?.academySelection().id;
 function scoreUnavailable(){return activity?.isAccount()&&(activity.getView().mode!=="account"||plans?.isAccount()&&plans.getState().owner!==activity.getView().owner)}
 let records={};try{records=activity?activity.records():JSON.parse(localStorage.getItem('pickleup_academy_v2')||'{}')}catch(e){}
@@ -141,9 +143,9 @@ function showFocus(x){
  document.getElementById('academyFocusPrev').disabled=i===0;
  document.getElementById('academyFocusNext').disabled=i===5;
  document.getElementById('academyFocusDone').textContent=done?'Bỏ đánh dấu':'Đánh dấu đã tập';
- timerView();
+ timerView();practiceControls();
 }
-function moveFocus(delta){const x=get();if(!x)return;stopTick();focusTimer=null;focusPositions[x.id]=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));try{if(!privatePractice())localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
+function moveFocus(delta){const x=get();if(!x)return;const index=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));if(privatePractice()){practice?.edit({lessonId:x.id,action:'focus',index});return}stopTick();focusTimer=null;focusPositions[x.id]=index;try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
 document.getElementById('academyFocusToggle').addEventListener('click',()=>{if(focusEnabled)pauseTimer();focusEnabled=!focusEnabled;showFocus(get())});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&focusTimer?.endsAt!==null){pauseTimer();timerView()}});
 document.getElementById('academyFocusPrev').addEventListener('click',()=>moveFocus(-1));
@@ -151,6 +153,7 @@ document.getElementById('academyFocusNext').addEventListener('click',()=>moveFoc
 document.getElementById('academyFocusDone').addEventListener('click',()=>{
  const x=get();if(!x)return;
  const i=currentFocusIndex(x),done=new Set(Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[]);
+ if(privatePractice()){practice?.edit({lessonId:x.id,action:'check',index:i,checked:!done.has(i)});return}
  if(done.has(i))done.delete(i);else done.add(i);
  stepRecords[x.id]=[...done].sort((a,b)=>a-b);
  try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
@@ -161,22 +164,33 @@ function drawSteps(x){
  const steps=[{title:'Khởi động · 10 phút',description:'Di chuyển nhẹ, làm nóng khớp và làm quen bóng.'},...x.drills.map((d,i)=>({title:'Bài '+(i+1)+' · '+d.name+' · '+d.minutes+' phút',description:d.instruction})),{title:'Kiểm tra · 6 phút',description:x.assessment.instruction},{title:'Thả lỏng · 5 phút',description:'Đi bộ nhẹ, giãn cơ thoải mái và bổ sung nước.'}];
  const stored=Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[];
  const finished=new Set(stored.filter(n=>Number.isInteger(n)&&n>=0&&n<steps.length));
+ if(list.dataset.lesson===x.id&&list.querySelectorAll('input[data-step]').length===steps.length){
+  for(const input of list.querySelectorAll('input[data-step]')){
+   if(!practice?.getState().busy)input.checked=finished.has(Number(input.dataset.step));
+   input.disabled=!!privatePractice()&&!practice?.canEdit();
+  }
+ }else{
  const fragment=document.createDocumentFragment();
  steps.forEach((step,i)=>{
   const label=document.createElement('label');label.className='academy-step';
   const input=document.createElement('input');input.type='checkbox';input.checked=finished.has(i);input.dataset.step=String(i);
+  input.disabled=!!privatePractice()&&!practice?.canEdit();
   const copy=document.createElement('span'),title=document.createElement('strong'),desc=document.createElement('span');
   title.textContent=step.title;desc.textContent=step.description;copy.append(title,desc);label.append(input,copy);fragment.append(label);
  });
  list.replaceChildren(fragment);
+ list.dataset.lesson=x.id;
+ }
  hint.textContent='Đã thực hiện '+finished.size+'/'+steps.length+' bước · Không thay thế điểm kiểm tra 20 lượt.';
  showFocus(x);
+ practiceControls();
 }
 document.getElementById('academyStepList').addEventListener('change',event=>{
  const input=event.target;if(!input.matches('input[data-step]'))return;
  const x=get();if(!x)return;
  const done=new Set(Array.isArray(stepRecords[x.id])?stepRecords[x.id]:[]);
  const index=Number(input.dataset.step);
+ if(privatePractice()){practice?.edit({lessonId:x.id,action:'check',index,checked:input.checked});drawSteps(x);return}
  if(input.checked)done.add(index);else done.delete(index);
  stepRecords[x.id]=[...done].sort((a,b)=>a-b);
  try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
@@ -184,6 +198,7 @@ document.getElementById('academyStepList').addEventListener('change',event=>{
 });
 document.getElementById('academyResetSteps').addEventListener('click',()=>{
  const x=get();if(!x)return;
+ if(privatePractice()){practice?.edit({lessonId:x.id,action:'reset'});return}
  delete stepRecords[x.id];try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
@@ -255,9 +270,30 @@ document.getElementById('academySave').addEventListener('click',async()=>{
  status.textContent='Đã lưu '+v+'/20 · '+(v>=x.assessment.target?'Đạt mục tiêu tuần này.':'Tiếp tục luyện kỹ thuật tuần này.')+(historySaved?'':' Điểm đã lưu, nhưng lịch sử lần tập chưa lưu được.');
 });
 function resetPracticeSource(){
+ practiceFocus=null;
  seedGuest=false;stopTick();focusTimer=null;focusEnabled=false;stepRecords=readPractice(stepsKey);focusPositions=readPractice(focusKey);dirty=false;saving=false;remembering=false;feedbackVersion=null;status.textContent='';
  for(const id of ['academyFeed','academyPace','academyTarget'])document.getElementById(id).value='';score.value='';
 }
+function practiceControls(){
+ const blocked=!!privatePractice()&&!practice?.canEdit();
+ for(const id of ['academyResetSteps','academyFocusDone'])document.getElementById(id).disabled=blocked;
+ const x=get();document.getElementById('academyFocusPrev').disabled=blocked||!x||currentFocusIndex(x)===0;document.getElementById('academyFocusNext').disabled=blocked||!x||currentFocusIndex(x)===5;
+ const notice=document.getElementById('academyPracticeStatus');if(notice)notice.textContent=practice?.notice()||'';
+ const retry=document.getElementById('academyPracticeRetry');if(retry){const s=practice?.getState();retry.hidden=!privatePractice()||s?.mode==='account'&&!s.error;retry.disabled=!!s?.busy||s?.mode==='loading'||s?.mode==='unavailable'}
+}
+function acceptPractice(){
+ const practiceState=practice?.getState();
+ if(practiceState?.busy&&document.activeElement?.closest('#academyStepList, .academy-focus-controls'))practiceFocus=document.activeElement;
+ if(privatePractice()){
+  const s=practice?.getState(),lessons=s?.mode==='account'?s.row?.value.lessons||{}:{};
+  const old=currentFocusIndex(get()||{});stepRecords=Object.fromEntries(Object.entries(lessons).map(([id,v])=>[id,v.checked]));focusPositions=Object.fromEntries(Object.entries(lessons).map(([id,v])=>[id,v.focus]));
+  if(old!==currentFocusIndex(get()||{})){stopTick();focusTimer=null}
+ }
+ const x=get();if(x)drawSteps(x);else practiceControls();
+ if(!practiceState?.busy&&practiceFocus){if(document.hasFocus()&&document.activeElement===document.body&&practiceFocus.isConnected&&!practiceFocus.disabled)practiceFocus.focus({preventScroll:true});practiceFocus=null}
+}
+document.addEventListener('pickleup:academy-practice-data',acceptPractice);
+document.getElementById('academyPracticeRetry')?.addEventListener('click',()=>practice?.retry());
 async function rememberLesson(id){
  if(remembering)return;const stamp=plans?.token();remembering=true;controls();
  try{if(plans)await plans.chooseLesson(id);else localStorage.setItem(selectionKey,id);if(stamp===plans?.token()){resumedId=id;selectionId=id;refreshLearning()}}
@@ -276,5 +312,5 @@ if(initialLesson&&data.some(x=>x.id===initialLesson))visitLesson(initialLesson,f
 refreshLearning();
 // The fragment can become visible before this lazy-loaded script arrives.
 // Enable score editing only after initial values and save listeners are ready.
-seedGuest=false;controls();renderAttempts();
+seedGuest=false;controls();renderAttempts();acceptPractice();
 })();

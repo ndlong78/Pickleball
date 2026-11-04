@@ -1,6 +1,6 @@
 # PickleUp V6 — kiến trúc database, auth và offline sync
 
-**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md).
+**Trạng thái 03/11/2026:** Main `6edb8f20a5a9088ffc5a3956ab207cd837faaa14` / V5.10.0 sau [#31](https://github.com/ndlong78/Pickleball/pull/31). [UI41657955460](https://github.com/ndlong78/Pickleball/actions/runs/41657955460):287 unit +474 browser +10 lượt WebKit pass,0 fail/flaky/retry; [backend41657955739](https://github.com/ndlong78/Pickleball/actions/runs/41657955739):275 pgTAP/45 REST và Auth thật hai engines pass; [Pages41657953304](https://github.com/ndlong78/Pickleball/actions/runs/41657953304) success cùng merge SHA. [PR5b2b1/V5.11.0](ACADEMY_DEVICE_STATE_PR5B2B1.md) đang persist checklist/bước tập trung local theo account; chưa merge/deploy. Năm flags vẫn false, URL/key rỗng. [Tiến độ/gates](V6_PROGRESS_REVIEW.md).
 
 ADR/baseline PR0 bên dưới giữ bối cảnh thiết kế; hợp đồng từng PR mô tả hiện thực. [Policy](PILOT_OPERATING_POLICY.md) ghi owner đã duyệt Managed Free/CAS và ủy quyền chi tiết Auth/chính sách dữ liệu. Ngân sách tự động 0 USD; quyền staging không suy thành quyền production, không tự merge. Blueprint là đầu vào thiết kế, không tự cấp quyền triển khai.
 
@@ -173,3 +173,5 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domains, chưa source UI hoặc rollout; consent PR4c chỉ áp dụng preferences/checkins. [Hợp đồng PR5a1](ACTIVITY_SYNC_PR5A1.md).
 
 PR5a2c bổ sung [assessment/match projections và UI](ASSESSMENT_MATCH_PR5A2C.md) trong cùng facade/consent, không schema/RLS/RPC mới. Backup/importer vẫn legacy thực; private assessment/match không tự nạp sang plans khách. Bản đồ2 mô tả nguồn V5 gốc cần chuyển, không thay bảng reader hiện thực trong hợp đồng từng PR.
+
+[PR5b2b1/V5.11.0](ACADEMY_DEVICE_STATE_PR5B2B1.md) persist checklist và bước tập trung Học viện trong device_state account/browser, cùng schema1. Typed atomic patches kiểm cả hai consent revisions, namespace/late-response guards và thông báo quota/corrupt; không RPC/outbox/guest mirror. Timer vẫn RAM, state mới chưa nằm trong export hiện tại; full device state/backup/purge còn gate.

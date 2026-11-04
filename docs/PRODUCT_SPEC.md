@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md). **Đọc cùng:** [AGENTS](../AGENTS.md), [engineering](ENGINEERING_STANDARDS.md), [release gates](RELEASE_CHECKLIST.md).
+**Trạng thái 03/11/2026:** Main `6edb8f20a5a9088ffc5a3956ab207cd837faaa14` / V5.10.0 sau [#31](https://github.com/ndlong78/Pickleball/pull/31). [UI41657955460](https://github.com/ndlong78/Pickleball/actions/runs/41657955460):287 unit +474 browser +10 lượt WebKit pass,0 fail/flaky/retry; [backend41657955739](https://github.com/ndlong78/Pickleball/actions/runs/41657955739):275 pgTAP/45 REST và Auth thật hai engines pass; [Pages41657953304](https://github.com/ndlong78/Pickleball/actions/runs/41657953304) success cùng merge SHA. [PR5b2b1/V5.11.0](ACADEMY_DEVICE_STATE_PR5B2B1.md) đang persist checklist/bước tập trung local theo account; chưa merge/deploy. Năm flags vẫn false, URL/key rỗng. [Tiến độ/gates](V6_PROGRESS_REVIEW.md).
 
 ## 1. Mục đích, đối tượng, triết lý
 
@@ -106,3 +106,5 @@ PR5b1c/V5.8.0: người dùng chọn riêng nguồn giáo án, tạo basic/advan
 PR5a2d/V5.9.0: Court ghi drill hoặc lượt kiểm tra riêng vào activity source khi own plan đã ACK và cùng nguồn. Điểm plan/timer không tự sinh training/attendance. History/evaluation/Journey/planner/tactical dùng cùng nguồn, account không trim1000; so sánh tách plan/bài/level/kind/conditions, orphan/null/future không bị dựng dữ liệu. [Hợp đồng và giới hạn](TRAINING_ACCOUNT_PR5A2D.md).
 
 PR5b2a/V5.10.0: lựa chọn bài Học viện theo nguồn giáo án/selection, điểm theo nguồn hoạt động riêng. Academy/Journey/Progress links dùng cùng choice, pending có nhãn, quota giữ preview, conflict review cả hai field. Checklist/focus/timer khi có nguồn account chỉ RAM phiên trang, guest giữ persistence. Chọn bài/checkbox/timer không tạo attendance hoặc attempt. [Hợp đồng/giới hạn](ACADEMY_SELECTION_PR5B2A.md).
+
+[PR5b2b1/V5.11.0](ACADEMY_DEVICE_STATE_PR5B2B1.md) persist checklist và bước tập trung Học viện trong device_state account/browser, cùng schema1. Typed atomic patches kiểm cả hai consent revisions, namespace/late-response guards và thông báo quota/corrupt; không RPC/outbox/guest mirror. Timer vẫn RAM, state mới chưa nằm trong export hiện tại; full device state/backup/purge còn gate.

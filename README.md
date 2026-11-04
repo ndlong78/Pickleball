@@ -4,15 +4,15 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 ## Trạng thái hiện tại — 03/11/2026
 
-Main **V5.9.0**, `a2df905` sau [#30](https://github.com/ndlong78/Pickleball/pull/30), Pages/backend success; UI sau merge có1 flaky, chưa clean. **PR5b2a/V5.10.0 đang nối lựa chọn bài Học viện tài khoản**, chưa merge/deploy. [Hợp đồng](docs/ACADEMY_SELECTION_PR5B2A.md), [tiến độ/evidence](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
+Main `6edb8f20a5a9088ffc5a3956ab207cd837faaa14` / V5.10.0 sau [#31](https://github.com/ndlong78/Pickleball/pull/31). [UI41657955460](https://github.com/ndlong78/Pickleball/actions/runs/41657955460):287 unit +474 browser +10 lượt WebKit pass,0 fail/flaky/retry; [backend41657955739](https://github.com/ndlong78/Pickleball/actions/runs/41657955739):275 pgTAP/45 REST và Auth thật hai engines pass; [Pages41657953304](https://github.com/ndlong78/Pickleball/actions/runs/41657953304) success cùng merge SHA. **PR5b2b1/V5.11.0 đang lưu checklist/bước tập trung theo account/browser**, chưa merge/deploy. [Hợp đồng](docs/ACADEMY_DEVICE_STATE_PR5B2B1.md), [tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
 - Guest mặc định. **Năm flags Auth/import/sync/activity/plan đều tắt**, URL/key rỗng; chưa cloud pilot/signup. Login không tự nhập hoặc gửi dữ liệu.
-- Main có giáo án và nhật ký tài khoản; PR mới chuyển bài Học viện gần nhất qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
-- Checklist/focus/timer khi dùng tài khoản chỉ RAM phiên trang, reset reload/source/owner; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
+- Main có giáo án, nhật ký và lựa chọn bài Học viện tài khoản qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
+- PR mới giữ checklist/bước tập trung tài khoản qua reload trên cùng trình duyệt; timer vẫn RAM. State mới chưa nằm trong các bản xuất hiện tại; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
 - Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
 
-Tiếp theo persisted account device state, full V6 backup/purge và PR6; pilot gates vẫn đóng.
+Tiếp theo Court/device timer state, full V6 backup/purge và PR6; pilot gates vẫn đóng.
 
 ## Phiên bản 1.1
 
@@ -32,7 +32,7 @@ Hoặc mở `index.html` để xem giao diện; tính năng service worker/PWA c
 
 ## Bảo vệ dữ liệu
 
-Trước khi xóa dữ liệu trình duyệt hay chuyển điện thoại, chọn **Tải bản sao lưu đầy đủ**. Mở trên thiết bị mới rồi dùng **Khôi phục từ tệp JSON**. Dữ liệu không tự đồng bộ giữa các thiết bị. Không tải tệp sao lưu từ người lạ.
+Với dữ liệu khách, trước khi xóa dữ liệu trình duyệt hay chuyển điện thoại, chọn **Tải bản sao lưu đầy đủ**. Bản này chưa chứa toàn tài khoản V6 hoặc checklist/focus tài khoản mới. Mở trên thiết bị mới rồi dùng **Khôi phục từ tệp JSON**. Dữ liệu không tự đồng bộ giữa các thiết bị. Không tải tệp sao lưu từ người lạ.
 
 ## Lộ trình ban đầu (lịch sử V1.1)
 
