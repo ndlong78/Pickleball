@@ -23,3 +23,9 @@ test('bounded preview rejects oversized files and unsupported envelope/schema/st
 test('inventory uses data-safe state keys and never interprets them as prototypes or training totals',async()=>{
  const s=blank();s.stores.outbox=[{namespace:'user:'+A,operationId:'x',state:'__proto__'},{namespace:'user:'+A,operationId:'y',state:'constructor'}];const {report}=await core.create(s);assert.deepEqual(report.outboxStates,[['__proto__',1],['constructor',1]]);assert.equal(report.pending,2);assert.equal({}.polluted,undefined);
 });
+
+test('credential inspection unwraps encoded JSON, repeated URI layers and credential assignments',async()=>{
+ const entries=[encodeURIComponent(JSON.stringify({access_token:'synthetic'})),encodeURIComponent(encodeURIComponent(JSON.stringify({refresh_token:'synthetic'}))),'api_key=synthetic','"service_role":"synthetic"'];
+ for(const entry of entries){const s=blank();s.stores.metadata=[row({value:entry})];await assert.rejects(core.create(s),{code:'credentials_detected'})}
+ const s=blank();s.stores.metadata=[row({value:{'%2561ccess_token':'synthetic'}})];await assert.rejects(core.create(s),{code:'credentials_detected'});
+});

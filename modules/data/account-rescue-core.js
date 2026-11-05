@@ -8,7 +8,10 @@ class RescueError extends Error{constructor(code){super(code);this.name='RescueE
 const fail=code=>{throw new RescueError(code)},plain=v=>v!==null&&typeof v==='object'&&Object.getPrototypeOf(v)===Object.prototype;
 const exact=(v,keys)=>plain(v)&&Object.keys(v).sort().join(',')===[...keys].sort().join(',');
 const credentialKey=key=>/^(?:p)?(?:accesstoken|refreshtoken|idtoken|token|authorization|password|passwd|otp|service(?:role|rolekey|key)|supabaseservicekey|publishablekey|dbpassword|databasepassword|smtppassword|apikey|secret|clientsecret)$/.test(key.replace(/[^a-z0-9]/gi,'').toLowerCase());
-function sensitive(text){return /(?:\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b|\bsb_(?:secret|publishable)_[A-Za-z0-9_-]+|\bBearer\s+\S+|\bpostgres(?:ql)?:\/\/[^\s]+|\bsmtps?:\/\/[^\s]+|\b(?:access[_-]?token|refresh[_-]?token|password|otp)\s*[:=]\s*["']?[^\s"',}]+)/i.test(text)}
+function sensitive(text){return /(?:\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b|\bsb_(?:secret|publishable)_[A-Za-z0-9_-]+|\bBearer\s+\S+|\bpostgres(?:ql)?:\/\/[^\s]+|\bsmtps?:\/\/[^\s]+|\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|authorization|password|passwd|otp|service[_-]?(?:role(?:[_-]?key)?|key)|supabase[_-]?service[_-]?key|publishable[_-]?key|(?:db|database|smtp)[_-]?password|api[_-]?key|client[_-]?secret|secret)["']?\s*[:=]\s*["']?[^\s"',}]+)/i.test(text)}
+function decoded(text){
+ for(let i=0;i<40;i++){let next;try{next=decodeURIComponent(text)}catch(_){return text}if(next===text)return text;text=next}fail('too_complex');
+}
 function inspectJSON(value,owner,{maxDepth=40,maxNodes=1000000}={}){
  let nodes=0;
  function walk(v,depth){
@@ -16,7 +19,7 @@ function inspectJSON(value,owner,{maxDepth=40,maxNodes=1000000}={}){
   if(v===null||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v))return;
   if(typeof v==='string'){
    if(sensitive(v))fail('credentials_detected');
-   if(/%[0-9a-f]{2}/i.test(v)){try{if(sensitive(decodeURIComponent(v)))fail('credentials_detected')}catch(error){if(error instanceof RescueError)throw error}}
+   if(/%[0-9a-f]{2}/i.test(v)){const unwrapped=decoded(v);if(unwrapped!==v)walk(unwrapped,depth+1)}
    if(/^\s*[\[{]/.test(v)){let parsed;try{parsed=JSON.parse(v)}catch(_){}if(parsed!==undefined)walk(parsed,depth+1)}
    return;
   }
@@ -26,7 +29,7 @@ function inspectJSON(value,owner,{maxDepth=40,maxNodes=1000000}={}){
   }
   if(!plain(v))fail('unsupported_value');
   for(const [key,child] of Object.entries(v)){
-   let decoded=key;try{decoded=decodeURIComponent(key)}catch(_){}if(credentialKey(decoded))fail('credentials_detected');
+   if(credentialKey(decoded(key)))fail('credentials_detected');
    if((key==='user_id'&&child!==owner)||(key==='namespace'&&child!=='user:'+owner))fail('foreign_account');
    walk(child,depth+1);
   }
