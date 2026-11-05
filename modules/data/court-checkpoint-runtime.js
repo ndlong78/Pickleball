@@ -48,7 +48,7 @@ function notice(){
  if(state.error)return state.error==='quota_exceeded'?'Không đủ dung lượng. Điểm dừng chưa lưu; đồng hồ đã dừng vẫn giữ trong phiên này. Có thể thử lại.':'Chưa xử lý được điểm dừng. Giữ trang đang mở và đọc lại hoặc thử lại.';
  const v=state.row?.value;return v?'Điểm dừng đã lưu: '+(v.ended?'kết thúc 6 phần':'phần '+(v.index+1)+'/6 · còn '+root.PICKLEUP_PRACTICE_CLOCK.fmt(v.remaining))+(v.epoch!==describe().binding.epoch?' · thuộc phiên đồng bộ cũ, không thể khôi phục.':' · khôi phục chỉ khi bạn chủ động bấm nút.'):'Chưa có điểm dừng cho giáo án này. Bấm lưu để tạm dừng đồng hồ và giữ vị trí qua reload.';
 }
-root.PICKLEUP_COURT_CHECKPOINT={getState:()=>copy(state),token:()=>generation,canSave,canRestore:compatible,notice,refresh:()=>read(true),restore,retry:()=>failed&&state.mode==='account'?commit(failed):read(true),
+root.PICKLEUP_COURT_CHECKPOINT={getState:()=>copy(state),token:()=>JSON.stringify([generation,state.row?.localRevision,state.row?.value,state.stale]),canSave,canRestore:compatible,notice,refresh:()=>read(true),restore,retry:()=>failed&&state.mode==='account'?commit(failed):read(true),
  save(clock){const d=describe();if(!canSave()||clock?.running||clock?.deadline!==null||clock?.planId!==d.binding.planId)return Promise.resolve();return commit({value:{schemaVersion:1,planId:clock.planId,epoch:d.binding.epoch,index:clock.index,remaining:clock.remaining,ended:clock.ended},revision:state.row.localRevision,binding:copy(d.binding)})}};
 document.addEventListener('pickleup:plan-data',adopt);
 root.addEventListener('focus',()=>{adopt();read(false)});document.addEventListener('visibilitychange',()=>{if(!document.hidden){adopt();read(false)}});
