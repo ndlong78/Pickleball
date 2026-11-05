@@ -6,12 +6,32 @@ if(!clock)return;
 const storageKey="pickleup_practice_state_v25",plansKey="pickleup_plans_v24",$=id=>document.getElementById(id);
 let plan=null,state=null,lastExpired=-1,wakeLock=null,wakeWanted=false,renderedDrillKey=null;
 const plansSource=window.PICKLEUP_PLANS,activity=window.PICKLEUP_ACTIVITY;
+const checkpoint=window.PICKLEUP_COURT_CHECKPOINT;
 let attemptBusy=false,activityToken=activity?.token();
 let planToken=plansSource?.token();
 const logApi=window.PICKLEUP_TRAINING_LOG,conditionsApi=window.PICKLEUP_PRACTICE_CONDITIONS;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
 function save(){if(plansSource?.isAccount())return;try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
 function message(value){$("pcRunMessage").textContent=value}
+function checkpointControls(){
+ const panel=$("pcCheckpointPanel");if(!panel)return;panel.hidden=!plan||!plansSource?.isAccount();
+ $("pcCheckpointStatus").textContent=checkpoint?.notice()||'';$("pcCheckpointSave").disabled=!checkpoint?.canSave();$("pcCheckpointRestore").disabled=!checkpoint?.canRestore();
+ const s=checkpoint?.getState();$("pcCheckpointRead").disabled=!!s?.busy||s?.mode==='loading';$("pcCheckpointRetry").hidden=!s?.error||s.stale;$("pcCheckpointRetry").disabled=!!s?.busy;
+}
+async function saveCheckpoint(){
+ if(!plan||!state||!checkpoint?.canSave())return;
+ const stamp=checkpoint.token(),sourceStamp=plansSource?.token(),id=plan.id;
+ if(checkpoint.getState().row?.value&&!confirm('Thay điểm dừng đã lưu của giáo án này bằng vị trí đang tập? Đồng hồ sẽ tạm dừng; không xác nhận buổi tập.'))return;
+ if(stamp!==checkpoint.token()||sourceStamp!==plansSource?.token()||plan?.id!==id||!checkpoint.canSave())return;state=clock.pause(state);render();await checkpoint.save(state);
+}
+async function restoreCheckpoint(){
+ if(!plan||!checkpoint?.canRestore())return;const stamp=checkpoint.token(),sourceStamp=plansSource?.token(),id=plan.id;
+ if(!confirm('Khôi phục điểm dừng đã xem? Đồng hồ sẽ dừng; vị trí đang tập trong phiên này được thay bằng điểm dừng.')||stamp!==checkpoint.token()||sourceStamp!==plansSource?.token()||plan?.id!==id)return;
+ const value=await checkpoint.restore();
+ if(!value||stamp!==checkpoint.token()||sourceStamp!==plansSource?.token()||plan?.id!==id)return;
+ state={planId:id,index:value.index,remaining:value.remaining,ended:value.ended,running:false,deadline:null};lastExpired=-1;render();message('Đã khôi phục điểm dừng; nhấn Bắt đầu khi sẵn sàng. Không tự xác nhận buổi tập.');
+}
+document.addEventListener('pickleup:court-checkpoint-data',checkpointControls);
 function phaseInfo(index){
  if(!plan||index>=clock.stages.length)return null;
  const step=clock.stages[index];
@@ -28,6 +48,7 @@ function loadPlan(p){
 }
 function render(){
  const enabled=!!plan;
+ checkpointControls();
  $("pcRunEmpty").hidden=enabled;$("pcRunPlayer").hidden=!enabled;
  if(!enabled){$("pcRunGuide").replaceChildren();$("pcRunDiagram").replaceChildren();$("pcRunSegments").replaceChildren();$("pcRunTitle").textContent="";$("pcRunStep").textContent="";$("pcRunClock").textContent="00:00";return;}
  if(!state)state=clock.create(plan.id);
@@ -156,6 +177,10 @@ document.addEventListener("pickleup:plan-selected",event=>loadPlan(plansSource?.
  $("pcRunPrev").addEventListener("click",()=>advance(-1));
  $("pcRunNext").addEventListener("click",()=>advance(1));
  $("pcRunReset").addEventListener("click",reset);
+ $("pcCheckpointSave")?.addEventListener('click',saveCheckpoint);
+ $("pcCheckpointRestore")?.addEventListener('click',restoreCheckpoint);
+ $("pcCheckpointRead")?.addEventListener('click',()=>checkpoint?.refresh());
+ $("pcCheckpointRetry")?.addEventListener('click',()=>checkpoint?.retry());
  $("pcRunScore").addEventListener("click",async()=>{if(!plan)return;const id=plan.id,version=plan.version,stamp=plansSource?.token();window.PICKLEUP_ROUTER?.openSection(version==='3.1'?'advancedCoach':'personalCoach');try{await window.PICKLEUP_PAGE_LOADER?.ensure('coach');if(stamp!==plansSource?.token()||plan?.id!==id)return;document.dispatchEvent(new CustomEvent('pickleup:plan-score-request',{detail:{id,version}}));$(version==='3.1'?'acCoachResult':'pcPostScore')?.focus()}catch(_){if(stamp===plansSource?.token())message('Chưa mở được phần kết quả; thử lại khi có mạng.')}});
  // Wall-clock deadlines recover from mobile background throttling without incorrectly skipping stages.
  setInterval(pulse,350);
