@@ -1,0 +1,12 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),{IDBFactory}=require('fake-indexeddb'),{open}=require('../modules/data/local-repository.js'),core=require('../modules/data/account-rescue-core.js');
+const A='user:11111111-1111-4111-8111-111111111111',B='user:22222222-2222-4222-8222-222222222222',G='guest:33333333-3333-4333-8333-333333333333',D='44444444-4444-4444-8444-444444444444';
+const op=(value,revision='0')=>({kind:'user_preferences',id:'self',value:{target_days:value},expectedLocalRevision:revision,operationId:crypto.randomUUID()});
+test('all own stores captured read-only, namespaces and legacy snapshots excluded',async()=>{
+ const db=await open({indexedDB:new IDBFactory()}),a=db.scope(A);try{await a.write(op(3));await a.setDeviceState(D,'focus',{index:2});await a.saveImportCheckpoint('a'.repeat(64),'legacy-1',{phase:'prepared'});await db.scope(B).write(op(5));await db.scope(G).write(op(2));const before=JSON.stringify(await a.listOutbox()),snapshot=await a.getAccountRescueSnapshot();assert.deepEqual(Object.keys(snapshot.stores),Object.keys(core.STORES));assert.equal(snapshot.stores.records.length,1);assert.equal(snapshot.stores.device_state.length,1);assert.equal(snapshot.stores.import_receipts.length,1);assert.equal(snapshot.stores.records[0].overlay.target_days,3);assert.equal(JSON.stringify(await a.listOutbox()),before);await core.create(snapshot);assert.throws(()=>db.scope(G).getAccountRescueSnapshot(),{code:'auth_required'})}finally{db.close()}
+});
+test('concurrent record/outbox/receipt mutation cannot produce a torn snapshot across connections',async()=>{
+ const indexedDB=new IDBFactory(),db=await open({indexedDB}),second=await open({indexedDB}),a=db.scope(A);try{await a.write(op(3));const [snapshot]=await Promise.all([a.getAccountRescueSnapshot(),second.scope(A).write(op(4,'1'))]);const record=snapshot.stores.records[0],head=snapshot.stores.outbox.find(o=>o.operationId===record.tailOperationId);assert.equal(record.overlay.target_days,head.payload.target_days);assert.ok(snapshot.stores.metadata.some(m=>m.key==='operation:'+head.operationId))}finally{second.close();db.close()}
+});
+test('scope closure interrupts snapshot work and preserves stored pending data',async()=>{
+ const db=await open({indexedDB:new IDBFactory()}),a=db.scope(A);try{await a.write(op(3));const work=a.getAccountRescueSnapshot();a.close();await assert.rejects(work);assert.equal((await db.scope(A).listOutbox()).length,1)}finally{db.close()}
+});

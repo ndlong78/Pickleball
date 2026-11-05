@@ -1,5 +1,5 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **05/11/2026** — main `7134d93` sau #32/app5.11.0, backend/UI/Pages sạch cùng merge SHA; evidence tại progress.
+Cập nhật: **05/11/2026** — main `078f98c` sau #33/app5.12.0, backend/UI/Pages sạch cùng merge SHA; evidence tại progress.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
@@ -12,11 +12,12 @@ Cập nhật: **05/11/2026** — main `7134d93` sau #32/app5.11.0, backend/UI/Pa
 | Đã merge #30 | [PR5a2d/V5.9.0: nhật ký tập tài khoản](docs/TRAINING_ACCOUNT_PR5A2D.md) | Own plan ACK, manual send/review; readiness fixture sync-ui đã sửa ở #31 |
 | Đã merge #31 | [PR5b2a/V5.10.0: Academy account selection](docs/ACADEMY_SELECTION_PR5B2A.md) | Một nguồn choice, sparse CAS giữ personal plan, route/A→B/privacy, clean PR và main CI; đã merge/deploy |
 | Đã merge #32 | [PR5b2b1/V5.11.0: checklist/bước tập trung account/browser](docs/ACADEMY_DEVICE_STATE_PR5B2B1.md) | Atomic local patches, reload/offline/two tabs/A→B/quota/corrupt; timer/backup/purge chưa thuộc lát cắt này |
-| Đang triển khai | [PR5b2b2/V5.12.0: điểm dừng Court local](docs/COURT_CHECKPOINT_PR5B2B2.md) | Explicit paused save/restore, own ACK/fenced CAS, không ghi đè tab khác; chưa full backup/purge |
+| Đã merge #33 | [PR5b2b2/V5.12.0: điểm dừng Court local](docs/COURT_CHECKPOINT_PR5B2B2.md) | Explicit paused save/restore, own ACK/fenced CAS, không ghi đè tab khác; chưa full backup/purge |
+| Đang triển khai | [PR5b2c1/V5.13.0: toàn cache rescue/preview chỉ đọc](docs/ACCOUNT_RESCUE_PR5B2C1.md) | Bảy stores own account, consistent snapshot, credentials/lifecycle fences; chưa restore/purge |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
-Các bước sau PR5b2a là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Main đã có giáo án/nhật ký tài khoản; Academy choice đã merge ở #31; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
+Các hạng mục phục hồi tiếp theo và PR6 là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Main đã có giáo án/nhật ký tài khoản; Academy choice đã merge ở #31; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
 
 ## Lịch sử roadmap V1–V5
 
