@@ -148,19 +148,19 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      return {namespace,deviceId,key:'academy-practice-1',localRevision:row?.localRevision||'0',value:practiceValue(row?row.value:{schemaVersion:1,lessons:{}})};
     }
     async function courtFence(tx,binding){
-     if(guest||!binding||!UUID.test(binding.planId)||binding.planId!==binding.planId.toLowerCase()||!UUID.test(binding.epoch))fail('plan_unavailable');
+     if(guest||!binding||typeof binding.planId!=='string'||typeof binding.epoch!=='string'||!UUID.test(binding.planId)||binding.planId!==binding.planId.toLowerCase()||!UUID.test(binding.epoch))fail('plan_unavailable');
      await requirePlanConsent(tx,binding.consentRevision);
      const records=tx.objectStore('records'),plan=await request(records.get([namespace,'personal_plans',binding.planId])),selection=await request(records.get([namespace,'user_selections','self'])),cursor=await request(tx.objectStore('sync_cursor').get([namespace,PLAN_POLICY]));
      if(!plan?.base||!selection?.base||cursor?.epoch!==binding.epoch||plan.baseEpoch!==binding.epoch||selection.baseEpoch!==binding.epoch||plan.localRevision!==binding.planRevision||selection.localRevision!==binding.selectionRevision||plan.base.user_id!==namespace.slice(5)||selection.base.user_id!==namespace.slice(5)||plan.base.id!==binding.planId||selection.base.selected_personal_plan_id!==binding.planId||[plan,selection].some(r=>r.deleted||r.reviewRequired||r.tailOperationId||r.base.deleted_at))fail('plan_unavailable');
     }
     function courtValue(value,planId){
      canonical(value);
-     if(!value||Object.keys(value).sort().join(',')!=='ended,epoch,index,planId,remaining,schemaVersion'||value.schemaVersion!==1||value.planId!==planId||!UUID.test(value.epoch)||!Number.isInteger(value.index)||value.index<0||value.index>6||!Number.isInteger(value.remaining)||value.remaining<0||value.remaining>[600,720,720,900,360,300,0][value.index]||typeof value.ended!=='boolean'||value.ended!==(value.index===6))fail('invalid_device_state');
+     if(!value||Object.getPrototypeOf(value)!==Object.prototype||Object.keys(value).sort().join(',')!=='ended,epoch,index,planId,remaining,schemaVersion'||value.schemaVersion!==1||value.planId!==planId||typeof value.epoch!=='string'||!UUID.test(value.epoch)||!Number.isInteger(value.index)||value.index<0||value.index>6||!Number.isInteger(value.remaining)||value.remaining<0||value.remaining>[600,720,720,900,360,300,0][value.index]||typeof value.ended!=='boolean'||value.ended!==(value.index===6))fail('invalid_device_state');
      return value;
     }
     async function courtRow(tx,planId){
      const metadata=tx.objectStore('metadata'),identity=await request(metadata.get([namespace,'court-device-id-1'])),deviceId=identity?identity.value:root.crypto.randomUUID();
-     if(!UUID.test(deviceId))fail('invalid_device_state');
+     if(typeof deviceId!=='string'||!UUID.test(deviceId))fail('invalid_device_state');
      if(!identity)await request(metadata.put({namespace,key:'court-device-id-1',value:deviceId}));
      const key='court-checkpoint-1:'+planId,row=await request(tx.objectStore('device_state').get([namespace,deviceId,key]));
      if(row&&(!revision(row.localRevision)||row.localRevision==='0'))fail('invalid_device_state');
