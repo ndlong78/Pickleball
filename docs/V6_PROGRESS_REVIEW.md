@@ -1,8 +1,10 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
-Cập nhật ngày **05/11/2026 (Asia/Saigon)**. Main `7134d93f1c76f1ccd276f7ad10c41f42d3c277ae` / V5.11.0 sau [#32](https://github.com/ndlong78/Pickleball/pull/32). [UI41757152273](https://github.com/ndlong78/Pickleball/actions/runs/41757152273):294 unit +492 browser +10 WebKit bổ sung pass,0 fail/flaky/retry; [backend41757152143](https://github.com/ndlong78/Pickleball/actions/runs/41757152143):275 pgTAP/45 REST và Auth thật hai engines pass; [Pages41757151403](https://github.com/ndlong78/Pickleball/actions/runs/41757151403) success cùng merge SHA.
+Cập nhật ngày **05/11/2026 (UTC)**. Main `078f98c8f58dc784d10743593ee724585840f61e` / V5.12.0 sau [#33](https://github.com/ndlong78/Pickleball/pull/33). [UI42014677077](https://github.com/ndlong78/Pickleball/actions/runs/42014677077):306 unit +512 browser +10 WebKit bổ sung pass,0 fail/flaky/retry; [backend42014676992](https://github.com/ndlong78/Pickleball/actions/runs/42014676992):275 pgTAP/45 REST và Auth thật hai engines pass; [Pages42014675888](https://github.com/ndlong78/Pickleball/actions/runs/42014675888) success cùng merge SHA.
 
-PR5b2b1 checklist/focus account đã merge/deploy. [PR5b2b2/V5.12.0](COURT_CHECKPOINT_PR5B2B2.md) đang nối điểm dừng Court local có explicit save/restore, CAS/ACK/epoch fences; chưa merge/deploy. Không PR mở trùng khi bắt đầu. Năm flags false, URL/key trống; chưa staging/cloud pilot. Full device state/backup/purge/PR6 còn gate.
+PR5b2b1 checklist/focus và [PR5b2b2/V5.12.0](COURT_CHECKPOINT_PR5B2B2.md) Court checkpoint đã merge/deploy. [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Không PR mở trùng khi bắt đầu PR mới; chưa merge/deploy PR5b2c1.
+
+**Full V6:** OTP/session và private data; các nguồn account trên tám route; offline/manual sync/retry/CAS conflict; nhập legacy có preview/provenance; backup/restore/cache privacy; vận hành staging/backup/Auth recovery/deletion/retention. Main đã có phần lớn luồng nghiệp vụ. Chưa coi V6 hoàn tất hoặc mở pilot đến khi các gate phục hồi và vận hành bên dưới đạt.
 
 **Các bảng mã nguồn và evidence ở mục1–3 dưới đây là snapshot lịch sử sau #22** (`6a59bdb622ae564a7f954584191197f9aa4c0767`, app5.5.0), không phải danh sách thiếu của HEAD hiện tại. Mục4–5 phản ánh kế hoạch tiếp theo; hợp đồng từng PR giữ phạm vi riêng.
 
@@ -56,7 +58,7 @@ Trong lần rà soát tài liệu: local Node24 chạy lại 206 unit pass/0 fai
 
 ## 4. Kế hoạch triển khai theo thứ tự phụ thuộc
 
-PR5a2a/#24, PR5a2b/#25 và PR5a2c/#26 đã merge; PR5b1a/#27 đã merge; PR5b1b/#28 đã merge; PR5b1c/#29 UI cá nhân đã merge; PR5a2d/#30 training đã merge; PR5b2a/#31 Academy selection đã merge; PR5b2b1/#32 đã merge; PR5b2b2 đang triển khai. Các bước sau đó là **phạm vi kế hoạch**, chưa là GitHub PR đã mở. Mỗi bước nhỏ có CI đúng HEAD và review riêng, không tự merge. Có thể tách nhỏ thêm theo reader/writer thực tế; không ấn định lịch khi phụ thuộc staging chưa sẵn sàng.
+PR5a2a/#24, PR5a2b/#25 và PR5a2c/#26 đã merge; PR5b1a/#27 đã merge; PR5b1b/#28 đã merge; PR5b1c/#29 UI cá nhân đã merge; PR5a2d/#30 training đã merge; PR5b2a/#31 Academy selection đã merge; PR5b2b1/#32 đã merge; PR5b2b2/#33 đã merge; PR5b2c1 đang triển khai. Các bước sau đó là **phạm vi kế hoạch**, chưa là GitHub PR đã mở. Mỗi bước nhỏ có CI đúng HEAD và review riêng, không tự merge. Có thể tách nhỏ thêm theo reader/writer thực tế; không ấn định lịch khi phụ thuộc staging chưa sẵn sàng.
 
 | Ưu tiên / bước | Kết quả cần có | Gate để coi hoàn tất |
 |---|---|---|
@@ -66,7 +68,8 @@ PR5a2a/#24, PR5a2b/#25 và PR5a2c/#26 đã merge; PR5b1a/#27 đã merge; PR5b1b/
 | 4 — PR5b1a RPC → PR5b1b client/review → UI plans/selections, rồi PR5a2d training | RPC/client/UI và training đã merge #27–#30; own plan ACK, mọi reader cùng nguồn, manual send/delete/review. Backend/UI main sau #31 sạch; sync-ui readiness fixture đã sửa | Snapshot plan immutable, kết quả CAS, plan→training/selection dependency, orphan/deleted plan có UX; timer giữ local, không tạo attendance. Phụ thuộc này cần trước manual training, dù các phần khác PR5a đã xong |
 | Đã merge #31 — PR5b2a: Academy account lesson selection | Choice sparse CAS, cross-route guards và RAM practice privacy; đã merge/deploy5.10 | Native reload/offline/two tabs/late A→B, quota/replay/conflict, không đổi personal choice hoặc ghi guest; clean HEAD CI |
 | Đã merge #32 — PR5b2b1: Academy checklist/focus | Persist account/browser checklist và bước tập trung; timer vẫn RAM, chưa full device state | Atomic patch/two tabs/consent fence/quota/corrupt/reload/offline/A→B và Auth thật; no guest mirror/no RPC |
-| Đang triển khai — PR5b2b2: Court checkpoint | Manual pause/save/preview/restore paused trên cùng account/browser; không tự resume hoặc gửi RPC | CAS checkpoint và plan/selection/consent/epoch fence, stale-tab review, quota/reload/offline/late A→B và Auth thật |
+| Đã merge #33 — PR5b2b2: Court checkpoint | Manual pause/save/preview/restore paused trên cùng account/browser; không tự resume hoặc gửi RPC | CAS checkpoint và plan/selection/consent/epoch fence, stale-tab review, quota/reload/offline/late A→B và Auth thật |
+| Đang triển khai — PR5b2c1: cứu hộ cache chỉ đọc | Đủ bảy stores own account, export/preview; không restore/purge | Consistent snapshot, no truncation/credentials/foreign owner, late A→B, native browsers và Auth local thật |
 | Tiếp theo — PR5b2b/c: device state, backup và phục hồi | Persist account device state đúng namespace, full V6 backup round-trip, compatibility export riêng, cache purge có preview/export pending; profile UI nếu cần | Native reload/offline/two tabs/late A→B trên 8 route; không trim lịch sử, không hứa V5 restore được dữ liệu V6; test import/export pending/frozen/conflicts/device state và credential exclusion |
 | 6 — PR6: hardening/vận hành pilot | Staging SMTP/Managed gateway, Auth expiry/refresh browser thật, importer repair/compensation, backup/Auth recovery/deletion/restore; load/rate/quota/privacy/support | Encrypted backup 7 bản ngày + 4 bản tuần, tuổi tối đa 35 ngày; restore đổi epoch và replay deletion markers; chứng minh RPO24h/RTO1 ngày làm việc; clean CI + QA iPhone/iPad/Android/PWA thật trước opt-in dữ liệu thật |
 
@@ -74,10 +77,10 @@ Công việc staging có thể chuẩn bị với dữ liệu giả trong lúc h
 
 ## 5. Việc owner cần chuẩn bị và điểm dừng hiện tại
 
-- **Review PR5b2b2/CI:** không cần credentials. UI bump app/cache5.12.0 và giữ năm flags tắt; owner tự quyết merge khi các gate đúng HEAD sạch.
+- **Review PR5b2c1/CI:** không cần credentials. UI bump app/cache5.13.0 và giữ năm flags tắt; owner tự quyết merge khi các gate đúng HEAD sạch.
 - **Khi bắt đầu staging:** cung cấp quyền project đúng môi trường qua kết nối bảo mật; kiểm region Singapore nếu khả dụng, Free quota và tách staging/pilot. Frontend chỉ URL HTTPS + publishable key; DB/service-role/SMTP secrets nằm ở cấu hình vận hành an toàn, không chat/repo/client.
 - **Trước email pilot:** custom SMTP/sender/domain đã xác minh, template OTP nhập mã, expiry/rate limits và `/Pickleball/` Site URL/allowlist; kiểm delivery/spam/abuse. Flag client không thay chính sách server về signup hoặc quyền RLS.
 - **Trước dữ liệu thật:** kho backup mã hóa ngoài Supabase, job/quyền operator, restore/Auth identity drill và workflow xóa account/cache đã kiểm chứng; privacy/support và QA thiết bị thật. Target trong [policy](PILOT_OPERATING_POLICY.md) chưa thành SLA đang vận hành.
-- **Tiếp theo về code:** PR5b2b2 Court checkpoint, sau đó full backup/purge và các gate device state còn lại, giữ flags off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
+- **Tiếp theo về code:** PR5b2c1 cứu hộ cache, sau đó safe restore/purge và các gate device state còn lại, giữ flags off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
 
 Hợp đồng tham chiếu: [kiến trúc](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md), [policy](PILOT_OPERATING_POLICY.md), [threat model](THREAT_MODEL.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md).

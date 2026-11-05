@@ -50,7 +50,7 @@ const api={getState:()=>clone(state),edit,refresh:read,retry:()=>failed&&state.m
   if(state.mode!=='account')return 'Chưa đọc được trạng thái thực hành tài khoản. Đọc lại; không dùng dữ liệu khách hoặc tự ghi đè. Timer chỉ giữ trong phiên trang.';
   if(state.busy)return 'Đang lưu checklist / bước tập trung trên thiết bị…';
   if(state.error)return state.error==='quota_exceeded'?'Không đủ dung lượng. Thao tác chưa lưu; thử lại sau khi giải phóng dung lượng.':'Thao tác chưa lưu. Đọc lại nguồn hoặc thử lại; trạng thái đã lưu được giữ nguyên.';
-  return 'Checklist và bước tập trung: đã lưu theo tài khoản trên trình duyệt này, giữ qua reload. Không gửi lên cloud, chưa nằm trong bản xuất hiện tại; có thể mất khi xóa dữ liệu trình duyệt. Timer chỉ giữ trong phiên trang; không tự xác nhận buổi tập.';
+  return 'Checklist và bước tập trung: đã lưu theo tài khoản trên trình duyệt này, giữ qua reload. Không gửi lên cloud, có trong bản cứu hộ cache V6 ở Dữ liệu; backup V5 không chứa phần này; có thể mất khi xóa dữ liệu trình duyệt. Timer chỉ giữ trong phiên trang; không tự xác nhận buổi tập.';
  }};
 root.PICKLEUP_ACADEMY_PRACTICE=api;
 document.addEventListener('pickleup:plan-data',adopt);document.addEventListener('pickleup:activity-data',adopt);

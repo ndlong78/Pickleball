@@ -2,7 +2,7 @@
 
 **Căn cứ:** [`../AGENTS.md`](../AGENTS.md), [`PRODUCT_SPEC.md`](PRODUCT_SPEC.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md). Quy trình này áp dụng cho feature, bugfix, performance và thay đổi tài liệu. **Đừng tự tuyên bố Stable từ việc code đã viết hoặc workflow có trạng thái xanh nhưng còn flaky.**
 
-**V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #32 có Academy device state, backend/UI/Pages cùng merge SHA sạch theo progress. PR5b2b2 nối Court checkpoint explicit local; flags vẫn tắt. Phải có CI HEAD mới sạch trước ready review. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
+**V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #33 có Academy device state và Court checkpoint, backend/UI/Pages cùng merge SHA sạch theo progress. PR5b2c1 thêm cứu hộ bảy stores và preview tệp chỉ đọc; flags vẫn tắt. Phải có CI HEAD mới sạch trước ready review. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
 
 ## 1. Trước mỗi nhiệm vụ: evidence thực tế
 
@@ -84,3 +84,8 @@ Tất cả release notes phải nói rõ: **đã viết → unit pass → browse
 Nêu rõ phạm vi và lý do, tệp thay đổi, branch/PR/commit URLs, đúng test counts pass/fail/flaky (nếu chưa chạy thì nói chưa chạy), trạng thái CI/Pages theo SHA, rủi ro và việc chưa kiểm chứng, một bước tiếp theo hợp lý. Không cần xin xác nhận cho mỗi chỉnh sửa nhỏ trong phạm vi; không hứa công việc chạy nền ngoài automation.
 
 **Mục tiêu cuối cùng:** hệ thống có thể cải tiến liên tục mà vẫn giữ lịch sử thực, mô hình huấn luyện đáng tin, UX nhất quán, khả năng offline và hành vi CI minh bạch.
+
+
+## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
+
+[PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.

@@ -17,6 +17,16 @@
 <p data-source style="overflow-wrap:anywhere"></p>
 <table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Nhóm</th><th scope="col">Trạng thái</th><th scope="col">Phần tử cấp đầu</th><th scope="col">Byte raw</th></tr></thead><tbody></tbody></table>
 </div>
+<div class="card" id="accountRescue" style="padding:20px;min-width:0">
+<h3>Cứu hộ toàn bộ cache V6 trên máy</h3>
+<p>Xuất cache của tài khoản đang đăng nhập: bản đã tải về, thay đổi chưa gửi, yêu cầu chưa rõ kết quả, conflict, checkpoint nhập, checklist/focus và điểm dừng Court. Không lấy dữ liệu khách hoặc phiên đăng nhập.</p>
+<p>Cache trên máy có thể chưa chứa hết dữ liệu cloud. Đây chưa là backup toàn tài khoản/DB và chưa có chức năng khôi phục từ tệp hoặc purge. Timer đang chạy và dữ liệu RAM chưa lưu không có trong tệp. Tệp riêng tư, chưa mã hóa; giữ ở nơi an toàn.</p>
+<button type="button" data-account-capture disabled>Đọc cache tài khoản</button>
+<a class="linkbtn" data-account-download hidden>Tải bản cứu hộ cache V6</a>
+<label style="display:block;margin-top:12px">Kiểm tra lại tệp cache V6 (chỉ xem, tối đa 32 MiB)<input type="file" accept=".json,application/json" disabled style="display:block;max-width:100%"></label>
+<p role="status" aria-live="polite">Đăng nhập chưa được cấu hình; chế độ khách vẫn dùng được.</p><p data-account-rescue-summary></p>
+<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Phần dữ liệu</th><th scope="col">Số dòng</th></tr></thead><tbody></tbody></table>
+</div>
 <div class="card" id="importPilot" style="padding:20px;min-width:0">
 <h3>Nhập dữ liệu vào tài khoản · pilot</h3>
 <p role="status" aria-live="polite">Pilot nhập dữ liệu chưa bật. Bản cứu hộ và dữ liệu trên máy vẫn hoạt động bình thường.</p>

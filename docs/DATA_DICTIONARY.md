@@ -77,13 +77,13 @@ Schema1 đã tạo tám stores bên dưới. Đây là mô hình logic; key/API 
 | Store | Key và nội dung | Bất biến |
 |---|---|---|
 | `records` | `[namespace,kind,id]`, server base/revision + local overlay/provenance | Không overwrite overlay khi pull |
-| `outbox` | `[namespace,operation_id]`, immutable request, expected_revision, depends_on, state, attempt metadata | Ghi cùng local record trong một transaction |
-| `conflicts` | `[namespace,conflict_id]`, base/local/remote/revision + quyết định | Không mất local intent; resolve gửi operation mới |
+| `outbox` | `[namespace,operationId]`, immutable request, expected_revision, depends_on, state, attempt metadata | Ghi cùng local record trong một transaction |
+| `conflicts` | `[namespace,conflictId]`, base/local/remote/revision + quyết định | Không mất local intent; resolve gửi operation mới |
 | `sync_cursor` | `[namespace,protocol]`, last revision/H | Cập nhật cùng transaction apply page |
-| `import_receipts` | `[namespace,fingerprint,adapter_version]`, manifest/item map/counts | Resume sau crash, không đánh complete trước server ack |
-| `legacy_snapshots` | `[installation_id,snapshot_id]`, raw text 18 keys/unknown PickleUp keys, absent markers, hashes | Local/export riêng, không tự upload |
-| `device_state` | `[namespace,device_id,key]`, timer/checklist/focus | Không sync giữa thiết bị |
-| `metadata` | schema version, feature flags, lock leases, auth generation, migration checkpoint | IDB upgrade không xóa pending; close/versionchange có UX retry |
+| `import_receipts` | `[namespace,fingerprint,adapterVersion]`, manifest/item map/counts | Resume sau crash, không đánh complete trước server ack |
+| `legacy_snapshots` | `[installationId,snapshotId]`, raw text 18 keys/unknown PickleUp keys, absent markers, hashes | Local/export riêng, không tự upload |
+| `device_state` | `[namespace,deviceId,key]`, timer/checklist/focus | Không sync giữa thiết bị |
+| `metadata` | `[namespace,key]`, consent revisions, operation receipts, device identity, lock leases | IDB upgrade không xóa pending; close/versionchange có UX retry |
 
 DB namespace là cách ly ứng dụng, không phải mã hóa chống người dùng cùng browser/OS. Quyền và hạn chế ở [THREAT_MODEL](THREAT_MODEL.md). Không lưu auth secret trong các backup/outbox/raw snapshots; legacy snapshot chỉ allowlist app keys + unknown prefix đã được preview.
 
@@ -104,3 +104,8 @@ PR5b1b thêm metadata `plans-selections-consent-1`, cursor slot `plans-selection
 [PR5b2b1/V5.11.0](ACADEMY_DEVICE_STATE_PR5B2B1.md) persist checklist và bước tập trung Học viện trong device_state account/browser, cùng schema1. Typed atomic patches kiểm cả hai consent revisions, namespace/late-response guards và thông báo quota/corrupt; không RPC/outbox/guest mirror. Timer vẫn RAM, state mới chưa nằm trong export hiện tại; full device state/backup/purge còn gate.
 
 [PR5b2b2/V5.12.0](COURT_CHECKPOINT_PR5B2B2.md) thêm điểm dừng Court local theo account/browser/plan: explicit pause/save/preview/restore paused, không tự resume hoặc tạo RPC/attendance. Typed device_state + identity metadata trên schema1; CAS checkpoint và consent/own ACK plan/selection/epoch fence trong transaction. Hai tab cần đọc/review trước ghi đè, quota giữ frozen retry, late responses/dialog guards không cập nhật account khác. Guest giữ timer key cũ. Checkpoint chưa nằm trong export hiện tại; full backup/purge và pilot gates còn lại.
+
+
+## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
+
+[PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.

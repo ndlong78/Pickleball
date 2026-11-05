@@ -195,6 +195,19 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      getDomainSnapshot(){return domainSnapshot(DEFAULT_POLICY)},
      getActivitySnapshot(){return domainSnapshot(ACTIVITY_POLICY)},
      getPlanSnapshot(){return domainSnapshot(PLAN_POLICY)},
+     getAccountRescueSnapshot(){
+      if(guest)fail('auth_required');
+      const names=['records','outbox','conflicts','sync_cursor','import_receipts','device_state','metadata'];
+      return transaction(names,'readonly',async tx=>{
+       let bytes=0,count=0;
+       const collect=name=>new Promise((resolve,reject)=>{
+        const rows=[],cursor=tx.objectStore(name).index('namespace').openCursor(namespace);
+        cursor.onerror=()=>reject(storageError(cursor.error));
+        cursor.onsuccess=()=>{try{const at=cursor.result;if(!at){resolve(rows);return}const row=at.value;bytes+=new TextEncoder().encode(canonical(row)).length;if(bytes>31*1024*1024||++count>100000)fail('rescue_too_large');rows.push(row);at.continue()}catch(error){reject(error)}};
+       });
+       const rows=await Promise.all(names.map(collect));return {owner:namespace.slice(5),repositoryVersion:VERSION,coverage:'local-cache-only',stores:Object.fromEntries(names.map((name,i)=>[name,rows[i]]))};
+      });
+     },
      getPlanConsent(){if(guest)fail('auth_required');return transaction(['metadata'],'readonly',planConsent)},
      setPlanConsent(enabled,expectedLocalRevision){
       if(guest||typeof enabled!=='boolean'||!revision(expectedLocalRevision))fail('invalid_consent');
