@@ -17,7 +17,7 @@ Cập nhật: **05/11/2026** — main `078f98c` sau #33/app5.12.0, backend/UI/Pa
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
-Các bước sau PR5b2a là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Main đã có giáo án/nhật ký tài khoản; Academy choice đã merge ở #31; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
+Các hạng mục phục hồi tiếp theo và PR6 là kế hoạch, chưa phải PR mở hoặc lịch phát hành cam kết. Giữ không tự merge, không production/chi phí hoặc public signup. Main đã có giáo án/nhật ký tài khoản; Academy choice đã merge ở #31; legacy latest snapshots không thành attempts giả. Gate/việc owner cấu hình ở [bản rà soát](docs/V6_PROGRESS_REVIEW.md).
 
 ## Lịch sử roadmap V1–V5
 
