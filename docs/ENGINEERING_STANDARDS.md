@@ -4,7 +4,7 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `078f98c` / V5.12.0 sau #33, Auth/import/sync/activity/plan flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `c849a16` / V5.13.0 sau #34, Auth/import/sync/activity/plan flags vẫn tắt, chưa cloud rollout. [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
 
 **Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
 

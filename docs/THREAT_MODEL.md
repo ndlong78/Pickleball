@@ -2,7 +2,7 @@
 
 Phạm vi: một người dùng nhiều thiết bị, private training/match data, Supabase Auth/Postgres/RPC/RLS, IndexedDB và GitHub Pages. Chưa mở sharing/coach/admin CMS. Thiết kế kiểm soát chưa phải kết quả pentest hoặc bằng chứng RLS đã được triển khai. Đọc [architecture](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md).
 
-**Cập nhật sau #30 (03/11/2026):** schema/RLS/RPC, Auth, importer, source UI mục tiêu/check-in, event lifecycle/repair và Academy đã có cùng tests local; Auth/import/sync/activity/plan flags vẫn tắt. [Rà soát tiến độ/rủi ro](V6_PROGRESS_REVIEW.md) ghi đúng merge SHA/evidence. Bảng dưới là yêu cầu kiểm soát, không phải mọi ô đều đã hoàn tất. Chưa Managed staging/SMTP, đủ domain source UI, full V6 backup/purge/account deletion, restore drill hoặc pentest độc lập; client cache không mã hóa và main protection chưa bật tại snapshot.
+**Cập nhật sau #34 (06/11/2026):** schema/RLS/RPC, Auth, importer, các nguồn account và cache rescue chỉ đọc đã merge/deploy5.13.0; năm flags vẫn tắt. [Tiến độ/evidence](V6_PROGRESS_REVIEW.md) ghi đúng merge SHA. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) tách credentials/frontend, server signup gate và metadata checks khỏi test A/B qua JWT. Bảng dưới là yêu cầu kiểm soát, chưa phải mọi ô hoàn tất. Chưa kiểm chứng Managed staging/SMTP, full restore/purge/account deletion, operational restore drill hoặc pentest độc lập; client cache không mã hóa. Trạng thái branch protection trong các snapshot cũ không phải kiểm tra hiện hành.
 
 ## 1. Tài sản, tác nhân và trust boundaries
 

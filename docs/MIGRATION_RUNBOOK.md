@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md).
+**Trạng thái 06/11/2026:** Main `c849a16cb77aaaa6295a3683e14d172582542a3b` / V5.13.0 sau [#34](https://github.com/ndlong78/Pickleball/pull/34). [UI42029535372](https://github.com/ndlong78/Pickleball/actions/runs/42029535372):321 unit +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42029535288](https://github.com/ndlong78/Pickleball/actions/runs/42029535288):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42029534340](https://github.com/ndlong78/Pickleball/actions/runs/42029534340) success cùng merge SHA. Cứu hộ toàn bộ cache account và preview tệp chỉ đọc đã merge/deploy; chưa full restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; chưa có bằng chứng Managed staging/SMTP/pilot. [Tiến độ/gates](V6_PROGRESS_REVIEW.md), [hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md).
 
 ## 1. Rủi ro restore hiện tại cần thiết kế bù
 
@@ -9,6 +9,8 @@
 Home còn có export `pickleup-ket-qua.json` shape `{app,exportedAt,records:[{week,skill,score,total,date}]}` không có schemaVersion/scores, **không được importer tổng hiện tại nhận**. V6 cần adapter nhận diện riêng (week1–6 → key0–5, total=20), preview chứ không reject nhầm hoặc coi là full backup. Không có bằng chứng lịch sử tất cả định dạng V1–V5 ngoài source hiện tại: thu thập fixtures đã ẩn danh trước khi cam kết tương thích toàn bộ phiên bản.
 
 ## 2. Chuẩn bị môi trường và gates
+
+Operator triển khai staging với dữ liệu giả theo [SUPABASE_STAGING_DEPLOYMENT](SUPABASE_STAGING_DEPLOYMENT.md): đối chiếu ref/history, dry-run sáu migrations, readonly metadata checks, Dashboard Auth/SMTP và frontend clone riêng. Đây chưa là quyền production hoặc bằng chứng đã cấu hình Managed; không chạy harness local vào cloud.
 
 **Hiện thực PR1a:** xem [BACKEND_PR1A](BACKEND_PR1A.md) để chạy migrations, upgrade fixture, pgTAP và REST/concurrency tests. Backend CI local đã có trong PR1a; các mục cloud/staging/import/restore dưới đây vẫn là gates tương lai. Không dùng fixture Auth standalone thay Supabase Auth thật khi deploy.
 

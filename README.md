@@ -2,14 +2,14 @@
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
 
-## Trạng thái hiện tại — 05/11/2026
+## Trạng thái hiện tại — 06/11/2026
 
-Main `078f98c8f58dc784d10743593ee724585840f61e` / V5.12.0 sau [#33](https://github.com/ndlong78/Pickleball/pull/33). [UI42014677077](https://github.com/ndlong78/Pickleball/actions/runs/42014677077):306 unit +512 browser +10 WebKit bổ sung pass,0 fail/flaky/retry; [backend42014676992](https://github.com/ndlong78/Pickleball/actions/runs/42014676992):275 pgTAP/45 REST và Auth thật hai engines pass; [Pages42014675888](https://github.com/ndlong78/Pickleball/actions/runs/42014675888) success cùng merge SHA. **PR5b2c1/V5.13.0 đang thêm cứu hộ cache V6 và kiểm tệp chỉ đọc**, chưa merge/deploy. [Hợp đồng](docs/ACCOUNT_RESCUE_PR5B2C1.md), [tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
+Main `c849a16cb77aaaa6295a3683e14d172582542a3b` / V5.13.0 sau [#34](https://github.com/ndlong78/Pickleball/pull/34). [UI42029535372](https://github.com/ndlong78/Pickleball/actions/runs/42029535372):321 unit +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42029535288](https://github.com/ndlong78/Pickleball/actions/runs/42029535288):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42029534340](https://github.com/ndlong78/Pickleball/actions/runs/42029534340) success cùng merge SHA. Cứu hộ toàn bộ cache account và preview tệp chỉ đọc đã merge/deploy; chưa full restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; chưa có bằng chứng Managed staging/SMTP/pilot. [Hướng dẫn Supabase staging](docs/SUPABASE_STAGING_DEPLOYMENT.md), [hợp đồng rescue](docs/ACCOUNT_RESCUE_PR5B2C1.md), [tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
 - Guest mặc định. **Năm flags Auth/import/sync/activity/plan đều tắt**, URL/key rỗng; chưa cloud pilot/signup. Login không tự nhập hoặc gửi dữ liệu.
 - Main có giáo án, nhật ký và lựa chọn bài Học viện tài khoản qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
-- Main giữ checklist/bước tập trung tài khoản qua reload. Main cho chủ động pause/save/restore điểm dừng Court, không tự chạy lại; Academy timer vẫn RAM. PR mới đưa state đã lưu vào bản cứu hộ cache V6, chưa restore; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
+- Main giữ checklist/bước tập trung tài khoản qua reload. Main cho chủ động pause/save/restore điểm dừng Court, không tự chạy lại; Academy timer vẫn RAM. Bản cứu hộ cache V6 đã chứa state được lưu, chưa restore; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
 - Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
 
 Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync và xử lý conflict, nhập legacy có kiểm soát, backup/restore/privacy và vận hành. Các luồng nghiệp vụ chính đã merge; tiếp theo là khôi phục cache an toàn, purge, importer repair và PR6 staging/backup/Auth recovery/xóa account/QA thực tế. Pilot gates vẫn đóng.
