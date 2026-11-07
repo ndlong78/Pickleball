@@ -2,21 +2,21 @@
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
 
-## Trạng thái hiện tại — 06/11/2026
+## Trạng thái hiện tại — 07/11/2026
 
-Main `c849a16cb77aaaa6295a3683e14d172582542a3b` / V5.13.0 sau [#34](https://github.com/ndlong78/Pickleball/pull/34). [UI42029535372](https://github.com/ndlong78/Pickleball/actions/runs/42029535372):321 unit +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42029535288](https://github.com/ndlong78/Pickleball/actions/runs/42029535288):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42029534340](https://github.com/ndlong78/Pickleball/actions/runs/42029534340) success cùng merge SHA. Cứu hộ toàn bộ cache account và preview tệp chỉ đọc đã merge/deploy; chưa full restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; chưa có bằng chứng Managed staging/SMTP/pilot. [Hướng dẫn Supabase staging](docs/SUPABASE_STAGING_DEPLOYMENT.md), [hợp đồng rescue](docs/ACCOUNT_RESCUE_PR5B2C1.md), [tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
+Main `b841224a99d71aa46fe49c503e446942226e90b5` / V5.13.1 sau [#36](https://github.com/ndlong78/Pickleball/pull/36). [UI42353494844](https://github.com/ndlong78/Pickleball/actions/runs/42353494844):322 unit +3 HTTP tests +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42353494823](https://github.com/ndlong78/Pickleball/actions/runs/42353494823):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42353494606](https://github.com/ndlong78/Pickleball/actions/runs/42353494606) success cùng merge SHA. Chưa có bằng chứng Managed staging/SMTP hoặc Cloudflare deployment. [Tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
-- Guest mặc định. **Năm flags Auth/import/sync/activity/plan đều tắt**, URL/key rỗng; chưa cloud pilot/signup. Login không tự nhập hoặc gửi dữ liệu.
+- Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; bốn flags import/sync/activity/plan còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
 - Main có giáo án, nhật ký và lựa chọn bài Học viện tài khoản qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
 - Main giữ checklist/bước tập trung tài khoản qua reload. Main cho chủ động pause/save/restore điểm dừng Court, không tự chạy lại; Academy timer vẫn RAM. Bản cứu hộ cache V6 đã chứa state được lưu, chưa restore; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
 - Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
 
 Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync và xử lý conflict, nhập legacy có kiểm soát, backup/restore/privacy và vận hành. Các luồng nghiệp vụ chính đã merge; tiếp theo là khôi phục cache an toàn, purge, importer repair và PR6 staging/backup/Auth recovery/xóa account/QA thực tế. Pilot gates vẫn đóng.
 
-## Nhánh Cloudflare staging — PR #36
+## Cloudflare Workers staging
 
-Main sau #35 là `bd8049f`, app5.13.0; Pages42321570405 success, không main UI/backend run mới do docs-only path filters. Nhánh `deploy/cloudflare-staging` sửa URL Auth thiếu scheme và CI qua HTTP guest fixture; build/cache5.13.1 để bỏ cấu hình cũ đã cache. Auth bật riêng trên nhánh này, bốn flag dữ liệu vẫn tắt; không cần merge vào main để Cloudflare deploy staging. [Phạm vi/kiểm chứng/Pages](docs/CLOUDFLARE_STAGING_PR36.md), [release notes](RELEASE_V5.13.1.md). Chưa xác minh Managed/Cloudflare deployment từ CI.
+Đích staging đã chọn: **https://pickleup-staging.home-309.workers.dev/**. Đây là Workers Static Assets; dùng [hướng dẫn Workers](docs/CLOUDFLARE_WORKERS_STAGING.md) thay phần Pages của PR #36. `npm run build:cloudflare` chỉ đóng gói runtime vào `dist`; Wrangler được pin và CI kiểm dry-run/local Workers cùng browser regression trên bản build. Giữ app/cache5.13.1 vì bytes runtime không đổi. Chưa deploy từ tác vụ chuẩn bị này; cấu hình Supabase/SMTP theo [runbook](docs/SUPABASE_STAGING_DEPLOYMENT.md).
 
 ## Phiên bản 1.1
 
@@ -316,4 +316,4 @@ Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số 
 
 V5.1 đã merge/deploy qua #9; QA thiết bị thật chưa được xác minh. Các thay đổi sau đó đã lên main đến V5.5.0/#22; [bản rà soát hiện hành](docs/V6_PROGRESS_REVIEW.md) ghi tiến độ và bằng chứng riêng cho từng mốc.
 
-Hợp đồng triển khai V6 đã merge: [Auth PR1b](docs/AUTH_PR1B.md), [repository PR2](docs/LOCAL_REPOSITORY_PR2.md), [rescue PR3a](docs/RESCUE_PREVIEW_PR3A.md), [atomic import PR3b](docs/ATOMIC_IMPORT_PR3B.md), [importer PR3c](docs/IMPORT_PILOT_PR3C.md), [real browser PR3d](docs/AUTH_IMPORT_BROWSER_PR3D.md), [pull PR4a](docs/CANONICAL_PULL_PR4A.md), [sender PR4b](docs/SYNC_SENDER_PR4B.md), [source UI PR4c](docs/SYNC_UI_PR4C.md), [event foundation PR5a1](docs/ACTIVITY_SYNC_PR5A1.md). Auth/import/sync flags vẫn tắt; chưa rollout dữ liệu thật. Kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.
+Hợp đồng triển khai V6 đã merge: [Auth PR1b](docs/AUTH_PR1B.md), [repository PR2](docs/LOCAL_REPOSITORY_PR2.md), [rescue PR3a](docs/RESCUE_PREVIEW_PR3A.md), [atomic import PR3b](docs/ATOMIC_IMPORT_PR3B.md), [importer PR3c](docs/IMPORT_PILOT_PR3C.md), [real browser PR3d](docs/AUTH_IMPORT_BROWSER_PR3D.md), [pull PR4a](docs/CANONICAL_PULL_PR4A.md), [sender PR4b](docs/SYNC_SENDER_PR4B.md), [source UI PR4c](docs/SYNC_UI_PR4C.md), [event foundation PR5a1](docs/ACTIVITY_SYNC_PR5A1.md). Sau #36 Auth bật, bốn flags dữ liệu vẫn tắt; chưa rollout dữ liệu thật. Kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.
