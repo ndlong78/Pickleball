@@ -24,7 +24,7 @@ async function route(page,name){
 }
 async function enable(page){
  await page.goto('/Pickleball/?page=settings');await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await document.fonts.ready;await new Promise(requestAnimationFrame)});
- await expect(page.locator('[data-plan-enable]')).toBeDisabled();await page.locator('[data-plan-consent]').check();await page.locator('[data-plan-enable]').click();await expect(page.locator(status)).toContainText('Đã đọc kho giáo án');
+ await expect(page.locator('[data-plan-enable]')).toBeDisabled();await page.locator('[data-plan-consent]').check();await page.locator('[data-plan-enable]').click();await expect.poll(()=>page.evaluate(()=>{const s=PICKLEUP_PLANS.getState();return s.mode==='account'&&!s.busy&&!!s.snapshot})).toBe(true);await expect(page.locator('[data-plan-send]')).toBeEnabled();
 }
 async function send(page,force=false){await route(page,'settings');await page.locator(force?'[data-plan-retry]':'[data-plan-send]').click()}
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([key])=>key.startsWith('pickleup_')&&key!=='pickleup_auth_v6').sort()));

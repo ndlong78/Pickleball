@@ -111,3 +111,8 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 ## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
 
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
+
+
+## Deployment config và test host — PR #36
+
+Browser regression chạy `scripts/serve_test.py --guest-auth`, fixture guest qua HTTP cho cả SW, không đổi source hoặc tái sử dụng server operator. Server mặc định giữ config source để thử thủ công. Mock SDK/transport và real Auth local có config riêng, không dùng project Managed. Readiness dựa trạng thái loaded và nút thao tác sẵn sàng, không dựa success message tạm thời. [Hợp đồng staging](CLOUDFLARE_STAGING_PR36.md).
