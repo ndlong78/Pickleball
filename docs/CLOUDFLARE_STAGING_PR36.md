@@ -29,9 +29,9 @@ npm run test:responsive
 
 Đóng server operator đang dùng port4173 trước Playwright; runner báo port bận thay vì tái sử dụng config/session thật. Khi thử thủ công, dùng `python3 scripts/serve_test.py` không có `--guest-auth`. Không dùng legacy anon JWT, service_role/secret hoặc DB password trong client.
 
-## Cloudflare Pages
+## Cloudflare Pages — hướng dẫn lịch sử trước merge #36
 
-Nhánh `deploy/cloudflare-staging` bật Auth riêng; main còn app5.13.0 và năm flags off. Không cần merge nhánh staging vào main để Cloudflare deploy nó; chưa merge cấu hình này vào main trước rollout riêng. Login không tự import hoặc sync; bốn flags dữ liệu vẫn false. Sửa CI không mở signup server hoặc thay dữ liệu Supabase.
+**Sau owner merge #36:** main `b841224` là app5.13.1, Auth bật và bốn flags dữ liệu tắt. Bảng Pages dưới chỉ dành project Pages. Đích hiện chọn là `pickleup-staging.home-309.workers.dev`, thuộc Workers; dùng [hướng dẫn Workers hiện hành](CLOUDFLARE_WORKERS_STAGING.md), không tìm mục Production branch của Pages trên Worker.
 
 Pages project phải kết nối GitHub. Chọn branch trong **Settings → Builds → Branch control → Production branch**, hoặc **Builds & deployments → Configure Production deployments** theo UI. Nhánh cần tồn tại trên GitHub; Direct Upload không có Git branch. [Cloudflare docs](https://developers.cloudflare.com/pages/configuration/branch-build-controls/).
 

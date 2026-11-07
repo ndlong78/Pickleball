@@ -34,8 +34,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--guest-auth', action='store_true',
                         help='Serve disabled Auth configuration for browser regression tests.')
+    parser.add_argument('--directory', default=None,
+                        help='Static document root (use dist for Cloudflare build regression).')
     args = parser.parse_args()
-    with create_server(guest_auth=args.guest_auth) as server:
+    with create_server(guest_auth=args.guest_auth, directory=args.directory) as server:
         server.serve_forever()
 
 if __name__ == '__main__':

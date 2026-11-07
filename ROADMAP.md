@@ -1,9 +1,9 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **06/11/2026** — main `c849a16` sau #34/app5.13.0, backend/UI/Pages sạch cùng merge SHA; evidence tại progress. [Hướng dẫn staging](docs/SUPABASE_STAGING_DEPLOYMENT.md) dành operator với dữ liệu giả, chưa là rollout cloud.
+Cập nhật: **07/11/2026** — main `b841224` sau #36/app5.13.1, backend/UI/Pages sạch cùng merge SHA; evidence tại progress. Auth đã bật trong source; chưa kiểm chứng Managed/SMTP/Cloudflare. [Hướng dẫn Workers staging](docs/CLOUDFLARE_WORKERS_STAGING.md).
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Năm flags vẫn tắt; Pages không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Auth bật sau #36; bốn flags dữ liệu vẫn tắt. Pages không có nghĩa cloud pilot đã bật.
 
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|
@@ -15,7 +15,8 @@ Cập nhật: **06/11/2026** — main `c849a16` sau #34/app5.13.0, backend/UI/Pa
 | Đã merge #33 | [PR5b2b2/V5.12.0: điểm dừng Court local](docs/COURT_CHECKPOINT_PR5B2B2.md) | Explicit paused save/restore, own ACK/fenced CAS, không ghi đè tab khác; chưa full backup/purge |
 | Đã merge #34 | [PR5b2c1/V5.13.0: toàn cache rescue/preview chỉ đọc](docs/ACCOUNT_RESCUE_PR5B2C1.md) | Bảy stores own account, consistent snapshot, credentials/lifecycle fences; chưa restore/purge |
 | Chuẩn bị staging | [Hướng dẫn deploy Supabase](docs/SUPABASE_STAGING_DEPLOYMENT.md) | Sáu migrations/readonly metadata checks, OTP/SMTP, A/B/multi-tab/path/PWA; không provisioning hoặc mở signup/pilot trong PR tài liệu |
-| Nhánh staging / PR #36 | [V5.13.1: cấu hình Auth và CI test host](docs/CLOUDFLARE_STAGING_PR36.md) | HTTPS URL, guest HTTP/SW fixture, readiness bền vững, cache upgrade; chưa rollout main/Managed |
+| Đã merge #36 | [V5.13.1: cấu hình Auth và CI test host](docs/CLOUDFLARE_STAGING_PR36.md) | HTTPS URL, guest HTTP/SW fixture, readiness bền vững, cache upgrade; main Auth bật, chưa xác minh Managed |
+| Chuẩn bị Workers staging | [Static build/Wrangler và cấu hình domain](docs/CLOUDFLARE_WORKERS_STAGING.md) | Dry-run, runtime local, regression từ dist; owner deploy sau merge, Managed SMTP vẫn cần kiểm chứng |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
@@ -514,4 +515,4 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 
 Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số phút thực tế, giáo án gắn với bản ghi và số ngày/phút trong tuần so với mục tiêu hiện tại. Bản ghi không có lessonId được ghi rõ chưa có giáo án, không suy đoán từ lựa chọn mới. Đạt mục tiêu tuần, chế độ nhẹ hoặc buổi từ 60 phút ưu tiên hồi phục; có điểm cùng bài hôm nay thì xem kết quả; còn lại chuẩn bị lịch kế tiếp. Tóm tắt giữ qua reload, cập nhật khi sửa và ẩn khi bỏ qua/xóa. Không thêm storage key/schema, không tự xác nhận từ đồng hồ/điểm.
 
-V5.1 đã merge/deploy ở #9. Đến #22, mã Auth/importer, source UI mục tiêu/check-in và nền event sync đã merge; các mốc tiếp theo/gates được theo dõi ở đầu roadmap và [bản rà soát V6](docs/V6_PROGRESS_REVIEW.md). Flags vẫn tắt, chưa cloud pilot; kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.
+V5.1 đã merge/deploy ở #9. Đến #22, mã Auth/importer, source UI mục tiêu/check-in và nền event sync đã merge; các mốc tiếp theo/gates được theo dõi ở đầu roadmap và [bản rà soát V6](docs/V6_PROGRESS_REVIEW.md). Auth bật sau #36, bốn flags dữ liệu vẫn tắt, chưa cloud pilot; kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.

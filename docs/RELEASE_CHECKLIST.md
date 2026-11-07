@@ -2,7 +2,7 @@
 
 **Căn cứ:** [`../AGENTS.md`](../AGENTS.md), [`PRODUCT_SPEC.md`](PRODUCT_SPEC.md), [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md). Quy trình này áp dụng cho feature, bugfix, performance và thay đổi tài liệu. **Đừng tự tuyên bố Stable từ việc code đã viết hoặc workflow có trạng thái xanh nhưng còn flaky.**
 
-**V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #34 có Academy device state, Court checkpoint, cứu hộ bảy stores và preview tệp chỉ đọc; backend/UI/Pages cùng merge SHA sạch theo progress. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) chỉ chuẩn bị operator trên dữ liệu giả, chưa là rollout; flags vẫn tắt. Phải có CI HEAD mới sạch trước ready review. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
+**V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #36 có Academy device state, Court checkpoint, cứu hộ bảy stores và preview tệp chỉ đọc; backend/UI/Pages cùng merge SHA sạch theo progress. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) chỉ chuẩn bị operator trên dữ liệu giả, chưa là rollout; sau #36 Auth bật trong source, bốn flags dữ liệu vẫn tắt. Phải có CI HEAD mới sạch trước ready review. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
 
 ## 1. Trước mỗi nhiệm vụ: evidence thực tế
 
@@ -94,3 +94,7 @@ Nêu rõ phạm vi và lý do, tệp thay đổi, branch/PR/commit URLs, đúng 
 ## Deployment branch — PR #36
 
 Chạy `python3 -m unittest scripts/test_static_host.py`; guest regression cần host `--guest-auth`, Auth-enabled tests vẫn có fixture/local server riêng. Kiểm URL/key công khai, cache5.13.0→5.13.1 và exact HEAD sạch, không skip hoặc nới timeout/retry. [Phạm vi/giới hạn](CLOUDFLARE_STAGING_PR36.md): cấu hình staging chưa là quyền merge main hoặc rollout production.
+
+## Workers static deployment
+
+Chạy `npm run check:cloudflare` (dry-run), `npm run test:cloudflare` (Workers runtime local) và regression hiện hữu; Playwright phục vụ bản build `dist` qua HTTP guest fixture. Không gọi đây là kiểm chứng Cloudflare edge hoặc Managed SMTP. [Hướng dẫn domain/build/config](CLOUDFLARE_WORKERS_STAGING.md). Không deploy trong GitHub PR workflow; owner merge/deploy riêng. Chỉ thay hạ tầng đóng gói, bytes runtime không đổi thì không bump app/PWA cache.

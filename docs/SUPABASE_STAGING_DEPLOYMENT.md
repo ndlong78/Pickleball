@@ -1,6 +1,8 @@
 # PickleUp V6 — triển khai Supabase staging
 
-Cập nhật 06/11/2026. Baseline đã merge: **#34 / main `c849a16cb77aaaa6295a3683e14d172582542a3b` / V5.13.0**. [UI42029535372](https://github.com/ndlong78/Pickleball/actions/runs/42029535372):321 unit +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry. [Backend42029535288](https://github.com/ndlong78/Pickleball/actions/runs/42029535288):275 pgTAP +45 REST và Auth local thật hai engines pass. [Pages42029534340](https://github.com/ndlong78/Pickleball/actions/runs/42029534340) success cùng merge SHA. Evidence đúng HEAD của PR hướng dẫn ghi trong mô tả PR.
+**Cập nhật deployment 07/11/2026:** #36 đã merge thành main `b841224`, app5.13.1, Auth bật và bốn flags dữ liệu tắt. Frontend chọn `https://pickleup-staging.home-309.workers.dev/`; Site URL/redirects và build theo [hướng dẫn Workers](CLOUDFLARE_WORKERS_STAGING.md). Không thay URL API Supabase bằng domain frontend.
+
+Baseline đã merge: **#36 / main `b841224a99d71aa46fe49c503e446942226e90b5` / V5.13.1**. [UI42353494844](https://github.com/ndlong78/Pickleball/actions/runs/42353494844):322 unit +3 HTTP tests +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry. [Backend42353494823](https://github.com/ndlong78/Pickleball/actions/runs/42353494823):275 pgTAP +45 REST và Auth local thật hai engines pass. [Pages42353494606](https://github.com/ndlong78/Pickleball/actions/runs/42353494606) success cùng merge SHA. Evidence đúng HEAD của PR Workers ghi trong mô tả PR.
 
 Đây là hướng dẫn operator cho **staging với dữ liệu giả**, chưa phải bằng chứng đã triển khai Managed hoặc mở pilot. Môi trường Codex hiện chưa có kết nối Supabase/SMTP. Chỉ Project URL/ref và publishable key được dùng ở frontend; DB password, personal access token, service/secret key và SMTP credentials ở máy operator hoặc cấu hình bảo mật, không chat/repo/log/artifact. Không tự mua dịch vụ hoặc mở production/signup công khai. [Policy](PILOT_OPERATING_POLICY.md) và [runbook](MIGRATION_RUNBOOK.md) giữ các gate dữ liệu thật.
 
@@ -17,7 +19,7 @@ Máy operator cần Git, Node24, Python3. CLI **2.54.11** khớp backend CI. Dư
 ```bash
 git clone https://github.com/ndlong78/Pickleball.git Pickleball-staging
 cd Pickleball-staging
-git checkout c849a16cb77aaaa6295a3683e14d172582542a3b
+git checkout b841224a99d71aa46fe49c503e446942226e90b5
 npm ci
 npx --yes supabase@2.54.11 --version
 npx --yes supabase@2.54.11 login
@@ -132,12 +134,12 @@ Không gọi `GRANT`/`ALTER` để sửa trực tiếp theo phỏng đoán. Nế
 
 Tên menu có thể thay đổi theo Dashboard; tìm Authentication / Sign In / Providers, URL Configuration, Email Templates, SMTP và Rate Limits.
 
-| Thiết lập | Staging local frontend giai đoạn đầu |
+| Thiết lập | Staging |
 |---|---|
 | Email provider / Confirm email | Bật cả hai |
 | Allow new users to sign up | **Tắt trên server** |
 | Anonymous sign-ins | Tắt; guest của PickleUp không cần Supabase anonymous user |
-| Site URL và redirect allowlist | `http://127.0.0.1:4173/Pickleball/`, đúng origin/prefix, không wildcard |
+| Site URL và redirect allowlist | `https://pickleup-staging.home-309.workers.dev/`; chỉ thêm allowlist `http://127.0.0.1:4173/Pickleball/` khi cần thử local, không wildcard |
 | Email OTP expiry | Đề xuất600 giây; ghi lại cấu hình thực tế |
 | OTP length | Đề xuất6 nếu có setting; frontend nhận6–10 chữ số |
 | Session JWT expiry | Có thể giữ3600 giây nếu là cấu hình hiện tại; nếu thay đổi phải ghi nhận và kiểm lại expiry/refresh |
@@ -159,7 +161,7 @@ Tạo hai user A/B thuộc hộp thư operator kiểm soát trong Authentication
 
 ## 5. Frontend staging và nguồn dữ liệu
 
-Chỉ sửa **bản clone thử nghiệm trên máy operator** ở bước2, không push config bật flag lên main hoặc thay Pages hiện tại. File `modules/auth-config.js` chứa thông tin công khai:
+Main sau owner merge #36 đã có Auth enabled với URL/key công khai. Nếu dùng project staging khác, chỉ sửa **bản clone thử nghiệm trên máy operator** ở bước2; thay cấu hình phát hành phải qua PR, không push thêm flag lên main hoặc tự đổi Pages. Mẫu định dạng dưới để đối chiếu, không ghi đè config hiện có bằng placeholder:
 
 ```js
 window.PICKLEUP_AUTH_CONFIG = Object.freeze({
@@ -190,7 +192,7 @@ Khi Auth đạt, bật từng flag trong bản thử, chủ động consent từ
 
 Login hoặc bật flag không tự nhập localStorage, không tự chọn nguồn hoặc gửi queue. Đọc/gửi/retry/review là thao tác riêng. Không bơm dữ liệu thật vào V5 để làm fixture. File cứu hộ cache V6 khác backup V5/raw rescue và **chưa restore**; cache chỉ gồm dữ liệu đã có trên máy, không thay backup DB/Auth.
 
-Frontend staging HTTPS/Pages riêng chỉ được cấu hình sau khi chọn host/origin, cập nhật URL allowlist chính xác và kiểm PWA. Bật cloud trên website hiện tại cần PR rollout/config riêng, đồng bộ build/assets/cache theo quy trình. Supabase environment variables không tự thay public JS config của static app. Hướng dẫn này giữ năm flags false trong source phát hành, app/assets/cache5.13.0.
+Frontend HTTPS hiện chọn Workers domain ở đầu tài liệu; build/deploy theo [hướng dẫn Workers](CLOUDFLARE_WORKERS_STAGING.md) sau merge PR cấu hình, không dùng checkout baseline chỉ có migrations để tìm Wrangler. Các lệnh phần2 ghim baseline đã kiểm chứng DB; để deploy frontend checkout main sau merge PR Workers. Cập nhật URL allowlist và kiểm PWA. Main app/assets/cache5.13.1 có Auth bật sau #36, bốn flags dữ liệu false. Supabase environment variables không tự thay public JS config; bật thêm domain/config cần PR rollout riêng.
 
 ## 6. Ma trận nghiệm thu Managed staging
 
