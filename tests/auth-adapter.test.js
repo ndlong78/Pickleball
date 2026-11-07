@@ -1,5 +1,17 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {createAuthAdapter,createGuardedFetch}=require('../modules/auth-adapter.js');
+test('deployment Auth config uses a complete project URL and public publishable key',()=>{
+ const sandbox={window:{}};
+ require('node:vm').runInNewContext(require('node:fs').readFileSync(require('node:path').join(__dirname,'../modules/auth-config.js'),'utf8'),sandbox,{timeout:1000});
+ const config=sandbox.window.PICKLEUP_AUTH_CONFIG;
+ assert.ok(config&&typeof config.enabled==='boolean','Auth enabled must be a boolean');
+ assert.ok(typeof config.url==='string'&&typeof config.publishableKey==='string','Auth public fields must be strings');
+ if(!config.enabled&&!config.url&&!config.publishableKey)return;
+ let url;try{url=new URL(config.url)}catch(_){assert.fail('Enabled Auth URL must include https:// and a project hostname')}
+ const allowed=url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1'].includes(url.hostname);
+ assert.ok(allowed&&!url.username&&!url.password&&!url.search&&!url.hash&&url.pathname==='/','Auth URL must be a clean HTTPS project origin or local loopback');
+ assert.ok(typeof config.publishableKey==='string'&&/^sb_publishable_[A-Za-z0-9_-]+$/.test(config.publishableKey),'Frontend requires a publishable key; never a secret or legacy JWT');
+});
 function fixture(){let event,resolve;const client={auth:{onAuthStateChange(fn){event=fn;return {data:{subscription:{unsubscribe(){}}}}},getSession:async()=>({data:{session:null}}),signOut:async()=>({}),signInWithOtp:async()=>({error:{status:429}}),verifyOtp:async()=>({error:{code:'otp_expired'}})},rpc(){return {abortSignal:()=>new Promise(r=>resolve=r)}}};return {adapter:createAuthAdapter(client),event:(s)=>event('SIGNED_IN',s),finish:()=>resolve({data:{status:'ok',changes:[{private:'A'}]}})}}
 test('guarded Auth transport preserves bodyless logout and other null-body responses',async()=>{
  for(const status of [204,205,304]){

@@ -14,6 +14,10 @@ Main `c849a16cb77aaaa6295a3683e14d172582542a3b` / V5.13.0 sau [#34](https://gith
 
 Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync và xử lý conflict, nhập legacy có kiểm soát, backup/restore/privacy và vận hành. Các luồng nghiệp vụ chính đã merge; tiếp theo là khôi phục cache an toàn, purge, importer repair và PR6 staging/backup/Auth recovery/xóa account/QA thực tế. Pilot gates vẫn đóng.
 
+## Nhánh Cloudflare staging — PR #36
+
+Main sau #35 là `bd8049f`, app5.13.0; Pages42321570405 success, không main UI/backend run mới do docs-only path filters. Nhánh `deploy/cloudflare-staging` sửa URL Auth thiếu scheme và CI qua HTTP guest fixture; build/cache5.13.1 để bỏ cấu hình cũ đã cache. Auth bật riêng trên nhánh này, bốn flag dữ liệu vẫn tắt; không cần merge vào main để Cloudflare deploy staging. [Phạm vi/kiểm chứng/Pages](docs/CLOUDFLARE_STAGING_PR36.md), [release notes](RELEASE_V5.13.1.md). Chưa xác minh Managed/Cloudflare deployment từ CI.
+
 ## Phiên bản 1.1
 
 - Sáu giáo án mẫu 60 phút với ba bài tập mỗi tuần, đồng hồ, lưu kết quả (giữ tương thích dữ liệu cũ).

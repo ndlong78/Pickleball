@@ -10,5 +10,5 @@ module.exports=defineConfig({
   {name:"Chromium responsive",use:{...devices["Desktop Chrome"],browserName:"chromium"}},
   {name:"WebKit responsive",use:{...devices["Desktop Safari"],browserName:"webkit"}}
  ],
- webServer:{command:"python3 scripts/serve_test.py",url:"http://127.0.0.1:4173/",reuseExistingServer:!process.env.CI,timeout:30000}
+ webServer:{command:"python3 scripts/serve_test.py --guest-auth",url:"http://127.0.0.1:4173/",reuseExistingServer:false,timeout:30000}
 });

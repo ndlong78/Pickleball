@@ -89,3 +89,8 @@ Nêu rõ phạm vi và lý do, tệp thay đổi, branch/PR/commit URLs, đúng 
 ## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
 
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
+
+
+## Deployment branch — PR #36
+
+Chạy `python3 -m unittest scripts/test_static_host.py`; guest regression cần host `--guest-auth`, Auth-enabled tests vẫn có fixture/local server riêng. Kiểm URL/key công khai, cache5.13.0→5.13.1 và exact HEAD sạch, không skip hoặc nới timeout/retry. [Phạm vi/giới hạn](CLOUDFLARE_STAGING_PR36.md): cấu hình staging chưa là quyền merge main hoặc rollout production.
