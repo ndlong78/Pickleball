@@ -1,5 +1,5 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **05/11/2026** — main `078f98c` sau #33/app5.12.0, backend/UI/Pages sạch cùng merge SHA; evidence tại progress.
+Cập nhật: **06/11/2026** — main `c849a16` sau #34/app5.13.0, backend/UI/Pages sạch cùng merge SHA; evidence tại progress. [Hướng dẫn staging](docs/SUPABASE_STAGING_DEPLOYMENT.md) dành operator với dữ liệu giả, chưa là rollout cloud.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
@@ -13,7 +13,8 @@ Cập nhật: **05/11/2026** — main `078f98c` sau #33/app5.12.0, backend/UI/Pa
 | Đã merge #31 | [PR5b2a/V5.10.0: Academy account selection](docs/ACADEMY_SELECTION_PR5B2A.md) | Một nguồn choice, sparse CAS giữ personal plan, route/A→B/privacy, clean PR và main CI; đã merge/deploy |
 | Đã merge #32 | [PR5b2b1/V5.11.0: checklist/bước tập trung account/browser](docs/ACADEMY_DEVICE_STATE_PR5B2B1.md) | Atomic local patches, reload/offline/two tabs/A→B/quota/corrupt; timer/backup/purge chưa thuộc lát cắt này |
 | Đã merge #33 | [PR5b2b2/V5.12.0: điểm dừng Court local](docs/COURT_CHECKPOINT_PR5B2B2.md) | Explicit paused save/restore, own ACK/fenced CAS, không ghi đè tab khác; chưa full backup/purge |
-| Đang triển khai | [PR5b2c1/V5.13.0: toàn cache rescue/preview chỉ đọc](docs/ACCOUNT_RESCUE_PR5B2C1.md) | Bảy stores own account, consistent snapshot, credentials/lifecycle fences; chưa restore/purge |
+| Đã merge #34 | [PR5b2c1/V5.13.0: toàn cache rescue/preview chỉ đọc](docs/ACCOUNT_RESCUE_PR5B2C1.md) | Bảy stores own account, consistent snapshot, credentials/lifecycle fences; chưa restore/purge |
+| Chuẩn bị staging | [Hướng dẫn deploy Supabase](docs/SUPABASE_STAGING_DEPLOYMENT.md) | Sáu migrations/readonly metadata checks, OTP/SMTP, A/B/multi-tab/path/PWA; không provisioning hoặc mở signup/pilot trong PR tài liệu |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 

@@ -1,6 +1,6 @@
 # PickleUp V6 — data dictionary và legacy inventory
 
-**Trạng thái 03/11/2026:** main `a2df905` / V5.9.0 sau #30 đã có giáo án/nhật ký account. Backend/Pages success, UI sau merge có1 flaky sync-ui offline; chưa clean. [PR5b2a/V5.10.0](ACADEMY_SELECTION_PR5B2A.md) đang nối Academy lesson selection và privacy state, chưa merge/deploy. Năm flags vẫn false, URL/key rỗng; không production/tự merge. [Tiến độ/evidence/gates](V6_PROGRESS_REVIEW.md).
+**Trạng thái 06/11/2026:** Main `c849a16cb77aaaa6295a3683e14d172582542a3b` / V5.13.0 sau [#34](https://github.com/ndlong78/Pickleball/pull/34). [UI42029535372](https://github.com/ndlong78/Pickleball/actions/runs/42029535372):321 unit +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42029535288](https://github.com/ndlong78/Pickleball/actions/runs/42029535288):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42029534340](https://github.com/ndlong78/Pickleball/actions/runs/42029534340) success cùng merge SHA. Cứu hộ toàn bộ cache account và preview tệp chỉ đọc đã merge/deploy; chưa full restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; chưa có bằng chứng Managed staging/SMTP/pilot. [Tiến độ/gates](V6_PROGRESS_REVIEW.md), [hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md).
 
 ## 1. Toàn bộ storage keys hiện có
 
