@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Trạng thái 09/11/2026:** Main `0fb6fc8` / V5.13.1 sau #37; UI/backend/Pages sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Auth bật, bốn flags dữ liệu tắt. Operator đã xác nhận nhận email OTP, đăng nhập và kiểm dữ liệu riêng trên staging; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi/giới hạn. Session/A/B/SMTP đầy đủ, full V6 restore/purge, backup và pilot còn gate.
+**Trạng thái 09/11/2026:** Main `0fb6fc8` / V5.13.1 sau #37; UI/backend/Pages sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Auth bật, bốn flags dữ liệu tắt. Operator đã xác nhận nhận email OTP, đăng nhập và kiểm dữ liệu riêng trên staging; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi/giới hạn. A/B/expiry/SMTP đầy đủ, full V6 restore/purge, backup và pilot còn gate.
 
 ## 1. Mục đích, đối tượng, triết lý
 

@@ -4,13 +4,15 @@ Ngày ghi nhận **09/11/2026**, múi giờ Asia/Saigon. Phạm vi: `https://pic
 
 ## 1. Bằng chứng do operator xác nhận
 
-Owner báo trong hội thoại: đã nhận email, đăng nhập và kiểm dữ liệu riêng; giữ OTP/token riêng. Không thu thập địa chỉ email, OTP, token, session, dữ liệu tài khoản hoặc email thô trong repo/artifact.
+Owner xác nhận trong hội thoại: đã nhận email, đăng nhập, kiểm dữ liệu riêng; sau đó xác nhận tải lại vẫn giữ phiên và đăng xuất đồng bộ giữa hai tab. OTP/token được giữ riêng. Không thu thập địa chỉ email, OTP, token, session, dữ liệu tài khoản hoặc email thô trong repo/artifact.
 
 | Luồng | Trạng thái | Phạm vi kết luận |
 |---|---|---|
 | Yêu cầu OTP và nhận email | ĐẠT — operator xác nhận | Email đến được hộp thư đã thử; chưa xác định SMTP provider/custom SMTP, sender DNS, quota, spam hoặc khả năng gửi cho người dùng khác |
-| Xác thực OTP và đăng nhập | ĐẠT — operator xác nhận | Có luồng đăng nhập thực tế; chưa ghi nhận restore/refresh/expiry/logout nhiều tab trên staging |
+| Xác thực OTP và đăng nhập | ĐẠT — operator xác nhận | Có luồng đăng nhập thực tế; refresh/expiry theo thời gian thực còn cần kiểm |
 | Kiểm tra truy cập dữ liệu riêng | ĐẠT — operator xác nhận | Phép kiểm dữ liệu riêng trong phiên đăng nhập đã được operator xác nhận; chưa có transcript trạng thái domain hoặc bằng chứng cách ly A/B/anonymous với dữ liệu khác nhau |
+| Tải lại giữ phiên | ĐẠT — operator xác nhận bổ sung | Phiên giữ qua tải lại; chưa suy thành refresh token hoặc expiry theo thời gian thực |
+| Logout nhiều tab | ĐẠT — operator xác nhận bổ sung | Đăng xuất đồng bộ hai tab trong lượt thử; không suy cache purge hoặc logout mọi thiết bị |
 
 Đây là kiểm chứng Managed staging do operator báo, tách khỏi Auth mock và GoTrue/Mailpit local CI. Codex chưa trực tiếp quan sát website hoặc Dashboard: môi trường vẫn không có kết nối quản trị Cloudflare/Supabase/SMTP và domain staging chưa được cho phép trong network policy. Không suy rằng website lỗi từ giới hạn truy cập của executor.
 
@@ -32,8 +34,8 @@ Dùng browser profile thử nghiệm, cùng domain ở trên và tài khoản hi
 
 | Ca | Thao tác | Kỳ vọng | Staging hiện tại |
 |---|---|---|---|
-| Restore | Đăng nhập A, tải lại `/?page=settings`, chờ khôi phục rồi kiểm dữ liệu riêng | Phiên vẫn là A, truy cập riêng hoạt động, dữ liệu guest không bị nhập/gửi | CHƯA GHI NHẬN |
-| Logout nhiều tab | Mở hai tab cùng browser profile/origin, xác nhận cùng A; đăng xuất từ tab1, quay lại tab2 | Cả hai về guest sau thông báo đồng bộ; UI riêng của A bị gỡ | CHƯA GHI NHẬN |
+| Restore | Đăng nhập A, tải lại `/?page=settings`, chờ khôi phục rồi kiểm dữ liệu riêng | Phiên vẫn là A, truy cập riêng hoạt động, dữ liệu guest không bị nhập/gửi | ĐẠT — operator xác nhận |
+| Logout nhiều tab | Mở hai tab cùng browser profile/origin, xác nhận cùng A; đăng xuất từ tab1, quay lại tab2 | Cả hai về guest sau thông báo đồng bộ; UI riêng của A bị gỡ | ĐẠT — operator xác nhận |
 | Re-login | Sau logout, tải lại trang rồi đăng nhập lại bằng mã mới | Không tự khôi phục phiên đã logout; mã mới đăng nhập được | CHƯA GHI NHẬN |
 | Đổi A→B | Logout A, đăng nhập B hiện hữu trong cùng profile, mở Settings | Identity và UI riêng thuộc B; không hiện lại dữ liệu A | CHƯA GHI NHẬN |
 | Refresh/expiry thực tế | Quan sát theo thời hạn đang cấu hình và thử mất/kết nối lại mạng | Refresh hợp lệ giữ đúng account; khi không thể phục hồi phiên, UI báo đăng nhập lại và không lộ account khác | CHƯA GHI NHẬN |

@@ -2,7 +2,7 @@
 
 Cập nhật nghiệm thu 09/11/2026. Đích được owner chọn: **https://pickleup-staging.home-309.workers.dev/**, đuôi `.dev`. Đây là **Workers Static Assets**, khác giao diện Cloudflare Pages. Không đổi DNS/custom domain `pickleup.no.id.vn` trong PR này.
 
-Main nguồn `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` sau owner merge [#37](https://github.com/ndlong78/Pickleball/pull/37), app/cache5.13.1. Auth bật với URL/key công khai; import/sync/activity/plan vẫn false. Operator đã xác nhận email OTP/login/kiểm dữ liệu riêng; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) phân biệt kết quả báo lại với phần chưa kiểm. Chưa đối chiếu deployment SHA, full migrations/RLS, SMTP/sender/quota hoặc signup server settings. Không tự mở signup hoặc bật bốn flags dữ liệu.
+Main nguồn `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` sau owner merge [#37](https://github.com/ndlong78/Pickleball/pull/37), app/cache5.13.1. Auth bật với URL/key công khai; import/sync/activity/plan vẫn false. Operator đã xác nhận email OTP/login/kiểm dữ liệu riêng, restore và logout hai tab; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) phân biệt kết quả báo lại với phần chưa kiểm. Chưa đối chiếu deployment SHA, full migrations/RLS, SMTP/sender/quota hoặc signup server settings. Không tự mở signup hoặc bật bốn flags dữ liệu.
 
 ## 1. Phần repository chuẩn bị
 
@@ -68,6 +68,6 @@ Sau deploy, owner mở URL chính và `/?page=settings`, kiểm build5.13.1, gue
 
 ## 5. Trạng thái và giới hạn của PR
 
-Main nguồn UI/backend/Pages sạch được ghi ở [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md). Ngày 09/11 owner báo đã nhận email OTP, đăng nhập và kiểm dữ liệu riêng trên staging. Chưa đối chiếu commit/build/browser thực tế, SMTP provider/sender/rate hoặc trạng thái đầy đủ các migrations. Codex chưa quan sát trực tiếp website/Managed; môi trường không có kết nối quản trị Cloudflare/Supabase/SMTP và network policy chưa cho phép domain staging. Không suy website lỗi từ giới hạn executor.
+Main nguồn UI/backend/Pages sạch được ghi ở [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md). Ngày 09/11 owner báo đã nhận email OTP, đăng nhập, kiểm dữ liệu riêng, giữ phiên sau tải lại và đăng xuất đồng bộ hai tab trên staging. Chưa đối chiếu commit/build/browser thực tế, SMTP provider/sender/rate hoặc trạng thái đầy đủ các migrations. Codex chưa quan sát trực tiếp website/Managed; môi trường không có kết nối quản trị Cloudflare/Supabase/SMTP và network policy chưa cho phép domain staging. Không suy website lỗi từ giới hạn executor.
 
-Session restore/logout nhiều tab/A→B/expiry trên staging, full RLS A/B/anonymous, backup/Auth recovery/deletion và QA thiết bị vẫn cần bằng chứng riêng. Ba bước Auth cơ bản không mở pilot dữ liệu thật; giữ [policy](PILOT_OPERATING_POLICY.md). Cấu hình/build của #37 không tự thay DB hoặc cấp quyền signup.
+A→B/refresh/expiry trên staging, full RLS A/B/anonymous, backup/Auth recovery/deletion và QA thiết bị vẫn cần bằng chứng riêng. Năm ca Auth cơ bản không mở pilot dữ liệu thật; giữ [policy](PILOT_OPERATING_POLICY.md). Cấu hình/build của #37 không tự thay DB hoặc cấp quyền signup.

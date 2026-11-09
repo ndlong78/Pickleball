@@ -1,5 +1,5 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **09/11/2026** — main `0fb6fc8` sau #37/app5.13.1, backend/UI/Pages sạch cùng merge SHA. Operator đã xác nhận email OTP, login và kiểm dữ liệu riêng trên staging; các ca phiên/A/B/SMTP đầy đủ và pilot còn gate. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md).
+Cập nhật: **09/11/2026** — main `0fb6fc8` sau #37/app5.13.1, backend/UI/Pages sạch cùng merge SHA. Operator đã xác nhận email OTP, login và kiểm dữ liệu riêng trên staging; các ca A/B/expiry/SMTP đầy đủ và pilot còn gate. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md).
 
 ## Tiến độ hiện hành và bước tiếp theo
 
@@ -17,7 +17,7 @@ Cập nhật: **09/11/2026** — main `0fb6fc8` sau #37/app5.13.1, backend/UI/Pa
 | Chuẩn bị staging | [Hướng dẫn deploy Supabase](docs/SUPABASE_STAGING_DEPLOYMENT.md) | Đối chiếu sáu migrations/metadata, các ca OTP/SMTP/A/B/multi-tab/path/PWA còn lại; không mở signup/pilot |
 | Đã merge #36 | [V5.13.1: cấu hình Auth và CI test host](docs/CLOUDFLARE_STAGING_PR36.md) | HTTPS URL, guest HTTP/SW fixture, readiness bền vững, cache upgrade; main Auth bật, chưa xác minh Managed |
 | Đã merge #37 | [Static build/Wrangler và cấu hình domain](docs/CLOUDFLARE_WORKERS_STAGING.md) | Main CI và Pages sạch; deployment Cloudflare thực tế chưa đối chiếu SHA |
-| Staging Auth cơ bản | [Operator xác nhận ngày 09/11](docs/STAGING_AUTH_VERIFICATION.md) | Đã nhận email/login/kiểm dữ liệu riêng; tiếp theo restore/logout hai tab/A→B/expiry, SMTP và A/B dữ liệu riêng |
+| Staging Auth cơ bản | [Operator xác nhận ngày 09/11](docs/STAGING_AUTH_VERIFICATION.md) | Đã nhận email/login/kiểm dữ liệu riêng; tiếp theo A→B/expiry, SMTP và A/B dữ liệu riêng |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
