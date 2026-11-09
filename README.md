@@ -2,9 +2,9 @@
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
 
-## Trạng thái hiện tại — 07/11/2026
+## Trạng thái hiện tại — 09/11/2026
 
-Main `b841224a99d71aa46fe49c503e446942226e90b5` / V5.13.1 sau [#36](https://github.com/ndlong78/Pickleball/pull/36). [UI42353494844](https://github.com/ndlong78/Pickleball/actions/runs/42353494844):322 unit +3 HTTP tests +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42353494823](https://github.com/ndlong78/Pickleball/actions/runs/42353494823):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42353494606](https://github.com/ndlong78/Pickleball/actions/runs/42353494606) success cùng merge SHA. Chưa có bằng chứng Managed staging/SMTP hoặc Cloudflare deployment. [Tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
+Main `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` / V5.13.1 sau [#37](https://github.com/ndlong78/Pickleball/pull/37). [UI42367445245](https://github.com/ndlong78/Pickleball/actions/runs/42367445245):327 unit +3 HTTP +1 Workers local +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42367445298](https://github.com/ndlong78/Pickleball/actions/runs/42367445298):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42367444675](https://github.com/ndlong78/Pickleball/actions/runs/42367444675) success cùng merge SHA. Ngày 09/11/2026, operator xác nhận đã nhận email OTP, đăng nhập, kiểm dữ liệu riêng, giữ phiên sau tải lại và đăng xuất đồng bộ hai tab trên staging. [Bằng chứng và checklist phiên](docs/STAGING_AUTH_VERIFICATION.md) ghi rõ phạm vi; chưa đối chiếu Cloudflare deployment SHA hoặc kiểm đủ Managed/SMTP/A/B/expiry/pilot. [Tiến độ](docs/V6_PROGRESS_REVIEW.md), [roadmap](ROADMAP.md).
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
 - Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; bốn flags import/sync/activity/plan còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
@@ -16,7 +16,7 @@ Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync
 
 ## Cloudflare Workers staging
 
-Đích staging đã chọn: **https://pickleup-staging.home-309.workers.dev/**. Đây là Workers Static Assets; dùng [hướng dẫn Workers](docs/CLOUDFLARE_WORKERS_STAGING.md) thay phần Pages của PR #36. `npm run build:cloudflare` chỉ đóng gói runtime vào `dist`; Wrangler được pin và CI kiểm dry-run/local Workers cùng browser regression trên bản build. Giữ app/cache5.13.1 vì bytes runtime không đổi. Chưa deploy từ tác vụ chuẩn bị này; cấu hình Supabase/SMTP theo [runbook](docs/SUPABASE_STAGING_DEPLOYMENT.md).
+Đích staging đã chọn: **https://pickleup-staging.home-309.workers.dev/**. Đây là Workers Static Assets; dùng [hướng dẫn Workers](docs/CLOUDFLARE_WORKERS_STAGING.md) thay phần Pages của PR #36. `npm run build:cloudflare` chỉ đóng gói runtime vào `dist`; Wrangler được pin và CI kiểm dry-run/local Workers cùng browser regression trên bản build. Giữ app/cache5.13.1 vì bytes runtime không đổi. Operator đã báo luồng OTP/login/kiểm dữ liệu riêng, restore và logout hai tab trên staging; commit deploy thực tế và các ca phiên còn cần đối chiếu theo [sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md). Cấu hình Supabase/SMTP theo [runbook](docs/SUPABASE_STAGING_DEPLOYMENT.md).
 
 ## Phiên bản 1.1
 

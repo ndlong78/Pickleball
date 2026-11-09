@@ -1,8 +1,8 @@
 # V6 — quyết định pilot và chính sách vận hành
 
-Quyết định ngày 29/10/2026; cập nhật tiến độ **06/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #34 là `c849a16`, ứng dụng5.13.0. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
+Quyết định ngày 29/10/2026; cập nhật tiến độ **09/11/2026**. Owner đã chọn Supabase Managed, ưu tiên miễn phí, duyệt CAS và giao Codex chủ động chọn Auth/backup/retention/xóa tài khoản. PR0 #10 và policy #11 đã merge; main sau #37 là `0fb6fc8`, ứng dụng5.13.1. **Policy được chốt, các cơ chế vận hành backup/retention/xóa account chưa chạy.** [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md).
 
-Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in, event lifecycle và Academy account đã merge/kiểm chứng local; Auth/import/sync/activity/plan flags đều tắt. Chưa có bằng chứng cloud/SMTP staging được cấu hình, backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
+Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in, event lifecycle và Academy account đã merge/kiểm chứng local; Auth bật sau #36, bốn flags dữ liệu vẫn tắt. Operator đã xác nhận nhận email OTP/login/kiểm dữ liệu riêng, restore và logout hai tab trên staging; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) ghi rõ chưa kiểm đủ A/B/expiry/SMTP hoặc đối chiếu deployment SHA. Chưa có bằng chứng backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
 
 ## 1. Phạm vi ủy quyền và chi phí
 
@@ -49,7 +49,7 @@ Free không được coi là có automatic DB backup/PITR/SLA. Mục tiêu pilot
 
 ## 5. Thứ tự triển khai và readiness
 
-PR1a–PR4c, PR5a1/PR5a2a/b/c và RPC PR5b1a/#27 đã merge. Client/queue/review PR5b1b đã merge; PR5b1c/#29 đã nối UI giáo án/lựa chọn cá nhân; PR5a2d/#30 đã nối nhật ký own plan ACK. PR5b2a/#31 đã nối Academy selection; PR5b2b1/#32 đã persist local Academy checklist/focus; PR5b2b2/#33 đã thêm Court checkpoint explicit; PR5b2c1/#34 đã thêm cứu hộ cache chỉ đọc; full V6 restore/purge và hardening còn lại. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) dành operator kiểm Managed với dữ liệu giả, không là bằng chứng provisioning/SMTP đã chạy. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
+PR1a–PR4c, PR5a1/PR5a2a/b/c và RPC PR5b1a/#27 đã merge. Client/queue/review PR5b1b đã merge; PR5b1c/#29 đã nối UI giáo án/lựa chọn cá nhân; PR5a2d/#30 đã nối nhật ký own plan ACK. PR5b2a/#31 đã nối Academy selection; PR5b2b1/#32 đã persist local Academy checklist/focus; PR5b2b2/#33 đã thêm Court checkpoint explicit; PR5b2c1/#34 đã thêm cứu hộ cache chỉ đọc; full V6 restore/purge và hardening còn lại. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) dành operator kiểm Managed với dữ liệu giả; báo cáo OTP/login/restore/logout cơ bản đã ghi riêng, không chứng minh đủ provisioning/migrations/SMTP để mở pilot. [Kế hoạch sau #22](V6_PROGRESS_REVIEW.md) ghi thứ tự/gate cụ thể; không coi toàn PR5a hoặc rollout pilot đã hoàn tất. Chưa tạo production DB hoặc mở đăng ký công khai.
 
 Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nhận region/quota, SMTP hoạt động, backup destination/job và restore drill đạt, privacy/export/delete được kiểm thử, CI đúng HEAD, feature flag opt-in. Owner đã ủy quyền lựa chọn kỹ thuật; thiếu quyền truy cập/cấu hình thực tế là công việc còn lại, không phải quyết định kỹ thuật cần hỏi lại.
 

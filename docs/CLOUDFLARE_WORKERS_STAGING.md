@@ -1,8 +1,8 @@
 # PickleUp — Cloudflare Workers staging
 
-Ngày07/11/2026. Đích được owner chọn: **https://pickleup-staging.home-309.workers.dev/**, đuôi `.dev`. Đây là **Workers Static Assets**, khác giao diện Cloudflare Pages. Không đổi DNS/custom domain `pickleup.no.id.vn` trong PR này.
+Cập nhật nghiệm thu 09/11/2026. Đích được owner chọn: **https://pickleup-staging.home-309.workers.dev/**, đuôi `.dev`. Đây là **Workers Static Assets**, khác giao diện Cloudflare Pages. Không đổi DNS/custom domain `pickleup.no.id.vn` trong PR này.
 
-Baseline: main `b841224a99d71aa46fe49c503e446942226e90b5` sau owner merge [#36](https://github.com/ndlong78/Pickleball/pull/36), app/cache5.13.1. Main đã bật Auth với URL/key công khai; import/sync/activity/plan vẫn false. Bật frontend không chứng minh SMTP, project/key, migrations hoặc quyền đăng ký server đã sẵn sàng. Không tự mở public signup hoặc bật bốn flags dữ liệu để thử deployment.
+Main nguồn `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` sau owner merge [#37](https://github.com/ndlong78/Pickleball/pull/37), app/cache5.13.1. Auth bật với URL/key công khai; import/sync/activity/plan vẫn false. Operator đã xác nhận email OTP/login/kiểm dữ liệu riêng, restore và logout hai tab; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) phân biệt kết quả báo lại với phần chưa kiểm. Chưa đối chiếu deployment SHA, full migrations/RLS, SMTP/sender/quota hoặc signup server settings. Không tự mở signup hoặc bật bốn flags dữ liệu.
 
 ## 1. Phần repository chuẩn bị
 
@@ -14,7 +14,7 @@ Baseline: main `b841224a99d71aa46fe49c503e446942226e90b5` sau owner merge [#36](
 
 ## 2. Owner cấu hình Worker sau merge
 
-Chờ PR này có CI HEAD sạch và owner merge; không chọn nhánh PR làm nhánh tự động deploy chính. Trong Cloudflare Dashboard → **Workers & Pages → pickleup-staging → Settings → Build**, kết nối repository `ndlong78/Pickleball` nếu chưa kết nối, rồi đặt:
+#37 đã merge và CI main nguồn sạch; nhánh deploy chính là main, không chọn nhánh PR tài liệu làm nhánh tự động deploy chính. Trong Cloudflare Dashboard → **Workers & Pages → pickleup-staging → Settings → Build**, kết nối repository `ndlong78/Pickleball` nếu chưa kết nối, rồi đặt:
 
 | Thiết lập Workers Builds | Giá trị |
 |---|---|
@@ -68,6 +68,6 @@ Sau deploy, owner mở URL chính và `/?page=settings`, kiểm build5.13.1, gue
 
 ## 5. Trạng thái và giới hạn của PR
 
-Main baseline UI/backend/Pages sạch được ghi ở [progress](V6_PROGRESS_REVIEW.md). Số test và exact HEAD cuối của PR mới ghi trong mô tả PR sau khi đọc logs. Không có Cloudflare deploy status trên baseline; Codex không có kết nối quản trị Cloudflare/Supabase/SMTP. GET URL staging bị proxy môi trường chặn ở CONNECT403, chưa tới website, nên **chưa xác minh website hiện chạy gì**. Không suy từ đó rằng website bị lỗi.
+Main nguồn UI/backend/Pages sạch được ghi ở [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md). Ngày 09/11 owner báo đã nhận email OTP, đăng nhập, kiểm dữ liệu riêng, giữ phiên sau tải lại và đăng xuất đồng bộ hai tab trên staging. Chưa đối chiếu commit/build/browser thực tế, SMTP provider/sender/rate hoặc trạng thái đầy đủ các migrations. Codex chưa quan sát trực tiếp website/Managed; môi trường không có kết nối quản trị Cloudflare/Supabase/SMTP và network policy chưa cho phép domain staging. Không suy website lỗi từ giới hạn executor.
 
-Chưa kiểm chứng deployment edge/Managed key-gateway/SMTP, browser expiry theo thời gian thật, backup/Auth recovery/deletion và QA thiết bị vật lý. Chưa mở pilot dữ liệu thật; giữ [policy](PILOT_OPERATING_POLICY.md). Sau merge owner cấu hình/deploy trên Worker, rồi thực hiện checklist Managed có kiểm soát; PR này không thay database hay cấp quyền signup.
+A→B/refresh/expiry trên staging, full RLS A/B/anonymous, backup/Auth recovery/deletion và QA thiết bị vẫn cần bằng chứng riêng. Năm ca Auth cơ bản không mở pilot dữ liệu thật; giữ [policy](PILOT_OPERATING_POLICY.md). Cấu hình/build của #37 không tự thay DB hoặc cấp quyền signup.
