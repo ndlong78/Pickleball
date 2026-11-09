@@ -4,7 +4,7 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `b841224` / V5.13.1 sau #36, Auth bật với cấu hình công khai, bốn flags dữ liệu tắt; chưa xác minh Managed/cloud rollout. Workers static build chỉ copy runtime, giữ bytes/version/cache; [hợp đồng deployment](CLOUDFLARE_WORKERS_STAGING.md). [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `0fb6fc8` / V5.13.1 sau #37, Auth bật với cấu hình công khai, bốn flags dữ liệu tắt. Operator đã báo nhận OTP/login/kiểm dữ liệu riêng; [sổ nghiệm thu staging](STAGING_AUTH_VERIFICATION.md) không thay gate session/A/B/SMTP đầy đủ hoặc pilot. Workers static build chỉ copy runtime, giữ bytes/version/cache; [hợp đồng deployment](CLOUDFLARE_WORKERS_STAGING.md). [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
 
 **Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
 
@@ -52,7 +52,7 @@
 
 **Backup/restore:** `modules/assessments-and-backup.js` xuất/nhập JSON `schemaVersion:1` với trường tùy chọn các module đời sau, gồm `weeklyGoal`, `weeklyPlan`, `weeklyCheckins`. Giữ khả năng nhập backup cũ, validate toàn bộ phần liên quan trước khi ghi, tránh cập nhật một phần không thể rollback khi có lỗi; xác nhận rõ khi import ghi đè. Khi thêm schema/key: thiết kế migration forward/backward phù hợp, giới hạn kích thước/bản ghi, test thiếu field, JSON hỏng, ngày bất hợp lệ, duplicate, dữ liệu lạ và hành vi giữ bản cũ.
 
-**Privacy:** guest giữ dữ liệu trên trình duyệt. Account chỉ gửi qua adapter/RPC sau consent và thao tác rõ ràng; đăng nhập không tự import/sync. Flags mặc định tắt, chưa rollout. Không log dữ liệu cá nhân không cần thiết, không gửi ra analytics ngoài phạm vi được phép, không commit data/secrets. Logout không tự xóa cache offline hoặc file export.
+**Privacy:** guest giữ dữ liệu trên trình duyệt. Account chỉ gửi qua adapter/RPC sau consent và thao tác rõ ràng; đăng nhập không tự import/sync. Bốn flags dữ liệu còn tắt; Auth bật sau #36, chưa mở pilot. Không log dữ liệu cá nhân không cần thiết, không gửi ra analytics ngoài phạm vi được phép, không commit data/secrets. Logout không tự xóa cache offline hoặc file export.
 
 ## 3. Responsive / accessibility: bắt buộc
 

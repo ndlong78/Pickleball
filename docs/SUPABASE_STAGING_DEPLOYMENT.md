@@ -1,10 +1,10 @@
 # PickleUp V6 — triển khai Supabase staging
 
-**Cập nhật deployment 07/11/2026:** #36 đã merge thành main `b841224`, app5.13.1, Auth bật và bốn flags dữ liệu tắt. Frontend chọn `https://pickleup-staging.home-309.workers.dev/`; Site URL/redirects và build theo [hướng dẫn Workers](CLOUDFLARE_WORKERS_STAGING.md). Không thay URL API Supabase bằng domain frontend.
+**Cập nhật nghiệm thu 09/11/2026:** main `0fb6fc8` sau #37, app5.13.1, Auth bật và bốn flags dữ liệu tắt. Operator xác nhận nhận OTP/login/kiểm dữ liệu riêng tại `https://pickleup-staging.home-309.workers.dev/`; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ các kết quả và phần chưa chạy. Site URL/build theo [hướng dẫn Workers](CLOUDFLARE_WORKERS_STAGING.md); URL API Supabase vẫn là Project URL.
 
 Baseline đã merge: **#36 / main `b841224a99d71aa46fe49c503e446942226e90b5` / V5.13.1**. [UI42353494844](https://github.com/ndlong78/Pickleball/actions/runs/42353494844):322 unit +3 HTTP tests +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry. [Backend42353494823](https://github.com/ndlong78/Pickleball/actions/runs/42353494823):275 pgTAP +45 REST và Auth local thật hai engines pass. [Pages42353494606](https://github.com/ndlong78/Pickleball/actions/runs/42353494606) success cùng merge SHA. Evidence đúng HEAD của PR Workers ghi trong mô tả PR.
 
-Đây là hướng dẫn operator cho **staging với dữ liệu giả**, chưa phải bằng chứng đã triển khai Managed hoặc mở pilot. Môi trường Codex hiện chưa có kết nối Supabase/SMTP. Chỉ Project URL/ref và publishable key được dùng ở frontend; DB password, personal access token, service/secret key và SMTP credentials ở máy operator hoặc cấu hình bảo mật, không chat/repo/log/artifact. Không tự mua dịch vụ hoặc mở production/signup công khai. [Policy](PILOT_OPERATING_POLICY.md) và [runbook](MIGRATION_RUNBOOK.md) giữ các gate dữ liệu thật.
+Đây là hướng dẫn operator cho **staging với dữ liệu giả**, không tự chứng minh triển khai Managed hoặc mở pilot. Báo cáo operator về ba bước Auth cơ bản được ghi riêng ở đầu tài liệu. Môi trường Codex hiện chưa có kết nối Supabase/SMTP. Chỉ Project URL/ref và publishable key được dùng ở frontend; DB password, personal access token, service/secret key và SMTP credentials ở máy operator hoặc cấu hình bảo mật, không chat/repo/log/artifact. Không tự mua dịch vụ hoặc mở production/signup công khai. [Policy](PILOT_OPERATING_POLICY.md) và [runbook](MIGRATION_RUNBOOK.md) giữ các gate dữ liệu thật.
 
 ## 1. Chọn project và phạm vi
 
@@ -213,7 +213,7 @@ Ghi kết quả **PASS / FAIL / CHƯA CHẠY**, không suy từ badge local CI. 
 | Thiết bị thật | Safari iPhone/iPad và Chrome Android/PWA; Playwright390/820/1180/1440 không thay field QA |
 | Signup mới | **Chưa chạy** khi signup server off; chỉ test sau server allowlist/hook, không mở public signup để đạt checklist |
 
-Tách status: mock transport/native IDB → GoTrue/Mailpit/Auth local thật → Managed staging SMTP/gateway → physical QA → pilot. Hai tầng đầu đã có CI; hướng dẫn mới chưa chứng minh hai tầng sau. Chưa triển khai operational backup/Auth restore/delete hoặc V6 full restore/purge; giữ gate dữ liệu thật đóng.
+Tách status: mock transport/native IDB → GoTrue/Mailpit/Auth local thật → Managed staging SMTP/gateway → physical QA → pilot. Hai tầng đầu đã có CI; báo cáo operator hiện chỉ bao phủ ba bước Auth cơ bản ở tầng Managed, chưa hoàn tất ma trận hoặc physical QA. Chưa triển khai operational backup/Auth restore/delete hoặc V6 full restore/purge; giữ gate dữ liệu thật đóng.
 
 ## 7. Lỗi thường gặp và bằng chứng cần giữ
 
