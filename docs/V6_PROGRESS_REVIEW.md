@@ -6,6 +6,8 @@ PR5b2b1 checklist/focus, Court checkpoint, cứu hộ toàn cache/preview chỉ 
 
 **Staging hiện hành:** `https://pickleup-staging.home-309.workers.dev/`. Operator xác nhận đã nhận email OTP, đăng nhập và kiểm dữ liệu riêng; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) phân biệt báo cáo operator, CI mock/GoTrue local và phần chưa chạy. Chưa đối chiếu Cloudflare build/SHA/browser thực tế hoặc chứng minh đầy đủ SMTP/RLS A/B/expiry. Codex chưa trực tiếp quan sát Managed; môi trường không có kết nối quản trị hoặc quyền truy cập domain staging.
 
+**Cập nhật 10/11/2026:** main hiện `6f782d2` sau #38 (docs-only), Pages42551232733 success; main UI/backend không có run mới do path filters. Operator đã báo cài Managed thành công6 migrations/16 bảng/10 RPC, role/RLS/ACL metadata đều OK; sau sửa mẫu Magic Link sang OTP, đã đăng nhập lại được. Private RPC sau cài và Managed A/B/writes/conflict/expiry chưa được ghi nhận đạt. Nhánh [PR6a/V5.14.0](STAGING_SYNC_PR6A.md) thêm URL opt-in để thử mục tiêu/check-in bằng dữ liệu giả; chưa merge/deploy. URL thường vẫn tắt sync, ba flags dữ liệu khác false.
+
 **Full V6:** OTP/session và private data; các nguồn account trên tám route; offline/manual sync/retry/CAS conflict; nhập legacy có preview/provenance; backup/restore/cache privacy; vận hành staging/backup/Auth recovery/deletion/retention. Main đã có phần lớn luồng nghiệp vụ. Chưa coi V6 hoàn tất hoặc mở pilot đến khi các gate phục hồi và vận hành bên dưới đạt.
 
 **Các bảng mã nguồn và evidence ở mục1–3 dưới đây là snapshot lịch sử sau #22** (`6a59bdb622ae564a7f954584191197f9aa4c0767`, app5.5.0), không phải danh sách thiếu của HEAD hiện tại. Mục4–5 phản ánh kế hoạch tiếp theo; hợp đồng từng PR giữ phạm vi riêng.

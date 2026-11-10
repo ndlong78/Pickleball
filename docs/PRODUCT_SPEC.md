@@ -2,6 +2,8 @@
 
 **Trạng thái 09/11/2026:** Main `0fb6fc8` / V5.13.1 sau #37; UI/backend/Pages sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Auth bật, bốn flags dữ liệu tắt. Operator đã xác nhận nhận email OTP, đăng nhập và kiểm dữ liệu riêng trên staging; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi/giới hạn. A/B/expiry/SMTP đầy đủ, full V6 restore/purge, backup và pilot còn gate.
 
+**PR6a / V5.14.0 đang triển khai:** [URL thử staging](STAGING_SYNC_PR6A.md) mở mục tiêu/check-in khi đúng origin/project và query opt-in; banner chỉ dùng dữ liệu giả. Người dùng vẫn chủ động chọn nguồn, đọc và gửi; URL thường và các nguồn khác giữ off. Chưa merge/deploy hoặc đủ gate pilot.
+
 ## 1. Mục đích, đối tượng, triết lý
 
 PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng trên PC, iPhone/iPad và Android; hoạt động cục bộ bằng trình duyệt, không cần tài khoản. Người mới và người chơi phong trào có thể tự đánh giá, luyện kỹ thuật, xem gợi ý, ghi kết quả và theo dõi tiến bộ. Thiết kế hướng tới trải nghiệm ngắn gọn, an toàn, rõ ràng, trung thực về bằng chứng. Không tự gắn nhãn DUPR hoặc chứng nhận trình độ.

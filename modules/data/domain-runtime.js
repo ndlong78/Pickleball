@@ -18,7 +18,7 @@ function canWrite(kind,id){
  if(kind==='practice_checkins'&&!state.timezone)return false;
  return !state.projection.rows[kind+':'+id]?.reviewRequired;
 }
-function notice(){return state.mode==='account'?'Dữ liệu tài khoản · mục tiêu/lịch tập và check-in. Hoạt động và giáo án có lựa chọn nguồn riêng; đồng hồ không gửi lên cloud. Biểu đồ check-in hiển thị 8 tuần.'+(!state.timezone?' Chọn múi giờ ghi nhận mới trong trang Dữ liệu trước khi check-in.':' Múi giờ ghi nhận mới: '+state.timezone+'.'):messages[state.mode]}
+function notice(){const trial=root.PICKLEUP_SYNC_CONFIG?.scope==='staging-preferences-checkins'?'Thử nghiệm staging · chỉ dùng dữ liệu giả. ':'';return trial+(state.mode==='account'?'Dữ liệu tài khoản · mục tiêu/lịch tập và check-in. Hoạt động và giáo án có lựa chọn nguồn riêng; đồng hồ không gửi lên cloud. Biểu đồ check-in hiển thị 8 tuần.'+(!state.timezone?' Chọn múi giờ ghi nhận mới trong trang Dữ liệu trước khi check-in.':' Múi giờ ghi nhận mới: '+state.timezone+'.'):messages[state.mode])}
 function paint(){for(const el of document.querySelectorAll('[data-domain-notice]')){el.textContent=notice();el.dataset.source=state.mode}}
 const ready=(async()=>{
  if(root.PICKLEUP_SYNC_CONFIG?.enabled!==true||root.PICKLEUP_AUTH_CONFIG?.enabled!==true||!root.PICKLEUP_AUTH_CONFIG.url||!root.PICKLEUP_AUTH_CONFIG.publishableKey){state={...state,mode:'guest'};emit();return}

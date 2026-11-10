@@ -1,9 +1,9 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **09/11/2026** — main `0fb6fc8` sau #37/app5.13.1, backend/UI/Pages sạch cùng merge SHA. Operator đã xác nhận email OTP, login và kiểm dữ liệu riêng trên staging; các ca A/B/expiry/SMTP đầy đủ và pilot còn gate. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md).
+Cập nhật: **10/11/2026** — main `6f782d2` sau #38/app5.13.1; nhánh PR6a/app5.14.0 chuẩn bị thử mục tiêu/check-in trên staging bằng dữ liệu giả. [Hợp đồng và checklist](docs/STAGING_SYNC_PR6A.md). Chưa bật pilot dữ liệu thật hoặc nghiệm thu Managed writes/A/B cho mode mới.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Auth bật sau #36; bốn flags dữ liệu vẫn tắt. Pages không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Auth bật sau #36; PR6a chỉ mở sync khi URL opt-in khớp staging origin/project, ba flags khác tắt. Pages không có nghĩa cloud pilot đã bật.
 
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|
@@ -18,6 +18,7 @@ Cập nhật: **09/11/2026** — main `0fb6fc8` sau #37/app5.13.1, backend/UI/Pa
 | Đã merge #36 | [V5.13.1: cấu hình Auth và CI test host](docs/CLOUDFLARE_STAGING_PR36.md) | HTTPS URL, guest HTTP/SW fixture, readiness bền vững, cache upgrade; main Auth bật, chưa xác minh Managed |
 | Đã merge #37 | [Static build/Wrangler và cấu hình domain](docs/CLOUDFLARE_WORKERS_STAGING.md) | Main CI và Pages sạch; deployment Cloudflare thực tế chưa đối chiếu SHA |
 | Staging Auth cơ bản | [Operator xác nhận ngày 09/11](docs/STAGING_AUTH_VERIFICATION.md) | Đã nhận email/login/kiểm dữ liệu riêng; tiếp theo A→B/expiry, SMTP và A/B dữ liệu riêng |
+| PR6a đang triển khai | [URL thử mục tiêu/check-in staging](docs/STAGING_SYNC_PR6A.md) | Gate origin/project/query; manual opt-in/read/send; mock/native IDB + Auth local CI, Managed A/B/conflict còn cần owner thử |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 

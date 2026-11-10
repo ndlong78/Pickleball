@@ -33,6 +33,8 @@ Trong **Settings → Domains & Routes**, xác nhận có `pickleup-staging.home-
 
 [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), [Static Assets](https://developers.cloudflare.com/workers/static-assets/get-started/), [redirect rules](https://developers.cloudflare.com/workers/static-assets/redirects/).
 
+**PR6a/V5.14.0:** sau owner merge/deploy, dùng [URL opt-in/checklist](STAGING_SYNC_PR6A.md) để thử mục tiêu/check-in. Không cần thêm build variable hoặc thay key. URL thường tắt sync; mode chỉ mở đúng host/project staging, importer/activity/plan vẫn false. Chưa nghiệm thu Managed writes/A/B cho mode mới.
+
 ## 3. Supabase Authentication → URL Configuration
 
 Trên **project staging hiện hữu đã đối chiếu**, đặt:
