@@ -8,6 +8,8 @@ Sửa thông báo thành công cũ khi có thay đổi mới cùng tab/qua tab k
 
 SHA256 ZIP5.14.1: `a85cbc00f9fac7a639a075e3e6259d6a4c75e7cbbd47b4cf56ad8a589b9f055c`
 
+**Gate5.14.1 còn chặn:** check ngoài GitHub Actions `Workers Builds: pickleup-staging` đang failure ở cùng source, [build log trên Dashboard](https://dash.cloudflare.com/30960f67a013cb4a835d79f2194508a0/workers/services/view/pickleup-staging/production/builds/28fae355-cc6d-45c9-8a6c-c309a1bea82f). GitHub không gửi lý do; PR #40 giữ draft chờ đối chiếu log. Hai workflow UI/backend xanh không thay check Cloudflare. Gói là candidate để review, chưa đủ gate merge/deploy.
+
 ## Bản5.14.0 đã merge #39
 
 [Tải ZIP trên GitHub](https://github.com/ndlong78/Pickleball/raw/refs/heads/feature/v5.14-staging-download/downloads/pickleup-staging-5.14.0.zip).

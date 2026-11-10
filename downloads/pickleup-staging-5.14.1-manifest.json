@@ -431,6 +431,14 @@
     ],
     "fail": 0,
     "flaky": 0,
-    "retry": 0
+    "retry": 0,
+    "scope": "GitHub Actions UI/backend only"
+  },
+  "external_build_check": {
+    "name": "Workers Builds: pickleup-staging",
+    "conclusion": "failure",
+    "details_url": "https://dash.cloudflare.com/30960f67a013cb4a835d79f2194508a0/workers/services/view/pickleup-staging/production/builds/28fae355-cc6d-45c9-8a6c-c309a1bea82f",
+    "reason": "not provided in GitHub check output",
+    "release_gate": "blocked; PR remains draft"
   }
 }
