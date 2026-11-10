@@ -18,6 +18,12 @@ Owner xác nhận trong hội thoại: đã nhận email, đăng nhập, kiểm 
 
 Main nguồn hiện tại là `0fb6fc85060cd025482394e0f53f527e1f3f6bbc`, app5.13.1 sau [#37](https://github.com/ndlong78/Pickleball/pull/37). **Chưa đối chiếu commit/build thực tế đang chạy trên Cloudflare**, thời điểm thao tác, browser/OS hoặc thiết bị. Việc ghi nhận ngày 09/11 không khẳng định mọi thao tác được thực hiện đúng ngày đó. Một phép kiểm riêng thành công cũng chưa chứng minh đầy đủ sáu migrations/RLS/grants hoặc mọi domain đã sẵn sàng.
 
+## Bổ sung 10/11/2026
+
+Operator gửi kết quả cài database: `INSTALLED`,6 migrations,16 tables,10 public RPC; audit báo migration_history PRESENT, PostgreSQL17,27 kiểm table/RPC/role OK. Trước cài, cùng project được đối chiếu ref `rfeoeagklmaqmkcdhprb` nhưng audit báo mọi đối tượng PickleUp MISSING; do đó báo cáo private access trước đây được giữ là lịch sử operator, **chưa coi là kiểm chứng RPC sau cài**.
+
+Sau sửa mẫu email Magic Link sang nội dung `{{ .Token }}` trên Dashboard theo hướng dẫn, operator xác nhận đăng nhập được. Chưa ghi nhận lại private probe, A/B hoặc data writes trên Managed sau cài. [PR6a](STAGING_SYNC_PR6A.md) chuẩn bị mode dữ liệu giả cho hai domain đầu; chưa merge/deploy hoặc chứng minh rollout.
+
 ## 2. CI đã đọc log ở main nguồn
 
 | Loại evidence | Merge SHA / run | Kết quả |

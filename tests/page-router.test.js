@@ -60,4 +60,10 @@ test("all eight pages resolve a top-level URL",()=>{
   assert.equal(app.win.PICKLEUP_ROUTER.getPage(),page);
  }
 });
+test('explicit staging trial remains in the URL through route changes and reload canonicalization',()=>{
+ const app=create('https://pickleup-staging.home-309.workers.dev/?pilot=preferences-checkins');
+ app.win.PICKLEUP_ROUTER.openPage('progress');app.win.PICKLEUP_ROUTER.openPage('settings');
+ const url=new URL(app.win.location.href);assert.equal(url.searchParams.get('pilot'),'preferences-checkins');assert.equal(url.searchParams.get('page'),'settings');
+ const reloaded=create(url.href);assert.equal(reloaded.win.PICKLEUP_ROUTER.getPage(),'settings');assert.equal(new URL(reloaded.win.location.href).searchParams.get('pilot'),'preferences-checkins');
+});
 test('Academy lesson links delegate persistence before routing under Pickleball',()=>{const app=create('https://example.org/Pickleball/?page=journey'),calls=[];app.win.PICKLEUP_PLANS={requestLesson:id=>calls.push(id)};const a={href:'https://example.org/Pickleball/?page=academy',dataset:{lessonId:'PU-037'},hasAttribute:()=>false};let prevented=false;app.listeners.get('click')({button:0,target:{closest:()=>a},preventDefault(){prevented=true}});assert.equal(prevented,true);assert.deepEqual(calls,['PU-037']);assert.equal(app.win.PICKLEUP_ROUTER.getPage(),'journey')});

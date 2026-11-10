@@ -6,6 +6,8 @@ Baseline đã merge: **#36 / main `b841224a99d71aa46fe49c503e446942226e90b5` / V
 
 Đây là hướng dẫn operator cho **staging với dữ liệu giả**, không tự chứng minh triển khai Managed hoặc mở pilot. Báo cáo operator về năm ca Auth cơ bản được ghi riêng ở đầu tài liệu. Môi trường Codex hiện chưa có kết nối Supabase/SMTP. Chỉ Project URL/ref và publishable key được dùng ở frontend; DB password, personal access token, service/secret key và SMTP credentials ở máy operator hoặc cấu hình bảo mật, không chat/repo/log/artifact. Không tự mua dịch vụ hoặc mở production/signup công khai. [Policy](PILOT_OPERATING_POLICY.md) và [runbook](MIGRATION_RUNBOOK.md) giữ các gate dữ liệu thật.
 
+**Bổ sung 10/11/2026:** owner đã báo cài đủ6 migrations/16 bảng/10 RPC và metadata RLS/ACL/role OK trên project hiện hữu; OTP login hoạt động sau sửa template. Không chạy lại bộ cài mới trên database đã có. Phần CLI dưới giữ làm runbook cho project mới/upgrade có đối chiếu history; lượt cài hiện hữu đã có journal. Bước nghiệm thu dữ liệu giả tiếp theo ở [PR6a](STAGING_SYNC_PR6A.md), chưa đủ Managed A/B/expiry hoặc pilot.
+
 ## 1. Chọn project và phạm vi
 
 Supabase chạy PostgreSQL/Auth/API; frontend vẫn là static PWA. Tạo project **riêng** tên `pickleup-staging`, Free, Singapore nếu khả dụng; kiểm quota và PostgreSQL17 như CI. Nếu version khác, chưa coi migrations đã được kiểm chứng trên version đó. Không link project đang chứa dữ liệu thật hoặc ứng dụng khác để làm theo hướng dẫn mới này. Project staging hiện hữu cần đối chiếu migration history trước, không ép đồng bộ lịch sử.

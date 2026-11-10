@@ -17,6 +17,7 @@ function render(){
  if(sourceChanged){serial++;running=false;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
  const configured=PICKLEUP_SYNC_CONFIG?.enabled===true&&PICKLEUP_AUTH_CONFIG?.enabled===true;
  body.hidden=!configured;
+ $('[data-sync-staging]').hidden=PICKLEUP_SYNC_CONFIG?.scope!=='staging-preferences-checkins';
  $('[data-sync-enable]').disabled=running||s.busy||!s.owner||s.mode!=='guest';
  $('[data-sync-device]').disabled=running||s.busy||!s.owner||!['account','error'].includes(s.mode);
  for(const selector of ['[data-sync-read]','[data-sync-send]','[data-sync-retry]','[data-sync-export]'])$(selector).disabled=running||s.busy||s.mode!=='account'||!s.snapshot;

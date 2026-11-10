@@ -2,10 +2,10 @@ const {test,expect}=require('@playwright/test'),{model}=require('./helpers/sync-
 test.use({trace:'off',screenshot:'off',video:'off',serviceWorkers:'block'});
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222';
 const status='#syncPilot [role=status]';
-async function fixture(context,servers=new Map([A,B].map(owner=>[owner,model({owner,domainRows:true})]))){
+async function fixture(context,servers=new Map([A,B].map(owner=>[owner,model({owner,domainRows:true})])),{staging=false}={}){
  const calls=[];let drop=false,held=null;
- await context.route('**/modules/auth-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.PICKLEUP_AUTH_CONFIG={enabled:true,url:"http://127.0.0.1:54321",publishableKey:"sb_publishable_fixture"}'}));
- await context.route('**/modules/data/sync-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.PICKLEUP_SYNC_CONFIG={enabled:true}'}));
+ await context.route('**/modules/auth-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.PICKLEUP_AUTH_CONFIG={enabled:true,url:'+JSON.stringify(staging?'https://rfeoeagklmaqmkcdhprb.supabase.co':'http://127.0.0.1:54321')+',publishableKey:"sb_publishable_fixture"}'}));
+ if(!staging)await context.route('**/modules/data/sync-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.PICKLEUP_SYNC_CONFIG={enabled:true}'}));
  await context.route('**/modules/auth-adapter.js*',r=>r.fulfill({contentType:'text/javascript',body:`(()=>{
  let owner=localStorage.getItem('fixture-owner')||'${A}';const listeners=new Set(),state=()=>({status:owner?'authenticated':'guest',user:owner?{id:owner,email:'fixture@example.invalid'}:null});
  function change(id){owner=id;for(const fn of [...listeners])fn(state())}
@@ -20,6 +20,36 @@ async function enable(page){await page.goto('/Pickleball/?page=settings');await 
 function remote(server,days,revision='0'){return server.apply({p_operation_id:crypto.randomUUID(),p_kind:'user_preferences',p_entity_key:'self',p_action:'put',p_expected_revision:revision,p_epoch:server.epoch,p_payload:{target_days:days,level_band:'1.0–2.0',session_minutes:45,gentle:false,goal_configured:true}})}
 async function goal(page,value){await route(page,'progress');await page.locator('#wgDays').selectOption(String(value));await page.locator('#wgSave').click();await expect(page.locator('#wgStatus')).toContainText('chờ đồng bộ')}
 async function send(page){await route(page,'settings');await page.locator('[data-sync-send]').click()}
+for(const [prefix,width] of [['/',390],['/',820],['/Pickleball/',1180],['/Pickleball/',1440]])test('real staging flag, mock RPC: explicit trial, manual send and safe exit at '+prefix+' '+width,async({page,context})=>{
+ await page.setViewportSize({width,height:900});
+ const origin='https://pickleup-staging.home-309.workers.dev';
+ // Virtual origin only: serve all app bytes from loopback, never contact Managed/Cloudflare.
+ await context.route(origin+'/**',async request=>{
+  const url=new URL(request.request().url());
+  const response=await request.fetch({url:'http://127.0.0.1:4173'+url.pathname+url.search});await request.fulfill({response});
+ });
+ const f=await fixture(context,undefined,{staging:true});
+ await context.route('https://rfeoeagklmaqmkcdhprb.supabase.co/**',request=>request.abort());
+ await page.addInitScript(()=>localStorage.setItem('pickleup_weekly_goal_v46',JSON.stringify({days:5,level:'2.0–2.5'})));
+ const normal=origin+prefix+'?page=settings',trial=normal+'&pilot=preferences-checkins';
+ const visit=async url=>{await page.goto(url);await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await PICKLEUP_DATA.ready})};
+ await visit(normal);await expect(page.locator('#syncPilot [data-sync-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
+ await visit(trial);await expect(page.locator('[data-sync-staging]')).toBeVisible();await expect(page.locator('[data-sync-enable]')).toBeEnabled();expect(f.calls).toHaveLength(0);
+ const guest=await page.evaluate(()=>localStorage.getItem('pickleup_weekly_goal_v46'));
+ await page.locator('[data-sync-enable]').click();await expect.poll(()=>page.evaluate(()=>{const s=PICKLEUP_DATA.getState();return s.mode==='account'&&!s.busy&&!!s.snapshot})).toBe(true);
+ await page.locator('[data-sync-timezone]').fill('UTC');await page.locator('[data-sync-zone-save]').click();
+ await goal(page,3);expect(new URL(page.url()).searchParams.get('pilot')).toBe('preferences-checkins');
+ expect(f.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(0);
+ const pending=await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open();try{return JSON.stringify(await db.scope('user:'+owner).listOutbox())}finally{db.close()}},A),calls=f.calls.length;
+ await visit(normal);await expect(page.locator('#syncPilot [data-sync-body]')).toBeHidden();expect(f.calls).toHaveLength(calls);
+ expect(await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open();try{return JSON.stringify(await db.scope('user:'+owner).listOutbox())}finally{db.close()}},A)).toBe(pending);
+ await visit(trial);await expect(page.locator('[data-sync-count]')).toContainText('1 thay đổi');expect(f.calls).toHaveLength(calls);
+ await page.locator('[data-sync-send]').click();await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');
+ expect(f.servers.get(A).rows.get('user_preferences:self').target_days).toBe(3);
+ expect(f.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(1);
+ expect(await page.evaluate(()=>localStorage.getItem('pickleup_weekly_goal_v46'))).toBe(guest);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
 for(const width of [390,820,1180,1440])test('mock Auth/RPC, native IDB: account source and manual check-in at '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});const f=await fixture(context);remote(f.servers.get(A),2);
  await page.addInitScript(()=>localStorage.setItem('pickleup_weekly_goal_v46',JSON.stringify({days:5,level:'2.0–2.5'})));
