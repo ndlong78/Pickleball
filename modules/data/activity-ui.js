@@ -2,7 +2,7 @@
 'use strict';
 const host=document.getElementById('activityPilot'),data=window.PICKLEUP_ACTIVITY;if(!host||!data)return;
 const $=s=>host.querySelector(s),status=$('[role=status]'),detail=$('[data-activity-detail]');
-let running=false,action=null,serial=0,owner,token,selection=null;
+let running=false,action=null,serial=0,owner,token,selection=null,syncFeedback=false;
 const names={academy_attempts:'Lượt Học viện',skill_assessments:'Đánh giá',training_entries:'Nhật ký tập',match_records:'Trận đấu'};
 const errors={network_error:'Lỗi mạng. Yêu cầu đang chờ được giữ nguyên.',offline:'Đang offline; thay đổi vẫn nằm trên thiết bị.',auth_required:'Đăng nhập lại đúng tài khoản để tiếp tục.',account_changed:'Tài khoản hoặc lựa chọn nguồn đã thay đổi; yêu cầu cũ giữ riêng.',consent_changed:'Lựa chọn nguồn đã thay đổi ở tab khác. Hãy kiểm tra lại.',busy:'Một tab hoặc thao tác khác đang đồng bộ. Thử lại sau.',retry_wait:'Chưa đến lượt thử lại. Chỉ bấm thử lại khi bạn muốn gửi tiếp.',needs_review:'Có hoạt động cần xem và xử lý.',uncertain_operation:'Có yêu cầu đã gửi chưa rõ kết quả. Thử lại đúng yêu cầu trước khi quyết định.',local_conflict:'Dữ liệu đã đổi sau khi xem. Mở lại mục cần xử lý trước khi chọn.',epoch_review_required:'Hãy xác nhận đã xem lại dữ liệu sau khi tải lại tài khoản.',quota_exceeded:'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.',upgrade_required:'Cần cập nhật ứng dụng. Dữ liệu chờ vẫn được giữ.',invalid_activity:'Dữ liệu cần kiểm tra. Xuất cache và đọc lại; chưa chuyển sang kho khách.',append_only:'Không thể ghi đè hoặc khôi phục lượt đã tồn tại. Chọn bản tài khoản hoặc xuất cache.',credentials_forbidden:'Không xuất được cache có trường thông tin đăng nhập. Giữ dữ liệu và kiểm tra riêng.',pending:'Còn thay đổi chờ gửi. Bấm đồng bộ tiếp để xử lý lượt kế tiếp.'};
 const message=code=>errors[code]||'Chưa thực hiện được. Hãy giữ cache và kiểm tra nguồn dữ liệu trong mục này.';
@@ -12,10 +12,11 @@ function render(){
  if(changedOwner){serial++;running=false;action=null;owner=s.owner}
  if(changedOwner||token!==nextToken){
   if(!changedOwner&&running&&!['enable','device'].includes(action)){serial++;running=false;action=null}
-  token=nextToken;selection=null;detail.replaceChildren();$('[data-activity-consent]').checked=false;status.textContent=data.notice();
+  syncFeedback=false;token=nextToken;selection=null;detail.replaceChildren();$('[data-activity-consent]').checked=false;status.textContent=data.notice();
  }
  const configured=window.PICKLEUP_ACTIVITY_CONFIG?.enabled===true&&window.PICKLEUP_AUTH_CONFIG?.enabled===true;
  $('[data-activity-body]').hidden=!configured;
+ $('[data-activity-staging]').hidden=window.PICKLEUP_ACTIVITY_CONFIG?.scope!=='staging-activity-events';
  if(!configured){status.textContent='Kho hoạt động pilot chưa bật. Chế độ khách vẫn dùng bình thường.';return}
  const consent=$('[data-activity-consent]');consent.disabled=running||s.busy||s.mode!=='guest';
  $('[data-activity-account]').textContent=s.owner?'Kho riêng của tài khoản đang đăng nhập · kiểm tra email trong mục Tài khoản.':'Đăng nhập để chọn kho hoạt động.';
@@ -27,6 +28,7 @@ function render(){
  const ops=s.snapshot?.outbox||[],pending=ops.filter(o=>['pending','sending','deferred'].includes(o.state)),uncertain=pending.filter(o=>o.state==='sending');
  $('[data-activity-retry]').hidden=!uncertain.length;
  $('[data-activity-count]').textContent=s.mode==='account'?pending.length+' hoạt động chờ gửi · '+uncertain.length+' yêu cầu chưa rõ kết quả. Lưu trên thiết bị chưa có nghĩa đã đồng bộ.':'';
+ if(syncFeedback&&s.mode==='account'&&s.snapshot){const review=ops.some(o=>['conflict','blocked'].includes(o.state));status.textContent=review?message('needs_review'):pending.length?message('pending'):'Đã đồng bộ hoạt động tài khoản.';}
  if(s.error)status.textContent=message(s.error);
  for(const input of detail.querySelectorAll('input,select'))input.disabled=running||s.busy;
  if(selection?.valid)selection.valid();
@@ -38,12 +40,13 @@ function render(){
  }
 }
 async function task(type,work){
- if(running)return;running=true;action=type;const stamp=serial;render();
+ if(running)return;running=true;syncFeedback=false;action=type;const stamp=serial;render();
  status.textContent=({enable:'Đang đọc kho hoạt động tài khoản…',device:'Đang chuyển về kho thiết bị…',read:'Đang đọc lại hoạt động tài khoản…',sync:'Đang đồng bộ hoạt động tài khoản…',preview:'Đang đọc dữ liệu cần xử lý…',resolve:'Đang lưu quyết định xử lý…',export:'Đang chuẩn bị tệp cache hoạt động…'})[type]||'Đang xử lý hoạt động…';
  try{
   const result=await work();if(stamp!==serial)return;
   if(result?.view)show(result.view);
   if(result?.artifact){const url=URL.createObjectURL(new Blob([JSON.stringify(result.artifact)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='pickleup-activity-cache.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  syncFeedback=['synced','pending','needs_review'].includes(result?.syncStatus);
   if(result?.message)status.textContent=result.message;
  }catch(error){if(stamp===serial)status.textContent=message(error.code)}
  finally{if(stamp===serial){running=false;action=null;render()}}
@@ -83,7 +86,7 @@ $('[data-activity-consent]').addEventListener('change',render);
 click('[data-activity-enable]','enable',async()=>{if(!$('[data-activity-consent]').checked)return;await data.controller().useAccount();return {message:'Đã đọc kho hoạt động tài khoản. Chưa nhập dữ liệu khách hoặc gửi thay đổi.'}});
 $('[data-activity-device]').addEventListener('click',()=>{serial++;running=false;task('device',async()=>{await data.controller().useDevice();return {message:'Hoạt động đang dùng kho thiết bị; cache và queue tài khoản vẫn giữ riêng.'}})});
 click('[data-activity-read]','read',async()=>{await data.controller().refresh();return {message:'Đã đọc hoạt động tài khoản; lượt chờ vẫn được giữ.'}});
-for(const [selector,forceRetry]of [['[data-activity-send]',false],['[data-activity-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {message:result.status==='synced'?'Đã đồng bộ hoạt động tài khoản.':message(result.status)}});
+for(const [selector,forceRetry]of [['[data-activity-send]',false],['[data-activity-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {syncStatus:result.status,message:result.status==='synced'?'Đã đồng bộ hoạt động tài khoản.':message(result.status)}});
 click('[data-activity-export]','export',async()=>({artifact:await data.controller().exportCache(),message:'Đã xuất cache hoạt động. Giữ tệp riêng tư ngoài trình duyệt; chưa phải backup toàn tài khoản.'}));
 document.addEventListener('pickleup:activity-data',render);data.ready.then(render);render();
 })();

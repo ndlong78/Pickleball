@@ -16,6 +16,9 @@ function render(){
  const sourceChanged=previous!==source;
  if(sourceChanged){serial++;running=false;syncFeedback=false;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
  const configured=PICKLEUP_SYNC_CONFIG?.enabled===true&&PICKLEUP_AUTH_CONFIG?.enabled===true;
+ $('[data-staging-access]').hidden=window.PickleUpStagingPilot?.available()!==true;
+ $('[data-staging-build]').textContent='Phiên bản '+(window.PICKLEUP_BUILD||'chưa rõ');
+ $('[data-staging-open]').hidden=window.PickleUpStagingPilot?.mode()==='account-data';
  body.hidden=!configured;
  $('[data-sync-staging]').hidden=PICKLEUP_SYNC_CONFIG?.scope!=='staging-preferences-checkins';
  $('[data-sync-enable]').disabled=running||s.busy||!s.owner||s.mode!=='guest';
@@ -63,6 +66,7 @@ function show(view){
  if(uncertain){confirm.disabled=true;detail.append(node('p',message('uncertain_operation')))}
 }
 function click(selector,work){$(selector).addEventListener('click',()=>task(work))}
+$('[data-staging-open]').addEventListener('click',()=>{const url=window.PickleUpStagingPilot?.entry();if(url)window.location.assign(url)});
 click('[data-sync-enable]',async()=>{await data.controller().useAccount();status.textContent='Đã đọc kho tài khoản. Dữ liệu khách chưa được nhập hoặc thay đổi.'});
 click('[data-sync-device]',async()=>{await data.controller().useDevice();status.textContent='Đang dùng dữ liệu thiết bị. Queue tài khoản được giữ riêng, chưa bị xóa.'});
 click('[data-sync-read]',async()=>{await data.controller().refresh();status.textContent='Đã đọc dữ liệu tài khoản. Các thay đổi chờ vẫn được giữ để đối soát.'});

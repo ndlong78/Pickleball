@@ -1,11 +1,12 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const pilot=fs.readFileSync(path.join(__dirname,'../modules/data/staging-pilot.js'),'utf8');
 const source=fs.readFileSync(path.join(__dirname,'../modules/data/sync-config.js'),'utf8');
 const origin='https://pickleup-staging.home-309.workers.dev';
-const auth={enabled:true,url:'https://rfeoeagklmaqmkcdhprb.supabase.co'};
+const auth={enabled:true,url:'https://rfeoeagklmaqmkcdhprb.supabase.co',publishableKey:'sb_publishable_synthetic'};
 function config(href,authentication=auth){
  const window={location:href===undefined?undefined:{href},PICKLEUP_AUTH_CONFIG:authentication};
- vm.runInNewContext(source,{window,URL});return window.PICKLEUP_SYNC_CONFIG;
+ const context=vm.createContext({window,URL});vm.runInContext(pilot,context);vm.runInContext(source,context);return window.PICKLEUP_SYNC_CONFIG;
 }
 test('staging sync requires explicit URL opt-in, with the normal staging URL staying disabled',()=>{
  for(const href of [origin+'/',origin+'/?page=settings',origin+'/?pilot=',origin+'/?pilot=all',origin+'/?pilot=preferences-checkins&pilot=preferences-checkins'])assert.equal(config(href).enabled,false);

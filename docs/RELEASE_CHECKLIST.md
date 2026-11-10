@@ -4,6 +4,8 @@
 
 **V6:** đọc thêm [tiến độ hiện hành](V6_PROGRESS_REVIEW.md), [kiến trúc và PR gates](ARCHITECTURE_V6_DATABASE.md), [migration/backend CI runbook](MIGRATION_RUNBOOK.md), [dictionary](DATA_DICTIONARY.md), [threat model](THREAT_MODEL.md). PR0 là mốc tài liệu lịch sử; backend workflow đã chạy Supabase local, REST và Auth thật từ các PR triển khai. Main sau #37 có Academy device state, Court checkpoint, cứu hộ bảy stores và preview tệp chỉ đọc; backend/UI/Pages cùng merge SHA sạch theo progress. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) chuẩn bị operator trên dữ liệu giả; [bằng chứng ngày 09/11](STAGING_AUTH_VERIFICATION.md) ghi nhận OTP/login/kiểm dữ liệu riêng, restore và logout hai tab do owner xác nhận, chưa đủ A/B/expiry/SMTP/pilot. Sau #39/main6cfec8d, Auth bật và sync mục tiêu/check-in chỉ opt-in trên staging; importer/activity/plan còn tắt. Bản sửa5.14.1 giữ các gate này, kiểm stale success sau queue mới cùng tab/qua tab khác và upgrade từ5.14.0. Phải có CI HEAD mới sạch trước ready review. Evidence local không thay staging/production hoặc QA thật. Giữ gate Node24/browser, không reset/test trên production, không tự merge; quyền staging không suy thành quyền production.
 
+**PR6b/V5.15.0:** thêm gate matrix shared helper, default-off/preview/key/project/query, giữ link PR6a, entry đầy đủ reload và independent consents; fresh-browser reads dùng mock/native IDB và phiên Auth thật chỉ RAM riêng biệt. Giữ node/browser/Workers/backend gates; source mới chỉ nghiệm thu dữ liệu giả. [Hợp đồng](STAGING_ACCOUNT_PR6B.md).
+
 ## 1. Trước mỗi nhiệm vụ: evidence thực tế
 
 1. Đọc `main` **HEAD SHA**, `package.json` version, PR mở, commit gần nhất, CI/Pages jobs mới nhất. Không đoán phiên bản theo lịch sử hội thoại.

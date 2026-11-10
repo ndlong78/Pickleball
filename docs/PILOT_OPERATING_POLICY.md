@@ -4,6 +4,8 @@ Quyết định ngày 29/10/2026; cập nhật tiến độ **09/11/2026**. Owne
 
 Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in, event lifecycle và Academy account đã merge/kiểm chứng local; Auth bật sau #36, bốn flags dữ liệu vẫn tắt. Operator đã xác nhận nhận email OTP/login/kiểm dữ liệu riêng, restore và logout hai tab trên staging; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) ghi rõ chưa kiểm đủ A/B/expiry/SMTP hoặc đối chiếu deployment SHA. Chưa có bằng chứng backup/retention job, account deletion hoặc pilot đang vận hành. Các target dưới đây chưa thành SLA; Pages deploy frontend không bật dịch vụ cloud.
 
+**Cập nhật vận hành 10/11 sau #40:** main `cc0d944` /5.14.1, GitHub→Cloudflare tự deploy; owner xác nhận lịch tập đề xuất/check-in giữa hai browser profiles cùng account. PR6b/5.15.0 chỉ mở thử các nguồn hoạt động/giáo án còn lại bằng dữ liệu giả và consent riêng; URL thường và importer vẫn off. [Hợp đồng](STAGING_ACCOUNT_PR6B.md). Các đoạn baseline09/11 ở trên là lịch sử; không dùng count PR hoặc ảnh cùng account thay gates pilot thật. Không thay chính sách chi phí/backup/Auth recovery/delete bên dưới.
+
 ## 1. Phạm vi ủy quyền và chi phí
 
 - Codex được chủ động thiết kế, viết code/tests/migrations, mở các PR theo lộ trình V6 và chọn chi tiết kỹ thuật trong các hợp đồng dữ liệu; không cần hỏi lại các lựa chọn đã được giao. Giữ tám route, guest/offline, check-in thủ công, dữ liệu legacy, RLS và không silent overwrite.

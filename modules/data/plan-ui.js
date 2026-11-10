@@ -2,7 +2,7 @@
 'use strict';
 const host=document.getElementById('planPilot'),data=window.PICKLEUP_PLANS;if(!host||!data)return;
 const $=s=>host.querySelector(s),status=$('[role=status]'),detail=$('[data-plan-detail]');
-let running=false,action=null,serial=0,owner,token,selection=null;
+let running=false,action=null,serial=0,owner,token,selection=null,syncFeedback=false;
 const names={personal_plans:'Giáo án cá nhân',user_selections:'Lựa chọn giáo án và bài Học viện'};
 const errors={plan_selected:"Bỏ chọn giáo án trước khi xóa; đồng bộ sẽ gửi bỏ chọn trước lệnh xóa.",dependency_changed:"Giáo án hoặc lựa chọn liên quan đã đổi; đọc lại và mở mục cần xử lý.",restore_requires_ack:"Chờ xác nhận xóa rồi mới khôi phục.",invalid_plan:"Dữ liệu giáo án cần kiểm tra; xuất cache và đọc lại.",network_error:'Lỗi mạng. Yêu cầu đang chờ được giữ nguyên.',offline:'Đang offline; thay đổi vẫn nằm trên thiết bị.',auth_required:'Đăng nhập lại đúng tài khoản để tiếp tục.',account_changed:'Tài khoản hoặc lựa chọn nguồn đã thay đổi; yêu cầu cũ giữ riêng.',consent_changed:'Lựa chọn nguồn đã thay đổi ở tab khác. Hãy kiểm tra lại.',busy:'Một tab hoặc thao tác khác đang đồng bộ. Thử lại sau.',retry_wait:'Chưa đến lượt thử lại. Chỉ bấm thử lại khi bạn muốn gửi tiếp.',needs_review:'Có giáo án cần xem và xử lý.',uncertain_operation:'Có yêu cầu đã gửi chưa rõ kết quả. Thử lại đúng yêu cầu trước khi quyết định.',local_conflict:'Dữ liệu đã đổi sau khi xem. Mở lại mục cần xử lý trước khi chọn.',epoch_review_required:'Hãy xác nhận đã xem lại dữ liệu sau khi tải lại tài khoản.',quota_exceeded:'Không đủ dung lượng. Chưa xác nhận đã lưu; hãy xuất cache đang có.',upgrade_required:'Cần cập nhật ứng dụng. Dữ liệu chờ vẫn được giữ.',invalid_plan:'Dữ liệu cần kiểm tra. Xuất cache và đọc lại; chưa chuyển sang kho khách.',append_only:'Không thể ghi đè hoặc khôi phục lượt đã tồn tại. Chọn bản tài khoản hoặc xuất cache.',credentials_forbidden:'Không xuất được cache có trường thông tin đăng nhập. Giữ dữ liệu và kiểm tra riêng.',pending:'Còn thay đổi chờ gửi. Bấm đồng bộ tiếp để xử lý lượt kế tiếp.'};
 const message=code=>errors[code]||'Chưa thực hiện được. Hãy giữ cache và kiểm tra nguồn dữ liệu trong mục này.';
@@ -12,10 +12,11 @@ function render(){
  if(changedOwner){serial++;running=false;action=null;owner=s.owner}
  if(changedOwner||token!==nextToken){
   if(!changedOwner&&running&&!['enable','device'].includes(action)){serial++;running=false;action=null}
-  token=nextToken;selection=null;detail.replaceChildren();$('[data-plan-consent]').checked=false;status.textContent=data.notice();
+  syncFeedback=false;token=nextToken;selection=null;detail.replaceChildren();$('[data-plan-consent]').checked=false;status.textContent=data.notice();
  }
  const configured=window.PICKLEUP_PLAN_CONFIG?.enabled===true&&window.PICKLEUP_AUTH_CONFIG?.enabled===true;
  $('[data-plan-body]').hidden=!configured;
+ $('[data-plan-staging]').hidden=window.PICKLEUP_PLAN_CONFIG?.scope!=='staging-plans-selections';
  if(!configured){status.textContent='Kho giáo án pilot chưa bật. Chế độ khách vẫn dùng bình thường.';return}
  const consent=$('[data-plan-consent]');consent.disabled=running||s.busy||s.mode!=='guest';
  $('[data-plan-account]').textContent=s.owner?'Kho riêng của tài khoản đang đăng nhập · kiểm tra email trong mục Tài khoản.':'Đăng nhập để chọn kho giáo án.';
@@ -28,6 +29,7 @@ function render(){
  $('[data-plan-retry]').hidden=!uncertain.length;
  $('[data-plan-count]').textContent=s.mode==='account'?pending.length+' giáo án chờ gửi · '+uncertain.length+' yêu cầu chưa rõ kết quả. Lưu trên thiết bị chưa có nghĩa đã đồng bộ.':'';
  $('[data-plan-clear]').disabled=running||s.busy||s.mode!=='account'||!s.snapshot;$('[data-plan-clear-lesson]').disabled=running||s.mode!=='account'||!data.canSelectLesson();const selected=s.snapshot?.records.find(r=>r.kind==='user_selections'&&r.id==='self');$('[data-plan-restore-selection]').hidden=!selected?.base?.deleted_at;$('[data-plan-restore-selection]').disabled=running||s.mode!=='account'||s.busy||!!selected?.tailOperationId||selected?.reviewRequired;manage(s);
+ if(syncFeedback&&s.mode==='account'&&s.snapshot){const review=ops.some(o=>['conflict','blocked'].includes(o.state));status.textContent=review?message('needs_review'):pending.length?message('pending'):'Đã đồng bộ giáo án tài khoản.';}
  if(s.error)status.textContent=message(s.error);
  for(const input of detail.querySelectorAll('input,select'))input.disabled=running||s.busy;
  if(selection?.valid)selection.valid();
@@ -39,12 +41,13 @@ function render(){
  }
 }
 async function task(type,work){
- if(running)return;running=true;action=type;const stamp=serial;render();
+ if(running)return;running=true;syncFeedback=false;action=type;const stamp=serial;render();
  status.textContent=({enable:'Đang đọc kho giáo án tài khoản…',device:'Đang chuyển về kho thiết bị…',read:'Đang đọc lại giáo án tài khoản…',sync:'Đang đồng bộ giáo án tài khoản…',preview:'Đang đọc dữ liệu cần xử lý…',resolve:'Đang lưu quyết định xử lý…',export:'Đang chuẩn bị tệp cache giáo án…'})[type]||'Đang xử lý giáo án…';
  try{
   const result=await work();if(stamp!==serial)return;
   if(result?.view)show(result.view);
   if(result?.artifact){const url=URL.createObjectURL(new Blob([JSON.stringify(result.artifact)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='pickleup-plan-cache.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  syncFeedback=['synced','pending','needs_review'].includes(result?.syncStatus);
   if(result?.message)status.textContent=result.message;
  }catch(error){if(stamp===serial)status.textContent=message(error.code)}
  finally{if(stamp===serial){running=false;action=null;render()}}
@@ -91,7 +94,7 @@ $('[data-plan-consent]').addEventListener('change',render);
 click('[data-plan-enable]','enable',async()=>{if(!$('[data-plan-consent]').checked)return;await data.controller().useAccount();return {message:'Đã đọc kho giáo án tài khoản. Chưa nhập dữ liệu khách hoặc gửi thay đổi.'}});
 $('[data-plan-device]').addEventListener('click',()=>{serial++;running=false;task('device',async()=>{await data.controller().useDevice();return {message:'Giáo án đang dùng kho thiết bị; cache và queue tài khoản vẫn giữ riêng.'}})});
 click('[data-plan-read]','read',async()=>{await data.controller().refresh();return {message:'Đã đọc giáo án tài khoản; lượt chờ vẫn được giữ.'}});
-for(const [selector,forceRetry]of [['[data-plan-send]',false],['[data-plan-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {message:result.status==='synced'?'Đã đồng bộ giáo án tài khoản.':message(result.status)}});
+for(const [selector,forceRetry]of [['[data-plan-send]',false],['[data-plan-retry]',true]])click(selector,'sync',async()=>{const result=await data.controller().sync({forceRetry});return {syncStatus:result.status,message:result.status==='synced'?'Đã đồng bộ giáo án tài khoản.':message(result.status)}});
 click('[data-plan-export]','export',async()=>({artifact:await data.controller().exportCache(),message:'Đã xuất cache giáo án. Giữ tệp riêng tư ngoài trình duyệt; chưa phải backup toàn tài khoản.'}));
 click('[data-plan-clear]','manage',async()=>{await data.choose(null);return {message:'Đã bỏ chọn trên thiết bị · chờ đồng bộ.'}});
 click('[data-plan-clear-lesson]','manage',async()=>{if(data.getState().mode!=='account')throw Object.assign(Error('source_unavailable'),{code:'source_unavailable'});await data.chooseLesson(null);return {message:'Đã bỏ chọn bài Học viện trên thiết bị · chờ đồng bộ.'}});

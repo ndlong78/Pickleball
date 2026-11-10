@@ -20,6 +20,15 @@ async function enable(page){await page.goto('/Pickleball/?page=settings');await 
 function remote(server,days,revision='0'){return server.apply({p_operation_id:crypto.randomUUID(),p_kind:'user_preferences',p_entity_key:'self',p_action:'put',p_expected_revision:revision,p_epoch:server.epoch,p_payload:{target_days:days,level_band:'1.0–2.0',session_minutes:45,gentle:false,goal_configured:true}})}
 async function goal(page,value){await route(page,'progress');await page.locator('#wgDays').selectOption(String(value));await page.locator('#wgSave').click();await expect(page.locator('#wgStatus')).toContainText('chờ đồng bộ')}
 async function send(page){await route(page,'settings');await page.locator('[data-sync-send]').click()}
+test('mock Auth/RPC, independent browser stores: fresh same-account reader receives sent goals and check-ins',async({page,context,browser})=>{
+ const f=await fixture(context);await enable(page);await goal(page,4);await route(page,'journey');await page.locator('#jTodayMinutes').fill('35');await page.locator('#jDone').click();await expect(page.locator('#jCheckStatus')).toContainText('chờ đồng bộ');await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');
+ const other=await browser.newContext({serviceWorkers:'block'});
+ try{
+  const reader=await fixture(other,f.servers),tab=await other.newPage();await enable(tab);await route(tab,'progress');await expect(tab.locator('#wgDays')).toHaveValue('4');await expect(tab.locator('#wcMinutes')).toHaveText('35 phút');expect(reader.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(0);
+  await goal(page,2);await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');const calls=reader.calls.length;await tab.reload();await expect(tab.locator('#wgDays')).toHaveValue('4');expect(reader.calls).toHaveLength(calls);
+  await route(tab,'settings');await tab.locator('[data-sync-read]').click();await expect(tab.locator(status)).toContainText('Đã đọc dữ liệu tài khoản');await route(tab,'progress');await expect(tab.locator('#wgDays')).toHaveValue('2');await expect(tab.locator('#wcMinutes')).toHaveText('35 phút');expect(reader.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(0);
+ }finally{await other.close()}
+});
 test('mock Auth/RPC, native IDB: later queued edits replace the previous successful sync notice',async({page,context})=>{
  const f=await fixture(context);await enable(page);await goal(page,3);await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');
  for(const [index,value] of [4,5,2].entries()){

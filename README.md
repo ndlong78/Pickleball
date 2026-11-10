@@ -2,14 +2,14 @@
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
 
-## V5.14.1 — sửa thông báo đồng bộ cũ
+## V5.15.0 — thử các nguồn tài khoản trên staging
 
-Sau một lượt gửi thành công, thay đổi mới ở cùng tab hoặc tab khác phải thay thông báo “Đã đồng bộ” bằng trạng thái hàng chờ hiện tại. [Bản sửa5.14.1](RELEASE_V5.14.1.md) giữ gửi thủ công và [URL thử staging](docs/STAGING_SYNC_PR6A.md), không tự nhập dữ liệu khách. Build/cache5.14.1; bản sửa chưa merge/deploy. URL thường tắt sync; ba flags importer/activity/plan còn false.
+[PR6b/V5.15.0](docs/STAGING_ACCOUNT_PR6B.md) thêm nút mở thử trong Dữ liệu và chế độ account-data trên đúng Workers origin/project: mục tiêu/check-in, hoạt động (điểm Học viện, đánh giá, trận đấu, nhật ký) và giáo án/lựa chọn. Mỗi nhóm có consent/read/send riêng; chỉ dữ liệu mới sau chọn nguồn được xếp hàng gửi. Không tự nhập lịch sử khách cũ. URL thường/preview vẫn off, importer luôn false. Build/cache5.15.0; PR chưa merge/deploy.
 
-Baseline main `6cfec8d` sau #39, app5.14.0: [UI42741124415](https://github.com/ndlong78/Pickleball/actions/runs/42741124415), [backend42741124556](https://github.com/ndlong78/Pickleball/actions/runs/42741124556) và [Pages42741124047](https://github.com/ndlong78/Pickleball/actions/runs/42741124047) success cùng merge SHA; logs UI/backend sạch0 fail/flaky/retry. Operator đã cung cấp ảnh build5.14.0/flag=true và nguồn tài khoản staging, có thay đổi mới chưa gửi. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md) giữ giới hạn; CI bản sửa ghi riêng ở PR đúng HEAD, chưa coi Managed writes/A/B đã đạt.
+Baseline main `cc0d944` sau #40, app5.14.1: [UI42834392634](https://github.com/ndlong78/Pickleball/actions/runs/42834392634), [backend42834392650](https://github.com/ndlong78/Pickleball/actions/runs/42834392650), [Pages42834391795](https://github.com/ndlong78/Pickleball/actions/runs/42834391795) và Cloudflare Production đều success cùng SHA; logs UI/backend sạch0 fail/flaky/retry. Operator đã xác nhận domain chính5.14.1, GitHub tự deploy và A→B lịch tập đề xuất/check-in khớp ngày/trạng thái/phút. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md) tách kết quả này khỏi các nhóm mới/expiry/SMTP/physical QA chưa kiểm. CI exact HEAD của PR6b ghi trong mô tả PR sau đọc logs.
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
-- Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; sync chỉ mở trên URL thử đủ điều kiện, importer/activity/plan còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
+- Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; ba nguồn chỉ mở trên URL thử đủ điều kiện và phải chọn riêng; importer còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
 - Main có giáo án, nhật ký và lựa chọn bài Học viện tài khoản qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
 - Main giữ checklist/bước tập trung tài khoản qua reload. Main cho chủ động pause/save/restore điểm dừng Court, không tự chạy lại; Academy timer vẫn RAM. Bản cứu hộ cache V6 đã chứa state được lưu, chưa restore; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
 - Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
@@ -18,7 +18,7 @@ Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync
 
 ## Cloudflare Workers staging
 
-Đích staging đã chọn: **https://pickleup-staging.home-309.workers.dev/**. Đây là Workers Static Assets; dùng [hướng dẫn Workers](docs/CLOUDFLARE_WORKERS_STAGING.md) thay phần Pages của PR #36. `npm run build:cloudflare` chỉ đóng gói runtime vào `dist`; Wrangler được pin và CI kiểm dry-run/local Workers cùng browser regression trên bản build. PR6a nâng app/cache5.14.0 để nhận cấu hình URL opt-in mới; [hợp đồng thử staging](docs/STAGING_SYNC_PR6A.md). Operator đã báo luồng OTP/login/kiểm dữ liệu riêng, restore và logout hai tab trên staging; commit deploy thực tế và các ca phiên còn cần đối chiếu theo [sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md). Cấu hình Supabase/SMTP theo [runbook](docs/SUPABASE_STAGING_DEPLOYMENT.md).
+Đích staging đã chọn: **https://pickleup-staging.home-309.workers.dev/**. Đây là Workers Static Assets; dùng [hướng dẫn Workers](docs/CLOUDFLARE_WORKERS_STAGING.md) thay phần Pages của PR #36. `npm run build:cloudflare` chỉ đóng gói runtime vào `dist`; Wrangler được pin và CI kiểm dry-run/local Workers cùng browser regression trên bản build. PR6a mở mục tiêu/check-in; PR6b/app5.15.0 thêm các nguồn hoạt động/giáo án trong chế độ thử [account-data](docs/STAGING_ACCOUNT_PR6B.md). Operator đã báo luồng OTP/login/kiểm dữ liệu riêng, restore và logout hai tab trên staging; commit deploy thực tế và các ca phiên còn cần đối chiếu theo [sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md). Cấu hình Supabase/SMTP theo [runbook](docs/SUPABASE_STAGING_DEPLOYMENT.md).
 
 ## Phiên bản 1.1
 

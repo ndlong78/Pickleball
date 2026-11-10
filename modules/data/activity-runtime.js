@@ -8,12 +8,13 @@ function projectDomains(value){return typeof extra?.project==='function'?extra.p
 let domains=projectDomains(null);
 let controller=null,state={mode:'loading',owner:null,busy:false,error:null,snapshot:null,projection:null},view=empty(),token=0,tag='';
 function legacy(key){try{return localStorage.getItem(key)}catch(_){return null}}
-function notice(){
+function sourceNotice(){
  if(state.mode==='guest')return 'Hoạt động: dữ liệu khách trên thiết bị. Đăng nhập không tự nhập điểm, đánh giá hoặc trận đấu.';
  if(state.mode==='loading')return 'Học viện: đang xác định nguồn dữ liệu, chưa thể lưu điểm.';
  if(state.mode==='error')return 'Không đọc được kho hoạt động tài khoản. Chưa chuyển sang ghi dữ liệu khách; đọc lại hoặc xuất cache trong Dữ liệu.';
  return 'Học viện, đánh giá, nhật ký tập và trận đấu: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Giáo án và lựa chọn cá nhân có nguồn riêng trong Dữ liệu. Lựa chọn bài Học viện có nguồn giáo án riêng. Checklist/bước tập trung Học viện lưu riêng theo tài khoản trên trình duyệt này; timer chỉ giữ trong phiên trang, không gửi lên cloud. Điểm và trận đấu không phải attendance hoặc DUPR.';
 }
+function notice(){return (root.PICKLEUP_ACTIVITY_CONFIG?.scope==='staging-activity-events'?'Thử nghiệm staging · chỉ dùng dữ liệu giả. ':'')+sourceNotice()}
 function emit(){
  for(const element of document.querySelectorAll('[data-activity-notice]')){element.textContent=notice();element.dataset.source=state.mode}
  document.dispatchEvent(new Event('pickleup:activity-data'));

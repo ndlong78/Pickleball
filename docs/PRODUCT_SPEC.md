@@ -1,8 +1,8 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Trạng thái 10/11/2026:** Main `6cfec8d` / V5.14.0 sau #39; UI/backend/Pages sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Auth bật; mục tiêu/check-in chỉ mở qua URL thử staging đủ điều kiện, importer/activity/plan còn tắt. Operator đã cung cấp ảnh build5.14.0/flag=true và nguồn tài khoản, có thay đổi mới chưa gửi; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ giới hạn Managed/A-B/SMTP. Full V6 restore/purge, backup và pilot còn gate.
+**Trạng thái 10/11/2026:** Main `cc0d944` / V5.14.1 sau #40; UI/backend/Pages/Cloudflare sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Operator xác nhận GitHub tự deploy, lịch tập đề xuất/check-in A→B đúng ngày/trạng thái/phút. [Sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi, không suy thành các nhóm hoạt động/giáo án hoặc expiry/SMTP/physical QA đã đạt. Full V6 restore/purge, backup và pilot còn gate.
 
-**Bản sửa V5.14.1 đang PR:** [Trạng thái đồng bộ](../RELEASE_V5.14.1.md) cập nhật khi có queue mới sau lượt gửi thành công, gồm tab khác. Giữ [URL thử staging](STAGING_SYNC_PR6A.md), chọn nguồn/đọc/gửi thủ công và dữ liệu giả; chưa merge/deploy bản sửa.
+**PR6b/V5.15.0 đang triển khai:** [Chế độ thử account-data](STAGING_ACCOUNT_PR6B.md) mở ba flags trên đúng staging, nguồn/consent/read/send riêng. Chỉ dữ liệu mới sau chọn nguồn được xếp hàng, lịch sử khách không tự nhập. Nút vào chế độ thử và phiên bản trong Dữ liệu; importer vẫn tắt. Bản PR chưa merge/deploy, chỉ dữ liệu giả.
 
 ## 1. Mục đích, đối tượng, triết lý
 

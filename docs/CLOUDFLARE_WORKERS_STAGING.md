@@ -4,6 +4,8 @@ Cập nhật nghiệm thu 09/11/2026. Đích được owner chọn: **https://pi
 
 Main nguồn `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` sau owner merge [#37](https://github.com/ndlong78/Pickleball/pull/37), app/cache5.13.1. Auth bật với URL/key công khai; import/sync/activity/plan vẫn false. Operator đã xác nhận email OTP/login/kiểm dữ liệu riêng, restore và logout hai tab; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) phân biệt kết quả báo lại với phần chưa kiểm. Chưa đối chiếu deployment SHA, full migrations/RLS, SMTP/sender/quota hoặc signup server settings. Không tự mở signup hoặc bật bốn flags dữ liệu.
 
+**Cập nhật sau #40:** primary đã tự build/deploy từ main `cc0d944` /5.14.1, Cloudflare Production build8bb66828 success và operator xác nhận phiên bản. Luồng owner chọn từ đây là GitHub→main→Cloudflare, không tải ZIP/upload thủ công. PR6b/5.15.0 thêm [chế độ account-data](STAGING_ACCOUNT_PR6B.md), không cần build variables, key hoặc migration mới. Preview PR chỉ preview, không mở sync trên hostname preview; owner merge riêng để primary tự cập nhật. Bản PR6b chưa merge/deploy.
+
 ## 1. Phần repository chuẩn bị
 
 - `npm run build:cloudflare` tạo mới `dist/` từ static runtime: shell/manifest/SW, root JS/CSS, modules/pages/icons/vendor và license Supabase. Không copy docs/tests/scripts/SQL/node_modules, dotfiles hoặc JSON dữ liệu. Từ chối symlink trong cây runtime; không đọc biến môi trường chứa credentials. `dist` là output sinh lại, không phải nơi lưu dữ liệu riêng.

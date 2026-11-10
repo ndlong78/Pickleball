@@ -3,7 +3,7 @@
  * Scripts are inserted in dependency order, with page-specific CSS loaded on demand. */
 (function(root){
 "use strict";
-const ACCOUNT_FILES=["modules/auth-config.js","modules/auth-adapter.js","modules/data/local-repository.js","modules/data/pull-controller.js","modules/data/sync-controller.js"];
+const ACCOUNT_FILES=["modules/auth-config.js","modules/data/staging-pilot.js","modules/auth-adapter.js","modules/data/local-repository.js","modules/data/pull-controller.js","modules/data/sync-controller.js"];
 const DOMAIN_FILES=["modules/data/sync-config.js","modules/data/domain-core.js","modules/data/domain-controller.js","modules/data/domain-runtime.js"];
 const ACTIVITY_FILES=["modules/data/activity-config.js","modules/data/activity-core.js","modules/data/activity-controller.js","modules/data/academy-source-core.js","modules/data/activity-source-core.js","curriculum.js","advanced-curriculum.js","modules/data/activity-runtime.js","modules/data/activity-history-ui.js"];
 const PLAN_FILES=["modules/data/plan-config.js","modules/data/plan-core.js","modules/data/plan-controller.js","modules/data/plan-runtime.js"];
