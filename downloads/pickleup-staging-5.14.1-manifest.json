@@ -1,0 +1,436 @@
+{
+  "source_commit": "13bddb6d3a43e47692ff0a6abf0cfef3231d285e",
+  "version": "5.14.1",
+  "pull_request": 40,
+  "files": 102,
+  "zip_bytes": 306133,
+  "zip_sha256": "a85cbc00f9fac7a639a075e3e6259d6a4c75e7cbbd47b4cf56ad8a589b9f055c",
+  "entries": [
+    {
+      "path": "_redirects",
+      "sha256": "e054abc39b0cd77fbbee4d95738340661679742ee997aa932a9732cb4d629861"
+    },
+    {
+      "path": "advanced-coach-core.js",
+      "sha256": "308abcee139faef1bc9d9ee1a0390b01baeeacd7a6fb266133b63bb6403cd72b"
+    },
+    {
+      "path": "advanced-coach-ui.js",
+      "sha256": "c8cc69c1c2db0b8d17603f8a52999301fbb32cc296f0034facb794dd186dab84"
+    },
+    {
+      "path": "advanced-curriculum.js",
+      "sha256": "cf69c2c14a16faed630e90f01dcf61dfa438c40e53f3d2df17c1b5197981807a"
+    },
+    {
+      "path": "advanced-diagrams.js",
+      "sha256": "430a4bad19fd67acda2b8027449ab33fd2424b02684405cf5e5c5e5a94b8262d"
+    },
+    {
+      "path": "advanced-readiness.js",
+      "sha256": "aadc39b7e0df34a5f21ebce43e273e191d0d39d0f437c3b6f1953ce5f4f0c336"
+    },
+    {
+      "path": "advanced.css",
+      "sha256": "e244a31fcd80c2ea8b93079f2ed0e8b6d39dd706f6fa7b4b793a46150cb90a6f"
+    },
+    {
+      "path": "court-diagrams.js",
+      "sha256": "044ad38a512092fda200773d5bdc0fa71dc3e471365ab3a0b72839170ed067eb"
+    },
+    {
+      "path": "curriculum.js",
+      "sha256": "d038b907cb8c6c510aad8012dc01a118310db07a2f102fc94386ec9ab6ea42f5"
+    },
+    {
+      "path": "dashboard.js",
+      "sha256": "2c9622de5de3543c58edf31ec2a3281b2dea3bc89b0c35afbe7a2c701c87582c"
+    },
+    {
+      "path": "icons/icon-192.png",
+      "sha256": "d7616eb198e7f2d1a8d7368dba1db6fcbeb06cfb940dd9bf815a27cc6216b0c1"
+    },
+    {
+      "path": "icons/icon-512.png",
+      "sha256": "88733cf9fb9342e0c4052f1aa7eca3b00f3c6ffb0f5db032d8af32521cfb15ba"
+    },
+    {
+      "path": "icons/icon.svg",
+      "sha256": "ebd64f9880f26771356c6bae5dc24ae20787cda303963ed85c620aadbc7a428f"
+    },
+    {
+      "path": "index.html",
+      "sha256": "27d5a50001057e334d9fe85a270de2b4018ca75831e68d26401e9d84f103341e"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "sha256": "39f1e09eeada308267cc1f366f41dba9f7f5378cdab0a86583976e3350f24d69"
+    },
+    {
+      "path": "match-journal.js",
+      "sha256": "8c016aed66db6f9da8a2a76cb517b68cb2224bacb99a612063767ec0091ad1a8"
+    },
+    {
+      "path": "mobile-ui.js",
+      "sha256": "e68fea56bd448472dafc7cc74bbf7eda048f0029b294cb4d3d8f1d356aba11fa"
+    },
+    {
+      "path": "modules/academy-insights-core.js",
+      "sha256": "81801902f909d33676459e26603632a96c3d1459728a1181030736c397ee768f"
+    },
+    {
+      "path": "modules/academy-insights-ui.js",
+      "sha256": "7fbb66443031f791c12233bbb4677889f44ef98d16f1017a257078fd0c73714c"
+    },
+    {
+      "path": "modules/academy-page.js",
+      "sha256": "89d4931d827e105c073aac561388e51c4b315906f52921b4341a6e88b3d11ead"
+    },
+    {
+      "path": "modules/academy-trends-core.js",
+      "sha256": "dc0f63a4ab84eff54204bf5ab18b717d89af5032a9165960b709f8a6a2300656"
+    },
+    {
+      "path": "modules/assessment-self-ui.js",
+      "sha256": "7f2dcdda23ed20e77c853e1116a810dd94ca78c3d76957859f134a1177c63a63"
+    },
+    {
+      "path": "modules/assessments-and-backup.js",
+      "sha256": "768298eb2c8578d1cb827db20a916d2c9de375c59b10a5c27a417ea7009ece6c"
+    },
+    {
+      "path": "modules/auth-adapter.js",
+      "sha256": "7efc85851582efa108b4f7fc3d8afa5763d97749562aa22bbe0bb83ed74b0bbb"
+    },
+    {
+      "path": "modules/auth-config.js",
+      "sha256": "997df2780c846d0a5ef02c9443f6a4b9173e3758d7ab0a25a19bc0e151e30e17"
+    },
+    {
+      "path": "modules/auth-ui.js",
+      "sha256": "edf4f6c0f3c2e25b5ccfa40ca8e0aa37d3da5765f1518173b0aaa4e06de7628b"
+    },
+    {
+      "path": "modules/data/academy-practice-runtime.js",
+      "sha256": "21e57e44862f1dcfdc61d326c637d322e4ee49a3ccfec836258b2abc86e6351f"
+    },
+    {
+      "path": "modules/data/academy-source-core.js",
+      "sha256": "a5867e440d0510c6e7d6264781a97f3f7da800e346267b95c0217ae7bf5e2d4d"
+    },
+    {
+      "path": "modules/data/account-rescue-controller.js",
+      "sha256": "3b962dcc703cf53a64eddd0e36ffe035d9488fcc5596c1285ea40d2ac71f599a"
+    },
+    {
+      "path": "modules/data/account-rescue-core.js",
+      "sha256": "70afe4dd76e37221c53402e61a3b424db020f6264eacfc67ea1fee1b87b1f8ae"
+    },
+    {
+      "path": "modules/data/account-rescue-ui.js",
+      "sha256": "a397449a2f36b7f04558c002ced7a691f6269ccf61a83779942fe1fd3fe295c0"
+    },
+    {
+      "path": "modules/data/activity-config.js",
+      "sha256": "b2a07071ad6d7267aee483ab01d2be773ef168c1a1a2ed114c706c45e716f874"
+    },
+    {
+      "path": "modules/data/activity-controller.js",
+      "sha256": "fb26e03faaae2e1f1987db69f24c640e28cf6cbd6a5e8e72d8ea338a0332e4a1"
+    },
+    {
+      "path": "modules/data/activity-core.js",
+      "sha256": "b7124176908cfc03055556f0d93516f3225b0363d1604b198ac317afcac00370"
+    },
+    {
+      "path": "modules/data/activity-history-ui.js",
+      "sha256": "d0dff1093cc533dd7fe15ffcfeedc5fb751e294b980d8c4c2529f3262e9e2ac4"
+    },
+    {
+      "path": "modules/data/activity-runtime.js",
+      "sha256": "78d0c4339f60897fb9e4dec25105893b55f5f0d53ef38c50d704b0f9ee7cc2b5"
+    },
+    {
+      "path": "modules/data/activity-source-core.js",
+      "sha256": "82c859fc9fd91585b0df35968f16b9e3fecec1d6ef3a259599cf9ae9ebcdf93d"
+    },
+    {
+      "path": "modules/data/activity-ui.js",
+      "sha256": "d7f9cb6d3a3a1702c89ccf37cad4859678281e439eecb2ef3e06481acad40e42"
+    },
+    {
+      "path": "modules/data/court-checkpoint-runtime.js",
+      "sha256": "9bcb17da17151e382348cfb20c93313c4a5f2516923a71f67cf5ec841657a4b2"
+    },
+    {
+      "path": "modules/data/domain-controller.js",
+      "sha256": "da0314587e621eda3e402846d3ab259627b0e2da85a8c86e10287d263abe797f"
+    },
+    {
+      "path": "modules/data/domain-core.js",
+      "sha256": "ea1d8af39fefa0b520bee93094ea5258dc790fbd39762da5ab64371aa0400249"
+    },
+    {
+      "path": "modules/data/domain-runtime.js",
+      "sha256": "4214086444e67a2d54599b96997cc0fef7684b436a11f8527d51697ecbed0b94"
+    },
+    {
+      "path": "modules/data/import-config.js",
+      "sha256": "bb7a1eb7376a7e11774a74981e977e262ff64ccd612849eedebff014ac2b4c85"
+    },
+    {
+      "path": "modules/data/import-controller.js",
+      "sha256": "9f855ea1ab87e4780110377bdc909d421654c40c17ca528e7b95f7d07a47d3ce"
+    },
+    {
+      "path": "modules/data/import-core.js",
+      "sha256": "b7d564fb1d2eb21f08236ae3c1243da32142ca604f9093289e8ab8e0dcd286eb"
+    },
+    {
+      "path": "modules/data/import-ui.js",
+      "sha256": "3cbad4de044a6c5166d4d8f1aa38e5f5ee7f14be1b498557bbe4e4e641ea2473"
+    },
+    {
+      "path": "modules/data/local-repository.js",
+      "sha256": "9a18718eaf5732d0b94aab537fe44d7271a58017079fcf626b09bb0836d6834e"
+    },
+    {
+      "path": "modules/data/plan-config.js",
+      "sha256": "687e0eb340b8710220a048b19de3ee632981fa0e61191d6700c321b1569ac686"
+    },
+    {
+      "path": "modules/data/plan-controller.js",
+      "sha256": "ad33e2e4bd9fb54c9fd873dbd7570669dbc37c6f0ed607f3d084e56ead08a023"
+    },
+    {
+      "path": "modules/data/plan-core.js",
+      "sha256": "9244837fd093b3a6077736685ea9dd010420eae5f10ede3f121e4e6a873d6896"
+    },
+    {
+      "path": "modules/data/plan-runtime.js",
+      "sha256": "188c02338b72686db96b178659f2f8a773e0e717df3621674f5bbabd4744f76f"
+    },
+    {
+      "path": "modules/data/plan-ui.js",
+      "sha256": "fe24680dcef67833431e215b97fb4e9ab79252822175d2ac5eeef70d67399ff4"
+    },
+    {
+      "path": "modules/data/pull-controller.js",
+      "sha256": "a8daa9fe411e6a00ebe312c88a2708f746f5fe438d9e3ecb31ae8b3f9225762f"
+    },
+    {
+      "path": "modules/data/rescue-core.js",
+      "sha256": "11d122d1c5ce28d1895d1b99b0e13b4a224e476118ff42643d7a0b1c10599cb3"
+    },
+    {
+      "path": "modules/data/rescue-ui.js",
+      "sha256": "0bdb5b01657fe4193c3cf5f600fec5e775d41d95a769a7b83e5ff074c7d2df24"
+    },
+    {
+      "path": "modules/data/sync-config.js",
+      "sha256": "5bd953715d47d5171c4588d03c92f2a7c7e8ba74024b21849e84146e19aad5da"
+    },
+    {
+      "path": "modules/data/sync-controller.js",
+      "sha256": "9a39c81bf2a490efcaae416f6b35bd00f612cebdd8f89d969d66bd0d0430bc19"
+    },
+    {
+      "path": "modules/data/sync-ui.js",
+      "sha256": "0e4150ac49c50194d570380fbe1ebab830bb5541441706a87257c60d43f0b9f9"
+    },
+    {
+      "path": "modules/page-catalog.js",
+      "sha256": "006f508ced8bf9183fb47eec6d81311f1bc3dd20dd322acf09142c512daa7bb0"
+    },
+    {
+      "path": "modules/page-layout.css",
+      "sha256": "c44ecc625e4468564f1b56dc613a9d163f85dde29b4b1692abef7c7f82903a31"
+    },
+    {
+      "path": "modules/page-loader.js",
+      "sha256": "5ebdbf9e1d1e1f2191459450abc844940397d12c1e104ad04a78da5d200b4df5"
+    },
+    {
+      "path": "modules/page-performance.js",
+      "sha256": "b9695ce95d13f71bc1dcaec4b3a2968a6cd1c8fb6b67a79fffaffda094570aa4"
+    },
+    {
+      "path": "modules/page-router.js",
+      "sha256": "6748ae8492d95bc84a88f0422422542ef8bb80c274b0d802c057706b0af1a14e"
+    },
+    {
+      "path": "modules/plan-reality-core.js",
+      "sha256": "530a3e6be36bb3021cdaf6c67c4c533b69645714be1403fd45b22d0e82ffb795"
+    },
+    {
+      "path": "modules/plan-reality-ui.js",
+      "sha256": "281f12f7ad5481b7b6620ddbc7abeda5610597771400cfed5dfbc56eec6ccb66"
+    },
+    {
+      "path": "modules/pwa-client.js",
+      "sha256": "baf5eaed7b0082d2a5cd74b79124dd616a0645b0b5a7639d49f4e39a32b0d832"
+    },
+    {
+      "path": "modules/training-journey-core.js",
+      "sha256": "88a6fdc6d354a0786bbf05b610f940a5c6c5fecf3646a56d82c7ad2e43bdeb5a"
+    },
+    {
+      "path": "modules/training-journey-ui.js",
+      "sha256": "e826f572e51e7ee24811084af8ff2acdada51321705331f38d825fc5f90aaba2"
+    },
+    {
+      "path": "modules/web-vitals.js",
+      "sha256": "54047f136f2dbf3de05ce59cc1d8cb136627d007c74b6b94f3c416b8bebd01aa"
+    },
+    {
+      "path": "modules/weekly-checkins-core.js",
+      "sha256": "e71611d3d24ff29fbf359feefa7486ee94d6b31c044050905d1c6270e6d341f7"
+    },
+    {
+      "path": "modules/weekly-checkins-ui.js",
+      "sha256": "e290fa848fe7689c9cad762423f51a9a9fcf58ce67e6ebc361491451c59544c9"
+    },
+    {
+      "path": "modules/weekly-goals-core.js",
+      "sha256": "7894d94876efaff66e80017a17dadfa132df380a4c9727ffa98d7b36ed619874"
+    },
+    {
+      "path": "modules/weekly-goals-ui.js",
+      "sha256": "0c5187ca5ce38af3be2e71dcbbf5dc05fb40d8d43ae792d85e785d247c736dcf"
+    },
+    {
+      "path": "modules/weekly-plan-core.js",
+      "sha256": "068c29aea27d5f3153480fe3acadd156e89b30a8722118aae1a1f8e48b5ec958"
+    },
+    {
+      "path": "modules/weekly-plan-ui.js",
+      "sha256": "16448712a1ec92ebc24957bab4055056854d997586be533c9ddfb786e9d4cdea"
+    },
+    {
+      "path": "modules/weekly-practice.js",
+      "sha256": "6f1a5aedf86b9cbdaaa93261d5102775498841f94e4a807d05212fe4cb4a3db7"
+    },
+    {
+      "path": "pages/academy.html",
+      "sha256": "19f58e43fd520596ada8290b33f564429be2df8c250a28ef0ada65e1a25c1dea"
+    },
+    {
+      "path": "pages/coach.html",
+      "sha256": "bb749e08f4ab163446699830b0bdbe0915a318ecaa05e452601bd1b0d7f59a3c"
+    },
+    {
+      "path": "pages/court.html",
+      "sha256": "499cf232559ce707ed508874352a2e8bdd68cd88230f7d2bbcd40f5e92e1c750"
+    },
+    {
+      "path": "pages/journey.html",
+      "sha256": "97a956bb9f47e497a1a822e8a03c6f383c3c5ea8b010c8d26ab466a10d330efe"
+    },
+    {
+      "path": "pages/matches.html",
+      "sha256": "cba04bef05c685ea4c93b02a31f3b370fbc97ad9bdfd23e6ee271fb4d57c4b32"
+    },
+    {
+      "path": "pages/progress.html",
+      "sha256": "ea38c0de3d4acda9721612203994ae009a64738e76a8a7c69c7e5266b788053b"
+    },
+    {
+      "path": "pages/settings.html",
+      "sha256": "eb9659f15140f27d6549719c81fdee27fb3c2f113c80b14315e4b733c15dfc2e"
+    },
+    {
+      "path": "personalized-core.js",
+      "sha256": "409d94b45ace5f6e6025a1bffd9b0f36d68d36e79549098b8e9c2d6d560f1d74"
+    },
+    {
+      "path": "personalized-ui.js",
+      "sha256": "6ecffd5c2879d07a5f785ba6d22156d2c27abd8b0b84d91bcbdcdd22529cf2da"
+    },
+    {
+      "path": "practice-clock.js",
+      "sha256": "fde3d7a9d8db36178aa5c05ffe4de50e683ff1b8b7893ad5137e50f7a4bd5e29"
+    },
+    {
+      "path": "practice-conditions.js",
+      "sha256": "4f3e94cf857ce6478266da7d61ccad7723d1fc67f6af3c07fb89dbdcf1c1d31a"
+    },
+    {
+      "path": "practice-diagrams.js",
+      "sha256": "576a1db0339373ff338b7583572d93e6543f23f7d7f9b23e43f3bf575c314184"
+    },
+    {
+      "path": "practice-runner.js",
+      "sha256": "eea59fc19656462f4a6c0a96ea1d578073d40d2acaf821daada34428cbeca945"
+    },
+    {
+      "path": "responsive.css",
+      "sha256": "6482fea03074b8354444db2304a7c33fae4a4514d2c452b33ee47c501ce74127"
+    },
+    {
+      "path": "stage-assessment.js",
+      "sha256": "4bc5de45c6820d1498f3b39c6743e8d4f5d4b15df3cf0e04ace7f09e51e32f52"
+    },
+    {
+      "path": "sw.js",
+      "sha256": "7d4913a0c2ac917c3d66361efa72635189ba4938bb5f2591e5e81e2e741be61e"
+    },
+    {
+      "path": "tactical-insights-core.js",
+      "sha256": "af8431cbc8420d94c2b195c0f6c1fb119900c2b940b3f1cba182b306f29b0abe"
+    },
+    {
+      "path": "tactical-insights-ui.js",
+      "sha256": "2213b9eb48b7efaf1cab23d0973c1c2a90f95d7909fa8b176a9f5a2cbe441879"
+    },
+    {
+      "path": "tactical-insights.css",
+      "sha256": "6a839d95329c3f43dbdafb1e9a4bb7d1f9490aad0cc0578ea81e8fd1e367860d"
+    },
+    {
+      "path": "training-evaluation-core.js",
+      "sha256": "2fd6d0a7415bb5b6d974f8d6ee1415fa2db20086ca2401ea5da88a248df167b9"
+    },
+    {
+      "path": "training-evaluation-ui.js",
+      "sha256": "5cd64f845417368512a6ea6eb09c5adeb0c20dccd88114ceee4c0e739d67623a"
+    },
+    {
+      "path": "training-evaluation.css",
+      "sha256": "718a16246f65e7bbd8112961971c423a830b70733ceba41446898ca3a3f88883"
+    },
+    {
+      "path": "training-history-ui.js",
+      "sha256": "6e74d13169e8510ac138e1221a16a6f4198ccae84e75d6303ed9aada3cd8666a"
+    },
+    {
+      "path": "training-log-core.js",
+      "sha256": "0e99ce7f7223372c2db74cd8cfc960bf90cc7b9d3b7eba0331afd9808a88b9a9"
+    },
+    {
+      "path": "vendor/SUPABASE-LICENSE",
+      "sha256": "334dd6820e2eaeab2064e7c59001b810566728a28a41a7c1dbf69bbee17d0936"
+    },
+    {
+      "path": "vendor/supabase.js",
+      "sha256": "441505936d6b949a94501e9cbe7e3e82dd474a500b24d64de58f834bd84efb3e"
+    }
+  ],
+  "merge_status_at_packaging": "not_merged",
+  "ci": {
+    "head_sha": "13bddb6d3a43e47692ff0a6abf0cfef3231d285e",
+    "ui_run": 42828298883,
+    "backend_run": 42828298984,
+    "unit_pass": 332,
+    "browser_pass": 540,
+    "additional_webkit_pass": 10,
+    "pgtap_pass": 275,
+    "rest_pass": 45,
+    "real_auth_local_engines": [
+      "Chromium",
+      "WebKit"
+    ],
+    "fail": 0,
+    "flaky": 0,
+    "retry": 0
+  }
+}
