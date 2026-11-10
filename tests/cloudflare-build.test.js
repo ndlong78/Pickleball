@@ -55,7 +55,8 @@ test('asset symlinks cannot publish files outside the selected runtime', t => {
 
 test('Wrangler targets a static staging Worker without server secrets or custom routes', () => {
   const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../wrangler.jsonc'), 'utf8'));
-  assert.deepEqual(Object.keys(config).sort(), ['$schema', 'assets', 'compatibility_date', 'name', 'workers_dev']);
+  assert.deepEqual(Object.keys(config).sort(), ['$schema', 'assets', 'compatibility_date', 'name', 'previews', 'workers_dev']);
+  assert.deepEqual(config.previews, {});
   assert.equal(config.name, 'pickleup-staging');
   assert.equal(config.workers_dev, true);
   assert.deepEqual(config.assets, {directory: './dist'});
