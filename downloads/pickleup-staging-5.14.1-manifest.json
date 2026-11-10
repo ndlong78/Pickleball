@@ -1,5 +1,5 @@
 {
-  "source_commit": "13bddb6d3a43e47692ff0a6abf0cfef3231d285e",
+  "source_commit": "4e17d5c803cc80d0fa1c128207cccb21007ae325",
   "version": "5.14.1",
   "pull_request": 40,
   "files": 102,
@@ -417,6 +417,19 @@
   ],
   "merge_status_at_packaging": "not_merged",
   "ci": {
+    "head_sha": "4e17d5c803cc80d0fa1c128207cccb21007ae325",
+    "ui_run": 42831272660,
+    "backend_run": 42831272587,
+    "status": "pending; not yet a release gate pass"
+  },
+  "external_build_check": {
+    "name": "Workers Builds: pickleup-staging",
+    "head_sha": "4e17d5c803cc80d0fa1c128207cccb21007ae325",
+    "conclusion": "success",
+    "details_url": "https://dash.cloudflare.com/30960f67a013cb4a835d79f2194508a0/workers/services/view/pickleup-staging/production/previews/fix-v5-14-1-sync-status/builds/817bbeb2-9250-496e-9fb7-73fbfd43b977",
+    "scope": "Preview build only; not production promotion or Managed sync acceptance"
+  },
+  "prior_github_actions": {
     "head_sha": "13bddb6d3a43e47692ff0a6abf0cfef3231d285e",
     "ui_run": 42828298883,
     "backend_run": 42828298984,
@@ -433,12 +446,5 @@
     "flaky": 0,
     "retry": 0,
     "scope": "GitHub Actions UI/backend only"
-  },
-  "external_build_check": {
-    "name": "Workers Builds: pickleup-staging",
-    "conclusion": "failure",
-    "details_url": "https://dash.cloudflare.com/30960f67a013cb4a835d79f2194508a0/workers/services/view/pickleup-staging/production/builds/28fae355-cc6d-45c9-8a6c-c309a1bea82f",
-    "reason": "not provided in GitHub check output",
-    "release_gate": "blocked; PR remains draft"
   }
 }
