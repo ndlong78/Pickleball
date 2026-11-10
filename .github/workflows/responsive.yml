@@ -74,6 +74,8 @@ jobs:
         run: npx playwright test tests/page-routing.spec.cjs --project="WebKit responsive" --grep="delayed optional font does not block" --repeat-each=5 --retries=0
       - name: Run iPhone and iPad viewport smoke tests
         run: npm run test:responsive
+      - name: Verify WebKit Academy countdown without retries
+        run: npx playwright test tests/v42-timer.spec.cjs --project="WebKit responsive" --grep="countdown 390" --repeat-each=10 --retries=0
       - name: Upload V3.8 browser benchmark
         if: always()
         uses: actions/upload-artifact@v6

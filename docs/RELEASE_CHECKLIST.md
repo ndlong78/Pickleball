@@ -6,6 +6,8 @@
 
 **PR6b/V5.15.0:** thêm gate matrix shared helper, default-off/preview/key/project/query, giữ link PR6a, entry đầy đủ reload và independent consents; fresh-browser reads dùng mock/native IDB và phiên Auth thật chỉ RAM riêng biệt. Giữ node/browser/Workers/backend gates; source mới chỉ nghiệm thu dữ liệu giả. [Hợp đồng](STAGING_ACCOUNT_PR6B.md).
 
+Playwright CI bật `failOnFlakyTests`: một ca chỉ qua sau retry vẫn làm job thất bại và giữ failure report. Countdown Học viện đợi lazy module sẵn sàng, dùng font hệ thống trong fixture; ca font mạng chậm kiểm riêng, không bỏ. WebKit countdown390 còn chạy lặp10 lần với retries=0; không tăng timeout hoặc giảm assertions để xanh.
+
 ## 1. Trước mỗi nhiệm vụ: evidence thực tế
 
 1. Đọc `main` **HEAD SHA**, `package.json` version, PR mở, commit gần nhất, CI/Pages jobs mới nhất. Không đoán phiên bản theo lịch sử hội thoại.
