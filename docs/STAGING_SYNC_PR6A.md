@@ -43,6 +43,8 @@ Sync không khởi tạo trên tài liệu mới không có query. Queue/cache g
 
 ## Version, PWA và kiểm thử
 
+**Sửa trạng thái5.14.1:** sau một lượt sync đã ACK, lưu thêm hoặc nhận thay đổi từ tab khác phải cập nhật thông báo thành còn chờ gửi/review. Thông báo thành công không được giữ nguyên bên cạnh queue mới. Sửa này chỉ UI, không tự gửi hoặc sửa outbox/RPC/flags; owner merge/deploy riêng. [Release notes](../RELEASE_V5.14.1.md). Khi nghiệm thu bản sửa, đối chiếu build5.14.1; quy trình opt-in và thoát ở trên giữ nguyên.
+
 App/build/assets/cache đồng bộ5.14.0 để browser không giữ `sync-config.js` cũ luôn false. PWA upgrade xóa cache release5.13.1 và các bản cũ, giữ local training probe. Không đổi worker caching Auth/REST, không cache token hoặc payload API.
 
 Unit kiểm default-off, explicit opt-in, hostname/protocol/port/path/query/project binding, fail-closed và router giữ query. Browser dùng flag thật trên origin staging **ảo**, asset lấy từ loopback, Auth/RPC mock và native IDB:390/820/1180/1440, chưa RPC trước opt-in, save chỉ queue, manual send, query qua route/reload, thoát/re-enter giữ queue và guest. Không gọi domain thật hoặc Managed trong regression. Regression hiện hữu còn kiểm offline/retry/conflict/A→B và PWA; backend GoTrue/Mailpit/REST/RLS thật local vẫn chạy riêng.

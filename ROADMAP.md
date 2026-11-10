@@ -1,5 +1,5 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **10/11/2026** — main `6f782d2` sau #38/app5.13.1; nhánh PR6a/app5.14.0 chuẩn bị thử mục tiêu/check-in trên staging bằng dữ liệu giả. [Hợp đồng và checklist](docs/STAGING_SYNC_PR6A.md). Chưa bật pilot dữ liệu thật hoặc nghiệm thu Managed writes/A/B cho mode mới.
+Cập nhật: **10/11/2026** — main `6cfec8d` sau #39/app5.14.0; UI/backend/Pages cùng merge SHA sạch. Operator đã mở được nguồn tài khoản staging và xác nhận ba thay đổi mới còn chờ gửi. [Bản sửa5.14.1](RELEASE_V5.14.1.md) cập nhật thông báo theo hàng chờ hiện tại, đang PR chưa merge/deploy. [Hợp đồng và checklist](docs/STAGING_SYNC_PR6A.md). Chưa bật pilot dữ liệu thật hoặc nghiệm thu Managed writes/A/B cho mode mới.
 
 ## Tiến độ hiện hành và bước tiếp theo
 

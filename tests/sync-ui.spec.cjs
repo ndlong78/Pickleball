@@ -20,6 +20,20 @@ async function enable(page){await page.goto('/Pickleball/?page=settings');await 
 function remote(server,days,revision='0'){return server.apply({p_operation_id:crypto.randomUUID(),p_kind:'user_preferences',p_entity_key:'self',p_action:'put',p_expected_revision:revision,p_epoch:server.epoch,p_payload:{target_days:days,level_band:'1.0–2.0',session_minutes:45,gentle:false,goal_configured:true}})}
 async function goal(page,value){await route(page,'progress');await page.locator('#wgDays').selectOption(String(value));await page.locator('#wgSave').click();await expect(page.locator('#wgStatus')).toContainText('chờ đồng bộ')}
 async function send(page){await route(page,'settings');await page.locator('[data-sync-send]').click()}
+test('mock Auth/RPC, native IDB: later queued edits replace the previous successful sync notice',async({page,context})=>{
+ const f=await fixture(context);await enable(page);await goal(page,3);await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');
+ for(const [index,value] of [4,5,2].entries()){
+  await goal(page,value);await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getState().snapshot.outbox.filter(o=>['pending','deferred','sending'].includes(o.state)).length)).toBe(index+1);
+ }
+ await route(page,'settings');await expect(page.locator('[data-sync-count]')).toContainText('3 thay đổi');await expect(page.locator(status)).toContainText('Còn thay đổi chờ gửi');expect(f.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(1);
+ await page.locator('[data-sync-send]').click();await expect(page.locator(status)).toContainText('Đã đồng bộ');await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');expect(f.servers.get(A).rows.get('user_preferences:self').target_days).toBe(2);
+});
+test('mock Auth/RPC, native IDB: another tab invalidates the previous successful sync notice without sending',async({page,context})=>{
+ const f=await fixture(context);await enable(page);await goal(page,3);await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');
+ const tab=await context.newPage();await tab.goto('/Pickleball/?page=progress');await expect(tab.locator('#wgDays')).toBeEnabled();await goal(tab,5);await page.bringToFront();
+ await expect(page.locator('[data-sync-count]')).toContainText('1 thay đổi');await expect(page.locator(status)).toContainText('Còn thay đổi chờ gửi');expect(f.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(1);
+ await page.locator('[data-sync-send]').click();await expect(page.locator(status)).toContainText('Đã đồng bộ');await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');await tab.close();
+});
 for(const [prefix,width] of [['/',390],['/',820],['/Pickleball/',1180],['/Pickleball/',1440]])test('real staging flag, mock RPC: explicit trial, manual send and safe exit at '+prefix+' '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});
  const origin='https://pickleup-staging.home-309.workers.dev';

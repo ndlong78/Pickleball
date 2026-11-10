@@ -2,11 +2,11 @@
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
 
-## V5.14.0 — nhánh triển khai PR6a
+## V5.14.1 — sửa thông báo đồng bộ cũ
 
-Thêm [chế độ thử mục tiêu/check-in trên staging](docs/STAGING_SYNC_PR6A.md) bằng URL opt-in, giới hạn đúng Workers origin và project Supabase. URL thường vẫn tắt sync; ba flags importer/activity/plan còn false. Chọn nguồn, đọc và gửi là thao tác riêng, không tự nhập dữ liệu khách. Build/cache5.14.0; chưa merge/deploy từ PR này.
+Sau một lượt gửi thành công, thay đổi mới ở cùng tab hoặc tab khác phải thay thông báo “Đã đồng bộ” bằng trạng thái hàng chờ hiện tại. [Bản sửa5.14.1](RELEASE_V5.14.1.md) giữ gửi thủ công và [URL thử staging](docs/STAGING_SYNC_PR6A.md), không tự nhập dữ liệu khách. Build/cache5.14.1; bản sửa chưa merge/deploy. URL thường tắt sync; ba flags importer/activity/plan còn false.
 
-Baseline đã merge là `6f782d2` sau #38, app5.13.1. [Pages42551232733](https://github.com/ndlong78/Pickleball/actions/runs/42551232733) success cùng SHA; #38 chỉ tài liệu nên không có main UI/backend mới. CI runtime trước đó và báo cáo operator giữ tại [sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md). CI exact HEAD của PR6a ghi trong mô tả PR sau khi đọc logs; chưa nghiệm thu Managed writes/A/B cho mode mới.
+Baseline main `6cfec8d` sau #39, app5.14.0: [UI42741124415](https://github.com/ndlong78/Pickleball/actions/runs/42741124415), [backend42741124556](https://github.com/ndlong78/Pickleball/actions/runs/42741124556) và [Pages42741124047](https://github.com/ndlong78/Pickleball/actions/runs/42741124047) success cùng merge SHA; logs UI/backend sạch0 fail/flaky/retry. Operator đã cung cấp ảnh build5.14.0/flag=true và nguồn tài khoản staging, có thay đổi mới chưa gửi. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md) giữ giới hạn; CI bản sửa ghi riêng ở PR đúng HEAD, chưa coi Managed writes/A/B đã đạt.
 
 - Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
 - Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; sync chỉ mở trên URL thử đủ điều kiện, importer/activity/plan còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
