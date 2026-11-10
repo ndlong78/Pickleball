@@ -2,7 +2,7 @@
 'use strict';
 const host=document.getElementById('syncPilot'),data=window.PICKLEUP_DATA;if(!host||!data)return;
 const $=selector=>host.querySelector(selector),status=$('[role=status]'),body=$('[data-sync-body]'),list=$('[data-sync-conflicts]'),detail=$('[data-sync-detail]');
-let serial=0,selection=null,previous=null,running=false,shownTimezone=null;
+let serial=0,selection=null,previous=null,running=false,shownTimezone=null,syncFeedback=false;
 const errors={offline:'Đang offline. Các thay đổi đã lưu vẫn chờ trong kho tài khoản trên thiết bị.',network_error:'Lỗi mạng. Yêu cầu đang chờ được giữ nguyên; chưa xác nhận đã đồng bộ.',auth_required:'Phiên đã hết hạn. Đăng nhập lại đúng tài khoản để tiếp tục.',stale:'Phiên vừa thay đổi. Yêu cầu cũ được giữ riêng cho tài khoản đó.',quota_exceeded:'Không đủ dung lượng lưu trữ. Không xác nhận đã lưu; hãy xuất bản cache đang có.',storage_unavailable:'Không truy cập được kho trên thiết bị. Không tự chuyển sang ghi kho khách.',local_conflict:'Dữ liệu đã thay đổi sau preview. Đọc lại và xem lại lựa chọn trước khi lưu.',epoch_review_required:'Hãy xác nhận đã kiểm tra dữ liệu sau khi tải lại tài khoản.',explicit_restore_required:'Hãy xác nhận khôi phục bản đã xóa.',uncertain_operation:'Có yêu cầu đã gửi chưa rõ kết quả. Thử gửi lại đúng yêu cầu trước khi quyết định.',bootstrap_required:'Cần đọc dữ liệu tài khoản lần đầu trước khi chỉnh sửa.',needs_review:'Có thay đổi cần bạn xem và xử lý.',upgrade_required:'Cần cập nhật ứng dụng. Yêu cầu đang chờ được giữ nguyên.',invalid_response:'Phản hồi chưa hợp lệ. Không xác nhận đã đồng bộ.',busy:'Một thao tác khác đang chạy.',retry_wait:'Chưa đến lúc thử lại hoặc đã đạt giới hạn. Chỉ dùng nút thử lại khi bạn muốn tiếp tục.',pending:'Còn thay đổi chờ gửi. Bấm đồng bộ tiếp để xử lý lượt kế tiếp.'};
 const message=code=>errors[code]||'Không thực hiện được. Dữ liệu chờ vẫn được giữ; hãy kiểm tra kết nối và đọc lại.';
 function node(tag,text){const el=document.createElement(tag);el.textContent=text;return el}
@@ -14,7 +14,7 @@ function summary(kind,value,deleted){
 function render(){
  const s=data.getState(),source=s.owner+':'+s.mode;
  const sourceChanged=previous!==source;
- if(sourceChanged){serial++;running=false;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
+ if(sourceChanged){serial++;running=false;syncFeedback=false;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
  const configured=PICKLEUP_SYNC_CONFIG?.enabled===true&&PICKLEUP_AUTH_CONFIG?.enabled===true;
  body.hidden=!configured;
  $('[data-sync-staging]').hidden=PICKLEUP_SYNC_CONFIG?.scope!=='staging-preferences-checkins';
@@ -29,6 +29,10 @@ function render(){
  const ops=s.snapshot?.outbox||[],pending=ops.filter(o=>['pending','deferred','sending'].includes(o.state)),uncertain=pending.filter(o=>o.state==='sending');
  $('[data-sync-count]').textContent=s.mode==='account'?pending.length+' thay đổi chờ gửi · '+uncertain.length+' yêu cầu đã gửi chưa rõ kết quả. Chỉ “Đã đồng bộ” sau khi server xác nhận.':'';
  $('[data-sync-retry]').hidden=!uncertain.length;
+ if(syncFeedback&&s.mode==='account'&&s.snapshot){
+  const review=ops.some(o=>['conflict','blocked'].includes(o.state));
+  status.textContent=review?message('needs_review'):pending.length?message('pending'):'Đã đồng bộ mục tiêu và check-in.';
+ }
  if(s.error)status.textContent=message(s.error);
  list.replaceChildren();
  for(const c of s.snapshot?.conflicts||[]){
@@ -38,7 +42,7 @@ function render(){
  }
 }
 async function task(work){
- if(running)return;running=true;const stamp=serial;render();
+ if(running)return;running=true;syncFeedback=false;const stamp=serial;render();
  try{await work()}catch(error){if(stamp===serial)status.textContent=message(error.code)}finally{if(stamp===serial){running=false;render()}}
 }
 function show(view){
@@ -63,7 +67,12 @@ click('[data-sync-enable]',async()=>{await data.controller().useAccount();status
 click('[data-sync-device]',async()=>{await data.controller().useDevice();status.textContent='Đang dùng dữ liệu thiết bị. Queue tài khoản được giữ riêng, chưa bị xóa.'});
 click('[data-sync-read]',async()=>{await data.controller().refresh();status.textContent='Đã đọc dữ liệu tài khoản. Các thay đổi chờ vẫn được giữ để đối soát.'});
 click('[data-sync-zone-save]',async()=>{await data.controller().setTimezone($('[data-sync-timezone]').value.trim());status.textContent='Đã xác nhận múi giờ cho ghi nhận mới.'});
-for(const [selector,forceRetry]of [['[data-sync-send]',false],['[data-sync-retry]',true]])click(selector,async()=>{const result=await data.controller().sync({forceRetry});status.textContent=result.status==='synced'?'Đã đồng bộ mục tiêu và check-in.':message(result.status)});
+for(const [selector,forceRetry]of [['[data-sync-send]',false],['[data-sync-retry]',true]])click(selector,async()=>{
+ const owner=data.getState().owner;status.textContent='Đang đồng bộ mục tiêu và check-in…';
+ const result=await data.controller().sync({forceRetry});if(owner!==data.getState().owner)return;
+ syncFeedback=['synced','pending','needs_review'].includes(result.status);
+ status.textContent=result.status==='synced'?'Đã đồng bộ mục tiêu và check-in.':message(result.status);
+});
 click('[data-sync-export]',async()=>{const artifact=data.controller().exportCache(),url=URL.createObjectURL(new Blob([JSON.stringify(artifact)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='pickleup-account-cache.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='Đã xuất cache mục tiêu/check-in, queue và conflict. Giữ tệp riêng tư; đây chưa phải backup toàn tài khoản hoặc tệp có thể nhập lại.'});
 document.addEventListener('pickleup:domain-data',render);data.ready.then(render);render();
 })();
