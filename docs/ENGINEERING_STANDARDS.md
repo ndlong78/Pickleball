@@ -4,7 +4,7 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Tại main `0fb6fc8` / V5.13.1 sau #37, Auth bật với cấu hình công khai, bốn flags dữ liệu tắt. Operator đã báo nhận OTP/login/kiểm dữ liệu riêng, restore và logout hai tab; [sổ nghiệm thu staging](STAGING_AUTH_VERIFICATION.md) không thay gate session/A/B/SMTP đầy đủ hoặc pilot. Workers static build chỉ copy runtime, giữ bytes/version/cache; [hợp đồng deployment](CLOUDFLARE_WORKERS_STAGING.md). [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi đã được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Main `6cfec8d` / V5.14.0 sau #39 có Auth bật và sync mục tiêu/check-in chỉ qua URL thử staging; importer/activity/plan còn tắt. [Sổ nghiệm thu staging](STAGING_AUTH_VERIFICATION.md) phân biệt ảnh operator với các gate Managed/A-B/SMTP/pilot còn lại. Workers build đóng gói runtime theo [hợp đồng deployment](CLOUDFLARE_WORKERS_STAGING.md). [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi được cấp quyền.
 
 **PR6a/V5.14.0:** `sync-config.js` đánh giá URL hiện tại khi module chạy: origin/path/project allowlist + một query opt-in. Không phụ thuộc build environment hoặc sửa Auth; mã được cache theo release nhưng giá trị flag được đánh giá lại khi reload. Router giữ query; URL thường off. Đây là gate thử frontend, server RLS/CAS vẫn là phân quyền. [Hợp đồng](STAGING_SYNC_PR6A.md); không Managed writes tự động hoặc mở signup.
 
@@ -28,6 +28,8 @@
 | `tests/` | Unit và E2E/hồi quy, trong đó có kiểm thử legacy/PWA |
 
 **Không refactor vượt phạm vi.** Khi thêm tính năng: tìm đúng route, đúng core và UI; khai báo thứ tự phụ thuộc module trong page-loader; nếu cần HTML fragment mới thì cập nhật page-catalog, router/loader, navigation và tests cấu trúc. Không tải mọi feature khi Home mới mở. Không làm mất state/đồng hồ đang hoạt động khi điều hướng nếu thiết kế yêu cầu giữ.
+
+**Sửa UI5.14.1 đang PR:** phản hồi sync theo snapshot outbox hiện tại, có pending/review thì không giữ success cũ; đổi nguồn/tài khoản bỏ phản hồi. Không tự RPC hoặc sửa queue/contract. [Release notes](../RELEASE_V5.14.1.md).
 
 ## 2. Data contracts & bảo toàn dữ liệu (không thay đổi tùy tiện)
 
@@ -54,7 +56,7 @@
 
 **Backup/restore:** `modules/assessments-and-backup.js` xuất/nhập JSON `schemaVersion:1` với trường tùy chọn các module đời sau, gồm `weeklyGoal`, `weeklyPlan`, `weeklyCheckins`. Giữ khả năng nhập backup cũ, validate toàn bộ phần liên quan trước khi ghi, tránh cập nhật một phần không thể rollback khi có lỗi; xác nhận rõ khi import ghi đè. Khi thêm schema/key: thiết kế migration forward/backward phù hợp, giới hạn kích thước/bản ghi, test thiếu field, JSON hỏng, ngày bất hợp lệ, duplicate, dữ liệu lạ và hành vi giữ bản cũ.
 
-**Privacy:** guest giữ dữ liệu trên trình duyệt. Account chỉ gửi qua adapter/RPC sau consent và thao tác rõ ràng; đăng nhập không tự import/sync. Bốn flags dữ liệu còn tắt; Auth bật sau #36, chưa mở pilot. Không log dữ liệu cá nhân không cần thiết, không gửi ra analytics ngoài phạm vi được phép, không commit data/secrets. Logout không tự xóa cache offline hoặc file export.
+**Privacy:** guest giữ dữ liệu trên trình duyệt. Account chỉ gửi qua adapter/RPC sau consent và thao tác rõ ràng; đăng nhập không tự import/sync. Sync chỉ opt-in staging theo PR6a; importer/activity/plan còn tắt, chưa mở pilot. Không log dữ liệu cá nhân không cần thiết, không gửi ra analytics ngoài phạm vi được phép, không commit data/secrets. Logout không tự xóa cache offline hoặc file export.
 
 ## 3. Responsive / accessibility: bắt buộc
 
