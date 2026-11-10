@@ -417,10 +417,26 @@
   ],
   "merge_status_at_packaging": "not_merged",
   "ci": {
+    "scope": "GitHub Actions UI/backend",
     "head_sha": "4e17d5c803cc80d0fa1c128207cccb21007ae325",
     "ui_run": 42831272660,
     "backend_run": 42831272587,
-    "status": "pending; not yet a release gate pass"
+    "run_attempts": 1,
+    "unit_pass": 332,
+    "browser_pass": 540,
+    "additional_webkit_pass": 10,
+    "http_host_pass": 3,
+    "workers_local_pass": 1,
+    "pgtap_pass": 275,
+    "rest_pass": 45,
+    "real_auth_local_engines": [
+      "Chromium",
+      "WebKit"
+    ],
+    "fail": 0,
+    "flaky": 0,
+    "retry": 0,
+    "status": "success; logs read"
   },
   "external_build_check": {
     "name": "Workers Builds: pickleup-staging",
