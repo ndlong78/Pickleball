@@ -35,3 +35,12 @@ test('Home backup detected separately; duplicate rows and over-legacy history ar
 test('unknown/deep formats and sparse non-JSON input fail with safe codes',async()=>{
  await assert.rejects(core.preview('not-json'),{code:'invalid_json'});await assert.rejects(core.preview('{"app":"Other"}'),{code:'invalid_format'});await assert.rejects(core.preview('{"app":"PickleUp","format":"future","schemaVersion":1,"scores":{}}'),{code:'invalid_format'});
 });
+
+test('known18 rescue survives failed enumeration but never silently appends unknown keys',async()=>{
+ for(const source of [{get length(){throw Error('enumeration denied')},getItem:key=>key==='pickleup_scores'?'{broken':null},{length:5000,key(){throw Error('must not enumerate')},getItem:()=>null}]){
+  const captured=await core.capture(source);assert.equal(captured.entries.length,18);
+  await assert.rejects(core.capture(source,{unknownKeys:['pickleup_future']}));
+ }
+ const source={get length(){throw Error('denied')},getItem:key=>key==='pickleup_scores'?' {"access_token":"synthetic"}':null};
+ await assert.rejects(core.capture(source),{code:'credentials_detected'});
+});

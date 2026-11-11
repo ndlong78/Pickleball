@@ -13,10 +13,12 @@ function render(report){
 }
 async function run(work){const stamp=++generation;refresh.disabled=true;download.disabled=true;file.disabled=true;status.textContent='Đang đọc và đối chiếu dữ liệu…';try{await work(stamp)}catch(error){if(stamp===generation){snapshot=null;status.textContent=errors[error.code]||'Không đọc được dữ liệu. Hãy thử lại; dữ liệu gốc được giữ nguyên.'}}finally{if(stamp===generation){refresh.disabled=false;file.disabled=false;download.disabled=!snapshot}}}
 refresh.addEventListener('click',()=>run(async stamp=>{
- const discovery=core.discover(localStorage);unknown.replaceChildren();
+ let discovery,warning='';
+ try{discovery=core.discover(localStorage)}catch(_){discovery={unknown:[],excluded:0};warning=' Không quét được khóa lạ; bản này chỉ gồm đúng 18 khóa đã biết, không phải toàn bộ lưu trữ origin.'}
+ unknown.replaceChildren();
  for(const key of discovery.unknown){const label=document.createElement('label'),box=document.createElement('input');box.type='checkbox';box.value=key;label.append(box,document.createTextNode(' Kèm nhóm chưa biết: '+key));label.style.display='block';label.style.overflowWrap='anywhere';unknown.appendChild(label)}
- host.querySelector('[data-excluded]').textContent=discovery.excluded?'Đã loại '+discovery.excluded+' khóa có tên liên quan đến đăng nhập/bảo mật.':'';
- const captured=await core.capture(localStorage),report=await core.preview(JSON.stringify(captured));if(stamp!==generation)return;snapshot=captured;render(report);
+ host.querySelector('[data-excluded]').textContent=warning.trim()+(discovery.excluded?'Đã loại '+discovery.excluded+' khóa có tên liên quan đến đăng nhập/bảo mật.':'');
+ const captured=await core.capture(localStorage),report=await core.preview(JSON.stringify(captured));if(stamp!==generation)return;snapshot=captured;render(report);status.textContent+=warning;
 }));
 unknown.addEventListener('change',()=>run(async stamp=>{const captured=await core.capture(localStorage,{unknownKeys:selected()}),report=await core.preview(JSON.stringify(captured));if(stamp!==generation)return;snapshot=captured;render(report)}));
 download.addEventListener('click',()=>run(async stamp=>{

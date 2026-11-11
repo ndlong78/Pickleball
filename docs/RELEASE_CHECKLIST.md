@@ -104,3 +104,5 @@ Chạy `python3 -m unittest scripts/test_static_host.py`; guest regression cần
 ## Workers static deployment
 
 Chạy `npm run check:cloudflare` (dry-run), `npm run test:cloudflare` (Workers runtime local) và regression hiện hữu; Playwright phục vụ bản build `dist` qua HTTP guest fixture. Không gọi đây là kiểm chứng Cloudflare edge hoặc Managed SMTP. [Hướng dẫn domain/build/config](CLOUDFLARE_WORKERS_STAGING.md). Không deploy trong GitHub PR workflow; owner merge/deploy riêng. Chỉ thay hạ tầng đóng gói, bytes runtime không đổi thì không bump app/PWA cache.
+
+**Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](GUEST_BACKUP_SAFETY.md).

@@ -3,7 +3,7 @@
 const CACHE="pickleup-shell-v5-15-1-stable";
 const SHELL=[
  "./","./index.html","./responsive.css?v=5.15.1",
- "./modules/page-layout.css?v=5.15.1","./modules/page-catalog.js?v=5.15.1","./modules/page-loader.js?v=5.15.1",
+ "./modules/legacy-storage.js?v=5.15.1","./modules/page-layout.css?v=5.15.1","./modules/page-catalog.js?v=5.15.1","./modules/page-loader.js?v=5.15.1",
  "./modules/web-vitals.js?v=5.15.1","./modules/page-router.js?v=5.15.1","./mobile-ui.js?v=5.15.1","./modules/pwa-client.js?v=5.15.1",
  "./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png"
 ];

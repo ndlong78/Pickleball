@@ -122,3 +122,5 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 ## Deployment config và test host — PR #36
 
 Browser regression chạy `scripts/serve_test.py --guest-auth`, fixture guest qua HTTP cho cả SW, không đổi source hoặc tái sử dụng server operator. Server mặc định giữ config source để thử thủ công. Mock SDK/transport và real Auth local có config riêng, không dùng project Managed. Readiness dựa trạng thái loaded và nút thao tác sẵn sàng, không dựa success message tạm thời. [Hợp đồng staging](CLOUDFLARE_STAGING_PR36.md).
+
+**Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](GUEST_BACKUP_SAFETY.md).

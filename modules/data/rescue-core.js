@@ -33,8 +33,8 @@ function read(storage,keys){
 }
 async function capture(storage,{unknownKeys=[]}={}){
  if(!Array.isArray(unknownKeys)||unknownKeys.length>128||unknownKeys.some(key=>KNOWN.has(key)||!safeKey(key)))fail('unsafe_key');
- const available=discover(storage).unknown;
- if(unknownKeys.some(key=>!available.includes(key)))fail('source_changed');
+ // Known-key rescue must not depend on enumeration of unrelated origin data.
+ if(unknownKeys.length){const available=discover(storage).unknown;if(unknownKeys.some(key=>!available.includes(key)))fail('source_changed')}
  const keys=[...KNOWN,...new Set(unknownKeys)].sort();
  const entries=read(storage,keys),serialized=canonical(entries);
  if(bytes(serialized)>MAX_BYTES-4096)fail('too_large');
