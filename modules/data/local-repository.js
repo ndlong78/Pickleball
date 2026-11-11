@@ -93,6 +93,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      for(const [name,keyPath] of Object.entries(STORES)){
       const table=opening.transaction.objectStore(name);
       if(JSON.stringify(table.keyPath)!==JSON.stringify(keyPath)||table.autoIncrement)fail('upgrade_required');
+      if(Array.from(table.indexNames).join(',')!==(name==='legacy_snapshots'?'':'namespace'))fail('upgrade_required');
       if(name!=='legacy_snapshots'&&(!table.indexNames.contains('namespace')||table.index('namespace').keyPath!=='namespace'||table.index('namespace').unique||table.index('namespace').multiEntry))fail('upgrade_required');
      }
     }
