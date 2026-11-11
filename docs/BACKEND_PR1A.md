@@ -1,5 +1,7 @@
 # PR1a — PostgreSQL/RLS và sync RPC protocol 1
 
+**Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
+
 Baseline: main `369dbca5c47eb1ff6255d4a61ad08da13ce150ed`, PR #10/#11 đã merge, frontend vẫn5.1.0. PR1a thêm backend **local/test**; không provision Supabase cloud, đổi UI/JS, storage keys, backup importer hoặc PWA cache. [Policy pilot](PILOT_OPERATING_POLICY.md) tiếp tục áp dụng. Auth OTP UI, session lifecycle và SMTP là PR1b; không coi JWT fixture trong test là đã kiểm chứng login.
 
 ## 1. Schema và giới hạn triển khai

@@ -88,4 +88,37 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(self.request('user_preferences',token=self.token_a)[1],[])
         self.assertEqual(sql('select count(*) from pickleup_private.sync_operation_epochs where user_id='+quote(self.a)+';')[-1],'0')
 
+    def test_legacy_epoch_guard_blocks_all_fenced_kinds_and_old_replay(self):
+        first=self.prepare();operation=str(uuid.uuid4())
+        self.assertEqual(self.op('user_preferences',payload={'target_days':3},opid=operation)['status'],'applied')
+        self.assertTrue(self.op('user_preferences',payload={'target_days':3},opid=operation)['replayed'])
+        new=str(uuid.uuid4());sql('update pickleup_private.sync_heads set epoch='+quote(new)+' where user_id='+quote(self.a)+';')
+        result=self.op('user_preferences',payload={'target_days':3},opid=operation)
+        self.assertEqual((result['status'],result['code']),('upgrade_required','epoch_required'))
+        kinds=['user_preferences','practice_checkins','academy_attempts','skill_assessments','training_entries','match_records','personal_plans','user_selections']
+        for kind in kinds:
+            with self.subTest(kind=kind):self.assertEqual(self.op(kind)['status'],'upgrade_required')
+        self.assertEqual(self.pull()['high_water'],'1')
+        self.assertEqual(sql('select count(*) from pickleup_private.sync_receipts where user_id='+quote(self.a)+';')[-1],'1')
+        self.assertEqual(self.rpc('apply_sync_operation',self.body(new,'1',{'target_days':4}))['status'],'applied')
+        self.assertEqual(self.op('user_preferences',payload={'target_days':2},token=self.token_b)['status'],'applied')
+
+    def test_legacy_epoch_guard_survives_head_recreation_and_keeps_profiles(self):
+        self.prepare();sql('delete from pickleup_private.sync_heads where user_id='+quote(self.a)+';')
+        self.assertEqual(self.op('user_preferences',payload={'target_days':3})['status'],'upgrade_required')
+        self.assertEqual(self.op('profiles',payload={'display_name':'Synthetic','timezone':'UTC'})['status'],'applied')
+        self.assertEqual(self.request('user_preferences',token=self.token_a)[1],[])
+        self.assertEqual(self.op('user_preferences',payload={'target_days':2},token=self.token_b)['status'],'applied')
+
+    def test_legacy_epoch_is_checked_after_waiting_on_operator_rotation(self):
+        self.prepare();new=str(uuid.uuid4())
+        held,_=self.begin_held('reset role; update pickleup_private.sync_heads set epoch='+quote(new)+' where user_id='+quote(self.a)+';')
+        statement=backend.op_sql(self.a,'user_preferences','self',0,{'target_days':3})
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            pending=pool.submit(self.concurrent_sql,'legacy-epoch-lock',statement)
+            self.wait_for_lock('legacy-epoch-lock');self.finish_held(held,'commit')
+            self.assertEqual(pending.result(timeout=20)['status'],'upgrade_required')
+        self.assertEqual(self.request('user_preferences',token=self.token_a)[1],[])
+        self.assertEqual(self.pull()['high_water'],'0')
+
 if __name__=='__main__':unittest.main(verbosity=2)

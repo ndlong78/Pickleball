@@ -1,5 +1,7 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
+**Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
+
 **Trạng thái 10/11/2026:** Main `cc0d944` / V5.14.1 sau #40; UI/backend/Pages/Cloudflare sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Operator xác nhận GitHub tự deploy, lịch tập đề xuất/check-in A→B đúng ngày/trạng thái/phút. [Sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi, không suy thành các nhóm hoạt động/giáo án hoặc expiry/SMTP/physical QA đã đạt. Full V6 restore/purge, backup và pilot còn gate.
 
 **PR6b/V5.15.0 đang triển khai:** [Chế độ thử account-data](STAGING_ACCOUNT_PR6B.md) mở ba flags trên đúng staging, nguồn/consent/read/send riêng. Chỉ dữ liệu mới sau chọn nguồn được xếp hàng, lịch sử khách không tự nhập. Nút vào chế độ thử và phiên bản trong Dữ liệu; importer vẫn tắt. Bản PR chưa merge/deploy, chỉ dữ liệu giả.
@@ -117,3 +119,5 @@ PR5b2a/V5.10.0: lựa chọn bài Học viện theo nguồn giáo án/selection,
 ## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
 
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
+
+**Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](GUEST_BACKUP_SAFETY.md).

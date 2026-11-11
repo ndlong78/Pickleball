@@ -1,5 +1,7 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
+**Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
+
 Cập nhật ngày **09/11/2026**. Main `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` / V5.13.1 sau [#37](https://github.com/ndlong78/Pickleball/pull/37). [UI42367445245](https://github.com/ndlong78/Pickleball/actions/runs/42367445245):327 unit +3 HTTP +1 Workers local +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42367445298](https://github.com/ndlong78/Pickleball/actions/runs/42367445298):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42367444675](https://github.com/ndlong78/Pickleball/actions/runs/42367444675) success cùng merge SHA.
 
 PR5b2b1 checklist/focus, Court checkpoint, cứu hộ toàn cache/preview chỉ đọc và Workers static deployment đã merge. Chưa full restore/purge hoặc backup toàn cloud. Auth enabled=true với URL/key công khai; bốn flags dữ liệu false. Không PR mở trùng khi bắt đầu cập nhật bằng chứng này.
@@ -92,3 +94,5 @@ Công việc staging có thể chuẩn bị với dữ liệu giả trong lúc h
 - **Tiếp theo về code:** safe restore/purge và các gate device state còn lại sau #34; tiếp tục ma trận staging dữ liệu giả song song; URL thường giữ nguồn off, chỉ opt-in đúng staging và importer vẫn off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
 
 Hợp đồng tham chiếu: [kiến trúc](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md), [policy](PILOT_OPERATING_POLICY.md), [threat model](THREAT_MODEL.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md).
+
+**Xử lý audit #41:** PR42 chứa commit Auth origin/readiness/CI pin; journal guest V1/null/optional/known18 rescue; và migration7 first-epoch legacy guard với pgTAP/REST/bundle SQL Editor6→7. Chưa merge/deploy/upgrade Managed. Main vẫn chưa clean sau#41; ruleset API bị403, owner áp dụng template; signup server/phiên Pages cũ còn cần quản trị. Kết quả đúng HEAD ghi trong PR42; không suy full V6/pilot đã xong.

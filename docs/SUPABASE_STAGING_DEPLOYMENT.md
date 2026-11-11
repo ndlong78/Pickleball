@@ -1,5 +1,7 @@
 # PickleUp V6 — triển khai Supabase staging
 
+**Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
+
 **Cập nhật nghiệm thu 09/11/2026:** main `0fb6fc8` sau #37, app5.13.1, Auth bật và bốn flags dữ liệu tắt. Operator xác nhận nhận OTP/login/kiểm dữ liệu riêng, restore và logout hai tab tại `https://pickleup-staging.home-309.workers.dev/`; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ các kết quả và phần chưa chạy. Site URL/build theo [hướng dẫn Workers](CLOUDFLARE_WORKERS_STAGING.md); URL API Supabase vẫn là Project URL.
 
 Baseline đã merge: **#36 / main `b841224a99d71aa46fe49c503e446942226e90b5` / V5.13.1**. [UI42353494844](https://github.com/ndlong78/Pickleball/actions/runs/42353494844):322 unit +3 HTTP tests +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry. [Backend42353494823](https://github.com/ndlong78/Pickleball/actions/runs/42353494823):275 pgTAP +45 REST và Auth local thật hai engines pass. [Pages42353494606](https://github.com/ndlong78/Pickleball/actions/runs/42353494606) success cùng merge SHA. Evidence đúng HEAD của PR Workers ghi trong mô tả PR.

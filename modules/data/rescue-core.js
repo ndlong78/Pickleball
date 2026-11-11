@@ -10,8 +10,8 @@ const MAX_BYTES=32*1024*1024;
 const bytes=text=>new TextEncoder().encode(text).length;
 class RescueError extends Error{constructor(code){super(code);this.name='RescueError';this.code=code}}
 const fail=code=>{throw new RescueError(code)};
-const safeKey=key=>typeof key==='string'&&key.startsWith('pickleup_')&&key.length<=160&&!/(auth|session|token|secret|password|credential|supabase|otp)/i.test(key);
-function secretContent(text){return /"(?:access_token|refresh_token|service_role|password|otp|client_secret)"\s*:/i.test(text)||/\bsb_secret_[a-z0-9_]+/i.test(text)}
+const safeKey=key=>typeof key==='string'&&key.startsWith('pickleup_')&&key!=='pickleup_restore_journal_v1'&&key.length<=160&&!/(auth|session|token|secret|password|credential|supabase|otp)/i.test(key);
+function secretContent(text){return /(?:access_token|refresh_token|service_role|password|otp|client_secret)[\\"'\s]*[:=]|\bsb_secret_[a-z0-9_]+/i.test(text)}
 function canonical(value,depth=0){
  if(depth>30)fail('too_complex');
  if(value===null||typeof value==='string'||typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value))return JSON.stringify(value);
@@ -33,8 +33,8 @@ function read(storage,keys){
 }
 async function capture(storage,{unknownKeys=[]}={}){
  if(!Array.isArray(unknownKeys)||unknownKeys.length>128||unknownKeys.some(key=>KNOWN.has(key)||!safeKey(key)))fail('unsafe_key');
- const available=discover(storage).unknown;
- if(unknownKeys.some(key=>!available.includes(key)))fail('source_changed');
+ // Known-key rescue must not depend on enumeration of unrelated origin data.
+ if(unknownKeys.length){const available=discover(storage).unknown;if(unknownKeys.some(key=>!available.includes(key)))fail('source_changed')}
  const keys=[...KNOWN,...new Set(unknownKeys)].sort();
  const entries=read(storage,keys),serialized=canonical(entries);
  if(bytes(serialized)>MAX_BYTES-4096)fail('too_large');

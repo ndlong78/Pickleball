@@ -1,5 +1,7 @@
 # PICKLEUP — PRODUCT ROADMAP
 Cập nhật: **10/11/2026** — main `cc0d944` sau #40/app5.14.1, UI/backend/Pages/Cloudflare sạch cùng SHA; GitHub tự deploy, operator xác nhận lịch tập đề xuất và check-in A→B. [PR6b/V5.15.0](docs/STAGING_ACCOUNT_PR6B.md) đang PR mở thử hoạt động/giáo án với consent riêng và dữ liệu giả; chưa merge/deploy hoặc nghiệm thu các nhóm mới. Importer/pilot dữ liệu thật còn đóng.
+**Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](docs/REVIEW_SAFETY_2026_11.md).
+
 
 ## Tiến độ hiện hành và bước tiếp theo
 
@@ -518,3 +520,5 @@ Lượt [GitHub Actions #40643096905](https://github.com/ndlong78/Pickleball/act
 Hành trình hiển thị tóm tắt sau xác nhận thủ công hôm nay: số phút thực tế, giáo án gắn với bản ghi và số ngày/phút trong tuần so với mục tiêu hiện tại. Bản ghi không có lessonId được ghi rõ chưa có giáo án, không suy đoán từ lựa chọn mới. Đạt mục tiêu tuần, chế độ nhẹ hoặc buổi từ 60 phút ưu tiên hồi phục; có điểm cùng bài hôm nay thì xem kết quả; còn lại chuẩn bị lịch kế tiếp. Tóm tắt giữ qua reload, cập nhật khi sửa và ẩn khi bỏ qua/xóa. Không thêm storage key/schema, không tự xác nhận từ đồng hồ/điểm.
 
 V5.1 đã merge/deploy ở #9. Đến #22, mã Auth/importer, source UI mục tiêu/check-in và nền event sync đã merge; các mốc tiếp theo/gates được theo dõi ở đầu roadmap và [bản rà soát V6](docs/V6_PROGRESS_REVIEW.md). Auth bật sau #36, bốn flags dữ liệu vẫn tắt, chưa cloud pilot; kiểm thử tự động không thay thế QA iPhone/iPad/Android thật.
+
+**Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](docs/GUEST_BACKUP_SAFETY.md).

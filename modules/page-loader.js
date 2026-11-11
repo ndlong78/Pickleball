@@ -3,19 +3,19 @@
  * Scripts are inserted in dependency order, with page-specific CSS loaded on demand. */
 (function(root){
 "use strict";
-const ACCOUNT_FILES=["modules/auth-config.js","modules/data/staging-pilot.js","modules/auth-adapter.js","modules/data/local-repository.js","modules/data/pull-controller.js","modules/data/sync-controller.js"];
+const ACCOUNT_FILES=["modules/auth-origin.js","modules/auth-config.js","modules/data/staging-pilot.js","modules/auth-adapter.js","modules/data/local-repository.js","modules/data/pull-controller.js","modules/data/sync-controller.js"];
 const DOMAIN_FILES=["modules/data/sync-config.js","modules/data/domain-core.js","modules/data/domain-controller.js","modules/data/domain-runtime.js"];
 const ACTIVITY_FILES=["modules/data/activity-config.js","modules/data/activity-core.js","modules/data/activity-controller.js","modules/data/academy-source-core.js","modules/data/activity-source-core.js","curriculum.js","advanced-curriculum.js","modules/data/activity-runtime.js","modules/data/activity-history-ui.js"];
 const PLAN_FILES=["modules/data/plan-config.js","modules/data/plan-core.js","modules/data/plan-controller.js","modules/data/plan-runtime.js"];
 const PAGE_FILES={
  home:["modules/weekly-practice.js"],
  journey:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/academy-trends-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","training-log-core.js","modules/training-journey-core.js","modules/training-journey-ui.js"],
- coach:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/assessment-self-ui.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
+ coach:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/academy-trends-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/backup-v1-core.js","modules/assessments-and-backup.js","modules/assessment-self-ui.js","advanced-readiness.js","personalized-ui.js","advanced-coach-ui.js"],
  court:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/weekly-practice.js","personalized-core.js","practice-conditions.js","training-log-core.js","practice-clock.js","modules/data/court-checkpoint-runtime.js","practice-diagrams.js","advanced-diagrams.js","advanced-coach-core.js","practice-runner.js"],
- academy:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/data/academy-practice-runtime.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/academy-page.js"],
+ academy:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/data/academy-practice-runtime.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/backup-v1-core.js","modules/assessments-and-backup.js","modules/academy-page.js"],
  progress:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/weekly-practice.js","modules/academy-trends-core.js","modules/academy-insights-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/plan-reality-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","modules/academy-insights-ui.js","modules/weekly-goals-ui.js","modules/weekly-plan-ui.js","modules/weekly-checkins-ui.js","modules/plan-reality-ui.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
  matches:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"practice-conditions.js","advanced-coach-core.js","tactical-insights-core.js","match-journal.js","tactical-insights-ui.js"],
- settings:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/data/account-rescue-core.js","modules/data/account-rescue-controller.js","modules/data/account-rescue-ui.js","modules/data/rescue-core.js","modules/data/rescue-ui.js","modules/auth-ui.js","modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/assessments-and-backup.js","modules/page-performance.js","modules/data/import-config.js","modules/data/import-core.js","modules/data/import-controller.js","modules/data/import-ui.js","modules/data/sync-ui.js","modules/data/activity-ui.js","modules/data/plan-ui.js"]
+ settings:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/data/account-rescue-core.js","modules/data/account-rescue-controller.js","modules/data/account-rescue-ui.js","modules/data/rescue-core.js","modules/data/rescue-ui.js","modules/auth-ui.js","modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/backup-v1-core.js","modules/assessments-and-backup.js","modules/page-performance.js","modules/data/import-config.js","modules/data/import-core.js","modules/data/import-controller.js","modules/data/import-ui.js","modules/data/sync-ui.js","modules/data/activity-ui.js","modules/data/plan-ui.js"]
 };
 const PAGE_STYLES={
  coach:["advanced.css"],
@@ -118,11 +118,15 @@ function loading(flag,message){
 }
 function ensure(page){
  if(!Object.prototype.hasOwnProperty.call(PAGE_FILES,page))return Promise.reject(new Error("Trang không tồn tại: "+page));
+ if(root.PickleUpLegacyStorage?.isBlocked())return Promise.reject(new Error('Dữ liệu đang chờ phục hồi an toàn.'));
  if(promises.has(page))return promises.get(page);
  const files=PAGE_FILES[page],styles=PAGE_STYLES[page]||[];
  const start=performance.now();
  prefetch(files);
  const promise=pipeline.then(async()=>{
+  // No feature may read a partially applied guest restore after a crash.
+  if(!root.PickleUpLegacyStorage&&root.localStorage?.getItem('pickleup_restore_journal_v1'))throw Error('Cần tải lại bộ phục hồi dữ liệu trước khi mở trang.');
+  if((await root.PickleUpLegacyStorage?.ready)?.status==='blocked'||root.PickleUpLegacyStorage?.isBlocked())throw Error('Dữ liệu đang chờ phục hồi an toàn. Xem hướng dẫn phía trên.');
   if(root.PICKLEUP_ROUTER?.getPage()===page)loading(true,"Đang mở "+((root.PICKLEUP_PAGES||[]).find(x=>x.id===page)?.title||"trang")+"…");
   const css=styles.map(loadStyle);
   const fragment=await ensureMarkup(page);

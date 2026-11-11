@@ -1,5 +1,7 @@
 # PickleUp V6 — threat model (thiết kế PR0)
 
+**Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
+
 Phạm vi: một người dùng nhiều thiết bị, private training/match data, Supabase Auth/Postgres/RPC/RLS, IndexedDB và GitHub Pages. Chưa mở sharing/coach/admin CMS. Thiết kế kiểm soát chưa phải kết quả pentest hoặc bằng chứng RLS đã được triển khai. Đọc [architecture](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md).
 
 **Cập nhật sau #34 (06/11/2026):** schema/RLS/RPC, Auth, importer, các nguồn account và cache rescue chỉ đọc đã merge/deploy5.13.0; năm flags vẫn tắt. [Tiến độ/evidence](V6_PROGRESS_REVIEW.md) ghi đúng merge SHA. [Hướng dẫn staging](SUPABASE_STAGING_DEPLOYMENT.md) tách credentials/frontend, server signup gate và metadata checks khỏi test A/B qua JWT. Bảng dưới là yêu cầu kiểm soát, chưa phải mọi ô hoàn tất. Chưa kiểm chứng Managed staging/SMTP, full restore/purge/account deletion, operational restore drill hoặc pentest độc lập; client cache không mã hóa. Trạng thái branch protection trong các snapshot cũ không phải kiểm tra hiện hành.

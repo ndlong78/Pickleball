@@ -6,7 +6,9 @@ do $$ declare r jsonb; begin
  r:=public.pull_changes();
  if jsonb_array_length(r->'changes')<>1 or r->'changes'->0->'row'->>'target_days'<>'2' then raise exception 'Upgrade snapshot missing from bootstrap'; end if;
  r:=public.apply_operation('33333333-3333-4333-8333-333333333334','user_preferences','self','put','1','{"target_days":4}',1);
- if r->>'status'<>'applied' or r->'row'->>'revision'<>'2' then raise exception 'Upgraded CAS failed'; end if;
+ if r->>'status'<>'upgrade_required' or r->>'code'<>'epoch_required' then raise exception 'Existing legacy writer must upgrade'; end if;
+ r:=public.apply_sync_operation('33333333-3333-4333-8333-333333333335','user_preferences','self','put','1',(public.prepare_sync()->>'epoch')::uuid,'{"target_days":4}',1);
+ if r->>'status'<>'applied' or r->'row'->>'revision'<>'2' then raise exception 'Upgraded fenced CAS failed'; end if;
 end $$;
 reset role;
 delete from auth.users where id='33333333-3333-4333-8333-333333333333';
