@@ -33,7 +33,7 @@ test('real IndexedDB: interrupted upgrade preserves pending operations',async({p
  await load(page);const result=await page.evaluate(async A=>{
   const name='pr2-'+crypto.randomUUID(),db=await PickleUpLocalRepository.open({name}),a=db.scope(A);
   await a.write({kind:'user_preferences',id:'self',operationId:crypto.randomUUID(),value:{target_days:3}});
-  await new Promise(resolve=>{const request=indexedDB.open(name,2);request.onupgradeneeded=()=>request.transaction.abort();request.onerror=event=>{event.preventDefault();resolve()}});
+  await new Promise(resolve=>{const request=indexedDB.open(name,PickleUpLocalRepository.VERSION+1);request.onupgradeneeded=()=>request.transaction.abort();request.onerror=event=>{event.preventDefault();resolve()}});
   let error;try{await a.listOutbox()}catch(e){error=e.code}
   const recovered=await PickleUpLocalRepository.open({name});try{return {error,count:(await recovered.scope(A).listOutbox()).length}}finally{recovered.close();db.close()}
  },A);expect(result).toEqual({error:'scope_closed',count:1});
