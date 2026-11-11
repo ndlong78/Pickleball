@@ -95,7 +95,7 @@ function showBlocked(message){
   });
   reload.addEventListener('click',()=>root.location.reload());panel.append(status,download,reload);document.body.prepend(panel);
  }
- panel.querySelector('p').textContent=message+' Dữ liệu được giữ nguyên; đóng các tab khác trước khi thử lại. Tệp cứu hộ riêng tư chỉ để giữ dữ liệu, chưa có chức năng nhập lại.';
+ panel.querySelector('p').textContent=message+' Chưa xác nhận khôi phục thành công; giữ lưu trữ và đóng các tab khác trước khi thử lại. Tệp cứu hộ riêng tư chỉ để giữ dữ liệu, chưa có chức năng nhập lại.';
 }
 const api={FIELDS:Object.freeze(FIELDS),JOURNAL,MAX_BYTES,apply,recover,emergency,RestoreError,isBlocked:()=>held,
  async restore(patch){

@@ -118,6 +118,7 @@ function loading(flag,message){
 }
 function ensure(page){
  if(!Object.prototype.hasOwnProperty.call(PAGE_FILES,page))return Promise.reject(new Error("Trang không tồn tại: "+page));
+ if(root.PickleUpLegacyStorage?.isBlocked())return Promise.reject(new Error('Dữ liệu đang chờ phục hồi an toàn.'));
  if(promises.has(page))return promises.get(page);
  const files=PAGE_FILES[page],styles=PAGE_STYLES[page]||[];
  const start=performance.now();

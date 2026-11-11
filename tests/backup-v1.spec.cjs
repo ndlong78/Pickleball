@@ -42,12 +42,16 @@ test('V1 unknown concurrent state blocks feature reads and offers a private emer
 });
 test('V1 rollback failure keeps journal and a later reload finishes recovery',async({page,context})=>{
  await seed(context);await settings(page);
+ await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('home'));
  await page.evaluate(before=>{
   const original=Storage.prototype.setItem;let failed=false;window.REPAIR_STORAGE=()=>Storage.prototype.setItem=original;
   Storage.prototype.setItem=function(key,value){if(key==='pickleup_academy_v2'){failed=true;throw new DOMException('synthetic','QuotaExceededError')}if(failed&&key==='pickleup_scores'&&value===before)throw new DOMException('synthetic','QuotaExceededError');return original.call(this,key,value)};
  },before);
  page.once('dialog',dialog=>dialog.accept());await page.locator('#restoreFile').setInputFiles(file({academy:{}}));await expect(page.locator('#legacyStorageRecovery')).toBeVisible();expect(await page.evaluate(key=>localStorage.getItem(key)!==null,JOURNAL)).toBe(true);
  expect(await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress').then(()=>false,()=>true))).toBe(true);
+ expect(await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('home').then(()=>false,()=>true))).toBe(true);
+ await page.evaluate(()=>PICKLEUP_ROUTER.openPage('home'));
+ expect(await page.evaluate(()=>PICKLEUP_ROUTER.getPage())).toBe('settings');
  await page.evaluate(()=>REPAIR_STORAGE());await page.reload();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
  expect(await page.evaluate(key=>localStorage.getItem(key),SCORE)).toBe(before);expect(await page.evaluate(key=>localStorage.getItem(key),JOURNAL)).toBeNull();
 });

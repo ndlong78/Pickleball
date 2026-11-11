@@ -23,6 +23,7 @@ function hrefFor(page,section){
  return url.pathname+url.search+url.hash;
 }
 function render(page){
+ if(root.PickleUpLegacyStorage?.isBlocked())return Promise.reject(new Error('Dữ liệu đang chờ phục hồi an toàn.'));
  const p=byId.get(page)||byId.get(DEFAULT);
  current=p.id;
  document.documentElement.dataset.pickleupPage=p.id;
@@ -57,6 +58,7 @@ function scrollToSection(section){
  root.scrollTo({top,behavior:"auto"});
 }
 function openPage(page,section=null,replace=false){
+ if(root.PickleUpLegacyStorage?.isBlocked())return;
  if(!byId.has(page))page=DEFAULT;
  if(section&&sections.get(section)!==page)section=null;
  const next=hrefFor(page,section);

@@ -8,9 +8,11 @@ test('raw rescue preserves all18 keys, malformed/empty/absent and device state e
  const preview=await core.preview(JSON.stringify(captured));assert.equal(preview.fingerprint,captured.fingerprint);assert.equal(preview.rows.find(r=>r.key==='pickleup_scores').status,'malformed');assert.equal(preview.rows.find(r=>r.key==='pickleup_weekly_goal_v46').status,'empty');assert.equal(preview.rows.find(r=>r.key==='pickleup_practice_state_v25').status,'device_only');assert.equal(preview.rows.find(r=>r.key==='pickleup_academy_last_lesson_v4').status,'readable');
 });
 test('unknown keys require selection, auth/session keys and embedded credential fields are excluded',async()=>{
- const source=storage({pickleup_future:'[1,2]',pickleup_auth_v6:'fixture-session',unrelated:'private'});assert.deepEqual(core.discover(source),{unknown:['pickleup_future'],excluded:1});
+ const source=storage({pickleup_future:'[1,2]',pickleup_auth_v6:'fixture-session',unrelated:'private',pickleup_restore_journal_v1:'private restore preimages'});assert.deepEqual(core.discover(source),{unknown:['pickleup_future'],excluded:2});
  const captured=await core.capture(source);assert.equal(captured.entries.length,18);assert.equal((await core.capture(source,{unknownKeys:['pickleup_future']})).entries.length,19);
  await assert.rejects(core.capture(source,{unknownKeys:['pickleup_auth_v6']}),{code:'unsafe_key'});
+ await assert.rejects(core.capture(source,{unknownKeys:['pickleup_restore_journal_v1']}),{code:'unsafe_key'});
+ await assert.rejects(core.capture(storage({pickleup_scores:JSON.stringify({raw:JSON.stringify({refresh_token:'synthetic'})})})),{code:'credentials_detected'});
  await assert.rejects(core.capture(storage({pickleup_scores:'{"access_token":"fixture-only"}'})),{code:'credentials_detected'});
 });
 test('double read detects observed changes and denied storage fails without fallback',async()=>{
