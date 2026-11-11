@@ -94,3 +94,5 @@ Công việc staging có thể chuẩn bị với dữ liệu giả trong lúc h
 - **Tiếp theo về code:** safe restore/purge và các gate device state còn lại sau #34; tiếp tục ma trận staging dữ liệu giả song song; URL thường giữ nguồn off, chỉ opt-in đúng staging và importer vẫn off. Không cần quyết định lại provider/CAS/Auth đã ủy quyền; không dùng production, không tự nâng ngân sách hoặc mở đăng ký công khai.
 
 Hợp đồng tham chiếu: [kiến trúc](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md), [policy](PILOT_OPERATING_POLICY.md), [threat model](THREAT_MODEL.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md).
+
+**Xử lý audit #41:** PR42 chứa commit Auth origin/readiness/CI pin; journal guest V1/null/optional/known18 rescue; và migration7 first-epoch legacy guard với pgTAP/REST/bundle SQL Editor6→7. Chưa merge/deploy/upgrade Managed. Main vẫn chưa clean sau#41; ruleset API bị403, owner áp dụng template; signup server/phiên Pages cũ còn cần quản trị. Kết quả đúng HEAD ghi trong PR42; không suy full V6/pilot đã xong.
