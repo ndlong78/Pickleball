@@ -20,6 +20,15 @@ Main nguồn hiện tại là `0fb6fc85060cd025482394e0f53f527e1f3f6bbc`, app5.1
 
 ## Bổ sung 10/11/2026
 
+### Nghiệm thu sau #40
+
+Main `cc0d94498a19cec64570159b953e43d271389ab0` /5.14.1 đã tự build/deploy qua GitHub→Cloudflare; check Production8bb66828 success cùng merge SHA và operator xác nhận primary trả5.14.1. Main UI42834392634/backend42834392650/Pages42834391795 success; logs0 fail/flaky/retry. Owner yêu cầu chỉ triển khai qua GitHub, không dùng gói ZIP/upload thủ công.
+
+Hai browser profiles **cùng tài khoản** báo source=account, error=null, sync=true,1 preferences/2 check-ins, pending0, cursor/serverHighWater11; writer có11 acked, reader0 acked là bình thường. Operator đã thấy lịch tập đề xuất khớp và xác nhận check-in hôm nay đúng ngày/trạng thái/phút. Ghi nhận nhóm này ĐẠT theo operator; không lưu email, UID/hash tài khoản, OTP/token hoặc payload riêng. Không dùng kết quả cùng account thay phép cách ly hai account.
+
+Phần user ban đầu thấy thiếu là lịch sử điểm/Học viện/giáo án/trận đấu, nằm ngoài flag PR6a. [PR6b/V5.15.0](STAGING_ACCOUNT_PR6B.md) đang mở thử các nguồn mới, chưa Managed QA cho chúng. Account switch/expiry/conflict/SMTP/backup/restore/deletion/physical QA vẫn cần bằng chứng riêng.
+
+
 Sau #39, operator cung cấp ảnh Console `build:5.14.0` / `sync:true`, banner dữ liệu giả và UI đã chọn nguồn tài khoản/múi giờ. Ảnh sau đó hiển thị thông báo thành công cũ cùng3 pending; operator xác nhận đây là thay đổi mới, chưa gửi lại. Vì vậy chưa coi ảnh này chứng minh lỗi server hoặc cả3 mục đã ACK. Sửa UI5.14.1 đang PR cập nhật thông báo khi queue thay đổi cùng tab/qua tab khác. Chưa ghi nhận đọc lại mục tiêu/check-in từ browser profile độc lập hoặc Managed A/B/conflict/expiry; không ghi email/OTP/token từ ảnh vào tài liệu.
 
 Operator gửi kết quả cài database: `INSTALLED`,6 migrations,16 tables,10 public RPC; audit báo migration_history PRESENT, PostgreSQL17,27 kiểm table/RPC/role OK. Trước cài, cùng project được đối chiếu ref `rfeoeagklmaqmkcdhprb` nhưng audit báo mọi đối tượng PickleUp MISSING; do đó báo cáo private access trước đây được giữ là lịch sử operator, **chưa coi là kiểm chứng RPC sau cài**.

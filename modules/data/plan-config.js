@@ -1,2 +1,5 @@
-/* Independent pilot gate. Login and other domain consents do not enable plans. */
-window.PICKLEUP_PLAN_CONFIG=Object.freeze({enabled:false});
+/* Independent consent still required after explicit synthetic staging opt-in. */
+(function(root){
+ const enabled=root.PickleUpStagingPilot?.enabled('plans-selections')===true;
+ root.PICKLEUP_PLAN_CONFIG=Object.freeze({enabled,scope:enabled?'staging-plans-selections':null});
+})(window);

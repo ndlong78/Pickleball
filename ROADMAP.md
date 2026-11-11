@@ -1,9 +1,9 @@
 # PICKLEUP — PRODUCT ROADMAP
-Cập nhật: **10/11/2026** — main `6cfec8d` sau #39/app5.14.0; UI/backend/Pages cùng merge SHA sạch. Operator đã mở được nguồn tài khoản staging và xác nhận ba thay đổi mới còn chờ gửi. [Bản sửa5.14.1](RELEASE_V5.14.1.md) cập nhật thông báo theo hàng chờ hiện tại, đang PR chưa merge/deploy. [Hợp đồng và checklist](docs/STAGING_SYNC_PR6A.md). Chưa bật pilot dữ liệu thật hoặc nghiệm thu Managed writes/A/B cho mode mới.
+Cập nhật: **10/11/2026** — main `cc0d944` sau #40/app5.14.1, UI/backend/Pages/Cloudflare sạch cùng SHA; GitHub tự deploy, operator xác nhận lịch tập đề xuất và check-in A→B. [PR6b/V5.15.0](docs/STAGING_ACCOUNT_PR6B.md) đang PR mở thử hoạt động/giáo án với consent riêng và dữ liệu giả; chưa merge/deploy hoặc nghiệm thu các nhóm mới. Importer/pilot dữ liệu thật còn đóng.
 
 ## Tiến độ hiện hành và bước tiếp theo
 
-[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Auth bật sau #36; PR6a chỉ mở sync khi URL opt-in khớp staging origin/project, ba flags khác tắt. Pages không có nghĩa cloud pilot đã bật.
+[Rà soát V6](docs/V6_PROGRESS_REVIEW.md) giữ snapshot lịch sử sau #22 và tiến độ mới. PR1a–PR4c, PR5a1 và PR5a2a/b/c và PR5b1a/b/c, PR5a2d đã merge. Auth bật sau #36; PR6a chỉ mở mục tiêu/check-in; PR6b mở thêm hoạt động/giáo án khi URL thử mới khớp staging origin/project, mỗi nguồn chọn riêng; importer luôn tắt. Pages không có nghĩa cloud pilot đã bật.
 
 | Trạng thái | Công việc | Gate chính |
 |---|---|---|

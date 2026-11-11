@@ -4,9 +4,9 @@
 
 ## 1. Kiến trúc đúng của repository
 
-`PickleUp` có frontend **static PWA** trên GitHub Pages: HTML5, CSS3, vanilla JavaScript. Chế độ khách dùng `localStorage`/JSON; mã V6 đã thêm Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Main `6cfec8d` / V5.14.0 sau #39 có Auth bật và sync mục tiêu/check-in chỉ qua URL thử staging; importer/activity/plan còn tắt. [Sổ nghiệm thu staging](STAGING_AUTH_VERIFICATION.md) phân biệt ảnh operator với các gate Managed/A-B/SMTP/pilot còn lại. Workers build đóng gói runtime theo [hợp đồng deployment](CLOUDFLARE_WORKERS_STAGING.md). [Tiến độ hiện hành](V6_PROGRESS_REVIEW.md). Không thêm framework, dịch vụ trả phí hoặc upload ngoài phạm vi được cấp quyền.
+`PickleUp` có frontend **static PWA** trên GitHub Pages/Cloudflare Workers Static Assets: HTML5, CSS3, vanilla JavaScript. Guest dùng `localStorage`/JSON; V6 dùng Supabase Auth/PostgreSQL/RPC/RLS và IndexedDB theo ủy quyền pilot. Main `cc0d944` / V5.14.1 sau #40 có Auth và URL thử mục tiêu/check-in; operator đã nghiệm thu lịch tập đề xuất/check-in A→B. PR6b/V5.15.0 mở thử các nguồn còn lại với consent riêng; importer vẫn tắt. [Tiến độ](V6_PROGRESS_REVIEW.md), [evidence](STAGING_AUTH_VERIFICATION.md), [deployment](CLOUDFLARE_WORKERS_STAGING.md). Không thêm framework/dịch vụ trả phí ngoài phạm vi.
 
-**PR6a/V5.14.0:** `sync-config.js` đánh giá URL hiện tại khi module chạy: origin/path/project allowlist + một query opt-in. Không phụ thuộc build environment hoặc sửa Auth; mã được cache theo release nhưng giá trị flag được đánh giá lại khi reload. Router giữ query; URL thường off. Đây là gate thử frontend, server RLS/CAS vẫn là phân quyền. [Hợp đồng](STAGING_SYNC_PR6A.md); không Managed writes tự động hoặc mở signup.
+**PR6b/V5.15.0:** shared `staging-pilot.js` lazy sau Auth config và trước các domain flags; một guard origin/path/project/publishable key/query. URL thường fail closed; link preferences-checkins giữ phạm vi cũ, account-data mở ba flags để chọn nguồn riêng. Entry dùng điều hướng tài liệu canonical để đổi mode, router tiếp tục giữ query. Không SDK calls trong UI hoặc server/RLS/IDB schema thay đổi. [Hợp đồng](STAGING_ACCOUNT_PR6B.md).
 
 **Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
 
@@ -56,7 +56,7 @@
 
 **Backup/restore:** `modules/assessments-and-backup.js` xuất/nhập JSON `schemaVersion:1` với trường tùy chọn các module đời sau, gồm `weeklyGoal`, `weeklyPlan`, `weeklyCheckins`. Giữ khả năng nhập backup cũ, validate toàn bộ phần liên quan trước khi ghi, tránh cập nhật một phần không thể rollback khi có lỗi; xác nhận rõ khi import ghi đè. Khi thêm schema/key: thiết kế migration forward/backward phù hợp, giới hạn kích thước/bản ghi, test thiếu field, JSON hỏng, ngày bất hợp lệ, duplicate, dữ liệu lạ và hành vi giữ bản cũ.
 
-**Privacy:** guest giữ dữ liệu trên trình duyệt. Account chỉ gửi qua adapter/RPC sau consent và thao tác rõ ràng; đăng nhập không tự import/sync. Sync chỉ opt-in staging theo PR6a; importer/activity/plan còn tắt, chưa mở pilot. Không log dữ liệu cá nhân không cần thiết, không gửi ra analytics ngoài phạm vi được phép, không commit data/secrets. Logout không tự xóa cache offline hoặc file export.
+**Privacy:** guest giữ dữ liệu trên trình duyệt. Account chỉ gửi qua adapter/RPC sau consent và thao tác rõ ràng; đăng nhập không tự import/sync. Các nguồn chỉ opt-in staging theo PR6a/PR6b và consent riêng; importer còn tắt, chưa mở pilot. Không log dữ liệu cá nhân không cần thiết, không gửi ra analytics ngoài phạm vi được phép, không commit data/secrets. Logout không tự xóa cache offline hoặc file export.
 
 ## 3. Responsive / accessibility: bắt buộc
 

@@ -2,6 +2,8 @@
 
 Ngày 10/11/2026. Baseline `6f782d2eb83b8cd0288cf398b7d3981b5151b3ef` sau #38, app5.13.1, không PR mở trùng khi bắt đầu. [Pages42551232733](https://github.com/ndlong78/Pickleball/actions/runs/42551232733) success cùng merge SHA. #38 chỉ tài liệu nên không có main UI/backend mới do push filters; baseline runtime và PR #38 evidence tại [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md). CI exact HEAD của PR mới ghi trong mô tả PR sau khi đọc logs, không dùng baseline thay gate.
 
+**Nghiệm thu sau #40:** owner xác nhận GitHub tự deploy5.14.1, lịch tập đề xuất và check-in đúng ngày/trạng thái/phút giữa hai browser profiles cùng account; [evidence](STAGING_AUTH_VERIFICATION.md). PR6a giữ tương thích chỉ mục tiêu/check-in. [PR6b/5.15.0](STAGING_ACCOUNT_PR6B.md) đang PR thêm mode account-data và nguồn hoạt động/giáo án chọn riêng; không tự nhập dữ liệu khách hoặc bật importer. Không dùng ZIP/upload thủ công.
+
 ## Phạm vi
 
 Chỉ mở thử hai domain `user_preferences` và `practice_checkins` qua URL tường minh, trên đúng Workers origin và project staging hiện có. Mặc định sync vẫn tắt; importer/activity/plan flags luôn false. Đây là luồng nghiệm thu với dữ liệu giả, chưa mở pilot dữ liệu thật hoặc public signup. Không SQL/migration/RLS, Auth adapter, RPC, IndexedDB schema hoặc18 khóa legacy thay đổi.
