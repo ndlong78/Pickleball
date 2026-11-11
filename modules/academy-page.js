@@ -313,4 +313,5 @@ refreshLearning();
 // The fragment can become visible before this lazy-loaded script arrives.
 // Enable score editing only after initial values and save listeners are ready.
 seedGuest=false;controls();renderAttempts();acceptPractice();
+document.getElementById('academyFocusToggle').disabled=false;
 })();
