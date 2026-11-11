@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {IDBFactory,IDBObjectStore}=require('fake-indexeddb');
-const {open}=require('../modules/data/local-repository.js');
+const {open,VERSION}=require('../modules/data/local-repository.js');
 const A='user:11111111-1111-4111-8111-111111111111',B='user:22222222-2222-4222-8222-222222222222',G='guest:33333333-3333-4333-8333-333333333333';
 const op=(name,value=1,revision='0')=>({kind:'user_preferences',id:'self',value:{target_days:value},operationId:name,expectedLocalRevision:revision});
 const id1='44444444-4444-4444-8444-444444444444',id2='55555555-5555-4555-8555-555555555555';
@@ -37,7 +37,7 @@ test('tombstone needs explicit restore and validation rejects credentials and in
 });
 test('versionchange closes readers and interrupted upgrade preserves committed rows',async()=>{
  const {indexedDB,db,a}=await fixture();await a.write(op(id1));
- await new Promise((resolve,reject)=>{const r=indexedDB.open('pickleup-v6',2);r.onupgradeneeded=()=>r.transaction.abort();r.onerror=()=>resolve();r.onsuccess=()=>reject(Error('upgrade unexpectedly committed'))});
+ await new Promise((resolve,reject)=>{const r=indexedDB.open('pickleup-v6',VERSION+1);r.onupgradeneeded=()=>r.transaction.abort();r.onerror=()=>resolve();r.onsuccess=()=>reject(Error('upgrade unexpectedly committed'))});
  await assert.rejects(a.read('user_preferences','self'),{code:'scope_closed'});const recovered=await open({indexedDB});try{assert.equal((await recovered.scope(A).listOutbox()).length,1)}finally{recovered.close();db.close()}
 });
 test('closing scope while a write is in flight aborts new mutation and preserves earlier pending work',async()=>{

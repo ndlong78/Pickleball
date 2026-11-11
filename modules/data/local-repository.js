@@ -1,7 +1,8 @@
 /* PR2: dormant local persistence. No Auth, network, legacy storage or UI writes. */
 (function(root){
 'use strict';
-const VERSION=1;
+// Version2 is a writer capability fence; the eight stores and their rows stay intact.
+const VERSION=2;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const KINDS=new Set(['profiles','user_preferences','personal_plans','academy_attempts','skill_assessments','practice_checkins','training_entries','match_records','user_selections']);
 const EVENTS=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
@@ -16,10 +17,19 @@ function policyConfig(policy){
  fail('invalid_policy');
 }
 const STORES={records:['namespace','kind','id'],outbox:['namespace','operationId'],conflicts:['namespace','conflictId'],sync_cursor:['namespace','protocol'],import_receipts:['namespace','fingerprint','adapterVersion'],legacy_snapshots:['installationId','snapshotId'],device_state:['namespace','deviceId','key'],metadata:['namespace','key']};
+const ACCOUNT_STORES=Object.freeze(Object.keys(STORES).filter(name=>name!=='legacy_snapshots'));
+const CACHE_GENERATION='local-cache-generation-1';
+const RECORD_FIELDS=new Set(['namespace','kind','id','base','baseRevision','baseEpoch','baseMissing','overlay','deleted','tailOperationId','localRevision','localUpdatedAt','reviewRequired','reviewBase','reviewReason']);
 class RepositoryError extends Error{constructor(code){super(code);this.name='RepositoryError';this.code=code}}
 const fail=code=>{throw new RepositoryError(code)};
 const revision=v=>typeof v==='string'&&/^(0|[1-9][0-9]{0,18})$/.test(v);
 const copy=v=>structuredClone(v);
+function validIdentity(kind,id){
+ if(!KINDS.has(kind)||typeof id!=='string'||(EVENTS.has(kind)||kind==='personal_plans')&&id!==id.toLowerCase())return false;
+ if(SINGLETONS.has(kind))return id==='self';
+ if(kind!=='practice_checkins')return UUID.test(id);
+ return /^\d{4}-\d{2}-\d{2}$/.test(id)&&Number.isFinite(Date.parse(id+'T00:00:00Z'))&&new Date(id+'T00:00:00Z').toISOString().slice(0,10)===id;
+}
 function canonical(value,depth=0){
  if(depth>12)fail('invalid_payload');
  if(value===null||typeof value==='boolean'||typeof value==='string')return JSON.stringify(value);
@@ -34,19 +44,59 @@ function canonical(value,depth=0){
 }
 const request=r=>new Promise((resolve,reject)=>{r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 function storageError(error){return error instanceof RepositoryError?error:new RepositoryError(error?.name==='QuotaExceededError'?'quota_exceeded':error?.name==='VersionError'?'upgrade_required':'storage_unavailable')}
+function markerValid(row,namespace){return !row||row.namespace===namespace&&row.key===CACHE_GENERATION&&Object.keys(row).sort().join(',')==='key,namespace,value'&&typeof row.value==='string'&&UUID.test(row.value)}
+// Conservative clean-cache policy. This does not authorize an imported rescue file,
+// authenticate a caller, or replace the future export/acknowledgement UI.
+function getPurgeBlockers(snapshot,{now=Date.now()}={}){
+ const blocked=new Set(),bad=code=>blocked.add(code),s=snapshot?.stores,namespace='user:'+snapshot?.owner;
+ if(!snapshot||!UUID.test(snapshot.owner)||snapshot.repositoryVersion!==VERSION||snapshot.coverage!=='local-cache-only'||!s||Object.keys(s).sort().join(',')!==[...ACCOUNT_STORES].sort().join(',')||ACCOUNT_STORES.some(name=>!Array.isArray(s[name]))||ACCOUNT_STORES.reduce((n,name)=>n+s[name].length,0)>100000||!Number.isSafeInteger(now))return ['invalid_snapshot'];
+ for(const name of ACCOUNT_STORES){const seen=new Set();for(const row of s[name]){if(!row||row.namespace!==namespace){bad('invalid_snapshot');continue}const key=JSON.stringify(STORES[name].map(k=>row[k]));if(seen.has(key))bad('invalid_snapshot');seen.add(key)}}
+ if(blocked.size)return [...blocked];
+ for(const row of s.records){
+  if(Object.keys(row).some(k=>!RECORD_FIELDS.has(k))||!validIdentity(row.kind,row.id)||row.tailOperationId!=null||row.overlay!=null||row.reviewRequired||!row.base||row.base.user_id!==snapshot.owner||!revision(row.baseRevision)||row.baseRevision==='0'||row.base.revision!==row.baseRevision||!UUID.test(row.baseEpoch)||!revision(row.localRevision)||row.localRevision==='0'||typeof row.deleted!=='boolean'||!Object.hasOwn(row.base,'deleted_at')||row.base.deleted_at!==null&&typeof row.base.deleted_at!=='string'||row.deleted!==(row.base.deleted_at!==null)||row.kind==='practice_checkins'&&row.base.local_date!==row.id||(EVENTS.has(row.kind)||row.kind==='personal_plans')&&row.base.id!==row.id)bad('unsettled_record');
+ }
+ const resolved=new Set(s.conflicts.filter(row=>row.state==='resolved').map(row=>row.conflictId));
+ for(const row of s.outbox){
+  if(!UUID.test(row.operationId)||!KINDS.has(row.kind)||!['acked','resolved'].includes(row.state))bad('unsettled_operation');
+  else if(row.state==='acked'&&(!revision(row.ackRevision)||row.ackRevision==='0'||!UUID.test(row.ackEpoch)))bad('unsettled_operation');
+  else if(row.state==='resolved'&&(!UUID.test(row.resolutionId)||!resolved.has(row.resolutionId)))bad('unsettled_operation');
+ }
+ if(s.conflicts.some(row=>row.state!=='resolved'||!UUID.test(row.conflictId)))bad('unsettled_conflict');
+ if(s.import_receipts.some(row=>row.value?.phase!=='complete'||row.value.pending!==null||row.value.owner!==snapshot.owner||!revision(row.localRevision)||row.localRevision==='0'))bad('unfinished_import');
+ if(s.sync_cursor.some(row=>![1,ACTIVITY_POLICY,PLAN_POLICY].includes(row.protocol)||!UUID.test(row.epoch)||!revision(row.localVersion)))bad('unknown_state');
+ for(const row of s.device_state)if(!UUID.test(row.deviceId)||!['timer','checklist','focus','academy-practice-1'].includes(row.key)&&!(typeof row.key==='string'&&row.key.startsWith('court-checkpoint-1:')&&UUID.test(row.key.slice(19))))bad('unknown_state');
+ for(const row of s.metadata){
+  const key=row.key;
+  if(key===CACHE_GENERATION){if(!markerValid(row,namespace))bad('unknown_state')}
+  else if(['activity-consent-1','plans-selections-consent-1'].includes(key)){if(typeof row.enabled!=='boolean'||!revision(row.localRevision)||row.localRevision==='0'||BigInt(row.localRevision)>=9999999999999999999n)bad('unknown_state')}
+  else if(key==='preferences-checkins-consent-1'){if(typeof row.enabled!=='boolean')bad('unknown_state')}
+  else if(['senderLease','activitySenderLease','planSenderLease'].includes(key)){if(!UUID.test(row.owner)||!Number.isSafeInteger(row.until))bad('unknown_state');else if(row.until>now)bad('active_sender')}
+  else if(['academy-device-id-1','court-device-id-1'].includes(key)){if(!UUID.test(row.value))bad('unknown_state')}
+  else if(key==='checkin-timezone-1'){if(typeof row.value!=='string')bad('unknown_state')}
+  else if(typeof key!=='string'||!key.startsWith('operation:')||!UUID.test(key.slice(10))||typeof row.signature!=='string'||!revision(row.localRevision??row.result?.localRevision))bad('unknown_state');
+ }
+ return [...blocked].sort();
+}
 function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVersionChange=()=>{}}={}){
  if(!indexedDB)return Promise.reject(new RepositoryError('storage_unavailable'));
  return new Promise((resolve,reject)=>{
-  let abandoned=false,opening;
+  let abandoned=false,opening,upgradeError=null;
   try{opening=indexedDB.open(name,VERSION)}catch(error){reject(storageError(error));return}
   opening.onblocked=()=>{abandoned=true;reject(new RepositoryError('upgrade_blocked'));onBlocked()};
-  opening.onerror=()=>reject(storageError(opening.error));
-  opening.onupgradeneeded=()=>{
+  opening.onerror=()=>reject(upgradeError||storageError(opening.error));
+  opening.onupgradeneeded=event=>{
    if(abandoned){opening.transaction.abort();return}
-   for(const [store,keyPath] of Object.entries(STORES)){
-    const table=opening.result.createObjectStore(store,{keyPath});
-    if(store!=='legacy_snapshots')table.createIndex('namespace','namespace');
-   }
+   try{
+    if(event.oldVersion===0){for(const [store,keyPath] of Object.entries(STORES)){const table=opening.result.createObjectStore(store,{keyPath});if(store!=='legacy_snapshots')table.createIndex('namespace','namespace')}}
+    else{
+     if(event.oldVersion!==1||Array.from(opening.result.objectStoreNames).sort().join(',')!==Object.keys(STORES).sort().join(','))fail('upgrade_required');
+     for(const [name,keyPath] of Object.entries(STORES)){
+      const table=opening.transaction.objectStore(name);
+      if(JSON.stringify(table.keyPath)!==JSON.stringify(keyPath)||table.autoIncrement)fail('upgrade_required');
+      if(name!=='legacy_snapshots'&&(!table.indexNames.contains('namespace')||table.index('namespace').keyPath!=='namespace'||table.index('namespace').unique||table.index('namespace').multiEntry))fail('upgrade_required');
+     }
+    }
+   }catch(error){upgradeError=storageError(error);opening.transaction.abort()}
   };
   opening.onsuccess=()=>{
    const db=opening.result;
@@ -59,7 +109,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
     if(typeof namespace!=='string'||! /^(guest|user):/.test(namespace)||!UUID.test(namespace.slice(namespace.indexOf(':')+1)))fail('invalid_namespace');
     const guest=namespace.startsWith('guest:');let active=true;
     const transactions=new Set();
-    async function transaction(stores,mode,work){
+    async function rawTransaction(stores,mode,work){
      if(!active||closed)fail('scope_closed');
      let tx;try{tx=db.transaction(stores,mode)}catch(error){throw storageError(error)}
      transactions.add(tx);
@@ -73,9 +123,23 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
       return result;
      }catch(error){try{tx.abort()}catch(_){}await done.catch(()=>{});throw storageError(error)}finally{transactions.delete(tx)}
     }
+    // Pin before returning a scope, including readers waiting on a remote response.
+    // Every user transaction checks the marker under the same metadata lock as purge.
+    const pinned=guest?Promise.resolve(null):rawTransaction(['metadata'],'readonly',async tx=>{const row=await request(tx.objectStore('metadata').get([namespace,CACHE_GENERATION]));return {signature:canonical(row??null),valid:markerValid(row,namespace)}});
+    pinned.catch(()=>{});
+    async function transaction(stores,mode,work){
+     if(!active||closed)fail('scope_closed');
+     if(guest)return rawTransaction(stores,mode,work);
+     const expected=await pinned;
+     return rawTransaction([...new Set([...stores,'metadata'])],mode,async tx=>{
+      const row=await request(tx.objectStore('metadata').get([namespace,CACHE_GENERATION]));
+      if(canonical(row??null)!==expected.signature)fail('cache_changed');
+      if(mode==='readwrite'&&!expected.valid)fail('upgrade_required');
+      return work(tx);
+     });
+    }
     function identity(kind,id){
-     if(!KINDS.has(kind)||typeof id!=='string'||(EVENTS.has(kind)||kind==='personal_plans')&&id!==id.toLowerCase())fail('invalid_entity');
-     if(SINGLETONS.has(kind)?id!=='self':kind==='practice_checkins'?!/^\d{4}-\d{2}-\d{2}$/.test(id)||!Number.isFinite(Date.parse(id+'T00:00:00Z'))||new Date(id+'T00:00:00Z').toISOString().slice(0,10)!==id:!UUID.test(id))fail('invalid_entity');
+     if(!validIdentity(kind,id))fail('invalid_entity');
     }
     const syncStores=['records','outbox','metadata','conflicts','sync_cursor'];
     const rowKey=op=>[namespace,op.kind,op.id];
@@ -190,6 +254,15 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      if(!record)fail('entity_not_found');
      return {record,operations:operations.filter(o=>o.kind===kind&&o.id===id),conflicts:(await own('conflicts')).filter(c=>c.state==='open'&&c.kind===kind&&c.id===id),cursor:await request(tx.objectStore('sync_cursor').get([namespace,PLAN_POLICY])),consent:await planConsent(tx),relatedRecords:records,relatedOperations:operations};
     }
+    function accountSnapshot(tx){
+     let bytes=0,count=0;
+     const collect=name=>new Promise((resolve,reject)=>{
+      const rows=[],cursor=tx.objectStore(name).index('namespace').openCursor(namespace);
+      cursor.onerror=()=>reject(storageError(cursor.error));
+      cursor.onsuccess=()=>{try{const at=cursor.result;if(!at){resolve(rows);return}const row=at.value;bytes+=new TextEncoder().encode(canonical(row)).length;if(bytes>31*1024*1024||++count>100000)fail('rescue_too_large');rows.push(row);at.continue()}catch(error){reject(error)}};
+     });
+     return Promise.all(ACCOUNT_STORES.map(collect)).then(rows=>({owner:namespace.slice(5),repositoryVersion:VERSION,coverage:'local-cache-only',stores:Object.fromEntries(ACCOUNT_STORES.map((name,i)=>[name,rows[i]]))}));
+    }
     const api={
      close(){active=false;for(const tx of transactions){try{tx.abort()}catch(_){}}scopes.delete(api)},
      getDomainSnapshot(){return domainSnapshot(DEFAULT_POLICY)},
@@ -197,15 +270,37 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      getPlanSnapshot(){return domainSnapshot(PLAN_POLICY)},
      getAccountRescueSnapshot(){
       if(guest)fail('auth_required');
-      const names=['records','outbox','conflicts','sync_cursor','import_receipts','device_state','metadata'];
-      return transaction(names,'readonly',async tx=>{
-       let bytes=0,count=0;
-       const collect=name=>new Promise((resolve,reject)=>{
-        const rows=[],cursor=tx.objectStore(name).index('namespace').openCursor(namespace);
-        cursor.onerror=()=>reject(storageError(cursor.error));
-        cursor.onsuccess=()=>{try{const at=cursor.result;if(!at){resolve(rows);return}const row=at.value;bytes+=new TextEncoder().encode(canonical(row)).length;if(bytes>31*1024*1024||++count>100000)fail('rescue_too_large');rows.push(row);at.continue()}catch(error){reject(error)}};
-       });
-       const rows=await Promise.all(names.map(collect));return {owner:namespace.slice(5),repositoryVersion:VERSION,coverage:'local-cache-only',stores:Object.fromEntries(names.map((name,i)=>[name,rows[i]]))};
+      return transaction(ACCOUNT_STORES,'readonly',accountSnapshot);
+     },
+     async getAccountPurgePreview(){
+      const snapshot=await api.getAccountRescueSnapshot();return {snapshot,blockers:getPurgeBlockers(snapshot)};
+     },
+     // Foundation only: no product caller until Auth/export/confirmation and RAM
+     // shutdown across tabs are integrated. Never use a file as a current preview.
+     async purgeAccountCache({expectedSnapshot,operationId}={}){
+      if(guest)fail('auth_required');
+      const expected=copy(expectedSnapshot);
+      if(!UUID.test(operationId)||expected?.owner!==namespace.slice(5)||expected.repositoryVersion!==VERSION||getPurgeBlockers(expected).includes('invalid_snapshot'))fail('invalid_preview');
+      return transaction(ACCOUNT_STORES,'readwrite',async tx=>{
+       const current=await accountSnapshot(tx);
+       if(JSON.stringify(current)!==JSON.stringify(expected))fail('preview_changed');
+       if(getPurgeBlockers(current).length)fail('purge_blocked');
+       // Generate internally: a supplied operation ID must never resurrect a past
+       // marker and make scopes from that generation writable again (ABA).
+       const generation=root.crypto.randomUUID();
+       const consents=await Promise.all([activityConsent(tx),planConsent(tx)]);
+       for(const name of ACCOUNT_STORES){
+        await new Promise((resolve,reject)=>{
+         const cursor=tx.objectStore(name).index('namespace').openCursor(namespace);
+         cursor.onerror=()=>reject(cursor.error);
+         cursor.onsuccess=()=>{const at=cursor.result;if(!at){resolve();return}const deletion=at.delete();deletion.onerror=()=>reject(deletion.error);deletion.onsuccess=()=>at.continue()};
+        });
+       }
+       const metadata=tx.objectStore('metadata');
+       await request(metadata.put({namespace,key:CACHE_GENERATION,value:generation}));
+       await request(metadata.put({namespace,key:'preferences-checkins-consent-1',enabled:false}));
+       for(const [i,key] of ['activity-consent-1','plans-selections-consent-1'].entries())await request(metadata.put({namespace,key,enabled:false,localRevision:(BigInt(consents[i].localRevision)+1n).toString()}));
+       return {status:'purged',generation,operationId,removed:Object.fromEntries(ACCOUNT_STORES.map(name=>[name,current.stores[name].length]))};
       });
      },
      getPlanConsent(){if(guest)fail('auth_required');return transaction(['metadata'],'readonly',planConsent)},
@@ -523,10 +618,10 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
     };
     scopes.add(api);return api;
    }
-   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY,PLAN_POLICY]),activityLifecycle:1,planLifecycle:1,trainingLifecycle:1});
+   resolve({scope,close,version:VERSION,policies:Object.freeze([DEFAULT_POLICY,ACTIVITY_POLICY,PLAN_POLICY]),activityLifecycle:1,planLifecycle:1,trainingLifecycle:1,cachePurgeTransactions:1});
   };
  });
 }
-const api={open,RepositoryError,VERSION};
+const api={open,RepositoryError,VERSION,getPurgeBlockers};
 if(typeof module!=='undefined')module.exports=api;else root.PickleUpLocalRepository=api;
 })(typeof window!=='undefined'?window:globalThis);

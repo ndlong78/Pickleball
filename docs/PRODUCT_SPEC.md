@@ -1,5 +1,8 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
+**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+
+
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
 
 **Trạng thái 10/11/2026:** Main `cc0d944` / V5.14.1 sau #40; UI/backend/Pages/Cloudflare sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Operator xác nhận GitHub tự deploy, lịch tập đề xuất/check-in A→B đúng ngày/trạng thái/phút. [Sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi, không suy thành các nhóm hoạt động/giáo án hoặc expiry/SMTP/physical QA đã đạt. Full V6 restore/purge, backup và pilot còn gate.

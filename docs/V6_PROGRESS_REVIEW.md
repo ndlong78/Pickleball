@@ -1,5 +1,8 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
+**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+
+
 **Hiện hành — 12/11/2026, sau #42:** main `c7729774d53bac295a15685f7e0655f7f321be8f` /5.15.1. UI42966329683:359 unit/580 browser Chromium+WebKit/40 lượt WebKit bổ sung,0 fail/flaky/retry; backend42966329674:300 pgTAP/48 REST/Auth local thật hai engines; Pages42966328494 và Cloudflare Production build582f21e0 success cùng merge SHA. Owner cung cấp ảnh SQL Editor staging xác nhận lịch sử **7 / 20261111000100**, sau đó xác nhận đã tắt/lưu signup server. [Sổ nghiệm thu và SELECT kiểm quyền tiếp theo](STAGING_AUTH_VERIFICATION.md#cập-nhật-12112026--sau-nâng-cấp-migration7). Owner cũng báo metadata bảng mới đúng **true / true / false / false** (RLS/FORCE RLS/client access/API rebind). Chưa nghiệm thu luồng gửi/đọc sau nâng cấp trên Managed. Không chạy lại bundle6→7; importer/public pilot vẫn đóng, không thay production. Kế tiếp: hoàn tất phép kiểm sau upgrade và nghiệm thu hoạt động/giáo án bằng dữ liệu giả; cache purge/restore vẫn là phạm vi kế hoạch, chưa có mã mới phát hành từ lần cập nhật này.
 
 Các mốc trước ngày12/11 bên dưới là lịch sử, không thay trạng thái hiện hành ở trên.

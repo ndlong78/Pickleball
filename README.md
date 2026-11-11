@@ -1,5 +1,7 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
+**Tiếp theo sau #43 — 12/11/2026:** main `131441e` /5.15.1; operator đã xác nhận staging migration7, signup server tắt và ledger RLS/ACL đúng kỳ vọng. [PR5b2c2a/V5.16.0](docs/CACHE_PURGE_TRANSACTION_PR5B2C2A.md) đang triển khai nền giao dịch dọn cache sạch + IndexedDB2, chưa có UI purge và chưa merge/deploy. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md) giữ phần Managed sau upgrade còn chưa kiểm. Các mốc dưới là lịch sử.
+
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](docs/REVIEW_SAFETY_2026_11.md).
 
 PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ trình đến trình độ 5.0.
