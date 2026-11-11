@@ -11,7 +11,7 @@ function createGuardedFetch(getGeneration,fetcher=(...args)=>root.fetch(...args)
   return new Response(noBody?null:body,{status:response.status,statusText:response.statusText,headers:response.headers});
  };
 }
-function createAuthAdapter(client,{rpcTransport}={}){
+function createAuthAdapter(client,{rpcTransport,allowSignup=true}={}){
  let generation=0,session=null,stopped=false;
  const listeners=new Set(),controllers=new Set();
  let state={status:"restoring",user:null,error:null};
@@ -28,6 +28,7 @@ function createAuthAdapter(client,{rpcTransport}={}){
  const initial=generation;
  const ready=client.auth.getSession().then(({data,error})=>{if(initial===generation){accept(error?null:data.session);if(error){state.error="Không khôi phục được phiên. Hãy đăng nhập lại.";publish()}}}).catch(()=>{if(initial===generation)accept(null)});
  async function requestOtp(email,signup){
+  if(signup&&!allowSignup)return {error:"Đăng ký mới chưa được mở. Hãy dùng tài khoản thử đã được cấp."};
   const stamp=generation;
   try{const {error}=await client.auth.signInWithOtp({email,options:{shouldCreateUser:signup}});return stamp===generation?{error:message(error)}:{stale:true}}catch(_){return {error:"Lỗi mạng. Kiểm tra kết nối rồi thử lại."}}
  }
@@ -76,6 +77,7 @@ function createAuthAdapter(client,{rpcTransport}={}){
  return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,syncRpc,eventRpc,planRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
 }
 async function connect(config){
+ if(!config?.enabled||!root.PickleUpAuthOrigin?.allowed(root.location,config.url))throw Error("Auth origin disabled");
  const url=new URL(config.url);
  if(url.protocol!=="https:"&&!(url.protocol==="http:"&&["localhost","127.0.0.1"].includes(url.hostname)))throw Error("Invalid Auth URL");
  if(!config.publishableKey.startsWith("sb_publishable_"))throw Error("Publishable key required");
@@ -83,7 +85,7 @@ async function connect(config){
  const {createClient}=await import("../vendor/supabase.js");
  let adapter;
  const guardedFetch=createGuardedFetch(()=>adapter?.getGeneration());
- adapter=createAuthAdapter(createClient(config.url,config.publishableKey,{global:{fetch:guardedFetch},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:"pickleup_auth_v6"}}),{rpcTransport:async(method,args,token,signal)=>{
+ adapter=createAuthAdapter(createClient(config.url,config.publishableKey,{global:{fetch:guardedFetch},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:"pickleup_auth_v6"}}),{allowSignup:config.allowSignup===true,rpcTransport:async(method,args,token,signal)=>{
   // Pin the token captured for this request. Never let an A request acquire B's
   // token from an async SDK auth lookup after an account switch.
   const response=await fetch(config.url.replace(/\/$/,"")+"/rest/v1/rpc/"+method,{method:"POST",signal,headers:{apikey:config.publishableKey,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(args)});
@@ -94,7 +96,7 @@ async function connect(config){
  return adapter;
 }
 let shared,sharedConfig;
-function getShared(config){if(!config?.enabled)return Promise.reject(Error("Auth disabled"));const identity=config.url+"|"+config.publishableKey;if(shared&&identity!==sharedConfig)return Promise.reject(Error("Auth configuration changed; reload required"));if(!shared){sharedConfig=identity;shared=connect(config).catch(error=>{shared=null;sharedConfig=null;throw error})}return shared}
+function getShared(config){if(!config?.enabled)return Promise.reject(Error("Auth disabled"));const identity=config.url+"|"+config.publishableKey+"|"+(config.allowSignup===true);if(shared&&identity!==sharedConfig)return Promise.reject(Error("Auth configuration changed; reload required"));if(!shared){sharedConfig=identity;shared=connect(config).catch(error=>{shared=null;sharedConfig=null;throw error})}return shared}
 root.PickleUpAuth={createAuthAdapter,connect,getShared};
 if(typeof module!=="undefined")module.exports={createAuthAdapter,createGuardedFetch};
 })(typeof window!=="undefined"?window:globalThis);

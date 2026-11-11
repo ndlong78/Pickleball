@@ -16,7 +16,34 @@ test('mock native Academy selection: conflict shows both lesson identities and u
  const f=await setup(context),id=seedPlan(f),server=f.servers.get(A);await enable(page);await choose(page,'PU-002');const current=server.rows.get('user_selections:self');server.apply({p_operation_id:crypto.randomUUID(),p_kind:'user_selections',p_entity_key:'self',p_action:'put',p_expected_revision:current.revision,p_epoch:server.epoch,p_payload:{selected_academy_lesson_id:'PU-003'}});await send(page);await expect(page.locator(status)).toContainText('cần xem và xử lý');await page.locator('[data-plan-reviews] button').click();await expect(page.locator('[data-plan-detail]')).toContainText('PU-002');await expect(page.locator('[data-plan-detail]')).toContainText('PU-003');expect(await page.evaluate(()=>PICKLEUP_PLANS.academySelection().id)).toBeNull();await page.getByLabel('Cách xử lý giáo án').selectOption('local');await page.getByRole('button',{name:'Xác nhận xử lý giáo án',exact:true}).click();await expect(page.locator(status)).toContainText('Đã lưu quyết định');await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');expect(server.rows.get('user_selections:self').selected_academy_lesson_id).toBe('PU-002');expect(server.rows.get('user_selections:self').selected_personal_plan_id).toBe(id);
 });
 test('mock native Academy selection: A to B ignores late navigation and clears focus/checklist/input in both tabs',async({page,context})=>{
- await setup(context);await enable(page);await choose(page,'PU-037');await page.locator('#academyStepList input').first().check();await page.locator('#academyFocusToggle').click();await page.locator('#academyFocusNext').click();await page.locator('#academyTimerStart').click();await page.locator('#academyScore').fill('19');const before=await legacy(page),tab=await context.newPage();await tab.goto('/Pickleball/?page=settings');await expect(tab.locator('[data-plan-send]')).toBeEnabled();await page.evaluate(()=>{const request=PICKLEUP_PAGE_LOADER.ensure;PICKLEUP_PAGE_LOADER.ensure=async name=>{const result=await request(name);if(name==='academy')await new Promise(r=>window.FINISH_LESSON_NAV=r);return result};window.OLD_OPEN=PICKLEUP_PLANS.requestLesson('PU-038')});await expect.poll(()=>page.evaluate(()=>typeof FINISH_LESSON_NAV)).toBe('function');await tab.evaluate(B=>SWITCH_PLAN_OWNER(B),B);await page.evaluate(()=>FINISH_LESSON_NAV());await expect(page.locator('#academyResumeText')).not.toContainText('Tuần 38');await expect(page.locator('#academyFocusToggle')).toHaveAttribute('aria-pressed','false');await expect(page.locator('#academyStepList input').first()).not.toBeChecked();await expect(page.locator('#academyScore')).not.toHaveValue('19');expect(await legacy(page)).toBe(before);
+ await setup(context);await enable(page);await choose(page,'PU-037');
+ await page.locator('#academyStepList input').first().check();
+ await page.locator('#academyFocusToggle').click();
+ await page.locator('#academyFocusNext').click();
+ await page.locator('#academyTimerStart').click();
+ await page.locator('#academyScore').fill('19');
+ const before=await legacy(page),tab=await context.newPage();
+ await tab.goto('/Pickleball/?page=settings');
+ await tab.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
+ await expect.poll(()=>tab.evaluate(()=>typeof SWITCH_PLAN_OWNER)).toBe('function');
+ await expect(tab.locator('[data-plan-send]')).toBeEnabled();
+ await page.evaluate(()=>{
+  const request=PICKLEUP_PAGE_LOADER.ensure;
+  PICKLEUP_PAGE_LOADER.ensure=async name=>{
+   const result=await request(name);
+   if(name==='academy')await new Promise(r=>window.FINISH_LESSON_NAV=r);
+   return result;
+  };
+  window.OLD_OPEN=PICKLEUP_PLANS.requestLesson('PU-038');
+ });
+ await expect.poll(()=>page.evaluate(()=>typeof FINISH_LESSON_NAV)).toBe('function');
+ await tab.evaluate(B=>SWITCH_PLAN_OWNER(B),B);
+ await page.evaluate(()=>FINISH_LESSON_NAV());
+ await expect(page.locator('#academyResumeText')).not.toContainText('Tuần 38');
+ await expect(page.locator('#academyFocusToggle')).toHaveAttribute('aria-pressed','false');
+ await expect(page.locator('#academyStepList input').first()).not.toBeChecked();
+ await expect(page.locator('#academyScore')).not.toHaveValue('19');
+ expect(await legacy(page)).toBe(before);
 });
 test('mock native Academy selection: deleted singleton requires confirmed restore of empty choices',async({page,context})=>{
  const f=await setup(context);seedPlan(f);await enable(page);await choose(page,'PU-037');await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');const server=f.servers.get(A),row=server.rows.get('user_selections:self');server.apply({p_operation_id:crypto.randomUUID(),p_kind:'user_selections',p_entity_key:'self',p_action:'delete',p_expected_revision:row.revision,p_epoch:server.epoch,p_payload:{}});await page.locator('[data-plan-read]').click();await expect(page.locator(status)).toContainText('Đã đọc');await route(page,'academy');await expect(page.locator('#academyRemember')).toBeDisabled();await expect(page.locator('#academy '+lessonStatus)).toContainText('Khôi phục');await route(page,'settings');page.once('dialog',d=>d.accept());await page.locator('[data-plan-restore-selection]').click();await expect(page.locator(status)).toContainText('Đã khôi phục lựa chọn trống');await send(page);await expect(page.locator(status)).toContainText('Đã đồng bộ');expect(server.rows.get('user_selections:self').selected_personal_plan_id).toBeNull();expect(server.rows.get('user_selections:self').selected_academy_lesson_id).toBeNull();await choose(page,'PU-038');

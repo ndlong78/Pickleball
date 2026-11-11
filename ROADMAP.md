@@ -1,5 +1,7 @@
 # PICKLEUP — PRODUCT ROADMAP
 Cập nhật: **10/11/2026** — main `cc0d944` sau #40/app5.14.1, UI/backend/Pages/Cloudflare sạch cùng SHA; GitHub tự deploy, operator xác nhận lịch tập đề xuất và check-in A→B. [PR6b/V5.15.0](docs/STAGING_ACCOUNT_PR6B.md) đang PR mở thử hoạt động/giáo án với consent riêng và dữ liệu giả; chưa merge/deploy hoặc nghiệm thu các nhóm mới. Importer/pilot dữ liệu thật còn đóng.
+**Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](docs/REVIEW_SAFETY_2026_11.md).
+
 
 ## Tiến độ hiện hành và bước tiếp theo
 

@@ -1,5 +1,7 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
+**Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
+
 **Trạng thái 10/11/2026:** Main `cc0d944` / V5.14.1 sau #40; UI/backend/Pages/Cloudflare sạch cùng merge SHA theo [tiến độ](V6_PROGRESS_REVIEW.md). Operator xác nhận GitHub tự deploy, lịch tập đề xuất/check-in A→B đúng ngày/trạng thái/phút. [Sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ phạm vi, không suy thành các nhóm hoạt động/giáo án hoặc expiry/SMTP/physical QA đã đạt. Full V6 restore/purge, backup và pilot còn gate.
 
 **PR6b/V5.15.0 đang triển khai:** [Chế độ thử account-data](STAGING_ACCOUNT_PR6B.md) mở ba flags trên đúng staging, nguồn/consent/read/send riêng. Chỉ dữ liệu mới sau chọn nguồn được xếp hàng, lịch sử khách không tự nhập. Nút vào chế độ thử và phiên bản trong Dữ liệu; importer vẫn tắt. Bản PR chưa merge/deploy, chỉ dữ liệu giả.

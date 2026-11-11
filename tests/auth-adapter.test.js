@@ -58,3 +58,10 @@ test('plan transport preserves HTTP200 domain outcomes instead of promoting them
  let event,result;const client={auth:{onAuthStateChange(fn){event=fn;return {data:{subscription:{unsubscribe(){}}}}},getSession:async()=>({data:{session:null}})}};
  const adapter=createAuthAdapter(client,{rpcTransport:async()=>result});try{await adapter.ready;event('SIGNED_IN',{user:{id:'A'},access_token:'fixture-A'});for(const status of ['applied','conflict','invalid','reset_required','upgrade_required','network_error']){result={status,epoch:'fixture-epoch'};assert.deepEqual(await adapter.planRpc('A','apply_plan_operation',{}),result)}}finally{adapter.destroy()}
 });
+
+test('a connected pilot adapter denies signup but still requests OTP for existing accounts',async()=>{
+ let requests=0;
+ const client={auth:{onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}}},getSession:async()=>({data:{session:null}}),signInWithOtp:async args=>{requests++;assert.equal(args.options.shouldCreateUser,false);return {}}}};
+ const adapter=createAuthAdapter(client,{allowSignup:false});
+ try{await adapter.ready;assert.ok((await adapter.requestOtp('fixture@example.invalid',true)).error);assert.equal(requests,0);assert.equal((await adapter.requestOtp('fixture@example.invalid',false)).error,null);assert.equal(requests,1)}finally{adapter.destroy()}
+});

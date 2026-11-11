@@ -5,9 +5,11 @@ if(!host)return;
 const status=host.querySelector('[role="status"]'),form=host.querySelector("form"),email=form.elements.email,otp=form.elements.otp,signup=form.elements.signup,send=form.elements.send,verify=form.elements.verify,logout=host.querySelector('[data-logout]'),probe=host.querySelector('[data-private]');
 let previousUser=null;
 let adapter,busy=false,until=0,serial=0;
-function controls(){send.disabled=busy||Date.now()<until;verify.disabled=busy;email.disabled=busy;signup.disabled=busy;otp.disabled=busy;logout.disabled=busy;probe.disabled=busy;send.textContent=Date.now()<until?"Gửi lại sau "+Math.ceil((until-Date.now())/1000)+"s":"Gửi mã OTP"}
+function controls(){send.disabled=busy||Date.now()<until;verify.disabled=busy;email.disabled=busy;signup.disabled=busy||config?.allowSignup!==true;otp.disabled=busy;logout.disabled=busy;probe.disabled=busy;send.textContent=Date.now()<until?"Gửi lại sau "+Math.ceil((until-Date.now())/1000)+"s":"Gửi mã OTP"}
 const config=window.PICKLEUP_AUTH_CONFIG;
-if(!config?.enabled||!config.url||!config.publishableKey){status.textContent="Chế độ khách · Đăng nhập chưa được cấu hình.";form.hidden=true;return}
+if(!config?.enabled||!config.url||!config.publishableKey){status.textContent=config?.url&&config?.publishableKey?"Chế độ khách · Đăng nhập thử chỉ có trên trang staging riêng.":"Chế độ khách · Đăng nhập chưa được cấu hình.";form.hidden=true;return}
+signup.checked=false;signup.disabled=config.allowSignup!==true;
+signup.closest('label').hidden=config.allowSignup!==true;
 async function init(){
  try{
   adapter=await PickleUpAuth.getShared(config);

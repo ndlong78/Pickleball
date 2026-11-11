@@ -58,7 +58,7 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
     const url=new URL(req.url,'http://fixture.invalid');let file=decodeURIComponent(url.pathname);
     if(!file.startsWith('/Pickleball/')){res.writeHead(404).end();return}
     file=file.slice('/Pickleball/'.length)||'index.html';
-    if(file==='modules/auth-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_AUTH_CONFIG=Object.freeze('+JSON.stringify({enabled:true,url:apiOrigin,publishableKey:alias})+');');return}
+    if(file==='modules/auth-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_AUTH_CONFIG=Object.freeze('+JSON.stringify({enabled:true,allowSignup:true,url:apiOrigin,publishableKey:alias})+');');return}
     if(file==='modules/data/sync-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_SYNC_CONFIG=Object.freeze({enabled:true});');return}
     if(file==='modules/data/activity-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_ACTIVITY_CONFIG=Object.freeze({enabled:true});');return}
     if(file==='modules/data/plan-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_PLAN_CONFIG=Object.freeze({enabled:true});');return}
