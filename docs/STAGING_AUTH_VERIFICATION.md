@@ -1,5 +1,35 @@
 # Staging Auth — kết quả và kiểm thử tiếp theo
 
+## Cập nhật 12/11/2026 — sau nâng cấp migration7
+
+Ngày ghi nhận theo Asia/Saigon; không suy thời điểm thực thi từ ngày ghi nhận. Owner báo đã chạy nâng cấp trên project staging đã đối chiếu `rfeoeagklmaqmkcdhprb`, gửi ảnh SQL Editor cho query `count(*) / max(version)` với kết quả **7 / 20261111000100**; sau đó xác nhận đã tắt và lưu **Allow new users to sign up** trên Supabase Authentication. Không cần chạy lại bundle6→7 trên database này.
+
+| Kiểm tra | Trạng thái | Phạm vi kết luận |
+|---|---|---|
+| Lịch sử migration sau nâng cấp | ĐẠT — kết quả SQL do operator cung cấp | Xác nhận số lượng7 và version lớn nhất20261111000100; chưa kiểm đủ từng version, source/checksum hoặc RLS/ACL của bảng mới |
+| Chặn signup trên server | ĐÃ CẤU HÌNH — operator xác nhận đã tắt và lưu | Không suy thành phép thử request signup từ client khác hoặc kiểm toàn bộ rate limits |
+| FORCE RLS/ACL của `legacy_write_epochs` | ĐẠT — operator báo đúng bốn giá trị mong đợi | `rls_enabled=true`, `rls_forced=true`, `client_access=false`, `api_can_rebind=false`; không thay kiểm tra toàn bộ ACL/RLS hoặc cách ly A/B |
+| Login và đọc/gửi bằng writer fenced sau nâng cấp | CHƯA KIỂM trên Managed | Nghiệm thu mục tiêu/check-in trước migration7 giữ nguyên là bằng chứng lịch sử |
+
+Phép kiểm SQL Editor đã dùng, chỉ đọc catalog, không lấy nội dung tài khoản:
+
+```sql
+select c.relrowsecurity as rls_enabled,
+       c.relforcerowsecurity as rls_forced,
+       has_table_privilege('authenticated', c.oid,
+         'SELECT,INSERT,UPDATE,DELETE') as client_access,
+       has_table_privilege('pickleup_api', c.oid,
+         'UPDATE,DELETE') as api_can_rebind
+from pg_class c
+where c.oid = to_regclass('pickleup_private.legacy_write_epochs');
+```
+
+Owner đã báo kết quả đúng kỳ vọng **true / true / false / false**. Phép kiểm phải có đúng một dòng. Không có dòng hoặc khác kỳ vọng thì dừng ghi thử và đối chiếu [hợp đồng migration7](LEGACY_EPOCH_GUARD.md); không nới quyền hoặc xóa lịch sử để sửa nhanh. Sau khi metadata đạt, dùng tài khoản hiện hữu trên staging, chỉ dữ liệu giả: đăng nhập, gửi thay đổi mục tiêu/check-in ở browser profile A, đợi ACK và0 pending, rồi cùng tài khoản chọn đúng nguồn/đọc lại ở profile B. Hai profile cùng account không chứng minh cách ly hai account; nghiệm thu hoạt động/giáo án, A→B, conflict, expiry và phục hồi vẫn riêng. Chỉ báo trạng thái và số lượng, giữ email/OTP/token/nội dung riêng ngoài repo/log/artifact.
+
+Nguồn đã merge [#42](https://github.com/ndlong78/Pickleball/pull/42): main `c7729774d53bac295a15685f7e0655f7f321be8f` /5.15.1. [UI42966329683](https://github.com/ndlong78/Pickleball/actions/runs/42966329683):359 unit,580 browser Chromium/WebKit,40 lượt WebKit bổ sung,3 HTTP và1 Workers pass,0 fail/flaky/retry. [Backend42966329674](https://github.com/ndlong78/Pickleball/actions/runs/42966329674):300 pgTAP,48 REST và GoTrue/Mailpit/SDK Auth browser thật hai engines pass. [Pages42966328494](https://github.com/ndlong78/Pickleball/actions/runs/42966328494) và Cloudflare Production build582f21e0 success cùng merge SHA. Đây là evidence CI/deploy của source, không thay xác minh build đang chạy trên browser hoặc Managed sau upgrade. CI của PR tài liệu mới ghi riêng trong mô tả PR.
+
+Các mục bên dưới là bằng chứng lịch sử được giữ theo ngày.
+
 Ngày ghi nhận **09/11/2026**, múi giờ Asia/Saigon. Phạm vi: `https://pickleup-staging.home-309.workers.dev/`, dữ liệu thử do operator kiểm soát. Đây là sổ bằng chứng vận hành, không là quyền bật thêm flags hoặc mở pilot.
 
 ## 1. Bằng chứng do operator xác nhận
