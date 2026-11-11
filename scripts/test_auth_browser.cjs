@@ -397,7 +397,7 @@ async function runEngine(engine,name,host){
    }finally{readers.forEach(r=>r.close());off();db.close()}
   },dataB.owner);
   assert.deepEqual(maintenance,{blockers:[],status:'purged',hadPrivateRows:true,cleared:true,disabled:true,late:'cache_changed',authenticated:true,cloudReadableAgain:true});
-  assert.equal(JSON.stringify((await canonical(next)).result),serverBeforePurge);assert.equal(await legacy(next),before);
+  assert.equal(JSON.stringify((await canonical(next)).result)===serverBeforePurge,true);assert.equal((await legacy(next))===before,true);
   phase=name+':logout_draft_after_training_reload';
   await next.evaluate(async()=>{await PICKLEUP_ROUTER.openPage('court');await PICKLEUP_PAGE_LOADER.ensure('court')});await next.locator('#pcRunNext').click();await next.locator('#pcAttemptNote').fill('Synthetic private Court logout draft');
   await next.evaluate(async()=>{await PICKLEUP_ROUTER.openPage('coach');await PICKLEUP_PAGE_LOADER.ensure('coach')});await next.locator('#pcPostScore').fill('15');
