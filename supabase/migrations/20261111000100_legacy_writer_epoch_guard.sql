@@ -1,3 +1,4 @@
+begin;
 -- Keep protocol1 compatibility only within a captured first epoch. Existing
 -- heads have unknown epoch history and fail closed for the eight fenced kinds.
 -- No reset/restore endpoint, business-data rewrite or client DML grant is added.
@@ -69,3 +70,4 @@ reset role;
 do $$ begin execute format('grant pickleup_api to %I with inherit false, set false',current_user);end $$;
 revoke create on schema public,pickleup_private from pickleup_api;
 notify pgrst,'reload schema';
+commit;

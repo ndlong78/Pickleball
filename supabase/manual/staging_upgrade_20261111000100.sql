@@ -86,7 +86,8 @@ do $$ begin execute format('grant pickleup_api to %I with inherit false, set fal
 revoke create on schema public,pickleup_private from pickleup_api;
 notify pgrst,'reload schema';
 
-insert into supabase_migrations.schema_migrations(version,name,statements) values('20261111000100','legacy_writer_epoch_guard',array[$pickleup_reviewed_migration_source$-- Keep protocol1 compatibility only within a captured first epoch. Existing
+insert into supabase_migrations.schema_migrations(version,name,statements) values('20261111000100','legacy_writer_epoch_guard',array[$pickleup_reviewed_migration_source$begin;
+-- Keep protocol1 compatibility only within a captured first epoch. Existing
 -- heads have unknown epoch history and fail closed for the eight fenced kinds.
 -- No reset/restore endpoint, business-data rewrite or client DML grant is added.
 lock table pickleup_private.sync_heads in share row exclusive mode;
@@ -157,6 +158,7 @@ reset role;
 do $$ begin execute format('grant pickleup_api to %I with inherit false, set false',current_user);end $$;
 revoke create on schema public,pickleup_private from pickleup_api;
 notify pgrst,'reload schema';
+commit;
 $pickleup_reviewed_migration_source$]::text[]);
 commit;
 select 'INSTALLED' as status, '20261111000100' as migration_version;
