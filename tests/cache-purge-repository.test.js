@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {IDBFactory,IDBObjectStore}=require('fake-indexeddb');
+const {IDBFactory,IDBObjectStore,IDBCursor}=require('fake-indexeddb');
 const repo=require('../modules/data/local-repository.js'),rescue=require('../modules/data/account-rescue-core.js');
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222',G='33333333-3333-4333-8333-333333333333',D='44444444-4444-4444-8444-444444444444',E='55555555-5555-4555-8555-555555555555',O='66666666-6666-4666-8666-666666666666';
 const ns='user:'+A,marker='local-cache-generation-1';
@@ -53,6 +53,13 @@ test('pinned scopes across connections reject late reads/writes/ACK/checkpoint/l
   assert.equal((await f.db.scope(ns).getAccountRescueSnapshot()).stores.records.length,0);assert.equal((await b.read('user_preferences','self')).overlay.target_days,6);
   await f.db.scope(ns).write(input());assert.equal((await f.db.scope(ns).listOutbox()).length,1);
  }finally{second.close();f.db.close()}
+});
+test('synchronous cursor delete/continue errors after partial deletes roll back the entire purge',async()=>{
+ for(const method of ['delete','continue']){const f=await fixture(),remove=IDBCursor.prototype.delete,advance=IDBCursor.prototype.continue;let deletes=0;try{
+  const p=await f.a.getAccountPurgePreview(),before=await raw(f.indexedDB);
+  try{IDBCursor.prototype.delete=function(...args){deletes++;if(method==='delete'&&deletes===3)throw new DOMException('synthetic','QuotaExceededError');return remove.apply(this,args)};IDBCursor.prototype.continue=function(...args){if(method==='continue'&&deletes===3)throw new DOMException('synthetic','QuotaExceededError');return advance.apply(this,args)};await assert.rejects(f.a.purgeAccountCache({expectedSnapshot:p.snapshot,operationId:D}),{code:'quota_exceeded'})}finally{IDBCursor.prototype.delete=remove;IDBCursor.prototype.continue=advance}
+  assert.equal(deletes,3);assert.deepEqual(await raw(f.indexedDB),before);assert.deepEqual(await f.a.getAccountRescueSnapshot(),p.snapshot);
+ }finally{IDBCursor.prototype.delete=remove;IDBCursor.prototype.continue=advance;f.db.close()}}
 });
 test('concurrent purges have one commit; caller operation IDs cannot resurrect old generations',async()=>{
  const f=await fixture(),second=await repo.open({indexedDB:f.indexedDB});try{const other=second.scope(ns),p=await f.a.getAccountPurgePreview();await other.getAccountRescueSnapshot();const results=await Promise.allSettled([f.a.purgeAccountCache({expectedSnapshot:p.snapshot,operationId:D}),other.purgeAccountCache({expectedSnapshot:p.snapshot,operationId:O})]);assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal(results.find(r=>r.status==='rejected').reason.code,'cache_changed');const first=results.find(r=>r.status==='fulfilled').value,fresh=f.db.scope(ns),p2=await fresh.getAccountPurgePreview(),again=await fresh.purgeAccountCache({expectedSnapshot:p2.snapshot,operationId:first.generation});assert.notEqual(again.generation,first.generation);await assert.rejects(other.setDomainConsent(true),{code:'cache_changed'});await assert.rejects(fresh.setDomainConsent(true),{code:'cache_changed'})}finally{second.close();f.db.close()}

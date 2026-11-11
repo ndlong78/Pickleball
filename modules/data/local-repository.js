@@ -294,7 +294,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
         await new Promise((resolve,reject)=>{
          const cursor=tx.objectStore(name).index('namespace').openCursor(namespace);
          cursor.onerror=()=>reject(cursor.error);
-         cursor.onsuccess=()=>{const at=cursor.result;if(!at){resolve();return}const deletion=at.delete();deletion.onerror=()=>reject(deletion.error);deletion.onsuccess=()=>at.continue()};
+         cursor.onsuccess=()=>{try{const at=cursor.result;if(!at){resolve();return}const deletion=at.delete();deletion.onerror=()=>reject(deletion.error);deletion.onsuccess=()=>{try{at.continue()}catch(error){reject(error)}}}catch(error){reject(error)}};
         });
        }
        const metadata=tx.objectStore('metadata');
