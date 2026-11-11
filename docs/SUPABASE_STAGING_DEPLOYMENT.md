@@ -1,6 +1,6 @@
 # PickleUp V6 — triển khai Supabase staging
 
-**Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
+**Cập nhật 12/11/2026 sau #42:** owner đã chạy nâng cấp trên staging, cung cấp kết quả lịch sử **7 / 20261111000100** và xác nhận đã tắt/lưu **Allow new users to sign up**. Không chạy lại bundle6→7. Bảng mới cần kiểm FORCE RLS/ACL và login/đọc/gửi qua writer fenced sau nâng cấp theo [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md#cập-nhật-12112026--sau-nâng-cấp-migration7); chưa coi count/max là bằng chứng mọi quyền hoặc luồng dữ liệu đều đạt. Source có7 migrations/17 bảng/10 public RPC, chưa đếm lại bảng/RPC trên Managed. [Hợp đồng và giới hạn migration7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
 
 **Cập nhật nghiệm thu 09/11/2026:** main `0fb6fc8` sau #37, app5.13.1, Auth bật và bốn flags dữ liệu tắt. Operator xác nhận nhận OTP/login/kiểm dữ liệu riêng, restore và logout hai tab tại `https://pickleup-staging.home-309.workers.dev/`; [sổ nghiệm thu](STAGING_AUTH_VERIFICATION.md) giữ các kết quả và phần chưa chạy. Site URL/build theo [hướng dẫn Workers](CLOUDFLARE_WORKERS_STAGING.md); URL API Supabase vẫn là Project URL.
 

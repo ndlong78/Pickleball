@@ -1,5 +1,9 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
+**Hiện hành — 12/11/2026, sau #42:** main `c7729774d53bac295a15685f7e0655f7f321be8f` /5.15.1. UI42966329683:359 unit/580 browser Chromium+WebKit/40 lượt WebKit bổ sung,0 fail/flaky/retry; backend42966329674:300 pgTAP/48 REST/Auth local thật hai engines; Pages42966328494 và Cloudflare Production build582f21e0 success cùng merge SHA. Owner cung cấp ảnh SQL Editor staging xác nhận lịch sử **7 / 20261111000100**, sau đó xác nhận đã tắt/lưu signup server. [Sổ nghiệm thu và SELECT kiểm quyền tiếp theo](STAGING_AUTH_VERIFICATION.md#cập-nhật-12112026--sau-nâng-cấp-migration7). Chưa xác minh FORCE RLS/ACL bảng mới hoặc luồng gửi/đọc sau nâng cấp trên Managed. Không chạy lại bundle6→7; importer/public pilot vẫn đóng, không thay production. Kế tiếp: hoàn tất phép kiểm sau upgrade và nghiệm thu hoạt động/giáo án bằng dữ liệu giả; cache purge/restore vẫn là phạm vi kế hoạch, chưa có mã mới phát hành từ lần cập nhật này.
+
+Các mốc trước ngày12/11 bên dưới là lịch sử, không thay trạng thái hiện hành ở trên.
+
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
 
 Cập nhật ngày **09/11/2026**. Main `0fb6fc85060cd025482394e0f53f527e1f3f6bbc` / V5.13.1 sau [#37](https://github.com/ndlong78/Pickleball/pull/37). [UI42367445245](https://github.com/ndlong78/Pickleball/actions/runs/42367445245):327 unit +3 HTTP +1 Workers local +528 browser Chromium/WebKit +10 lượt WebKit bổ sung pass,0 fail/flaky/retry; [backend42367445298](https://github.com/ndlong78/Pickleball/actions/runs/42367445298):275 pgTAP/45 REST và Auth local thật hai engines pass; [Pages42367444675](https://github.com/ndlong78/Pickleball/actions/runs/42367444675) success cùng merge SHA.
