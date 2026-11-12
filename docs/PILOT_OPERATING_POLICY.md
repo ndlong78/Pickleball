@@ -59,3 +59,7 @@ Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nh
 ## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
 
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
+
+## Cập nhật12/11 — cache privacy
+
+#44 đã merge primitive purge; [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI export/ack/final confirmation và đăng xuất rõ ràng trước khi dọn cache sạch, chỉ staging dữ liệu giả. Không force discard pending, xóa cloud/account, remote wipe, restore hoặc backup vận hành. Không thay policy chi phí, retention, signup-off hay gate pilot.

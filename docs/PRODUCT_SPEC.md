@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
@@ -124,3 +124,7 @@ PR5b2a/V5.10.0: lựa chọn bài Học viện theo nguồn giáo án/selection,
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
 
 **Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](GUEST_BACKUP_SAFETY.md).
+
+## PR5b2c2b / V5.17.0 — UI dọn cache staging
+
+Dữ liệu có mục dọn cache staging riêng, cần online và đóng các cửa sổ PickleUp khác. Chỉ cache đã xử lý xong, tệp phải được tải/giữ ngoài browser và xác nhận; tệp chưa nhập lại được. Thao tác ghi rõ đăng xuất trước khi xóa. Checklist/focus/checkpoint chỉ trên máy có thể mất khỏi browser; cloud/guest/tài khoản khác giữ nguyên. Không force discard pending hoặc account deletion. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).

@@ -82,6 +82,8 @@ async function connect(config){
  if(url.protocol!=="https:"&&!(url.protocol==="http:"&&["localhost","127.0.0.1"].includes(url.hostname)))throw Error("Invalid Auth URL");
  if(!config.publishableKey.startsWith("sb_publishable_"))throw Error("Publishable key required");
  if(url.username||url.password||url.search||url.hash||!["","/"].includes(url.pathname))throw Error("Invalid Auth URL");
+ if(!root.PickleUpCacheMaintenanceHost)throw Error('Auth maintenance gate missing');
+ await root.PickleUpCacheMaintenanceHost.authGate();
  const {createClient}=await import("../vendor/supabase.js");
  let adapter;
  const guardedFetch=createGuardedFetch(()=>adapter?.getGeneration());

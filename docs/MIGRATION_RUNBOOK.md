@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -112,3 +112,7 @@ PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domai
 ## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
 
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
+
+## PR5b2c2b / V5.17.0 — UI dọn cache staging
+
+Không SQL mới; staging vẫn7 migrations, không chạy lại6→7. Frontend nâng IDB1/2→3 giữ rows, versionchange đóng connection cũ; tab giữ connection làm blocked, đóng/cập nhật tab rồi thử lại. Không downgrade schema/xóa browser storage để rollback. Nếu lỗi: tắt purge config ở bản mới tương thích DB3, giữ guest và cache; không deploy lại repository2 lên DB3. Coordination DB hỏng bị chặn bảo trì/Auth gate, giữ nguyên dữ liệu để điều tra. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).

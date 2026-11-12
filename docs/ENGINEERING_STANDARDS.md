@@ -1,6 +1,6 @@
 # PickleUp — ENGINEERING STANDARDS (V5.x)
 
-**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -129,3 +129,7 @@ PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho m
 Browser regression chạy `scripts/serve_test.py --guest-auth`, fixture guest qua HTTP cho cả SW, không đổi source hoặc tái sử dụng server operator. Server mặc định giữ config source để thử thủ công. Mock SDK/transport và real Auth local có config riêng, không dùng project Managed. Readiness dựa trạng thái loaded và nút thao tác sẵn sàng, không dựa success message tạm thời. [Hợp đồng staging](CLOUDFLARE_STAGING_PR36.md).
 
 **Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](GUEST_BACKUP_SAFETY.md).
+
+## PR5b2c2b / V5.17.0 — UI dọn cache staging
+
+Host gate được lazy-load trước Auth adapter; SDK chỉ tạo sau worker status. Không worker vẫn dùng Auth bình thường nhưng UI purge cần worker hiện hành kiểm soát. Worker cũ/không phản hồi/storage hỏng fail closed với Auth, guest còn dùng được; cập nhật/reload/đóng tab, không xóa dữ liệu. Entry maintenance full reload đóng nguồn/timer cũ; cần tự lưu RAM trước khi vào. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).

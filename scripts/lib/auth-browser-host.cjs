@@ -59,10 +59,11 @@ async function start({backendURL,anonKey,appPort=4173,apiPort=4174}){
     if(!file.startsWith('/Pickleball/')){res.writeHead(404).end();return}
     file=file.slice('/Pickleball/'.length)||'index.html';
     if(file==='modules/auth-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_AUTH_CONFIG=Object.freeze('+JSON.stringify({enabled:true,allowSignup:true,url:apiOrigin,publishableKey:alias})+');');return}
-    if(file==='modules/data/sync-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_SYNC_CONFIG=Object.freeze({enabled:true});');return}
-    if(file==='modules/data/activity-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_ACTIVITY_CONFIG=Object.freeze({enabled:true});');return}
-    if(file==='modules/data/plan-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_PLAN_CONFIG=Object.freeze({enabled:true});');return}
-    if(file==='modules/data/import-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_IMPORT_CONFIG=Object.freeze({enabled:true});');return}
+    if(file==='modules/data/sync-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_SYNC_CONFIG=Object.freeze({enabled:new URL(window.location.href).searchParams.get("maintenance")!=="account-cache"});');return}
+    if(file==='modules/data/activity-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_ACTIVITY_CONFIG=Object.freeze({enabled:new URL(window.location.href).searchParams.get("maintenance")!=="account-cache"});');return}
+    if(file==='modules/data/plan-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_PLAN_CONFIG=Object.freeze({enabled:new URL(window.location.href).searchParams.get("maintenance")!=="account-cache"});');return}
+    if(file==='modules/data/import-config.js'){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end('window.PICKLEUP_IMPORT_CONFIG=Object.freeze({enabled:new URL(window.location.href).searchParams.get("maintenance")!=="account-cache"});');return}
+    if(file==='modules/data/account-purge-config.js'){const content=await fs.readFile(path.join(ROOT,file),'utf8');res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'}).end(content+';window.PICKLEUP_PURGE_CONFIG=Object.freeze({enabled:true});');return}
     const resolved=path.resolve(ROOT,file),type=TYPES[path.extname(file)];
     if(!resolved.startsWith(ROOT+path.sep)||!type||file.split('/').some(p=>p.startsWith('.'))||['node_modules/','test-results/','playwright-report/','scripts/','supabase/','tests/','docs/'].some(prefix=>file.startsWith(prefix))){res.writeHead(404).end();return}
     const content=await fs.readFile(resolved);

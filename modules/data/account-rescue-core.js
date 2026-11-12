@@ -43,7 +43,7 @@ function canonical(v){
 }
 async function digest(value,cryptoImpl=root.crypto){const bytes=new TextEncoder().encode(canonical(value));if(bytes.length>MAX_BYTES)fail('too_large');return [...new Uint8Array(await cryptoImpl.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('')}
 function validate(snapshot,expectedOwner){
- if(!exact(snapshot,['owner','repositoryVersion','coverage','stores'])||(typeof snapshot.owner!=='string'||!UUID.test(snapshot.owner))||![1,2].includes(snapshot.repositoryVersion)||snapshot.coverage!=='local-cache-only'||!exact(snapshot.stores,Object.keys(STORES)))fail('invalid_format');
+ if(!exact(snapshot,['owner','repositoryVersion','coverage','stores'])||(typeof snapshot.owner!=='string'||!UUID.test(snapshot.owner))||![1,2,3].includes(snapshot.repositoryVersion)||snapshot.coverage!=='local-cache-only'||!exact(snapshot.stores,Object.keys(STORES)))fail('invalid_format');
  if(expectedOwner!==undefined&&snapshot.owner!==expectedOwner)fail('foreign_account');
  inspectJSON(snapshot,snapshot.owner);let total=0;
  for(const [name,keys] of Object.entries(STORES)){

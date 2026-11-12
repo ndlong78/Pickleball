@@ -1,8 +1,9 @@
 /* PR2: dormant local persistence. No Auth, network, legacy storage or UI writes. */
 (function(root){
 'use strict';
-// Version2 is a writer capability fence; the eight stores and their rows stay intact.
-const VERSION=2;
+// Version3 fences clients without the worker/Auth maintenance protocol.
+// The eight stores, generation marker and existing rows stay intact.
+const VERSION=3;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const KINDS=new Set(['profiles','user_preferences','personal_plans','academy_attempts','skill_assessments','practice_checkins','training_entries','match_records','user_selections']);
 const EVENTS=new Set(['academy_attempts','skill_assessments','training_entries','match_records']);
@@ -89,7 +90,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
    try{
     if(event.oldVersion===0){for(const [store,keyPath] of Object.entries(STORES)){const table=opening.result.createObjectStore(store,{keyPath});if(store!=='legacy_snapshots')table.createIndex('namespace','namespace')}}
     else{
-     if(event.oldVersion!==1||Array.from(opening.result.objectStoreNames).sort().join(',')!==Object.keys(STORES).sort().join(','))fail('upgrade_required');
+     if(![1,2].includes(event.oldVersion)||Array.from(opening.result.objectStoreNames).sort().join(',')!==Object.keys(STORES).sort().join(','))fail('upgrade_required');
      for(const [name,keyPath] of Object.entries(STORES)){
       const table=opening.transaction.objectStore(name);
       if(JSON.stringify(table.keyPath)!==JSON.stringify(keyPath)||table.autoIncrement)fail('upgrade_required');

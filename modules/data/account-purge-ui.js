@@ -1,0 +1,36 @@
+(function(root){
+'use strict';const panel=document.getElementById('accountPurge');if(!panel)return;
+const $=s=>panel.querySelector(s),entry=$('[data-purge-entry]'),body=$('[data-purge-body]'),status=$('[role=status]'),capture=$('[data-purge-capture]'),download=$('[data-purge-download]'),ack=$('[data-purge-ack]'),purge=$('[data-purge-run]'),inventory=$('tbody'),blockers=$('[data-purge-blockers]');
+const labels={records:'Bản ghi và bản chỉnh sửa',outbox:'Yêu cầu đã gửi/chờ xử lý',conflicts:'Bản đối soát',sync_cursor:'Mốc đồng bộ',import_receipts:'Thông tin nhập dữ liệu',device_state:'Checklist và điểm dừng trên máy',metadata:'Thiết lập trên máy'};
+const errors={multiple_tabs:'Hãy đóng các tab/cửa sổ PickleUp khác của cùng trình duyệt rồi đọc lại cache.',maintenance_busy:'Có phiên dọn cache khác đang chạy. Đóng tab này và quay lại tab đang thực hiện.',worker_required:'Cần cập nhật PWA và tải lại trang trước khi dọn cache.',worker_unavailable:'Chưa kiểm tra được trạng thái các tab. Cập nhật/tải lại ứng dụng rồi thử lại.',upgrade_blocked:'Đóng các tab cũ rồi tải lại để cập nhật; giữ nguyên dữ liệu trên máy.',upgrade_required:'Ứng dụng cần cập nhật. Đóng các tab cũ rồi tải lại, giữ nguyên dữ liệu trên máy.',lease_lost:'Mất quyền bảo trì; chưa xác nhận dọn cache. Đăng nhập và đọc lại để kiểm tra.',offline:'Cần kết nối mạng để đăng xuất hoàn tất trước khi dọn cache.',logout_failed:'Đăng xuất chưa hoàn tất. Cache được giữ nguyên; kết nối mạng và đăng nhập lại để kiểm tra.',preview_changed:'Cache đã đổi từ lúc xuất tệp. Đọc và giữ tệp mới trước khi thử lại.',cache_changed:'Cache đã đổi. Đọc lại trong phiên hiện tại.',account_changed:'Phiên tài khoản đã đổi; bản xem trước và tệp cũ đã đóng.',purge_blocked:'Cache còn phần chưa xử lý xong; chưa xóa. Hãy đồng bộ/đối soát trước.',quota_exceeded:'Lưu trữ gặp lỗi. Giao dịch đã rollback; cache được giữ nguyên.',credentials_detected:'Tệp có dấu hiệu thông tin đăng nhập; không xuất hoặc xóa cache.',foreign_account:'Cache không khớp tài khoản đang đăng nhập; chưa xuất hoặc xóa.',rescue_too_large:'Cache vượt giới hạn xuất tệp; giữ nguyên dữ liệu, không xóa một phần.'};
+const reasons={unsettled_operation:'Còn yêu cầu chờ, chưa rõ kết quả hoặc cần xử lý.',unsettled_record:'Còn bản chỉnh sửa hoặc bản ghi chưa đủ thông tin xác nhận.',unsettled_conflict:'Còn xung đột chưa giải quyết.',unfinished_import:'Còn phiên nhập dữ liệu chưa hoàn tất.',active_sender:'Có lượt gửi còn hoạt động; đợi kết thúc rồi đọc lại.',unknown_state:'Có trạng thái chưa nhận diện; giữ tệp cứu hộ và dữ liệu gốc.',invalid_snapshot:'Chưa kiểm tra được cấu trúc cache.'};
+let controller=null,initializing=false,url=null,linkId=null;
+const allowed=()=>root.PickleUpAccountPurgeConfig.active()&&document.documentElement.dataset.pickleupPage==='settings';
+function clearURL(){if(url)URL.revokeObjectURL(url);url=linkId=null;download.removeAttribute('href');download.hidden=true}
+function paint(s){
+ inventory.replaceChildren();blockers.replaceChildren();capture.disabled=s.busy||!s.owner;ack.disabled=s.busy||!s.requested||s.blockers.length>0;ack.checked=s.acknowledged;purge.disabled=s.busy||!s.owner||!s.requested||!s.acknowledged||s.blockers.length>0;
+ if(linkId!==s.previewId){clearURL();if(s.previewId&&controller&&!s.busy){const file=controller.download(s.previewId);url=URL.createObjectURL(new Blob([file.text],{type:'application/json'}));linkId=s.previewId;download.href=url;download.download='pickleup-account-cache-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json'}}
+ download.hidden=!url||s.busy;
+ if(s.report)for(const [name,label]of Object.entries(labels)){const tr=document.createElement('tr');for(const v of [label,s.report.counts[name]]){const td=document.createElement('td');td.textContent=String(v);tr.append(td)}inventory.append(tr)}
+ for(const code of s.blockers){const li=document.createElement('li');li.textContent=reasons[code]||reasons.unknown_state;blockers.append(li)}
+ if(s.error)status.textContent=errors[s.error]||'Chưa hoàn tất. Dữ liệu gốc được giữ nếu giao dịch chưa commit; đăng nhập và đọc lại để kiểm tra.';
+ else status.textContent=({reading:'Đang đọc và kiểm tra cache trên máy…',checking:'Đang kiểm tra tệp, cache và các tab…',logging_out:'Đang đăng xuất và đóng dữ liệu phiên hiện tại…',purging:'Đang dọn cache đã xác nhận…',done:'Đã dọn cache tài khoản đã chọn và đăng xuất trên trình duyệt này. Dữ liệu cloud, khách và tài khoản khác được giữ.',preview:s.blockers.length?'Có phần chưa xử lý xong. Bạn vẫn có thể giữ tệp cứu hộ; chưa thể dọn cache.':'Đã đọc cache. Tải tệp và xác nhận trước khi tiếp tục.'})[s.phase]||(s.owner?'Chưa đọc cache. Kiểm tra email tài khoản ở mục Tài khoản bên dưới.':'Đăng nhập tài khoản cần dọn cache trước khi xem dữ liệu.');
+}
+async function run(work){const stamp=controller?.getState().generation;try{await work()}catch(error){const current=controller?.getState();if(current?.generation===stamp&&!current.error)status.textContent=errors[error.code]||'Chưa thực hiện; đọc lại cache rồi thử lại.'}}
+async function init(){
+ const active=allowed();body.hidden=!active;entry.hidden=!root.PickleUpAccountPurgeConfig.entry()||active;
+ if(!active){status.textContent='Dọn cache chỉ mở riêng trên staging, bằng dữ liệu thử.';return}
+ if(controller){paint(controller.getState());return}if(initializing)return;initializing=true;
+ try{const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);await auth.ready;if(!allowed())return;controller=PickleUpAccountPurgeController.create({auth,enabled:allowed,openRepository:()=>PickleUpLocalRepository.open({onVersionChange:()=>controller?.cancel('upgrade_required')}),confirm:()=>root.confirm('Dọn cache của tài khoản vừa xem và đăng xuất trên trình duyệt này? Checklist/điểm dừng chỉ trên máy cũng sẽ bị xóa. Tệp đã giữ chưa có chức năng nhập lại. Dữ liệu luyện tập trên cloud và dữ liệu khách không bị xóa.'),onChange:paint,onBusy:(id,busy)=>document.dispatchEvent(new CustomEvent('pickleup:maintenance-busy',{detail:{id,busy}}))});paint(controller.getState())}
+ catch(_){capture.disabled=ack.disabled=purge.disabled=true;status.textContent='Chưa mở được phiên bảo trì. Cập nhật/tải lại ứng dụng hoặc đóng tab bảo trì khác rồi thử lại.'}finally{initializing=false}
+}
+entry.addEventListener('click',()=>{const href=root.PickleUpAccountPurgeConfig.entry();if(href)root.location.assign(href)});
+capture.addEventListener('click',()=>{if(controller&&!capture.disabled)run(()=>controller.capture())});
+download.addEventListener('click',event=>{try{if(!controller||!url||!linkId)throw Error();controller.requested(linkId)}catch(_){event.preventDefault();clearURL()}});
+ack.addEventListener('change',()=>{if(controller)run(()=>controller.acknowledge(linkId,ack.checked))});
+purge.addEventListener('click',()=>{if(controller&&!purge.disabled)run(()=>controller.purge(linkId))});
+document.addEventListener('pickleup:route-change',()=>{if(!allowed()){controller?.cancel('route_changed');clearURL()}else init()});
+navigator.serviceWorker?.addEventListener('controllerchange',()=>{controller?.cancel('upgrade_required');init()});
+root.addEventListener('pagehide',()=>{controller?.close();clearURL()});root.addEventListener('pageshow',event=>{if(event.persisted&&root.PickleUpAccountPurgeConfig.active())root.location.reload()});
+init();
+})(window);

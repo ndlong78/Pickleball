@@ -1,9 +1,9 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
-**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
-**Hiện hành — 12/11/2026, sau #42:** main `c7729774d53bac295a15685f7e0655f7f321be8f` /5.15.1. UI42966329683:359 unit/580 browser Chromium+WebKit/40 lượt WebKit bổ sung,0 fail/flaky/retry; backend42966329674:300 pgTAP/48 REST/Auth local thật hai engines; Pages42966328494 và Cloudflare Production build582f21e0 success cùng merge SHA. Owner cung cấp ảnh SQL Editor staging xác nhận lịch sử **7 / 20261111000100**, sau đó xác nhận đã tắt/lưu signup server. [Sổ nghiệm thu và SELECT kiểm quyền tiếp theo](STAGING_AUTH_VERIFICATION.md#cập-nhật-12112026--sau-nâng-cấp-migration7). Owner cũng báo metadata bảng mới đúng **true / true / false / false** (RLS/FORCE RLS/client access/API rebind). Chưa nghiệm thu luồng gửi/đọc sau nâng cấp trên Managed. Không chạy lại bundle6→7; importer/public pilot vẫn đóng, không thay production. Kế tiếp: hoàn tất phép kiểm sau upgrade và nghiệm thu hoạt động/giáo án bằng dữ liệu giả; cache purge/restore vẫn là phạm vi kế hoạch, chưa có mã mới phát hành từ lần cập nhật này.
+**Lịch sử — 12/11/2026, sau #42:** main `c7729774d53bac295a15685f7e0655f7f321be8f` /5.15.1. UI42966329683:359 unit/580 browser Chromium+WebKit/40 lượt WebKit bổ sung,0 fail/flaky/retry; backend42966329674:300 pgTAP/48 REST/Auth local thật hai engines; Pages42966328494 và Cloudflare Production build582f21e0 success cùng merge SHA. Owner cung cấp ảnh SQL Editor staging xác nhận lịch sử **7 / 20261111000100**, sau đó xác nhận đã tắt/lưu signup server. [Sổ nghiệm thu và SELECT kiểm quyền tiếp theo](STAGING_AUTH_VERIFICATION.md#cập-nhật-12112026--sau-nâng-cấp-migration7). Owner cũng báo metadata bảng mới đúng **true / true / false / false** (RLS/FORCE RLS/client access/API rebind). Chưa nghiệm thu luồng gửi/đọc sau nâng cấp trên Managed. Không chạy lại bundle6→7; importer/public pilot vẫn đóng, không thay production. Kế tiếp: hoàn tất phép kiểm sau upgrade và nghiệm thu hoạt động/giáo án bằng dữ liệu giả; cache purge/restore vẫn là phạm vi kế hoạch, chưa có mã mới phát hành từ lần cập nhật này.
 
 Các mốc trước ngày12/11 bên dưới là lịch sử, không thay trạng thái hiện hành ở trên.
 
@@ -103,3 +103,14 @@ Công việc staging có thể chuẩn bị với dữ liệu giả trong lúc h
 Hợp đồng tham chiếu: [kiến trúc](ARCHITECTURE_V6_DATABASE.md), [dictionary](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md), [policy](PILOT_OPERATING_POLICY.md), [threat model](THREAT_MODEL.md), [PR4c](SYNC_UI_PR4C.md), [PR5a1](ACTIVITY_SYNC_PR5A1.md).
 
 **Xử lý audit #41:** PR42 chứa commit Auth origin/readiness/CI pin; journal guest V1/null/optional/known18 rescue; và migration7 first-epoch legacy guard với pgTAP/REST/bundle SQL Editor6→7. Chưa merge/deploy/upgrade Managed. Main vẫn chưa clean sau#41; ruleset API bị403, owner áp dụng template; signup server/phiên Pages cũ còn cần quản trị. Kết quả đúng HEAD ghi trong PR42; không suy full V6/pilot đã xong.
+
+## Sau #44 và kế hoạch PR5b2c2b — 12/11/2026
+
+Main `da28b27cd22e92518146f47a84da3f712b662d3c`, app5.16.0; không PR mở trùng khi bắt đầu. [UI43121745320](https://github.com/ndlong78/Pickleball/actions/runs/43121745320):372 unit/586 Chromium-WebKit +40 lượt bổ sung,3 HTTP/1 Workers; [backend43121745369](https://github.com/ndlong78/Pickleball/actions/runs/43121745369):300 pgTAP/48 REST/GoTrue-Mailpit Auth thật hai engines; logs0 fail/flaky/retry. [Pages43121744114](https://github.com/ndlong78/Pickleball/actions/runs/43121744114) và Cloudflare Production build1da41b81 success cùng SHA. Chưa trực tiếp quan sát browser Managed của bản này.
+
+1. [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md): UI export/ack/confirm/logout/purge, quiesce một cửa sổ với worker lease, chặn client cũ bằng IndexedDB3. CI đúng HEAD phải sạch trước ready; chưa merge/deploy hoặc nghiệm thu Managed.
+2. Nghiệm thu staging sau SQL7 bằng dữ liệu giả: private send/read, hoạt động/giáo án, A→B/conflict/expiry và UI dọn cache trên máy thử; không dùng dữ liệu thật chưa sao lưu.
+3. Full rescue/restore compatibility, importer repair có provenance và CAS, không tự replay pending.
+4. Backup mã hóa ngoài DB, restore drill gồm Auth và sync epoch, Auth recovery/delete/retention; chỉ mở pilot khi các gate vận hành đạt. Custom SMTP và field QA chưa được chứng minh.
+
+Owner đã xác nhận7 migrations/latest20261111000100, signup server off và ledger metadata true/true/false/false; không chạy lại bundle6→7. Deploy frontend qua GitHub→Cloudflare, không ZIP/upload thủ công. Chính sách budget0/không production/không tự merge giữ nguyên.
