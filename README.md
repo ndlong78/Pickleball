@@ -1,6 +1,6 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
-**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](docs/POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.18.0](docs/RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](docs/REVIEW_SAFETY_2026_11.md).
 

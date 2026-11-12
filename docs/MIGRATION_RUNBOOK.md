@@ -1,6 +1,6 @@
 # PickleUp V6 — migration và rollout runbook
 
-**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -116,3 +116,7 @@ PR5a1 bổ sung fenced event RPC và policy cursor/lease riêng cho4 event domai
 ## PR5b2c2b / V5.17.0 — UI dọn cache staging
 
 Không SQL mới; staging vẫn7 migrations, không chạy lại6→7. Frontend nâng IDB1/2→3 giữ rows, versionchange đóng connection cũ; tab giữ connection làm blocked, đóng/cập nhật tab rồi thử lại. Không downgrade schema/xóa browser storage để rollback. Nếu lỗi: tắt purge config ở bản mới tương thích DB3, giữ guest và cache; không deploy lại repository2 lên DB3. Coordination DB hỏng bị chặn bảo trì/Auth gate, giữ nguyên dữ liệu để điều tra. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
+
+## PR5b2d1 / V5.18.0 — đối chiếu trước khôi phục
+
+Không SQL mới hoặc đổi signup/feature flags. App/PWA5.18.0 nâng cache5.17.0, giữ IDB3 và file1/2/3. Compare mở repository theo cơ chế bootstrap/upgrade hiện hữu, chỉ snapshot rows readonly; không ghi đè nghiệp vụ. Kết quả cần làm mới khi cache đổi, không dùng làm token commit. Full restore còn cần quarantine, server reconciliation, device/provenance policy, confirmation/quiesce và atomic rollback. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).

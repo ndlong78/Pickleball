@@ -63,3 +63,7 @@ Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nh
 ## Cập nhật12/11 — cache privacy
 
 #44 đã merge primitive purge; [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI export/ack/final confirmation và đăng xuất rõ ràng trước khi dọn cache sạch, chỉ staging dữ liệu giả. Không force discard pending, xóa cloud/account, remote wipe, restore hoặc backup vận hành. Không thay policy chi phí, retention, signup-off hay gate pilot.
+
+## PR5b2d1 — bước chuẩn bị restore
+
+[Đối chiếu tệp/cache V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) chỉ đọc và hiển thị khác biệt cùng các bước đối soát còn thiếu. Không backup vận hành, restore/replay, đổi consent/signup hoặc retention. Chính sách chi phí0/không production/không tự merge và gate pilot giữ nguyên.

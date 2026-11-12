@@ -1,6 +1,6 @@
 # PickleUp V6 — data dictionary và legacy inventory
 
-**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -120,3 +120,7 @@ PR5b1b thêm metadata `plans-selections-consent-1`, cursor slot `plans-selection
 ## PR5b2c2b / V5.17.0 — UI dọn cache staging
 
 DB `pickleup-v6` VERSION3 giữ nguyên tám stores, nâng1/2→3 kiểm layout và giữ mọi dòng/generation. Cứu hộ envelope1 đọc snapshot1/2/3. DB phối hợp riêng `pickleup-maintenance-v1` VERSION1 chỉ có store `lease`, key `active`: client Window ID, UUID lease, tên cache release, deadline/expires; không account/email/credential/payload. Lease không là dữ liệu tài khoản hoặc bản backup. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
+
+## PR5b2d1 / V5.18.0 — đối chiếu trước khôi phục
+
+Không đổi schema IDB3/tám stores, rescue envelope1 và snapshot1/2/3. validateSnapshot chỉ kiểm container/owner/JSON/bounds và clone; không domain schema/ACK/provenance/server truth. Report comparison.version1 chứa store/totals counters, fixed risk code/count, hai repository versions và canRestore=false/cloudVerified=false; không owner/row IDs/notes. Không persist report/file hoặc thay receipt/cursor/consent/lease. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).

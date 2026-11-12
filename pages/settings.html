@@ -20,12 +20,21 @@
 <div class="card" id="accountRescue" style="padding:20px;min-width:0">
 <h3>Cứu hộ toàn bộ cache V6 trên máy</h3>
 <p>Xuất cache của tài khoản đang đăng nhập: bản đã tải về, thay đổi chưa gửi, yêu cầu chưa rõ kết quả, conflict, checkpoint nhập, checklist/focus và điểm dừng Court. Không lấy dữ liệu khách hoặc phiên đăng nhập.</p>
-<p>Cache trên máy có thể chưa chứa hết dữ liệu cloud. Đây chưa là backup toàn tài khoản/DB và chưa có chức năng khôi phục từ tệp hoặc purge. Timer đang chạy và dữ liệu RAM chưa lưu không có trong tệp. Tệp riêng tư, chưa mã hóa; giữ ở nơi an toàn.</p>
+<p>Cache trên máy có thể chưa chứa hết dữ liệu cloud. Đây chưa là backup toàn tài khoản/DB và chưa có chức năng khôi phục từ tệp. Dọn cache là thao tác riêng trong mục bên dưới. Timer đang chạy và dữ liệu RAM chưa lưu không có trong tệp. Tệp riêng tư, chưa mã hóa; giữ ở nơi an toàn.</p>
 <button type="button" data-account-capture disabled>Đọc cache tài khoản</button>
 <a class="linkbtn" data-account-download hidden>Tải bản cứu hộ cache V6</a>
 <label style="display:block;margin-top:12px">Kiểm tra lại tệp cache V6 (chỉ xem, tối đa 32 MiB)<input type="file" accept=".json,application/json" disabled style="display:block;max-width:100%"></label>
 <p role="status" aria-live="polite">Đăng nhập chưa được cấu hình; chế độ khách vẫn dùng được.</p><p data-account-rescue-summary></p>
 <table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Phần dữ liệu</th><th scope="col">Số dòng</th></tr></thead><tbody></tbody></table>
+<h4>Đối chiếu trước khôi phục</h4>
+<p>Chọn tệp đúng tài khoản, kiểm tra checksum rồi so với một ảnh chụp cache hiện tại. Không ghi đè bản ghi hoặc gửi dữ liệu lên máy chủ. Cache có thể đổi sau khi đọc; kết quả này không xác nhận tệp có thể khôi phục.</p>
+<button type="button" data-account-compare disabled>So tệp với cache tài khoản trên máy</button>
+<div data-restore-preview hidden>
+<p data-restore-summary></p>
+<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Phần dữ liệu</th><th scope="col">Giống</th><th scope="col">Chỉ tệp</th><th scope="col">Chỉ máy</th><th scope="col">Khác</th><th scope="col">Chưa đối chiếu: tệp/máy</th></tr></thead><tbody data-restore-rows></tbody></table>
+<ul data-restore-risks></ul>
+<p>Tệp đúng checksum vẫn chưa phải bằng chứng dữ liệu đã được server xác nhận. Chưa khôi phục; không bật lại nguồn tài khoản, dùng lại thông tin đồng bộ hoặc gửi lại yêu cầu từ tệp. Giữ tệp gốc riêng tư ngoài trình duyệt, kể cả phần chưa nhận diện.</p>
+</div>
 </div>
 <div class="card" id="importPilot" style="padding:20px;min-width:0">
 <h3>Nhập dữ liệu vào tài khoản · pilot</h3>
