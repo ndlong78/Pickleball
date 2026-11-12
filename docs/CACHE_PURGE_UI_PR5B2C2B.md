@@ -38,3 +38,7 @@ Native IDB/SW với mock Auth: bốn viewport390/820/1180/1440, actual download 
 GoTrue/Mailpit local thật: tài khoản fixture độc lập nhận OTP, login UI, tạo mục tiêu/ACK qua RPC, RAM-only rescue/request/ack, native confirm, worker lease, SDK logout/session removal và purge product DB. SELECT count/revision chỉ đọc trên PostgreSQL local sau logout chứng minh row cloud fixture còn nguyên; không gọi đây là authenticated UI reread khi guest. Không tạo private file/download artifact, traces/screenshots/storageState hoặc OTP/token log. Suite cũ vẫn kiểm Auth refresh, revoked refresh, A/B, private pull/import/late responses. CI exact HEAD/số pass/fail/flaky/retry ghi trong PR trước ready.
 
 Không cần SQL/cấu hình Supabase mới. Owner đã xác nhận migration7/latest20261111000100, signup-off và ledger metadata đúng. Managed sau upgrade/UI purge mới, hoạt động/giáo án/A→B/conflict/expiry/custom SMTP và thiết bị thực chưa được chứng minh; chỉ dữ liệu giả, không mở pilot. Deploy GitHub→Cloudflare sau owner merge, không ZIP/upload thủ công. Kế tiếp full restore compatibility/importer repair và vận hành backup/Auth recovery/delete/retention theo policy.
+
+## Tình trạng sau merge #45
+
+Đã merge app5.17.0 tại `5767079`, Pages/Cloudflare/backend success. UI main có603 pass/1 flaky WebKit820, workflow failure; không ghi clean run. [Điều tra và bản sửa fixture](POSTMERGE_V5_17.md) xử lý test gọi repository trước khi lazy module thực thi sau reload. Runtime purge/IDB3/worker protocol không đổi; Managed mới chưa nghiệm thu.

@@ -72,6 +72,8 @@ jobs:
         run: npx playwright test tests/rescue.spec.cjs --project="WebKit responsive" --grep="raw rescue preserves legacy and excludes Auth at 390" --repeat-each=5 --retries=0
       - name: Verify optional font loading and navigation without retries
         run: npx playwright test tests/page-routing.spec.cjs --project="WebKit responsive" --grep="delayed optional font does not block" --repeat-each=5 --retries=0
+      - name: Verify WebKit purge reload hydration without retries
+        run: npx playwright test tests/account-purge.spec.cjs --project="WebKit responsive" --grep="own clean-cache purge 820" --repeat-each=10 --retries=0
       - name: Run iPhone and iPad viewport smoke tests
         run: npm run test:responsive
       - name: Verify WebKit Academy countdown without retries

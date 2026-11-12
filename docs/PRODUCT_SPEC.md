@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
