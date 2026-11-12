@@ -1,6 +1,6 @@
 # V6 — tiến độ và kế hoạch sau PR #22
 
-**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Lịch sử — 12/11/2026, sau #42:** main `c7729774d53bac295a15685f7e0655f7f321be8f` /5.15.1. UI42966329683:359 unit/580 browser Chromium+WebKit/40 lượt WebKit bổ sung,0 fail/flaky/retry; backend42966329674:300 pgTAP/48 REST/Auth local thật hai engines; Pages42966328494 và Cloudflare Production build582f21e0 success cùng merge SHA. Owner cung cấp ảnh SQL Editor staging xác nhận lịch sử **7 / 20261111000100**, sau đó xác nhận đã tắt/lưu signup server. [Sổ nghiệm thu và SELECT kiểm quyền tiếp theo](STAGING_AUTH_VERIFICATION.md#cập-nhật-12112026--sau-nâng-cấp-migration7). Owner cũng báo metadata bảng mới đúng **true / true / false / false** (RLS/FORCE RLS/client access/API rebind). Chưa nghiệm thu luồng gửi/đọc sau nâng cấp trên Managed. Không chạy lại bundle6→7; importer/public pilot vẫn đóng, không thay production. Kế tiếp: hoàn tất phép kiểm sau upgrade và nghiệm thu hoạt động/giáo án bằng dữ liệu giả; cache purge/restore vẫn là phạm vi kế hoạch, chưa có mã mới phát hành từ lần cập nhật này.
@@ -114,3 +114,11 @@ Main `da28b27cd22e92518146f47a84da3f712b662d3c`, app5.16.0; không PR mở trùn
 4. Backup mã hóa ngoài DB, restore drill gồm Auth và sync epoch, Auth recovery/delete/retention; chỉ mở pilot khi các gate vận hành đạt. Custom SMTP và field QA chưa được chứng minh.
 
 Owner đã xác nhận7 migrations/latest20261111000100, signup server off và ledger metadata true/true/false/false; không chạy lại bundle6→7. Deploy frontend qua GitHub→Cloudflare, không ZIP/upload thủ công. Chính sách budget0/không production/không tự merge giữ nguyên.
+
+## Sau #45 — ưu tiên khôi phục CI sạch trước restore
+
+Main `5767079f9bf6ba8be557d9ff2a3757965f6c4da7`, app5.17.0: [UI43149008204](https://github.com/ndlong78/Pickleball/actions/runs/43149008204)394 unit,603 browser pass/1 flaky WebKit820 (retry qua), workflow failure do failOnFlakyTests. Hai lượt WebKit5+5 trước suite pass; các lượt bổ sung sau suite không chạy do failure, không ghi thành40 đã pass. [Backend43149008055](https://github.com/ndlong78/Pickleball/actions/runs/43149008055)300 pgTAP/48 REST/GoTrue-Mailpit thật hai engines sạch; [Pages43149007276](https://github.com/ndlong78/Pickleball/actions/runs/43149007276) và Cloudflare Production build7463cd20 success cùng SHA. Không PR mở trùng khi bắt đầu.
+
+[Bản sửa test-only](POSTMERGE_V5_17.md) tái hiện rõ module chưa có sau reload, await lazy loader/guest init, kiểm toàn snapshot A và giữ B/guest; thêm10 lượt WebKit820 không retry. Giữ version/PWA5.17.0, không SQL/feature flag/Auth config mới. CI exact HEAD ghi trong PR trước ready; không tự merge. Không gọi main là sạch cho đến CI sau merge bản sửa được kiểm lại.
+
+Sau đó tiếp tục full rescue/restore compatibility theo các gate bảo toàn pending/provenance/CAS, rồi importer repair và vận hành backup/Auth recovery/delete. UI purge Managed/nhóm hoạt động/giáo án/A→B/conflict/expiry/custom SMTP/physical QA chưa được chứng minh; chỉ dữ liệu giả và GitHub→Cloudflare, không ZIP/upload hoặc mở signup.

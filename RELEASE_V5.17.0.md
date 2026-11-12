@@ -5,3 +5,7 @@
 Mode riêng `?page=settings&maintenance=account-cache` tắt bốn nguồn/import; yêu cầu online, một cửa sổ và worker hiện hành. Lease persisted chặn SDK tab mới, mất lease/đổi tài khoản hủy local scope và link. IndexedDB1/2→3 giữ tám stores/mọi dòng, chặn frontend cũ mở lại; rescue envelope1 đọc snapshot1/2/3. Không downgrade/xóa storage để cập nhật.
 
 App/assets/PWA5.17.0; không SQL/RLS/Auth config hoặc dependencies mới, giữ18 khóa guest. Không restore/import engine mới, secure erase/remote wipe, account deletion hay mở pilot. Triển khai qua GitHub→Cloudflare sau owner merge, không ZIP/upload. CI exact HEAD và giới hạn Managed ghi trong PR; không tự merge.
+
+## Sau merge #45 — 12/11/2026
+
+Đã merge `5767079`, Pages/Cloudflare và backend xanh. UI main603 pass/1 flaky WebKit820; chưa release sạch. [Bản sửa kiểm thử](docs/POSTMERGE_V5_17.md) await Settings/guest init trước đọc IDB sau reload, tái hiện script chậm có kiểm soát và thêm10 lượt WebKit không retry. Đây là test/workflow/docs-only, giữ runtime/version/cache5.17.0; không SQL hoặc cấu hình mới. CI exact PR HEAD ghi trong PR; cần kiểm lại main sau owner merge.

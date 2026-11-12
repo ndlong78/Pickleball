@@ -1,6 +1,6 @@
 # PickleUp — RELEASE CHECKLIST & CODEX WORKFLOW (V5.x)
 
-**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -115,3 +115,7 @@ Chạy `npm run check:cloudflare` (dry-run), `npm run test:cloudflare` (Workers 
 ## PR5b2c2b / V5.17.0 — UI dọn cache staging
 
 Kiểm UI bốn viewport, /Pickleball/, export download fixture, pending/offline/cancel, A→B/hash đến muộn, extra/new tab chặn SDK, worker restart/expiry/malformed store, upgrade IDB2→3/PWA5.16.0, rollback quota và guest/B. Real GoTrue/Mailpit bổ sung product UI: OTP→private goal RPC→RAM rescue/ack→confirm→SDK logout→purge; read-only local PostgreSQL xác nhận row/revision còn nguyên sau logout. Đây không là Auth cloud/SMTP/field QA. CI đúng PR HEAD phải sạch trước ready. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
+
+## Sau #45 — kiểm thử reload dọn cache
+
+[Điều tra WebKit820](POSTMERGE_V5_17.md): disabled/hidden là markup mặc định, không chứng minh module đã khởi tạo. Test phải await `PICKLEUP_PAGE_LOADER.ensure('settings')` sau reload rồi xác nhận Auth guest và trạng thái purge guest trước khi đọc IDB. Fixture giữ việc chèn script repository ở820 tái hiện cửa sổ chưa thực thi module ngay cả khi SW đã cache bytes. CI thêm10 lượt WebKit820/retries0; failOnFlakyTests và mọi assertion bảo toàn dữ liệu giữ nguyên. Không tăng timeout/retry hoặc đổi runtime để chữa fixture.
