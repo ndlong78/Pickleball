@@ -184,3 +184,7 @@ PR5a2c bổ sung [assessment/match projections và UI](ASSESSMENT_MATCH_PR5A2C.m
 ## Cập nhật PR5b2c1 / V5.13.0 — cứu hộ cache chỉ đọc
 
 [PR5b2c1/V5.13.0](ACCOUNT_RESCUE_PR5B2C1.md) thêm cứu hộ toàn bộ cache account trên máy và kiểm tra tệp chỉ đọc; chưa restore/purge hoặc backup toàn cloud. Năm flags false, URL/key trống; [tiến độ/gates](V6_PROGRESS_REVIEW.md). Snapshot readonly một transaction trên records/outbox/conflicts/sync_cursor/import_receipts/device_state/metadata, đúng namespace đăng nhập. Giữ cả checkpoint Court/checklist/focus và metadata identity trước đây chưa được các exports cũ bao phủ. Không đọc guest/legacy_snapshots/Auth, không SQL/RPC hoặc tự replay. Credential/owner/size/JSON validation fail toàn bộ; SHA256 không là quyền restore. A→B/logout bỏ phản hồi và link cũ. Tệp plaintext riêng tư cần lưu ngoài browser. Chưa thay gate restore/purge/backup vận hành; policy target chưa là SLA.
+
+## PR5b2c2b / V5.17.0 — UI dọn cache staging
+
+Workflow purge UI dùng mode riêng maintenance=account-cache, không pilot; bốn source/import flags false, không tự pull/import. Preflight đọc-only trước final confirm, acquire persisted worker lease sau confirm rồi recheck snapshot, logout SDK rồi primitive CAS. IDB3 là capability fence; worker protocol1 tách RPC business protocol1. Tham khảo hợp đồng mới, không suy thành cloud/account delete hoặc full restore. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).

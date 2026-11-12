@@ -53,5 +53,5 @@ test('native V1 upgrade: close old connections, retain frozen request/device/pro
   const snapshot=await db.scope('user:'+A).getAccountRescueSnapshot(),file=await PickleUpAccountRescueCore.create(snapshot,{expectedOwner:A});await PickleUpAccountRescueCore.preview(file.text,{expectedOwner:A});db.close();
   const legacy=await new Promise((resolve,reject)=>{const r=indexedDB.open(name);r.onerror=()=>reject(r.error);r.onsuccess=()=>{const conn=r.result,t=conn.transaction('legacy_snapshots'),q=t.objectStore('legacy_snapshots').count();q.onsuccess=()=>{resolve(q.result);conn.close()};q.onerror=()=>reject(q.error)}});
   return {closed,oldError,legacy,version:snapshot.repositoryVersion,pending:snapshot.stores.outbox[0].state,original:snapshot.stores.import_receipts[0].value.signature,device:snapshot.stores.device_state[0].value.index};
- },{A,D});expect(result).toEqual({closed:true,oldError:'VersionError',legacy:1,version:2,pending:'sending',original:'synthetic original',device:2});
+ },{A,D});expect(result).toEqual({closed:true,oldError:'VersionError',legacy:1,version:3,pending:'sending',original:'synthetic original',device:2});
 });

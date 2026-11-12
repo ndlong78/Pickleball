@@ -31,7 +31,7 @@ additional_redirect_urls = ["http://127.0.0.1:4173/?auth_callback=1"]
 jwt_expiry = 3600
 enable_signup = true
 [auth.rate_limit]
-# Ephemeral local accounts only; six distinct test recipients across suites.
+# Ephemeral local fixture accounts only; never a Managed SMTP configuration.
 email_sent = 20
 [auth.email]
 enable_signup = true

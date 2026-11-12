@@ -47,6 +47,22 @@
 <button type="button" data-import-stop disabled>Dừng · giữ checkpoint</button>
 </div>
 </div>
+<div class="card" id="accountPurge" style="padding:20px;min-width:0">
+<h3>Dọn cache tài khoản và đăng xuất · thử nghiệm staging</h3>
+<p>Chỉ dùng dữ liệu giả. Dọn bản tài khoản trên trình duyệt này, gồm checklist/điểm dừng chỉ có trên máy; không xóa dữ liệu luyện tập trên cloud, dữ liệu khách hoặc tài khoản khác. Cần đăng xuất thành công trước khi xóa. Chưa có chức năng nhập lại tệp cứu hộ.</p>
+<button type="button" data-purge-entry hidden>Mở chế độ dọn cache riêng</button>
+<p>Chế độ riêng tải lại trang và tắt các nguồn đồng bộ. Dừng/lưu việc đang làm trước khi mở; đồng hồ và dữ liệu RAM chưa lưu không có trong tệp.</p>
+<p role="status" aria-live="polite">Dọn cache thử nghiệm chưa bật.</p>
+<div data-purge-body hidden>
+<p>Đóng các tab/cửa sổ PickleUp khác của cùng trình duyệt. Đăng nhập đúng tài khoản, kiểm email ở mục Tài khoản bên dưới rồi đọc cache. Không tự kéo dữ liệu cloud hoặc nhập dữ liệu khách.</p>
+<button type="button" data-purge-capture disabled>Đọc cache để xem trước</button>
+<a class="linkbtn" data-purge-download hidden download>Tải tệp cứu hộ cache đã xem</a>
+<table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Phần dữ liệu</th><th scope="col">Số dòng trên máy</th></tr></thead><tbody></tbody></table>
+<ul data-purge-blockers></ul>
+<p><label><input type="checkbox" data-purge-ack disabled> Tôi đã giữ tệp riêng tư ở nơi an toàn ngoài trình duyệt và hiểu tệp chưa có chức năng nhập lại. Checklist/điểm dừng trên máy có thể không có bản cloud.</label></p>
+<button type="button" data-purge-run disabled>Xác nhận dọn cache và đăng xuất</button>
+<p>Chỉ dọn khi không còn yêu cầu chờ, kết quả gửi chưa rõ, xung đột hoặc nhập dở. Lỗi mạng/kiểm tra trước xóa sẽ giữ cache; nếu đã đăng xuất, đăng nhập lại để kiểm tra. Đây không phải xóa tài khoản, xóa an toàn khỏi ổ đĩa hoặc thu hồi tệp đã tải.</p>
+</div></div>
 <div class="card sync-panel" id="syncPilot">
 <h3>Mục tiêu và check-in · tài khoản pilot</h3>
 <div data-staging-access hidden><p><strong>Thử đồng bộ tài khoản trên staging · chỉ dùng dữ liệu giả.</strong> Có thể thử điểm Học viện, đánh giá, trận đấu và giáo án. Chọn nguồn riêng cho từng nhóm; chỉ gửi khi bấm đồng bộ. Dữ liệu cũ trên thiết bị không tự chuyển lên tài khoản.</p><p data-staging-build></p><button type="button" data-staging-open>Mở thử hoạt động và giáo án tài khoản</button></div>

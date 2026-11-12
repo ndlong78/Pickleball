@@ -1,6 +1,6 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
-**Tiếp theo sau #43 — 12/11/2026:** main `131441e` /5.15.1; operator đã xác nhận staging migration7, signup server tắt và ledger RLS/ACL đúng kỳ vọng. [PR5b2c2a/V5.16.0](docs/CACHE_PURGE_TRANSACTION_PR5B2C2A.md) đang triển khai nền giao dịch dọn cache sạch + IndexedDB2, chưa có UI purge và chưa merge/deploy. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md) giữ phần Managed sau upgrade còn chưa kiểm. Các mốc dưới là lịch sử.
+**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](docs/CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](docs/REVIEW_SAFETY_2026_11.md).
 
@@ -16,7 +16,7 @@ Baseline main `cc0d944` sau #40, app5.14.1: [UI42834392634](https://github.com/n
 - Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; ba nguồn chỉ mở trên URL thử đủ điều kiện và phải chọn riêng; importer còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
 - Main có giáo án, nhật ký và lựa chọn bài Học viện tài khoản qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
 - Main giữ checklist/bước tập trung tài khoản qua reload. Main cho chủ động pause/save/restore điểm dừng Court, không tự chạy lại; Academy timer vẫn RAM. Bản cứu hộ cache V6 đã chứa state được lưu, chưa restore; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
-- Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, chưa purge/account deletion/backup vận hành.
+- Giữ backup V5/raw rescue và cache exports ngoài browser trước khi xóa/chuyển máy. Cache V6 **chưa round-trip/toàn account**, primitive purge đã merge #44; UI dọn cache đang PR, chưa account deletion/backup vận hành.
 
 Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync và xử lý conflict, nhập legacy có kiểm soát, backup/restore/privacy và vận hành. Các luồng nghiệp vụ chính đã merge; tiếp theo là khôi phục cache an toàn, purge, importer repair và PR6 staging/backup/Auth recovery/xóa account/QA thực tế. Pilot gates vẫn đóng.
 

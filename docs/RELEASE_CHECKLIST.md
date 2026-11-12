@@ -1,6 +1,6 @@
 # PickleUp — RELEASE CHECKLIST & CODEX WORKFLOW (V5.x)
 
-**PR5b2c2a / V5.16.0 — đang triển khai, chưa merge:** [giao dịch dọn cache](CACHE_PURGE_TRANSACTION_PR5B2C2A.md) cho namespace account sạch; blockers, snapshot CAS, rollback và generation fence. IndexedDB1→2 giữ tám stores và dữ liệu, cứu hộ đọc snapshot1/2. Chưa có product caller/UI purge; Auth/export/confirmation và quiesce nhiều tab là gate PR kế tiếp. Không SQL/RLS/Auth config hoặc18 khóa guest thay đổi.
+**Hiện hành — 12/11/2026:** main `da28b27` /5.16.0 sau #44 đã merge; UI/backend/Pages và Cloudflare Production cùng SHA success. PR tiếp theo [PR5b2c2b/V5.17.0](CACHE_PURGE_UI_PR5B2C2B.md) bổ sung UI xuất cứu hộ, xác nhận, đăng xuất và dọn cache sạch trên staging; đang PR, chưa merge/deploy. IndexedDB3 giữ dữ liệu/tám stores; pending/conflict/import dở chặn xóa. Không SQL mới, không mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -111,3 +111,7 @@ Chạy `python3 -m unittest scripts/test_static_host.py`; guest regression cần
 Chạy `npm run check:cloudflare` (dry-run), `npm run test:cloudflare` (Workers runtime local) và regression hiện hữu; Playwright phục vụ bản build `dist` qua HTTP guest fixture. Không gọi đây là kiểm chứng Cloudflare edge hoặc Managed SMTP. [Hướng dẫn domain/build/config](CLOUDFLARE_WORKERS_STAGING.md). Không deploy trong GitHub PR workflow; owner merge/deploy riêng. Chỉ thay hạ tầng đóng gói, bytes runtime không đổi thì không bump app/PWA cache.
 
 **Backup guest sau audit #41:** validate toàn bộ V1, phần vắng mặt giữ nguyên/null xóa rõ ràng, journal trước ghi và recovery trước feature reads; quota/conflict chưa an toàn thì giữ dữ liệu và dừng. Raw rescue18 key không phụ thuộc quét khóa lạ. Không backup/restore cloud hoặc Auth; xem [hợp đồng và giới hạn](GUEST_BACKUP_SAFETY.md).
+
+## PR5b2c2b / V5.17.0 — UI dọn cache staging
+
+Kiểm UI bốn viewport, /Pickleball/, export download fixture, pending/offline/cancel, A→B/hash đến muộn, extra/new tab chặn SDK, worker restart/expiry/malformed store, upgrade IDB2→3/PWA5.16.0, rollback quota và guest/B. Real GoTrue/Mailpit bổ sung product UI: OTP→private goal RPC→RAM rescue/ack→confirm→SDK logout→purge; read-only local PostgreSQL xác nhận row/revision còn nguyên sau logout. Đây không là Auth cloud/SMTP/field QA. CI đúng PR HEAD phải sạch trước ready. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
