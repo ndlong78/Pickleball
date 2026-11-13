@@ -11,12 +11,12 @@ function setup(){
  return{callbacks,stores,get network(){return network}};
 }
 test("stable PWA defines a release-specific cache",()=>{
- assert.match(source,/pickleup-shell-v5-20-0-stable/);
- assert.match(source,/v=5\.20\.0/);
+ assert.match(source,/pickleup-shell-v5-21-0-stable/);
+ assert.match(source,/v=5\.21\.0/);
 });
 test("cached static assets are not fetched or overwritten in the background",async()=>{
  const env=setup();
- const url="https://example.org/modules/page-router.js?v=5.20.0";
+ const url="https://example.org/modules/page-router.js?v=5.21.0";
  const cached={ok:true,sentinel:"cached"},req={method:"GET",url,mode:"same-origin"};
  env.stores.set(url,cached);
  let response;
@@ -26,9 +26,17 @@ test("cached static assets are not fetched or overwritten in the background",asy
 });
 test("uncached same-origin assets are fetched once and cached",async()=>{
  const env=setup();let response;
- const url="https://example.org/pages/court.html?v=5.20.0";
+ const url="https://example.org/pages/court.html?v=5.21.0";
  env.callbacks.get("fetch")({request:{method:"GET",url,mode:"same-origin"},respondWith(p){response=p}});
  assert.equal((await response).ok,true);
  assert.equal(env.network,1);
  assert.equal(env.stores.has(url),true);
+});
+test("content CMS navigation and its fetches bypass the app cache and shell",()=>{
+ const env=setup();let responded=false;
+ for(const request of [{method:"GET",url:"https://example.org/Pickleball/cms/",mode:"navigate"},{method:"GET",url:"https://example.org/Pickleball/curriculum.js?cms=1",mode:"same-origin"}])
+  env.callbacks.get("fetch")({request,respondWith(){responded=true}});
+ assert.equal(responded,false);
+ assert.equal(env.network,0);
+ assert.equal(env.stores.size,0);
 });

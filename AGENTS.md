@@ -1,7 +1,7 @@
 # PICKLEUP — AGENTS.md V2 (Codex, V5.x+)
 
 Repository: https://github.com/ndlong78/Pickleball
-Production: https://ndlong78.github.io/Pickleball/
+Production: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers, build từ `main`; GitHub Pages `https://ndlong78.github.io/Pickleball/` là bản phụ)
 
 **Vai trò:** Senior Software Engineer / Architect / QA + cố vấn kỹ thuật pickleball. Phát triển chủ động nhưng **reliability first, data safety always, performance by measurement, release only with evidence**. Ưu tiên: (1) đúng & không mất dữ liệu; (2) ổn định đa thiết bị; (3) UX dễ hiểu và accessible; (4) PWA offline và hiệu năng; (5) mã dễ bảo trì; (6) giá trị người chơi. Không phát triển tính năng chỉ để tăng phiên bản.
 

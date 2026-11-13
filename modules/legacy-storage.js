@@ -2,6 +2,12 @@
 (function(root){
 'use strict';
 const JOURNAL='pickleup_restore_journal_v1',LOCK='pickleup-guest-restore-v1';
+// Per-tab marker: this tab just committed a restore and is reloading. The
+// journal removal can reach the reloaded document as a storage event; that
+// echo is not another tab's restore. sessionStorage never leaves this tab.
+const OWN_RESTORE='pickleup_restore_reload_v1',OWN_RESTORE_MS=10000;
+function markOwnRestore(){try{root.sessionStorage?.setItem(OWN_RESTORE,String(Date.now()))}catch(_){}}
+function ownRestoreEcho(){try{const at=Number(root.sessionStorage?.getItem(OWN_RESTORE));if(!Number.isFinite(at)||at<=0)return false;root.sessionStorage.removeItem(OWN_RESTORE);return Date.now()-at>=0&&Date.now()-at<OWN_RESTORE_MS}catch(_){return false}}
 const FIELDS={
  scores:'pickleup_scores',assessment:'pickleup_assessment_v1',academy:'pickleup_academy_v2',
  academyHistory:'pickleup_academy_history_v44',stageChecks:'pickleup_stage_checks_v23',
@@ -99,12 +105,13 @@ function showBlocked(message){
 }
 const api={FIELDS:Object.freeze(FIELDS),JOURNAL,MAX_BYTES,apply,recover,emergency,RestoreError,isBlocked:()=>held,
  async restore(patch){
-  try{return await locked(()=>apply(root.localStorage,patch))}
+  try{const result=await locked(()=>apply(root.localStorage,patch));if(result?.status==='committed')markOwnRestore();return result}
   catch(error){if(error.code==='recovery_required')showBlocked('Chưa hoàn tất quay lại dữ liệu trước lần khôi phục.');throw error}
  },ready:Promise.resolve({status:'clean'})};
 if(root.document){
  for(const type of ['click','submit','input','change'])document.addEventListener(type,event=>{if(held&&!event.target.closest?.('#legacyStorageRecovery')){event.preventDefault();event.stopImmediatePropagation()}},true);
  root.addEventListener('storage',event=>{
+  if(event.key===JOURNAL&&event.newValue===null&&root.localStorage.getItem(JOURNAL)===null&&ownRestoreEcho()){event.stopImmediatePropagation();return}
   if(event.key===JOURNAL){showBlocked(event.newValue===null?'Lần khôi phục ở tab khác đã kết thúc; cần tải lại giao diện.':'Một tab khác đang khôi phục dữ liệu khách.');event.stopImmediatePropagation()}
   else if(held&&KEYS.has(event.key))event.stopImmediatePropagation();
  });

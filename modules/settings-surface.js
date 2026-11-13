@@ -1,15 +1,20 @@
-/* PickleUp V5.18 — keep production Settings focused on guest backup and rescue.
+/* PickleUp V5.18/V5.21 — keep public Settings focused on guest backup and rescue.
    Presentation only: hiding a card never disables its module, storage or the
-   server Auth/RLS boundary. Staging and loopback keep every operator tool. */
+   server Auth/RLS boundary. The Workers host shows operator tools only with an
+   explicit pilot/maintenance URL; loopback keeps every tool for tests. */
 (function(root){
 'use strict';
 const ACCOUNT_CARDS=['accountPanel','syncPilot','activityPilot','planPilot','importPilot','accountRescue','accountPurge'];
 const DIAGNOSTIC_CARDS=['pageDiagnostics'];
 function decide(location,auth,origin){
- let debug=false;
- try{debug=new URL(location.href).searchParams.get('debug')==='1'}catch(_){}
+ let url=null;try{url=new URL(location.href)}catch(_){}
+ const params=url?.searchParams;
  const internal=origin?.internal?.(location)===true;
- return {account:internal||auth?.enabled===true,diagnostics:internal||debug};
+ const loopback=internal&&['localhost','127.0.0.1','[::1]'].includes(url?.hostname);
+ // The Workers host is also the public site: operator tools appear there only
+ // with an explicit ?pilot=… or ?maintenance=… URL; loopback keeps them for tests.
+ const tools=!!params&&(params.has('pilot')||params.has('maintenance'));
+ return {account:loopback||internal&&tools,diagnostics:loopback||params?.get('debug')==='1'};
 }
 function apply(document,surface){
  for(const [ids,visible]of [[ACCOUNT_CARDS,surface.account],[DIAGNOSTIC_CARDS,surface.diagnostics]]){

@@ -10,10 +10,14 @@ test('production origins hide account pilots and diagnostics; debug only reveals
   assert.deepEqual(decide({href:href+'&debug=true'},{enabled:false},origin),{account:false,diagnostics:false});
  }
 });
-test('staging and loopback keep every operator tool; enabled Auth keeps account cards',()=>{
- for(const href of [stage+'/?page=settings','http://127.0.0.1:4173/Pickleball/?page=settings','http://localhost:4173/?page=settings'])
+test('Workers host is public by default; pilot or maintenance URLs reveal operator tools; loopback keeps all',()=>{
+ assert.deepEqual(decide({href:stage+'/?page=settings'},{enabled:true},origin),{account:false,diagnostics:false});
+ assert.deepEqual(decide({href:stage+'/?page=settings&debug=1'},{enabled:true},origin),{account:false,diagnostics:true});
+ for(const q of ['pilot=account-data','pilot=preferences-checkins','maintenance=account-cache'])
+  assert.deepEqual(decide({href:stage+'/?page=settings&'+q},{enabled:true},origin),{account:true,diagnostics:false},q);
+ for(const href of ['http://127.0.0.1:4173/Pickleball/?page=settings','http://localhost:4173/?page=settings'])
   assert.deepEqual(decide({href},{enabled:false},origin),{account:true,diagnostics:true});
- assert.deepEqual(decide({href:'https://example.invalid/'},{enabled:true},origin),{account:true,diagnostics:false});
+ assert.deepEqual(decide({href:'https://example.invalid/?pilot=account-data'},{enabled:true},origin),{account:false,diagnostics:false});
 });
 test('missing helpers or malformed locations fail closed',()=>{
  assert.deepEqual(decide({href:'https://ndlong78.github.io/'},undefined,undefined),{account:false,diagnostics:false});

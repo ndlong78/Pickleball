@@ -11,6 +11,8 @@ on:
       - "advanced.css"
       - "match-journal.js"
       - "curriculum.js"
+      - "cms/**"
+      - "scripts/check-content.cjs"
       - "dashboard.js"
       - "responsive.css"
       - "mobile-ui.js"
@@ -56,6 +58,15 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Run JavaScript unit tests
         run: npm run test:unit
+      - name: Validate Academy content against the base branch
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          base="$RUNNER_TEMP/base-curriculum.js"
+          if [ -n "$BASE_SHA" ] && [ "$BASE_SHA" != "0000000000000000000000000000000000000000" ] && git fetch --depth=1 origin "$BASE_SHA"; then
+            git show FETCH_HEAD:curriculum.js > "$base" || rm -f "$base"
+          fi
+          node scripts/check-content.cjs --previous "$base"
       - name: Verify isolated static test host
         run: python3 -m unittest scripts/test_static_host.py
       - name: Validate Cloudflare static build without deployment

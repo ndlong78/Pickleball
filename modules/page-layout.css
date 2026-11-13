@@ -218,3 +218,14 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
  #academyDetail .lesson-cues li{font-size:17px}
  #academyDetail .lesson-more-body{padding:4px 12px 12px}
 }
+
+/* V5.21 Academy coach video: click-to-load YouTube facade, 16:9, thumb-friendly. */
+#academyDetail .lesson-video{margin:14px 0}
+#academyDetail .lesson-video-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+#academyDetail .lesson-video-tabs button{min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid #cddfc4;background:#fff;color:#254435;font-weight:700}
+#academyDetail .lesson-video-tabs button[aria-pressed=true]{background:#10292a;color:#c9fa74;border-color:#10292a}
+#academyDetail .lesson-video-frame{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#10292a}
+#academyDetail .lesson-video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#academyDetail .lesson-video-play{position:absolute;inset:0;width:100%;border:0;background:#10292a;color:#f4fbef;font-size:17px;font-weight:800;cursor:pointer;padding:16px}
+#academyDetail .lesson-video-play:focus-visible{outline:3px solid #b8ef49;outline-offset:-6px}
+#academyDetail .lesson-video .sub{margin:6px 0 0}

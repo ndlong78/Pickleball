@@ -1,10 +1,10 @@
 /* PickleUp V3.5 — small offline shell + on-demand cache for visited pages.
    Page-specific JS/CSS is cached only when the user opens that page. */
-const CACHE="pickleup-shell-v5-20-0-stable";
+const CACHE="pickleup-shell-v5-21-0-stable";
 const SHELL=[
- "./","./index.html","./responsive.css?v=5.20.0",
- "./modules/legacy-storage.js?v=5.20.0","./modules/page-layout.css?v=5.20.0","./modules/page-catalog.js?v=5.20.0","./modules/page-loader.js?v=5.20.0",
- "./modules/web-vitals.js?v=5.20.0","./modules/page-router.js?v=5.20.0","./mobile-ui.js?v=5.20.0","./modules/pwa-client.js?v=5.20.0",
+ "./","./index.html","./responsive.css?v=5.21.0",
+ "./modules/legacy-storage.js?v=5.21.0","./modules/page-layout.css?v=5.21.0","./modules/page-catalog.js?v=5.21.0","./modules/page-loader.js?v=5.21.0",
+ "./modules/web-vitals.js?v=5.21.0","./modules/page-router.js?v=5.21.0","./mobile-ui.js?v=5.21.0","./modules/pwa-client.js?v=5.21.0",
  "./manifest.webmanifest","./icons/icon.svg","./icons/icon-192.png","./icons/icon-512.png"
 ];
 self.addEventListener("install",event=>{
@@ -64,6 +64,8 @@ self.addEventListener("fetch",event=>{
  const req=event.request,url=new URL(req.url);
  if(url.pathname.includes("/auth/")||url.pathname.includes("/rest/")||url.searchParams.has("code")||url.searchParams.has("token_hash")||url.searchParams.has("auth_callback"))return;
  if(req.method!=="GET"||url.origin!==self.location.origin)return;
+ // The content CMS is a separate tool: never cache it or let it replace the app shell.
+ if(url.pathname.includes("/cms/")||url.searchParams.has("cms"))return;
  if(req.mode==="navigate"){
   event.respondWith(
    fetch(req).then(async response=>{
