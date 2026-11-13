@@ -1,6 +1,6 @@
 # Thiết kế: phiên bản giáo án và CMS nội dung Học viện
 
-Trạng thái: **đề xuất, chưa triển khai**. Tài liệu này chỉ chốt hợp đồng dữ liệu và thứ tự PR; không đổi code, schema, Auth hay dữ liệu người dùng. Owner cần duyệt các quyết định ở mục 9 trước PR đầu tiên.
+Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (xem mục 10). Lưu phiên bản đề theo lượt điểm (C1), mở rộng ID (C3) và CMS trên Supabase (C4) vẫn là đề xuất.
 
 ## 1. Vì sao cần làm trước khi thêm video hoặc bài mới
 
@@ -120,3 +120,26 @@ Thêm bài `PU-081+` cần **một PR riêng, đồng bộ**:
 3. Giai đoạn A (nội dung qua PR GitHub) có đủ cho HLV trong 2–3 tháng tới không, hay cần giao diện CMS sớm hơn.
 4. Nơi lưu video (Supabase Storage, Cloudflare R2/Stream) và ngân sách băng thông.
 5. Ai giữ vai trò `content_publisher`.
+
+## 10. Đã triển khai ở V5.21.0 và quyết định đã chốt
+
+Owner yêu cầu làm CMS ngay, ưu tiên miễn phí và thuận tiện. Các quyết định ở mục 9 được chốt như sau:
+
+| # | Quyết định | Lý do |
+|---|---|---|
+| 1 | Lượt điểm cũ coi là `assessmentVersion` 1 | Code giáo án không đổi kể từ commit đầu tiên còn trong lịch sử (28/10), trước khi có `academy-80-v1`. CMS khóa trường chấm điểm nên không phát sinh đề mới cho tới C1 |
+| 2 | Giữ định dạng `PU-` + số | Không đổi ID cũ; mở rộng ở C3 |
+| 3 | Sửa nội dung qua trang `cms/` + PR GitHub | Miễn phí, không server, không secret, có review và CI |
+| 4 | Video trên **YouTube, chế độ Không công khai** | Miễn phí, không giới hạn, tải lên từ điện thoại, tự chọn chất lượng theo mạng. Phương án offline sau này: Cloudflare R2 (miễn phí 10 GB) |
+| 5 | Owner giữ quyền merge (xuất bản) | Đúng quy trình hiện tại; không thêm vai trò mới |
+
+### Điều chỉnh so với mục 5 (Giai đoạn A)
+Không dùng `content/academy/lessons.json` + bước build, vì HLV sửa trên GitHub web không chạy được Node, còn commit tự động từ GitHub Action không kích hoạt lại CI. Thay vào đó **`curriculum.js` là nguồn duy nhất**: JSON nằm giữa `/*CONTENT-BEGIN*/` và `/*CONTENT-END*/`, đầu và adapter cố định; `advanced-curriculum.js` chỉ là adapter. CMS xuất nguyên tệp, CI chạy `scripts/check-content.cjs --previous <bản base>`.
+
+- Dữ liệu 80 bài sau chuyển đổi **giống hệt** bản sinh từ bộ sinh cũ (so JSON từng bài, đúng thứ tự khóa).
+- Dung lượng tải: gzip 9,6 KB → 13,8 KB (+4,2 KB).
+- `MAX_ASSESSMENT_VERSION = 1` trong `modules/content-core.js` chặn đổi đề cho tới C1; validator còn chặn xóa bài, lùi phiên bản, sửa nội dung mà không tăng `revision`, khóa lạ, video sai định dạng và tổng buổi khác 60 phút.
+- Video: chỉ lưu ID 11 ký tự, góc quay `back/side/top/front`, giây bắt đầu/kết thúc. Trang Học viện chỉ nhúng `youtube-nocookie.com` **sau khi người tập bấm xem**; không tải ảnh hay script YouTube trước đó.
+- Service worker bỏ qua mọi yêu cầu dưới `/cms/` hoặc có tham số `cms`, để trang CMS không thay shell offline của app. Bản nháp CMS lưu ở khóa `pickleupcms_draft_v1`, không dùng tiền tố `pickleup_` của dữ liệu người tập.
+
+Hướng dẫn cho HLV: [CMS_GUIDE.md](CMS_GUIDE.md).

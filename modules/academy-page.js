@@ -222,6 +222,35 @@ function choose(){
 let lastDrawnId=null;
 // V5.20 progressive disclosure: layer 1 answers "how?" (diagram, three cues,
 // one start action); layer 2 keeps rules, mistakes, setup and timeline one tap away.
+// V5.21: coach videos are YouTube IDs from the CMS. Nothing loads from YouTube
+// until the player taps play; the stored ID is re-validated before embedding.
+const ANGLE_LABELS={back:'Sau lưng',side:'Bên hông',top:'Trên cao',front:'Phía trước'};
+function videoMarkup(x){
+ const content=window.PICKLEUP_CONTENT,list=(Array.isArray(x.media)?x.media:[]).filter(m=>content?.embedUrl(m));
+ if(!list.length)return '';
+ const tabs=list.length>1?'<div class="lesson-video-tabs" role="group" aria-label="Góc quay">'+list.map((m,i)=>'<button type="button" data-video-index="'+i+'" aria-pressed="'+(i===0)+'">'+esc(ANGLE_LABELS[m.angle]||m.angle)+'</button>').join('')+'</div>':'';
+ return '<section class="lesson-video" data-lesson-video aria-label="Video hướng dẫn">'+tabs+'<div class="lesson-video-frame" data-video-frame>'+videoButton(list[0])+'</div><p class="sub">Video mở từ YouTube khi bấm xem; cần kết nối mạng.</p></section>';
+}
+function videoButton(m){return '<button type="button" class="lesson-video-play" data-video-play>▶ Xem video · '+esc(ANGLE_LABELS[m.angle]||m.angle)+(m.title?' · '+esc(m.title):'')+'</button>'}
+function playableMedia(){const x=get();return (Array.isArray(x?.media)?x.media:[]).filter(m=>window.PICKLEUP_CONTENT?.embedUrl(m))}
+detail.addEventListener('click',event=>{
+ const section=event.target.closest?.('[data-lesson-video]');if(!section)return;
+ const list=playableMedia(),frame=section.querySelector('[data-video-frame]');
+ const tab=event.target.closest('[data-video-index]');
+ if(tab){
+  const i=Number(tab.dataset.videoIndex);if(!list[i])return;
+  for(const b of section.querySelectorAll('[data-video-index]'))b.setAttribute('aria-pressed',String(b===tab));
+  frame.dataset.index=String(i);frame.innerHTML=videoButton(list[i]);return;
+ }
+ if(!event.target.closest('[data-video-play]'))return;
+ const media=list[Number(frame.dataset.index||0)],src=window.PICKLEUP_CONTENT?.embedUrl(media);if(!src)return;
+ if(navigator.onLine===false){frame.querySelector('[data-video-play]').textContent='Đang offline · cần mạng để xem video';return}
+ const iframe=document.createElement('iframe');
+ iframe.src=src;iframe.title='Video hướng dẫn · '+(ANGLE_LABELS[media.angle]||media.angle);
+ iframe.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';iframe.allowFullscreen=true;
+ iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.loading='lazy';
+ frame.replaceChildren(iframe);
+});
 function lessonMarkup(x,court){
  const view=window.PICKLEUP_ACADEMY_LESSON?.summary(x)||{cues:x.cues||[],mistakes:x.mistakes||[],minutes:60,parts:6,rule:null};
  const block=(minutes,title,body,check)=>'<div class="block"><div class="minute">'+minutes+'<small>phút</small></div><div><h4>'+title+'</h4><p>'+body+'</p>'+(check?'<em>'+check+'</em>':'')+'</div></div>';
@@ -235,6 +264,7 @@ function lessonMarkup(x,court){
   +'<h3>Tuần '+x.week+' · '+esc(x.title)+'</h3><p class="sub">'+esc(x.goal)+'</p>'
   +'<p class="lesson-meta"><span>⏱ '+view.minutes+' phút · '+view.parts+' phần</span><span>🎯 '+esc(x.zone||'Trong sân đối phương')+'</span></p></header>'
   +court
+  +videoMarkup(x)
   +'<section class="lesson-cues" aria-label="Điểm cần nhớ"><h4>Điểm cần nhớ</h4><ol>'+view.cues.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol></section>'
   +'<div class="lesson-cta"><button type="button" class="primary" data-lesson-start>▶ Bắt đầu tập</button>'
   +'<p class="sub">Mở đồng hồ từng bước. Chạy hết giờ hoặc đánh dấu bước không tự tính là buổi đã tập.</p></div>'

@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**Thiết kế phiên bản giáo án và CMS — 13/11/2026 (đề xuất, chưa triển khai):** [CONTENT_VERSIONING_CMS](docs/CONTENT_VERSIONING_CMS.md) chốt ID bài bất biến, `assessmentVersion` theo từng bài để không trộn điểm đề cũ/mới, trường `av` tùy chọn cho lịch sử khách, mở rộng ID ngoài `PU-080` và thứ tự PR C1–C5 trước khi thêm video hoặc bài 4.0–5.0.
+**V5.21.0 — 13/11/2026 (đang PR):** CMS nội dung Học viện tại `cms/` và video YouTube (Không công khai, chỉ tải khi bấm xem). `curriculum.js` là nguồn nội dung duy nhất, CI kiểm tra và khóa trường chấm điểm. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.21.0.md).
+
+**Thiết kế phiên bản giáo án và CMS — 13/11/2026 (giai đoạn A triển khai ở V5.21.0):** [CONTENT_VERSIONING_CMS](docs/CONTENT_VERSIONING_CMS.md) chốt ID bài bất biến, `assessmentVersion` theo từng bài để không trộn điểm đề cũ/mới, trường `av` tùy chọn cho lịch sử khách, mở rộng ID ngoài `PU-080` và thứ tự PR C1–C5 trước khi thêm video hoặc bài 4.0–5.0.
 
 **V5.20.0 — 13/11/2026 (đã merge #49):** bài Học viện theo bố cục 3 tầng: nội dung đứng trước điều khiển; tầng 1 gồm sơ đồ sân, 3 điểm cần nhớ chữ lớn và một nút **Bắt đầu tập** (không lưu/không xác nhận buổi tập); tầng 2 thu gọn gồm luật theo kỹ năng (Kitchen, giao bóng, hai lần nảy, gọi điểm 0-0-2, tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút. [Release notes](RELEASE_V5.20.0.md).
 

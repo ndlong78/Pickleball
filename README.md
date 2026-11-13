@@ -1,6 +1,8 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
-**V5.20.0 — 13/11/2026 (đang PR):** bài Học viện theo bố cục 3 tầng: nội dung đứng trước điều khiển; tầng 1 gồm sơ đồ sân, 3 điểm cần nhớ chữ lớn và một nút **Bắt đầu tập** (không lưu/không xác nhận buổi tập); tầng 2 thu gọn gồm luật theo kỹ năng (Kitchen, giao bóng, hai lần nảy, gọi điểm 0-0-2, tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút. [Release notes](RELEASE_V5.20.0.md).
+**V5.21.0 — 13/11/2026 (đang PR):** CMS nội dung Học viện tại `cms/` và video YouTube (Không công khai, chỉ tải khi bấm xem). `curriculum.js` là nguồn nội dung duy nhất, CI kiểm tra và khóa trường chấm điểm. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.21.0.md).
+
+**V5.20.0 — 13/11/2026 (đã merge #49):** bài Học viện theo bố cục 3 tầng: nội dung đứng trước điều khiển; tầng 1 gồm sơ đồ sân, 3 điểm cần nhớ chữ lớn và một nút **Bắt đầu tập** (không lưu/không xác nhận buổi tập); tầng 2 thu gọn gồm luật theo kỹ năng (Kitchen, giao bóng, hai lần nảy, gọi điểm 0-0-2, tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút. [Release notes](RELEASE_V5.20.0.md).
 
 **V5.19.0 — 13/11/2026 (đã merge #47):** [PR5b2d1](docs/RESTORE_PREVIEW_PR5B2D1.md) đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục. Chỉ đọc, chưa restore/replay/ghi đè; giữ IDB3/SQL/Auth/signup và dữ liệu khách. Nâng từ 5.18.0 vì #48 đã dùng số này. [Release notes](RELEASE_V5.19.0.md).
 

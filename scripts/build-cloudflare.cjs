@@ -25,6 +25,8 @@ function build(root = path.resolve(__dirname, '..')) {
     if (!name.startsWith('.') && (/\.(js|css)$/.test(name) || ['index.html', 'manifest.webmanifest'].includes(name))) collect(name);
   }
   for (const directory of ['modules', 'pages', 'icons', 'vendor']) collect(directory);
+  // The content CMS is an optional static tool; package it when present.
+  if (fs.existsSync(path.join(root, 'cms'))) collect('cms');
   // Workers metadata is copied explicitly, outside the runtime extension filter.
   if (!fs.lstatSync(path.join(root, '_redirects')).isFile()) throw new Error('Missing redirect rules.');
   files.push('_redirects');
