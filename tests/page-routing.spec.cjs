@@ -1,4 +1,5 @@
 const {test,expect}=require("@playwright/test");
+const {navigate}=require('./helpers/navigation.cjs');
 const sizes=[
  {name:"iPhone",width:390,height:844},
  {name:"iPad portrait",width:820,height:1180},
@@ -44,10 +45,10 @@ for(const size of sizes){
    await expect(page).toHaveURL(/page=matches/);
    await expect(page.locator("#matchJournal")).toBeVisible();
    await page.evaluate(()=>localStorage.setItem("pickleup-route-smoke","saved"));
-   await page.locator('#pageNavigation a[data-route="progress"]').click();
+   await navigate(page,'progress');
    await expect(page.locator("#trainingHistory")).toBeVisible();
    expect(await page.evaluate(()=>localStorage.getItem("pickleup-route-smoke"))).toBe("saved");
-   await page.locator('#pageNavigation a[data-route="settings"]').click();
+   await navigate(page,'settings');
    await expect(page.locator("#backup")).toBeVisible();
   });
  });
@@ -61,7 +62,7 @@ test.describe('optional font loading',()=>{
    // This is intentionally load, not domcontentloaded: the held font must be optional.
    await page.goto('/Pickleball/?page=home',{waitUntil:'load'});await requested;
    expect(await page.evaluate(()=>performance.getEntriesByType('navigation')[0].loadEventEnd>0)).toBe(true);expect(settled).toBe(false);
-   await page.locator('#pickleupMobileDock a[href="#personalCoach"]').click();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('coach'));await expect(page.locator('#personalCoach')).toBeInViewport();await expect(page.locator('#pickleupMobileDock a[href="#personalCoach"]')).toHaveAttribute('aria-current','page');
+   await page.locator('#pickleupMobileDock a[href="#academy"]').click();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('academy'));await expect(page.locator('#academy')).toBeInViewport();await expect(page.locator('#pickleupMobileDock a[href="#academy"]')).toHaveAttribute('aria-current','page');
    await page.locator('#pickleupMobileDock a[href="#trainingHistory"]').click();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));await page.locator('#aiRefresh').click();await expect(page.locator('#aiCount')).toHaveText('0');await expect(page.locator('#pickleupMobileDock a[href="#trainingHistory"]')).toHaveAttribute('aria-current','page');expect(settled).toBe(false);
   }finally{release();await page.unrouteAll({behavior:'wait'})}
  });

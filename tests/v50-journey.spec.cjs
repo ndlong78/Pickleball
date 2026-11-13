@@ -1,4 +1,5 @@
 const {test,expect}=require("@playwright/test");
+const {navigate}=require('./helpers/navigation.cjs');
 for(const size of [390,820,1180,1440]){
  test.describe("PickleUp V5.0 journey "+size,()=>{
   test.use({viewport:{width:size,height:900}});
@@ -23,7 +24,7 @@ for(const size of [390,820,1180,1440]){
    await page.locator("#jLessonOpen").click();
    await expect(page).toHaveURL(/page=academy/);
    await expect(page.locator("#academyWeek")).toHaveValue(/^PU-0/);
-   await page.locator('#pageNavigation a[data-route="journey"]').click();
+   await navigate(page,'journey');
    await expect(page.locator("#journeyFlow")).toBeVisible();
    await page.locator("#jClear").click();
    await expect(page.locator("#jProgress")).toHaveText("0/2");

@@ -22,6 +22,8 @@
 | `index.html` | Application shell, home, navigation, mount points, mã build |
 | `modules/page-catalog.js` | Danh mục 8 route và section IDs |
 | `modules/page-router.js` | `?page=...#section`, history, điều hướng nội bộ |
+| `mobile-ui.js` | Menu "Thêm" dùng chung cho thanh trên và dock (V5.18); router vẫn giữ `aria-current` |
+| `modules/settings-surface.js` | Ẩn thẻ tài khoản/pilot và chẩn đoán trên production; chỉ trình bày, Auth/RLS vẫn là ranh giới bảo mật |
 | `modules/page-loader.js` | Lazy-load JS/CSS/HTML fragment, giữ module sau khi mở |
 | `pages/*.html` | Static trusted markup của các route tải theo nhu cầu |
 | `modules/*-core.js` | Logic thuần, dễ kiểm thử và không dùng DOM nếu không cần |

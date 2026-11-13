@@ -1,4 +1,5 @@
 const {test,expect}=require("@playwright/test");
+const {navigate}=require('./helpers/navigation.cjs');
 const fs=require("node:fs"),path=require("node:path");
 const profiles=[
  {name:"iphone-390",width:390,height:844,isMobile:true,hasTouch:true},
@@ -17,7 +18,7 @@ for(const profile of profiles){
    await page.goto("/?page=home");
    await page.locator("#weekList .week").first().waitFor();
    for(const id of routes){
-    if(id!=="home")await page.locator('#pageNavigation a[data-route="'+id+'"]').click();
+    if(id!=="home")await navigate(page,id);
     await expect(page.locator("#pageHeading")).not.toBeEmpty();
     await page.waitForFunction(p=>window.PICKLEUP_PAGE_LOADER?.readMetrics().some(m=>m.page===p),id);
     const row=await page.evaluate(p=>{

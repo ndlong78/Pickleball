@@ -1,5 +1,7 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
+**V5.18.0 — 13/11/2026 (đang PR):** điều hướng gọn còn 4 tab (Tổng quan · Học viện · Trên sân · Tiến bộ) cộng menu **Thêm** (Hành trình · HLV cá nhân · Thi đấu · Dữ liệu), vẫn đủ 8 route. Trang Dữ liệu trên production chỉ còn sao lưu/cứu hộ khách; panel tài khoản/pilot và Web Vitals chỉ hiện trên staging/localhost (`debug=1` mở riêng chẩn đoán). [Release notes](RELEASE_V5.18.0.md).
+
 **Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](docs/POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](docs/REVIEW_SAFETY_2026_11.md).
@@ -134,7 +136,9 @@ PickleUp đã bổ sung `responsive.css` (nạp sau các style cũ) và `mobile-
 
 **Lưu ý**: V2.6.1 sửa bố cục và thao tác, không thay đổi các khóa dữ liệu luyện tập từ V2.4 đến V2.6.
 
-## Điều hướng cố định trên tất cả thiết bị (V2.6.2)
+## Điều hướng cố định trên tất cả thiết bị (V2.6.2, cập nhật V5.18.0)
+
+**Từ V5.18.0:** thanh trên và dock dưới cùng dùng 4 tab **🏠 Tổng quan · 📚 Học viện · ⏱ Trên sân · 📈 Tiến bộ** và nút **☰ Thêm** (Hành trình · HLV cá nhân · Thi đấu · Dữ liệu). Phần dưới là lịch sử V2.6.2.
 
 Thanh menu bốn mục **🎯 HLV cá nhân · ⏱ Trên sân · 📈 Tiến bộ · 📚 Giáo án** luôn hiển thị ở **cạnh dưới cửa sổ** khi cuộn trang, trên **PC, iPad ngang/dọc và iPhone**.
 - PC: menu gọn, nằm giữa phía dưới; không còn một menu bốn mục khác trùng lặp ở phía trên.
