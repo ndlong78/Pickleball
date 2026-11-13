@@ -66,4 +66,4 @@ Gate cloud pilot thật: quyền Supabase project đúng môi trường, xác nh
 
 ## PR5b2d1 — bước chuẩn bị restore
 
-[Đối chiếu tệp/cache V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) chỉ đọc và hiển thị khác biệt cùng các bước đối soát còn thiếu. Không backup vận hành, restore/replay, đổi consent/signup hoặc retention. Chính sách chi phí0/không production/không tự merge và gate pilot giữ nguyên.
+[Đối chiếu tệp/cache V5.19.0](RESTORE_PREVIEW_PR5B2D1.md) chỉ đọc và hiển thị khác biệt cùng các bước đối soát còn thiếu. Không backup vận hành, restore/replay, đổi consent/signup hoặc retention. Chính sách chi phí0/không production/không tự merge và gate pilot giữ nguyên.

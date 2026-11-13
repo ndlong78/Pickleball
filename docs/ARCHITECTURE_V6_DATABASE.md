@@ -189,6 +189,6 @@ PR5a2c bổ sung [assessment/match projections và UI](ASSESSMENT_MATCH_PR5A2C.m
 
 Workflow purge UI dùng mode riêng maintenance=account-cache, không pilot; bốn source/import flags false, không tự pull/import. Preflight đọc-only trước final confirm, acquire persisted worker lease sau confirm rồi recheck snapshot, logout SDK rồi primitive CAS. IDB3 là capability fence; worker protocol1 tách RPC business protocol1. Tham khảo hợp đồng mới, không suy thành cloud/account delete hoặc full restore. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
 
-## PR5b2d1 / V5.18.0 — đối chiếu trước khôi phục
+## PR5b2d1 / V5.19.0 — đối chiếu trước khôi phục
 
 PR5b2d1 bổ sung local difference preview trước restore, không tạo restore writer. Structural validateSnapshot và semantic JSON comparison không là domain migration hoặc xác nhận server; mọi report canRestore=false/cloudVerified=false. Không nhập snapshot thành active cache, auto replay frozen requests, bật consent hay dùng lại generation/cursor/lease. Full restore đi qua quarantine/provenance/epoch/dependencies, fresh server/target snapshot và atomic confirmation/quiesce ở các PR sau. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).

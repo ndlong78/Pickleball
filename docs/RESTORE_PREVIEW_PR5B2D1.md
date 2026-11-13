@@ -1,4 +1,4 @@
-# PR5b2d1 / V5.18.0 — đối chiếu cache trước khôi phục
+# PR5b2d1 / V5.19.0 — đối chiếu cache trước khôi phục
 
 Baseline main `6e22b1f89d373cec6fb1342287c31b3987e53741` /5.17.0 sau #46, không PR mở trùng. UI main43240835088 đã hoàn tất394 unit/604 browser +50 lượt bổ sung/3 HTTP/1 Workers,0 fail/flaky/retry; Pages43240834380 và Cloudflare Production buildce39f4a1 success cùng SHA. Backend main không tạo run mới do push path filters (bản sửa46 test/workflow/docs-only); PR46 HEAD8c180b9 backend43235807953 có300 pgTAP/48 REST/GoTrue-Mailpit hai engines sạch. CI exact HEAD PR mới ghi trong PR trước ready; không tự merge.
 

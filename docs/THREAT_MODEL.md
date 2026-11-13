@@ -1,6 +1,6 @@
 # PickleUp V6 — threat model (thiết kế PR0)
 
-**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.19.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -78,6 +78,6 @@ PR5b2a: lựa chọn Academy không mirror key V5; delayed navigation và form r
 
 UI purge yêu cầu Auth đúng owner, cứu hộ hiện tại/ack và final confirmation, một cửa sổ, explicit local logout thành công rồi mới transaction. Worker lease persisted TTL15s/max60s chặn SDK client mới; IDB3 chặn repository2 mở lại. Account change/route/pagehide/lease loss hủy scope/links, pending giữ nguyên. Đây là phối hợp client cùng origin, không chống XSS/OS, secure erase hoặc remote wipe. Không thể hủy RPC/logout đã gửi, chỉ chặn local commit/feedback cũ. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
 
-## PR5b2d1 / V5.18.0 — đối chiếu trước khôi phục
+## PR5b2d1 / V5.19.0 — đối chiếu trước khôi phục
 
 Checksum và cache giống nhau không chứng minh domain hợp lệ hoặc ACK từ server. So sánh chỉ counts/fixed labels, không render raw notes/state/keys; Map identities không là object properties. Khóa không nhận diện tính riêng, giữ file gốc. Credential/foreign owner/duplicate/size reject cả lượt. File đúng checksum có thể bị chỉnh cố ý; không cấp restore/replay/purge authority, consent/cursor/lease không activate. A→B/expiry/logout bỏ report và private file reference. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).

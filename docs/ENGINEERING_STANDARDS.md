@@ -1,6 +1,6 @@
 # PickleUp — ENGINEERING STANDARDS (V5.x)
 
-**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.19.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -136,6 +136,6 @@ Browser regression chạy `scripts/serve_test.py --guest-auth`, fixture guest qu
 
 Host gate được lazy-load trước Auth adapter; SDK chỉ tạo sau worker status. Không worker vẫn dùng Auth bình thường nhưng UI purge cần worker hiện hành kiểm soát. Worker cũ/không phản hồi/storage hỏng fail closed với Auth, guest còn dùng được; cập nhật/reload/đóng tab, không xóa dữ liệu. Entry maintenance full reload đóng nguồn/timer cũ; cần tự lưu RAM trước khi vào. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
 
-## PR5b2d1 / V5.18.0 — đối chiếu trước khôi phục
+## PR5b2d1 / V5.19.0 — đối chiếu trước khôi phục
 
 restore-preview-core lazy riêng Settings, sau account-rescue-core và trước controller. So sánh thuần trên snapshot đã kiểm container/owner/bounds, thứ tự key object không ảnh hưởng nhưng arrays/strings giữ nguyên. Controller chỉ getAccountRescueSnapshot readonly sau nút compare, bỏ selectedFile/comparison khi đổi account/file, lỗi hoặc invalidate. File không được tải lại như ảnh chụp mới của máy. Không RPC/writer/legacy read mới. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).

@@ -1,6 +1,6 @@
 # PickleUp — RELEASE CHECKLIST & CODEX WORKFLOW (V5.x)
 
-**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.18.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.19.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -120,6 +120,6 @@ Kiểm UI bốn viewport, /Pickleball/, export download fixture, pending/offline
 
 [Điều tra WebKit820](POSTMERGE_V5_17.md): disabled/hidden là markup mặc định, không chứng minh module đã khởi tạo. Test phải await `PICKLEUP_PAGE_LOADER.ensure('settings')` sau reload rồi xác nhận Auth guest và trạng thái purge guest trước khi đọc IDB. Fixture giữ việc chèn script repository ở820 tái hiện cửa sổ chưa thực thi module ngay cả khi SW đã cache bytes. CI thêm10 lượt WebKit820/retries0; failOnFlakyTests và mọi assertion bảo toàn dữ liệu giữ nguyên. Không tăng timeout/retry hoặc đổi runtime để chữa fixture.
 
-## PR5b2d1 / V5.18.0 — đối chiếu trước khôi phục
+## PR5b2d1 / V5.19.0 — đối chiếu trước khôi phục
 
 Bổ sung compare core bảy stores, old snapshots1/2/3, canonical object order/array order, unknown keys, credentials/ownership/size và ACK không cấp quyền restore. Controller inspect chưa mở DB, compare explicit readonly, delayed A→B/storage failure clear state. Native mock UI bốn viewport/offline/no RPC/unchanged A/B/guest, unknown/XSS note/new invalid file/logout. Real Auth browser helper so file với private cache chỉ RAM và kiểm RPC/rows không đổi. CI HEAD Chromium/WebKit +50 lượt bổ sung, backend và Workers phải sạch; Managed/SMTP/field QA tách riêng. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).
