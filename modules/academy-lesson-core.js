@@ -1,4 +1,4 @@
-/* PickleUp V5.19 — pure progressive-disclosure model for one Academy lesson.
+/* PickleUp V5.20 — pure progressive-disclosure model for one Academy lesson.
    No DOM or storage: the UI decides markup, this decides what shows first. */
 (function(root){
 'use strict';

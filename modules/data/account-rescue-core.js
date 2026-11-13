@@ -56,6 +56,12 @@ function validate(snapshot,expectedOwner){
  }
  return snapshot;
 }
+// Container/owner/size validation only, never domain validity or restore authority.
+function validateSnapshot(snapshot,{expectedOwner}={}){
+ const captured=structuredClone(snapshot);validate(captured,expectedOwner);
+ if(new TextEncoder().encode(canonical(captured)).length>MAX_BYTES)fail('too_large');
+ return captured;
+}
 function report(snapshot){
  const stores=snapshot.stores,counts=Object.fromEntries(Object.entries(stores).map(([name,rows])=>[name,rows.length]));
  const states=new Map();for(const row of stores.outbox){const state=typeof row.state==='string'?row.state:'unknown';states.set(state,(states.get(state)||0)+1)}
@@ -71,5 +77,5 @@ async function preview(text,{expectedOwner,cryptoImpl=root.crypto}={}){
  if(!exact(artifact,['app','format','version','payload','sha256'])||artifact.app!=='PickleUp'||artifact.format!==FORMAT||artifact.version!==1||!exact(artifact.payload,['exportedAt','snapshot'])||typeof artifact.payload.exportedAt!=='string'||!Number.isFinite(Date.parse(artifact.payload.exportedAt))||typeof artifact.sha256!=='string'||!/^[a-f0-9]{64}$/.test(artifact.sha256))fail('invalid_format');
  const snapshot=validate(artifact.payload.snapshot,expectedOwner);if(await digest(artifact.payload,cryptoImpl)!==artifact.sha256)fail('checksum_mismatch');return {artifact,report:report(snapshot)};
 }
-const api={FORMAT,MAX_BYTES,MAX_ROWS,STORES,RescueError,create,preview};if(typeof module!=='undefined')module.exports=api;else root.PickleUpAccountRescueCore=api;
+const api={FORMAT,MAX_BYTES,MAX_ROWS,STORES,RescueError,validateSnapshot,create,preview};if(typeof module!=='undefined')module.exports=api;else root.PickleUpAccountRescueCore=api;
 })(typeof window==='undefined'?globalThis:window);

@@ -1,6 +1,6 @@
 # PickleUp — ENGINEERING STANDARDS (V5.x)
 
-**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.19.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Bản vá sau audit #41 (đang PR, chưa áp dụng Managed):** migration7 `20261111000100` thêm first-epoch legacy guard; user đã có head phải dùng writer fenced cho8 kind, profile PR1a giữ nguyên. Source có7 migrations/17 bảng/10 public RPC; staging operator trước đó mới xác nhận6/16/10. [Hợp đồng, giới hạn và SQL Editor6→7](LEGACY_EPOCH_GUARD.md). Các mốc sáu migrations dưới đây là baseline lịch sử, không phải bộ upgrade mới.
@@ -23,7 +23,7 @@
 | `modules/page-catalog.js` | Danh mục 8 route và section IDs |
 | `modules/page-router.js` | `?page=...#section`, history, điều hướng nội bộ |
 | `mobile-ui.js` | Menu "Thêm" dùng chung cho thanh trên và dock (V5.18); router vẫn giữ `aria-current` |
-| `modules/academy-lesson-core.js` | Mô hình thuần cho bài Học viện 3 tầng: điểm cần nhớ, thời lượng, luật theo kỹ năng và mức mở mặc định (V5.19) |
+| `modules/academy-lesson-core.js` | Mô hình thuần cho bài Học viện 3 tầng: điểm cần nhớ, thời lượng, luật theo kỹ năng và mức mở mặc định (V5.20) |
 | `modules/settings-surface.js` | Ẩn thẻ tài khoản/pilot và chẩn đoán trên production; chỉ trình bày, Auth/RLS vẫn là ranh giới bảo mật |
 | `modules/page-loader.js` | Lazy-load JS/CSS/HTML fragment, giữ module sau khi mở |
 | `pages/*.html` | Static trusted markup của các route tải theo nhu cầu |
@@ -136,3 +136,7 @@ Browser regression chạy `scripts/serve_test.py --guest-auth`, fixture guest qu
 ## PR5b2c2b / V5.17.0 — UI dọn cache staging
 
 Host gate được lazy-load trước Auth adapter; SDK chỉ tạo sau worker status. Không worker vẫn dùng Auth bình thường nhưng UI purge cần worker hiện hành kiểm soát. Worker cũ/không phản hồi/storage hỏng fail closed với Auth, guest còn dùng được; cập nhật/reload/đóng tab, không xóa dữ liệu. Entry maintenance full reload đóng nguồn/timer cũ; cần tự lưu RAM trước khi vào. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
+
+## PR5b2d1 / V5.19.0 — đối chiếu trước khôi phục
+
+restore-preview-core lazy riêng Settings, sau account-rescue-core và trước controller. So sánh thuần trên snapshot đã kiểm container/owner/bounds, thứ tự key object không ảnh hưởng nhưng arrays/strings giữ nguyên. Controller chỉ getAccountRescueSnapshot readonly sau nút compare, bỏ selectedFile/comparison khi đổi account/file, lỗi hoặc invalidate. File không được tải lại như ảnh chụp mới của máy. Không RPC/writer/legacy read mới. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).

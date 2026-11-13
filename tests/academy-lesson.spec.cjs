@@ -1,7 +1,7 @@
 const {test,expect}=require("@playwright/test");
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([k])=>k.startsWith("pickleup_")).sort()));
 for(const width of [390,820,1180,1440]){
- test.describe("V5.19 Academy lesson progressive disclosure "+width,()=>{
+ test.describe("V5.20 Academy lesson progressive disclosure "+width,()=>{
   test.use({viewport:{width,height:900}});
   test("layer 1 shows cues and one start action; details stay one tap away; start never saves",async({page})=>{
    await page.goto("/?page=academy");

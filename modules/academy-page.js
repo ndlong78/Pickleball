@@ -220,7 +220,7 @@ function choose(){
  show();
 }
 let lastDrawnId=null;
-// V5.19 progressive disclosure: layer 1 answers "how?" (diagram, three cues,
+// V5.20 progressive disclosure: layer 1 answers "how?" (diagram, three cues,
 // one start action); layer 2 keeps rules, mistakes, setup and timeline one tap away.
 function lessonMarkup(x,court){
  const view=window.PICKLEUP_ACADEMY_LESSON?.summary(x)||{cues:x.cues||[],mistakes:x.mistakes||[],minutes:60,parts:6,rule:null};

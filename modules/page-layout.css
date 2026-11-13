@@ -194,7 +194,7 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .sync-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.sync-comparison>div{padding:12px;border:1px solid #9da9a2;border-radius:10px}
 @media(max-width:600px){.sync-comparison{grid-template-columns:1fr}}
 
-/* V5.19 Academy lesson: layer 1 = diagram, cues, one start action; layer 2 = details. */
+/* V5.20 Academy lesson: layer 1 = diagram, cues, one start action; layer 2 = details. */
 #academyDetail .lesson-head{margin-bottom:12px}
 #academyDetail .lesson-head .kicker{margin:0 0 6px}
 #academyDetail .lesson-head h3{margin:0 0 6px}

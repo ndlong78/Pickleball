@@ -1,6 +1,6 @@
 # PickleUp — PRODUCT SPECIFICATION (V5.x)
 
-**Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
+**Hiện hành — 12/11/2026:** main `6e22b1f` /5.17.0 sau #46 đã merge; UI/Pages/Cloudflare success cùng SHA, logs UI sạch. [PR5b2d1/V5.19.0](RESTORE_PREVIEW_PR5B2D1.md) bổ sung đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục; đang PR, chưa merge/deploy. Chỉ đọc, chưa restore/replay/ghi đè, giữ IDB3/SQL/Auth/signup và dữ liệu khách. Các mốc thấp hơn là lịch sử.
 
 
 **Rà soát sau #41 — 11/11/2026:** main `1f6ecd9` /5.15.0 có UI post-merge557 pass/1 flaky, chưa đạt release sạch dù Pages/backend success. Bản vá5.15.1 chặn Auth ngoài staging/local backend, đóng signup frontend, sửa readiness và khóa dependency CI; đang PR, chưa merge/deploy. [Đánh giá và việc còn lại](REVIEW_SAFETY_2026_11.md).
@@ -28,7 +28,7 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 | `matches` — Thi đấu | Nhật ký trận, chiến thuật và phối hợp đánh đôi | Không tự suy ra chất lượng thi đấu từ bài kỹ thuật |
 | `settings` — Dữ liệu | Xuất/nhập JSON và cứu hộ dữ liệu khách; công cụ tài khoản/pilot và chẩn đoán hiệu năng chỉ hiện trên staging/localhost (V5.18, `debug=1` mở riêng chẩn đoán) | Tương thích ngược, xác nhận trước ghi đè |
 
-**Trang bài Học viện (V5.19):** nội dung trước điều khiển; tầng 1 hiện sơ đồ, 3 điểm cần nhớ và một hành động "Bắt đầu tập" (chỉ mở chế độ tập trung, không lưu/xác nhận); tầng 2 thu gọn gồm luật theo kỹ năng (tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút.
+**Trang bài Học viện (V5.20):** nội dung trước điều khiển; tầng 1 hiện sơ đồ, 3 điểm cần nhớ và một hành động "Bắt đầu tập" (chỉ mở chế độ tập trung, không lưu/xác nhận); tầng 2 thu gọn gồm luật theo kỹ năng (tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút.
 
 `modules/page-catalog.js` là nguồn đúng cuối cùng cho danh mục route/section. Từ V5.18, menu chính và dock dùng 4 tab (`home`, `academy`, `court`, `progress`) cộng menu **Thêm** (`journey`, `coach`, `matches`, `settings`); không bỏ route nào. Cả menu điều hướng chính, menu cố định và link sâu `?page=...#section` phải hoạt động, kể cả khi đổi trang rồi quay lại. `journey` là trang mới **thêm vào**, không thay thế các trang chuyên môn.
 
@@ -130,3 +130,7 @@ PR5b2a/V5.10.0: lựa chọn bài Học viện theo nguồn giáo án/selection,
 ## PR5b2c2b / V5.17.0 — UI dọn cache staging
 
 Dữ liệu có mục dọn cache staging riêng, cần online và đóng các cửa sổ PickleUp khác. Chỉ cache đã xử lý xong, tệp phải được tải/giữ ngoài browser và xác nhận; tệp chưa nhập lại được. Thao tác ghi rõ đăng xuất trước khi xóa. Checklist/focus/checkpoint chỉ trên máy có thể mất khỏi browser; cloud/guest/tài khoản khác giữ nguyên. Không force discard pending hoặc account deletion. [Hợp đồng và giới hạn](CACHE_PURGE_UI_PR5B2C2B.md).
+
+## PR5b2d1 / V5.19.0 — đối chiếu trước khôi phục
+
+Trong Dữ liệu → Cứu hộ cache V6, chọn tệp đúng tài khoản, kiểm checksum rồi bấm so tệp với cache trên máy. Hiển thị số dòng giống, chỉ tệp, chỉ máy, khác cùng khóa và chưa so được khóa. Chỉ là ảnh chụp tại lúc đọc, không số buổi tập hoặc bảo đảm phục hồi. Tệp có ACK vẫn cần xác minh server; không có nút ghi/restore/replay. Guest và backup V5 giữ nguyên. [Phạm vi, evidence và giới hạn](RESTORE_PREVIEW_PR5B2D1.md).
