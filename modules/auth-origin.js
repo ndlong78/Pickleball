@@ -14,7 +14,11 @@ function allowed(location,project){
   return page.origin===STAGING&&api.origin===PROJECT||loopback(page)&&loopback(api);
  }catch(_){return false}
 }
-const api=Object.freeze({allowed});
+// Staging and local test hosts may show operator tools; production never does.
+function internal(location){
+ try{const page=new URL(location.href);return page.origin===STAGING||loopback(page)}catch(_){return false}
+}
+const api=Object.freeze({allowed,internal});
 root.PickleUpAuthOrigin=api;
 if(typeof module!=='undefined')module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

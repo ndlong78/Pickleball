@@ -1,4 +1,5 @@
 const {test,expect}=require("@playwright/test");
+const {navigate}=require('./helpers/navigation.cjs');
 const devices=[
  {name:"iPhone SE",width:320,height:568},
  {name:"iPhone",width:390,height:844},
@@ -44,28 +45,51 @@ for(const screen of devices){
    await page.locator("#academyLevel").selectOption({label:"3.5–4.0"});
    await expect(page.locator("#academyWeek option")).toHaveCount(24);
    await expect(page.locator("#academyDetail")).toContainText("Kiểm tra");
-   await page.locator('#pageNavigation a[data-route="coach"]').click();
+   await navigate(page,'coach');
    await expect(page.locator("#advancedCheckInputs input")).toHaveCount(6);
-   await page.locator('#pageNavigation a[data-route="matches"]').click();
+   await navigate(page,'matches');
    await page.locator("#matchOurs").fill("11");
    await page.locator("#matchTheirs").fill("9");
    await page.locator("#matchSave").click();
    await expect(page.locator("#matchSummary")).toContainText("1 trận");
    await expect(page.locator("#matchHistory")).toContainText("11–9");
   });
-  test("persistent menu links navigate to all four sections",async({page})=>{
-   await page.goto("/");
+  test("persistent dock has four tabs plus a shared Thêm menu for the other four routes",async({page})=>{
+   await page.goto("/?page=coach");
+   const dock=page.locator("#pickleupMobileDock");
    const links=[
-    {href:"#personalCoach",target:"personalCoach"},
-    {href:"#pcOnCourt",target:"pcOnCourt"},
-    {href:"#trainingHistory",target:"trainingHistory"},
-    {href:"#academy",target:"academy"}
+    {route:"academy",target:"academy"},
+    {route:"court",target:"pcOnCourt"},
+    {route:"progress",target:"trainingHistory"},
+    {route:"home",target:"homeShortcuts"}
    ];
    for(const link of links){
-    await page.locator('#pickleupMobileDock a[href="'+link.href+'"]').click();
-    await expect(page.locator("#"+link.target)).toBeInViewport();
-    await expect(page.locator('#pickleupMobileDock a[href="'+link.href+'"]')).toHaveAttribute("aria-current","page");
+    await dock.locator('a[data-route="'+link.route+'"]').click();
+    await expect(page).toHaveURL(new RegExp("page="+link.route));
+    await expect(page.locator("#"+link.target)).toBeVisible();
+    await expect(dock.locator('a[data-route="'+link.route+'"]')).toHaveAttribute("aria-current","page");
    }
+   const more=dock.locator("[data-nav-more-toggle]"),panel=page.locator("#pageNavMore");
+   await expect(panel).toBeHidden();
+   await more.click();
+   await expect(panel).toBeVisible();
+   await expect(more).toHaveAttribute("aria-expanded","true");
+   await expect(panel.locator("a[data-route]")).toHaveCount(4);
+   await expect(panel.locator("a").first()).toBeFocused();
+   await page.keyboard.press("Escape");
+   await expect(panel).toBeHidden();
+   await expect(more).toBeFocused();
+   await more.click();
+   await panel.locator('a[data-route="settings"]').click();
+   await expect(page).toHaveURL(/page=settings/);
+   await expect(panel).toBeHidden();
+   await expect(page.locator("#backup")).toBeVisible();
+   await expect(more).toHaveAttribute("data-active","");
+   await expect(page.locator("[data-nav-more-current]")).toHaveText("Dữ liệu");
+   await expect(page.locator('#pageNavigation a[data-route="settings"]')).toHaveAttribute("aria-current","page");
+   await page.locator('#pageNavigation a[data-route="court"]').click();
+   await expect(more).not.toHaveAttribute("data-active","");
+   await expect(page.locator("[data-nav-more-current]")).toHaveText("");
   });
   test("V3.1 generates advanced training, uses court timer and saves results",async({page})=>{
    await page.goto("/?page=coach");
@@ -85,14 +109,14 @@ for(const screen of devices){
    await page.locator("#pcAttemptTarget").selectOption("standard");
    await page.locator("#pcAttemptSave").click();
    await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
-   await page.locator('#pageNavigation a[data-route="coach"]').click();
+   await navigate(page,'coach');
    await page.locator("#acCoachResult").fill("14");
    await page.locator("#acCoachSave").click();
    await expect(page.locator("#acCoachStatus")).toContainText("Đã lưu");
    await page.reload();
    await expect(page.locator("#acCoachPlan")).toContainText("Reset");
    await expect(page.locator("#acCoachFinished")).toContainText("1");
-   await page.locator('#pageNavigation a[data-route="court"]').click();
+   await navigate(page,'court');
    await expect(page.locator("#pcRunPlayer")).toBeVisible();
   });
   test("personal coach and on-court timer can be used without clipped controls",async({page})=>{
@@ -117,7 +141,7 @@ for(const screen of devices){
    await page.locator("#pcAttemptTarget").selectOption("standard");
    await page.locator("#pcAttemptSave").click();
    await expect(page.locator("#pcRunMessage")).toContainText("Đã lưu");
-   await page.locator('#pageNavigation a[data-route="progress"]').click();
+   await navigate(page,'progress');
    await page.locator("#thRefresh").click();
    await expect(page.locator("#thTotal")).toContainText("1 lần tập");
   });
