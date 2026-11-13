@@ -78,6 +78,8 @@ jobs:
         run: npm run test:responsive
       - name: Verify WebKit Academy countdown without retries
         run: npx playwright test tests/v42-timer.spec.cjs --project="WebKit responsive" --grep="V4.2 focus countdown" --repeat-each=10 --retries=0
+      - name: Verify WebKit Academy step reset without retries
+        run: npx playwright test tests/v41-steps.spec.cjs --project="WebKit responsive" --repeat-each=10 --retries=0
       - name: Verify WebKit account switch and focus readiness without retries
         run: npx playwright test tests/academy-selection.spec.cjs tests/v42-focus.spec.cjs --project="WebKit responsive" --grep="A to B ignores late navigation|V4.2 focused drills 390" --repeat-each=10 --retries=0
       - name: Upload V3.8 browser benchmark

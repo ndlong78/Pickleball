@@ -1,10 +1,12 @@
 const {test,expect}=require("@playwright/test");
+const settled=page=>page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure("academy");await Promise.all([window.PICKLEUP_ACTIVITY?.ready,window.PICKLEUP_PLANS?.ready]);await document.fonts.ready;await new Promise(requestAnimationFrame)});
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([k])=>k.startsWith("pickleup_")).sort()));
 for(const width of [390,820,1180,1440]){
  test.describe("V5.20 Academy lesson progressive disclosure "+width,()=>{
   test.use({viewport:{width,height:900}});
   test("layer 1 shows cues and one start action; details stay one tap away; start never saves",async({page})=>{
    await page.goto("/?page=academy");
+   await settled(page);
    const detail=page.locator("#academyDetail");
    await expect(detail.locator(".lesson-cues li")).toHaveCount(3);
    await expect(detail.locator("[data-lesson-start]")).toBeVisible();
@@ -31,6 +33,7 @@ for(const width of [390,820,1180,1440]){
 }
 test("Kitchen reminder opens for beginners and stays collapsed from 2.5",async({page})=>{
  await page.goto("/?page=academy");
+ await settled(page);
  await page.locator("#academyLevel").selectOption({label:"1.0–2.0"});
  const ids=await page.evaluate(()=>PICKLEUP_CURRICULUM.filter(x=>x.skill==="volley").map(x=>({id:x.id,level:x.level})));
  const beginner=ids.find(x=>x.level==="1.0–2.0"),later=ids.find(x=>x.level==="2.5–3.0");
