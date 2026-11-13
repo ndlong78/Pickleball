@@ -9,6 +9,8 @@
 - **Service worker** bỏ qua `/cms/` để CMS không thay shell offline của app.
 - **Domain Workers là trang công khai**: `https://pickleup-staging.home-309.workers.dev` là host chính cho người tập. Trang Dữ liệu ở đây mặc định chỉ hiện Sao lưu và Cứu hộ dữ liệu khách. Thẻ đăng nhập, đồng bộ, hoạt động, giáo án tài khoản, nhập và dọn cache chỉ hiện với URL vận hành `?pilot=account-data`, `?pilot=preferences-checkins` hoặc `?maintenance=account-cache`; Web Vitals chỉ hiện với `?debug=1`. Nút "mở thử" trong thẻ đồng bộ vì vậy không còn hiện ở URL thường; operator vào thẳng URL pilot. Chỉ đổi phần hiển thị: Auth, RLS, dữ liệu và cờ pilot không đổi.
 
+- **Sửa khóa nhầm sau khi khôi phục V1**: sau khi tab tự khôi phục và tải lại, sự kiện `storage` báo journal đã xóa có thể tới chính trang vừa tải lại (Chromium phát bất đồng bộ), khiến trang tự khóa "đang chờ phục hồi" dù đã thành công. `legacy-storage.js` nay đặt dấu riêng từng tab trong `sessionStorage` khi tự khôi phục thành công và bỏ qua đúng một tiếng vọng đó trong 10 giây. Tab khác đang khôi phục, hoặc dấu đã cũ, vẫn bị khóa như trước.
+
 ## Tương thích và dữ liệu
 - Không đổi localStorage/IndexedDB, Auth, SQL hay dependency. Lượt điểm cũ coi là phiên bản đề 1.
 - Đối tượng bài ở runtime thêm `status`, `revision`, `assessmentVersion`, `media`; giữ nguyên các trường cũ.

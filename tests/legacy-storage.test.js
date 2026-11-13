@@ -58,3 +58,24 @@ test('crash during rollback cleanup retains recoverable preimages at each durabl
  const interrupted=snapshots.filter(x=>x.has(core.JOURNAL)&&JSON.parse(x.get(core.JOURNAL)).phase==='rollback');assert.ok(interrupted.length>1);
  for(const snapshot of interrupted){const copy=store(Object.fromEntries(snapshot));assert.equal(core.recover(copy).status,'rolled_back');assert.equal(copy.getItem(scores),'old');assert.equal(copy.getItem(assessment),'old assessment')}
 });
+test('own restore echo after reload does not block; another tab and stale markers still do',()=>{
+ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+ const source=fs.readFileSync(path.join(__dirname,'../modules/legacy-storage.js'),'utf8');
+ function boot({marker,now=Date.now()}={}){
+  const local=store(),session=store(marker===undefined?{}:{pickleup_restore_reload_v1:String(marker)}),listeners=new Map();
+  const document={addEventListener(){},body:null,createElement(){throw Error('no DOM')}};
+  const window={document,localStorage:local,sessionStorage:session,navigator:{},location:{reload(){}},addEventListener(type,fn){listeners.set(type,fn)}};
+  window.window=window;
+  vm.runInNewContext(source,{window,globalThis:window,document,Date:{now:()=>now},Number,String,JSON,Map,Set,Error,TextEncoder,Promise,Array,Object,URL});
+  const fire=newValue=>listeners.get('storage')({key:'pickleup_restore_journal_v1',newValue,stopImmediatePropagation(){}});
+  return {api:window.PickleUpLegacyStorage,fire,session};
+ }
+ const now=Date.now();
+ const own=boot({marker:now-500,now});own.fire(null);
+ assert.equal(own.api.isBlocked(),false,'own reload echo is ignored');
+ assert.equal(own.session.getItem('pickleup_restore_reload_v1'),null,'marker is single-use');
+ own.fire(null);assert.equal(own.api.isBlocked(),true,'a second completion is another tab');
+ const none=boot();none.fire(null);assert.equal(none.api.isBlocked(),true);
+ const stale=boot({marker:now-20000,now});stale.fire(null);assert.equal(stale.api.isBlocked(),true);
+ const active=boot({marker:now-500,now});active.fire('{"version":1}');assert.equal(active.api.isBlocked(),true,'another tab mid-restore always blocks');
+});
