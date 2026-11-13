@@ -23,3 +23,7 @@ CI thêm10 lượt WebKit820/retries0 trước suite đầy đủ, ngoài40 lư�
 Không cần chạy SQL, bật flag, đổi signup hoặc upload thủ công. Owner vẫn merge qua GitHub; sau merge kiểm lại main UI/backend/Pages/Cloudflare cùng SHA. Không tự merge. Dữ liệu staging vẫn thử; Supabase migration7/signup-off do owner đã xác nhận, không chạy lại6→7.
 
 Giữ gate Managed UI purge, hoạt động/giáo án/A→B/conflict/expiry/custom SMTP và QA thiết bị thật; test fixture không thay Auth integration hoặc Managed. Sau khi main sạch, tiếp tục restore compatibility và importer repair, không tự replay pending hoặc coi tệp rescue là backup toàn tài khoản.
+
+## Đã kiểm main sau #46
+
+Merge `6e22b1f89d373cec6fb1342287c31b3987e53741`, [UI43240835088](https://github.com/ndlong78/Pickleball/actions/runs/43240835088):394 unit/604 browser +50 lượt bổ sung/3 HTTP/1 Workers,0 fail/flaky/retry. [Pages43240834380](https://github.com/ndlong78/Pickleball/actions/runs/43240834380) và Cloudflare Production buildce39f4a1 success cùng merge SHA. Backend không tạo run push mới do path filters; PR46 HEAD8c180b9 backend43235807953 đã sạch. Bản sửa flaky đã có clean run main, tiếp tục PR5b2d1 đối chiếu trước restore; không suy thành Managed/physical QA.
