@@ -45,3 +45,20 @@ test("compares like-for-like levels and reports declines",()=>{
  assert.match(result.trend,/giảm 7 điểm/);
  assert.equal(core.recommend(lessons,{},[],"2.0–2.5").lesson.id,"PU-004");
 });
+test("C1: new attempts carry av; missing or malformed av reads as version 1 and never invalidates history",()=>{
+ const v1={...lessons[0],assessmentVersion:1},a=core.append([],v1,9,when(1));
+ assert.equal(a[0].av,1);
+ assert.equal(Object.hasOwn(core.append([],lessons[0],9,when(1))[0],"av"),false);
+ for(const av of [undefined,null,0,-1,1.5,"2",{}]){const row={id:"PU-001",skill:"serve",level:"1.0–2.0",score:9,date:when(1),av};assert.equal(core.validateHistory([row]),true);assert.equal(core.attemptVersion(row),1)}
+ assert.equal(core.readHistory(JSON.stringify(a)).length,1);
+});
+test("C1: attempts without av still compare while the test is version 1; after a new version they are set aside",()=>{
+ const old=[{id:"PU-001",skill:"serve",level:"1.0–2.0",score:4,date:when(1)},{id:"PU-001",skill:"serve",level:"1.0–2.0",score:9,date:when(2),av:1}];
+ const v1=[{...lessons[0],assessmentVersion:1}],v2=[{...lessons[0],assessmentVersion:2}];
+ assert.match(core.recommend(v1,{},old,"1.0–2.0").trend,/tăng 5/);
+ const moved=core.recommend(v2,{"PU-001":{score:9,date:when(2),av:1}},old,"1.0–2.0");
+ assert.match(moved.reason,/Chưa có điểm kiểm tra/);
+ const mixed=core.recommend(v2,{},old.concat(core.append([],v2[0],12,when(3)),core.append([],v2[0],15,when(4))),"1.0–2.0");
+ assert.match(mixed.trend,/tăng 3/);
+ assert.equal(core.sameAssessment({account:true,av:1},v2[0]),true);
+});

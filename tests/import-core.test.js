@@ -44,3 +44,12 @@ test('invalid calendar dates quarantine; exact source timestamp precision surviv
 test('explicit quarantine of an unresolved record binds its path in consent without dropping source',async()=>{
  const data={scores:{0:{score:5,date},1:{score:6,date,future:'retain-original'}}};const p=await prepare(data,{selected:['scores']});assert.equal(p.counts.unresolved,1);const q=await prepare(data,{selected:['scores'],choices:{'scores.1':{mode:'quarantine'}}});assert.equal(q.counts.invalid,1);assert.equal(q.counts.ready,1);assert.equal(q.decisions.find(row=>row.path==='scores.1').reason,'user_quarantine');assert.notEqual(q.manifestHash,p.manifestHash);
 });
+test('C1: optional av on guest Academy data imports with a per-lesson version; malformed av is quarantined, not guessed',async()=>{
+ const row={id:'PU-001',skill:'serve',level:'1.0–2.0',score:7,date};
+ const p=await prepare({academyHistory:[{...row,av:2},row,{...row,av:'2'}],academy:{'PU-001':{score:7,date,av:1}}},{selected:['academyHistory','academy']});
+ const attempts=p.items.filter(i=>i.kind==='academy_attempts');
+ assert.deepEqual(attempts.map(i=>i.payload.content_version),['PU-001@a2','legacy-unknown']);
+ assert.equal(p.items.filter(i=>i.kind==='legacy_score_snapshots').length,1);
+ assert.deepEqual(p.rows.filter(r=>r.group==='academyHistory').map(r=>[r.disposition,r.reason]),[['ready',null],['ready',null],['invalid','invalid_attempt']]);
+ assert.deepEqual(p.counts,{ready:3,invalid:1,unresolved:0,local_only:0});
+});

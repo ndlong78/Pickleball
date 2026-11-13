@@ -25,7 +25,7 @@ test('unknown legacy content and differing snapshots never prove comparable; old
  const old=event(2,1,{content_version:'legacy-unknown',lesson_snapshot:{title:lesson.title}}),changed=event(18,2,{content_version:'older-version'}),view=projection([old,changed]);assert.equal(view.history[0].comparisonKey,null);assert.equal(view.history[1].currentContent,false);assert.equal(PICKLEUP_ACADEMY_INSIGHTS.analyze(lessons,view.records,view.history,lesson.level,'serve',lesson.id).delta,null);assert.notEqual(PICKLEUP_WEEKLY_GOALS.recommend(lessons,view.records,view.history,lesson.level).code,'target');assert.equal(activity.comparisonKey('academy_attempts',old),null);
 });
 test('manual attempt snapshot preserves lesson meaning and rejects partial or invalid conditions',()=>{
- const id=uid(),payload=source.attempt(lesson,16,{eventId:id,occurredAt:'2026-11-02T10:00:00Z',conditions:known,activityCore:activity});assert.equal(payload.client_event_id,id);assert.equal(payload.content_version,source.VERSION);assert.deepEqual(payload.lesson_snapshot,{title:lesson.title,assessment:lesson.assessment.instruction});assert.throws(()=>source.attempt(lesson,16,{eventId:id,occurredAt:'2026-11-02T10:00:00Z',conditions:{feed:'partner'},activityCore:activity}),{code:'invalid_activity'});
+ const id=uid(),payload=source.attempt(lesson,16,{eventId:id,occurredAt:'2026-11-02T10:00:00Z',conditions:known,activityCore:activity});assert.equal(payload.client_event_id,id);assert.equal(payload.content_version,'PU-001@a1');assert.deepEqual(payload.lesson_snapshot,{title:lesson.title,assessment:lesson.assessment.instruction});assert.throws(()=>source.attempt(lesson,16,{eventId:id,occurredAt:'2026-11-02T10:00:00Z',conditions:{feed:'partner'},activityCore:activity}),{code:'invalid_activity'});
 });
 async function runtime(enabled=true,{sourceCore=extra}={}){
  const db=await repository.open({indexedDB:new IDBFactory()}),server=model({activityRows:true}),listeners=new Set(),calls=[],storage=new Map([[source.SCORES,JSON.stringify({'PU-001':{score:4,date:'2026-01-01T00:00:00Z'}})],[source.HISTORY,'[]']]);let sharedCalls=0;
@@ -50,4 +50,19 @@ test('account assessment and match writers capture intent before await, preserve
 
 test('mixed account assets stop before Auth and never expose guest assessment or match data as account views',async()=>{
  const f=await runtime(true,{sourceCore:null});try{f.storage.set(extra.KEYS.matches,JSON.stringify([{note:'Guest only'}]));assert.equal(f.sharedCalls,0);assert.equal(f.data.getState().error,'upgrade_required');assert.equal(f.data.canWrite(),false);assert.equal(f.data.raw(extra.KEYS.matches),'[]');assert.equal(f.data.raw(extra.KEYS.self),'null')}finally{f.close()}
+});
+test('C1: account attempts record a per-lesson assessment version and still compare with academy-80-v1 attempts',()=>{
+ const legacy=event(6,1,{content_version:source.LEGACY_VERSION}),fresh=event(10,2),view=projection([legacy,fresh]);
+ assert.equal(fresh.content_version,'PU-001@a1');
+ assert.equal(view.history.every(x=>x.currentContent),true);
+ assert.equal(view.history[0].comparisonKey,view.history[1].comparisonKey);
+ assert.match(PICKLEUP_ACADEMY_TRENDS.recommend(lessons,view.records,view.history,lesson.level).trend,/tăng 4/);
+ // The lesson moves to assessment version 2: earlier attempts stop being current and never mix with new ones.
+ const v2={...lesson,assessmentVersion:2},library=[v2,lessons[1]],next={...source.attempt(v2,15,{eventId:uid(),occurredAt:'2026-01-01T10:00:03Z',conditions:known,activityCore:activity}),id:uid(),source_kind:'manual'};
+ assert.equal(next.content_version,'PU-001@a2');
+ const moved=source.project({events:{academy_attempts:[legacy,fresh,next]}},library,{now:'2026-11-02T00:00:00Z',activityCore:activity});
+ assert.deepEqual(moved.history.map(x=>x.currentContent),[false,false,true]);
+ assert.notEqual(moved.history[1].comparisonKey,moved.history[2].comparisonKey);
+ assert.equal(PICKLEUP_ACADEMY_INSIGHTS.analyze(library,moved.records,moved.history,lesson.level,'serve',lesson.id).delta,null);
+ assert.equal(source.currentVersion(source.LEGACY_VERSION,v2),false);
 });

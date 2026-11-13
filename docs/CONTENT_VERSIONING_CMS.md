@@ -1,6 +1,6 @@
 # Thiết kế: phiên bản giáo án và CMS nội dung Học viện
 
-Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (xem mục 10). Lưu phiên bản đề theo lượt điểm (C1), mở rộng ID (C3) và CMS trên Supabase (C4) vẫn là đề xuất.
+Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (mục 10); **C1 (lưu phiên bản đề theo lượt điểm) triển khai ở V5.22.0** (mục 11). Mở khóa đổi đề trong CMS, mở rộng ID (C3) và CMS trên Supabase (C4) vẫn là đề xuất.
 
 ## 1. Vì sao cần làm trước khi thêm video hoặc bài mới
 
@@ -146,3 +146,13 @@ Host chính là Cloudflare Workers (`https://pickleup-staging.home-309.workers.d
 
 ### Domain Workers là trang công khai (V5.21.0)
 Owner xác nhận `https://pickleup-staging.home-309.workers.dev` là host chính cho người tập thật. `modules/settings-surface.js` vì vậy coi domain này là công khai: công cụ tài khoản/pilot chỉ hiện khi URL có `pilot` hoặc `maintenance`, Web Vitals chỉ hiện với `debug=1`; localhost vẫn hiện đủ để test. Đây là lớp hiển thị, không thay Auth/RLS.
+
+## 11. C1 đã triển khai ở V5.22.0
+
+- **Khách:** lượt mới trong `pickleup_academy_history_v44` và bản ghi mới trong `pickleup_academy_v2` có thêm trường tùy chọn `av` (số nguyên ≥ 1). Không đổi tên khóa, không migrate, không viết lại lượt cũ. Thiếu `av` hoặc `av` sai định dạng được đọc là đề 1 (quyết định 1 ở mục 10) và **không** làm hỏng cả lịch sử.
+- **Tài khoản:** `content_version` của lượt mới là `<mã bài>@a<assessmentVersion>`, ví dụ `PU-012@a1`. `academy-80-v1` được coi là `@a1`: vẫn là nội dung hiện hành khi bài ở đề 1 và dùng chung khóa so sánh với lượt mới. Không đổi SQL, RPC hay RLS (cột chỉ giới hạn 1–40 ký tự).
+- **So sánh:** gợi ý Học viện (`academy-trends-core`), biểu đồ tiến bộ (`academy-insights-core`) và gợi ý mục tiêu tuần (`weekly-goals-core`) chỉ dùng lượt khách có `av` bằng `assessmentVersion` hiện tại của bài. Lượt theo đề cũ vẫn nằm trong dữ liệu, sao lưu và cứu hộ; biểu đồ báo số lượt "theo đề kiểm tra cũ" và trang bài ghi rõ điểm gần nhất là theo đề cũ, không điền sẵn vào ô điểm. Lượt tài khoản tiếp tục so theo `comparisonKey`/`currentContent`.
+- **Nhập vào tài khoản (pilot):** `import-core` chấp nhận `av`; lượt có `av` nhập với `content_version` `<mã bài>@a<av>`, lượt không có giữ `legacy-unknown` như trước (không đổi fingerprint của dữ liệu đã nhập). `av` sai định dạng bị đánh dấu không hợp lệ, không đoán.
+- **Tương thích ngược:** bản app cũ đọc lịch sử khách có `av` bình thường (validator cũ không kiểm khóa lạ). Bản cũ còn cache sẽ coi lượt tài khoản `PU-xxx@a1` là khác phiên bản với `academy-80-v1` cho tới khi PWA cập nhật; không mất dữ liệu. Công cụ nhập của bản cũ từ chối lượt có `av` (báo trường lạ), cũng không mất dữ liệu.
+- **Chưa làm:** `MAX_ASSESSMENT_VERSION` vẫn là 1 và CMS vẫn khóa trường chấm điểm. Mở khóa là PR riêng, sau khi bản này đã phát hành và người dùng đã nhận bản PWA mới.
+

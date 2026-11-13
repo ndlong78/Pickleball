@@ -40,7 +40,7 @@ function comparisonKey(kind,value){
  if(kind==='academy_attempts'&&(value.content_version==='legacy-unknown'||typeof value.lesson_snapshot?.assessment!=='string'||!value.lesson_snapshot.assessment.trim()))return null;
  try{validate(kind,value,value.source_kind==='legacy')}catch(_){return null}
  if(kind==='training_entries'&&!uuid(value.plan_id))return null;
- return JSON.stringify([kind,kind==='academy_attempts'?value.lesson_id:value.exercise_id,value.skill,value.level_band,kind==='academy_attempts'?[value.content_version,value.lesson_snapshot?.title,value.lesson_snapshot?.assessment??null]:[value.plan_id,value.kind],value.conditions.feed,value.conditions.pace,value.conditions.target]);
+ return JSON.stringify([kind,kind==='academy_attempts'?value.lesson_id:value.exercise_id,value.skill,value.level_band,kind==='academy_attempts'?[value.content_version==='academy-80-v1'?value.lesson_id+'@a1':value.content_version,value.lesson_snapshot?.title,value.lesson_snapshot?.assessment??null]:[value.plan_id,value.kind],value.conditions.feed,value.conditions.pace,value.conditions.target]);
 }
 function project(snapshot,{owner,now=new Date()}={}){
  if(!uuid(owner)||!Array.isArray(snapshot.records)||!Number.isFinite(new Date(now).getTime()))fail('invalid_activity');

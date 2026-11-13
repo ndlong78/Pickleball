@@ -69,3 +69,13 @@ test("invalid history entries and legacy duplicates never inflate an existing le
  const x=core.analyze(lessons,{"PU-001":{score:20,date:at(8)}},history,"1.0–2.0","serve");
  assert.equal(x.count,2);assert.equal(x.delta,4);
 });
+test("C1: scores from an earlier assessment version stay out of the trend and are reported separately",()=>{
+ const row=(score,n,av)=>({id:"PU-001",skill:"serve",level:"1.0–2.0",score,date:at(n),...(av?{av}:{})});
+ const history=[row(4,1),row(8,2,1),row(10,3,2),row(13,4,2)];
+ const same=core.analyze(lessons.map(x=>({...x,assessmentVersion:1})),{},history.slice(0,2),"1.0–2.0","serve","PU-001");
+ assert.equal(same.delta,4);assert.equal(same.oldCount,0);
+ const v2=lessons.map(x=>x.id==="PU-001"?{...x,assessmentVersion:2}:x),moved=core.analyze(v2,{},history,"1.0–2.0","serve","PU-001");
+ assert.equal(moved.delta,3);assert.equal(moved.chart.length,2);assert.equal(moved.oldCount,2);assert.match(moved.status,/2 lượt theo đề kiểm tra cũ/);
+ const only=core.analyze(v2,{"PU-001":{score:8,date:at(2)}},history.slice(0,2),"1.0–2.0","serve","PU-001");
+ assert.equal(only.count,0);assert.equal(only.oldCount,2);assert.match(only.status,/Đề kiểm tra đã thay đổi/);
+});
