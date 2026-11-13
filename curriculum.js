@@ -59,10 +59,16 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    },
    "coachNote": "Tập chậm và ưu tiên tính hợp lệ.",
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "9f549e90",
-   "media": []
+   "media": [
+    {
+     "kind": "youtube",
+     "id": "jDPXRNpaoeI",
+     "angle": "back"
+    }
+   ]
   },
   {
    "id": "PU-002",
