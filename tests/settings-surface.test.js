@@ -32,3 +32,10 @@ test('markup hides every managed card by default and never the guest rescue card
  apply(document,{account:false,diagnostics:true});
  assert.deepEqual([...attrs.keys()].sort(),[...ACCOUNT_CARDS].sort());
 });
+test('page links into Settings never promise sync, which is hidden on the public site',()=>{
+ for(const file of fs.readdirSync(path.join(__dirname,'..','pages')).filter(f=>f.endsWith('.html'))){
+  const html=fs.readFileSync(path.join(__dirname,'..','pages',file),'utf8');
+  for(const [,label] of html.matchAll(/<a[^>]*href="\?page=settings[^"]*"[^>]*>([^<]*)<\/a>/g))
+   assert.doesNotMatch(label,/đồng bộ|chọn nguồn/i,file+' links to Settings as "'+label+'"');
+ }
+});
