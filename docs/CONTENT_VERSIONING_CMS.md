@@ -143,3 +143,6 @@ Không dùng `content/academy/lessons.json` + bước build, vì HLV sửa trên
 - Service worker bỏ qua mọi yêu cầu dưới `/cms/` hoặc có tham số `cms`, để trang CMS không thay shell offline của app. Bản nháp CMS lưu ở khóa `pickleupcms_draft_v1`, không dùng tiền tố `pickleup_` của dữ liệu người tập.
 
 Host chính là Cloudflare Workers (`https://pickleup-staging.home-309.workers.dev`), build từ `main`; `build-cloudflare` đóng gói `cms/`, nên CMS nằm tại `https://pickleup-staging.home-309.workers.dev/cms/`. Hướng dẫn cho HLV: [CMS_GUIDE.md](CMS_GUIDE.md).
+
+### Domain Workers là trang công khai (V5.21.0)
+Owner xác nhận `https://pickleup-staging.home-309.workers.dev` là host chính cho người tập thật. `modules/settings-surface.js` vì vậy coi domain này là công khai: công cụ tài khoản/pilot chỉ hiện khi URL có `pilot` hoặc `maintenance`, Web Vitals chỉ hiện với `debug=1`; localhost vẫn hiện đủ để test. Đây là lớp hiển thị, không thay Auth/RLS.
