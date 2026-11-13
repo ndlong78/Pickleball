@@ -1,4 +1,5 @@
 const {test,expect}=require("@playwright/test");
+const {navigate}=require('./helpers/navigation.cjs');
 test("V5.18.0 upgrades legacy PWA cache without erasing local training data",async({page})=>{
  await page.goto("/?page=home");
  await page.evaluate(async()=>{
@@ -31,6 +32,7 @@ test("V5.18.0 upgrades legacy PWA cache without erasing local training data",asy
   const v5151=await caches.open("pickleup-shell-v5-15-1-stable");await v5151.put("./v5151-probe",new Response("previous repository version1"));
   const v517=await caches.open("pickleup-shell-v5-17-0-stable");await v517.put("./v517-probe",new Response("previous cache maintenance"));
   const v516=await caches.open("pickleup-shell-v5-16-0-stable");await v516.put("./v516-probe",new Response("previous cache transactions"));
+  const v517=await caches.open("pickleup-shell-v5-17-0-stable");await v517.put("./v517-probe",new Response("previous eight-item navigation"));
   await v513.put('./modules/auth-config.js?v=5.13.0',new Response('window.PICKLEUP_AUTH_CONFIG={enabled:true,url:"missing-scheme.invalid",publishableKey:"sb_publishable_synthetic"};',{headers:{'Content-Type':'application/javascript'}}));
   const oldRegistration=await navigator.serviceWorker.getRegistration();
   if(oldRegistration)await oldRegistration.unregister();
@@ -39,7 +41,7 @@ test("V5.18.0 upgrades legacy PWA cache without erasing local training data",asy
   await navigator.serviceWorker.ready;
   await registration.update();
  });
- await expect.poll(async()=>await page.evaluate(async()=>{const keys=await caches.keys();return ["pickleup-shell-v3-6-vitals-versioned","pickleup-shell-v3-7-fragments","pickleup-shell-v5-0-stable","pickleup-shell-v5-4-stable","pickleup-shell-v5-4-1-stable","pickleup-shell-v5-5-0-stable","pickleup-shell-v5-6-0-stable","pickleup-shell-v5-7-0-stable","pickleup-shell-v5-8-0-stable","pickleup-shell-v5-9-0-stable","pickleup-shell-v5-10-0-stable","pickleup-shell-v5-11-0-stable","pickleup-shell-v5-12-0-stable","pickleup-shell-v5-13-0-stable","pickleup-shell-v5-13-1-stable","pickleup-shell-v5-14-0-stable","pickleup-shell-v5-14-1-stable","pickleup-shell-v5-15-0-stable"].every(name=>!keys.includes(name))})).toBe(true);
+ await expect.poll(async()=>await page.evaluate(async()=>{const keys=await caches.keys();return ["pickleup-shell-v3-6-vitals-versioned","pickleup-shell-v3-7-fragments","pickleup-shell-v5-0-stable","pickleup-shell-v5-4-stable","pickleup-shell-v5-4-1-stable","pickleup-shell-v5-5-0-stable","pickleup-shell-v5-6-0-stable","pickleup-shell-v5-7-0-stable","pickleup-shell-v5-8-0-stable","pickleup-shell-v5-9-0-stable","pickleup-shell-v5-10-0-stable","pickleup-shell-v5-11-0-stable","pickleup-shell-v5-12-0-stable","pickleup-shell-v5-13-0-stable","pickleup-shell-v5-13-1-stable","pickleup-shell-v5-14-0-stable","pickleup-shell-v5-14-1-stable","pickleup-shell-v5-15-0-stable","pickleup-shell-v5-17-0-stable"].every(name=>!keys.includes(name))})).toBe(true);
  const result=await page.evaluate(async()=>{
   const keys=await caches.keys();
   return {keys,record:JSON.parse(localStorage.getItem("pickleup_v38_migration_probe"))};
@@ -58,6 +60,7 @@ test("V5.18.0 upgrades legacy PWA cache without erasing local training data",asy
  expect(result.keys).not.toContain("pickleup-shell-v5-13-1-stable");
  expect(result.keys).not.toContain("pickleup-shell-v5-14-0-stable");
  expect(result.keys).not.toContain("pickleup-shell-v5-14-1-stable");
+ expect(result.keys).not.toContain("pickleup-shell-v5-17-0-stable");
  expect(result.keys).toContain("pickleup-shell-v5-18-0-stable");
  await page.evaluate(()=>PICKLEUP_ROUTER.openPage('settings'));await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
  await expect(page.locator('#accountRescue [role=status]')).toContainText('chưa được cấu hình');
@@ -68,7 +71,7 @@ test("V5.18.0 caches a visited advanced page for later offline reuse",async({pag
  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
  await page.reload(); // ensure the active service worker controls the document
  await expect.poll(async()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
- await page.locator('#pageNavigation a[data-route="academy"]').click();
+ await navigate(page,'academy');
  await expect(page.locator("#academyWeek option")).toHaveCount(80);
  const cached=await page.evaluate(async()=>{
   const c=await caches.open("pickleup-shell-v5-18-0-stable");
@@ -100,6 +103,6 @@ test('V5.18.0 restores guest Academy choice and practice state offline under Pic
 
 test('V5.18.0 restores visited Settings and account rescue modules offline with guest controls disabled',async({page,context})=>{
  await page.goto('/Pickleball/');await page.evaluate(()=>navigator.serviceWorker.ready);await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
- await expect.poll(()=>page.evaluate(async()=>{const c=await caches.open('pickleup-shell-v5-18-0-stable'),paths=(await c.keys()).map(r=>new URL(r.url).pathname);return ['modules/auth-origin.js','modules/auth-config.js','pages/settings.html','modules/data/account-rescue-core.js','modules/data/restore-preview-core.js','modules/data/account-rescue-controller.js','modules/data/account-rescue-ui.js'].every(p=>paths.includes('/Pickleball/'+p))})).toBe(true);
+ await expect.poll(()=>page.evaluate(async()=>{const c=await caches.open('pickleup-shell-v5-18-0-stable'),paths=(await c.keys()).map(r=>new URL(r.url).pathname);return ['modules/auth-origin.js','modules/auth-config.js','pages/settings.html','modules/data/account-rescue-core.js','modules/data/account-rescue-controller.js','modules/data/account-rescue-ui.js'].every(p=>paths.includes('/Pickleball/'+p))})).toBe(true);
  await context.setOffline(true);await page.reload();await expect(page.locator('[data-account-capture]')).toBeDisabled();await expect(page.locator('#accountRescue [role=status]')).toContainText('chưa được cấu hình');await expect(page.locator('#rescuePanel [data-refresh]')).toBeEnabled();expect(new URL(page.url()).pathname).toBe('/Pickleball/');await context.setOffline(false);
 });

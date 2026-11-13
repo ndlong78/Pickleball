@@ -1,9 +1,8 @@
 <!-- PickleUp V3.7 · settings · static trusted page markup -->
 <section class="section" id="performanceDiagnostics" data-pickleup-page="settings">
-<div class="sectionHead"><div><div class="kicker">PickleUp V3.5 · Hiệu năng</div>
-<h2>Tốc độ tải từng trang</h2>
-<p class="sub">Đo thời gian nạp module trên chính trình duyệt này; không gửi thông tin lên máy chủ. Thời gian thay đổi theo mạng và cache.</p></div>
-<button type="button" id="pagePerformanceRefresh" class="linkbtn">Làm mới</button></div>
+<div class="sectionHead"><div><div class="kicker">Dữ liệu trên thiết bị</div>
+<h2>Cứu hộ dữ liệu</h2>
+<p class="sub">Xuất nguyên trạng dữ liệu luyện tập cũ trên trình duyệt này và xem trước tệp. Thao tác chỉ đọc; không gửi dữ liệu lên máy chủ.</p></div></div>
 <div class="card" id="rescuePanel" style="padding:20px;min-width:0">
 <h3>Cứu hộ dữ liệu cũ · xem trước tệp</h3>
 <p>Giữ nguyên 18 khóa dữ liệu cũ, kể cả JSON lỗi, đồng hồ, checklist và bước tập trung. Tệp chứa dữ liệu riêng tư; hãy giữ ở nơi an toàn ngoài trình duyệt. Không gồm phiên đăng nhập hoặc kho IndexedDB V6.</p>
@@ -17,7 +16,7 @@
 <p data-source style="overflow-wrap:anywhere"></p>
 <table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Nhóm</th><th scope="col">Trạng thái</th><th scope="col">Phần tử cấp đầu</th><th scope="col">Byte raw</th></tr></thead><tbody></tbody></table>
 </div>
-<div class="card" id="accountRescue" style="padding:20px;min-width:0">
+<div class="card" id="accountRescue" data-surface-hidden style="padding:20px;min-width:0">
 <h3>Cứu hộ toàn bộ cache V6 trên máy</h3>
 <p>Xuất cache của tài khoản đang đăng nhập: bản đã tải về, thay đổi chưa gửi, yêu cầu chưa rõ kết quả, conflict, checkpoint nhập, checklist/focus và điểm dừng Court. Không lấy dữ liệu khách hoặc phiên đăng nhập.</p>
 <p>Cache trên máy có thể chưa chứa hết dữ liệu cloud. Đây chưa là backup toàn tài khoản/DB và chưa có chức năng khôi phục từ tệp. Dọn cache là thao tác riêng trong mục bên dưới. Timer đang chạy và dữ liệu RAM chưa lưu không có trong tệp. Tệp riêng tư, chưa mã hóa; giữ ở nơi an toàn.</p>
@@ -36,7 +35,7 @@
 <p>Tệp đúng checksum vẫn chưa phải bằng chứng dữ liệu đã được server xác nhận. Chưa khôi phục; không bật lại nguồn tài khoản, dùng lại thông tin đồng bộ hoặc gửi lại yêu cầu từ tệp. Giữ tệp gốc riêng tư ngoài trình duyệt, kể cả phần chưa nhận diện.</p>
 </div>
 </div>
-<div class="card" id="importPilot" style="padding:20px;min-width:0">
+<div class="card" id="importPilot" data-surface-hidden style="padding:20px;min-width:0">
 <h3>Nhập dữ liệu vào tài khoản · pilot</h3>
 <p role="status" aria-live="polite">Pilot nhập dữ liệu chưa bật. Bản cứu hộ và dữ liệu trên máy vẫn hoạt động bình thường.</p>
 <div data-import-body hidden>
@@ -56,7 +55,7 @@
 <button type="button" data-import-stop disabled>Dừng · giữ checkpoint</button>
 </div>
 </div>
-<div class="card" id="accountPurge" style="padding:20px;min-width:0">
+<div class="card" id="accountPurge" data-surface-hidden style="padding:20px;min-width:0">
 <h3>Dọn cache tài khoản và đăng xuất · thử nghiệm staging</h3>
 <p>Chỉ dùng dữ liệu giả. Dọn bản tài khoản trên trình duyệt này, gồm checklist/điểm dừng chỉ có trên máy; không xóa dữ liệu luyện tập trên cloud, dữ liệu khách hoặc tài khoản khác. Cần đăng xuất thành công trước khi xóa. Chưa có chức năng nhập lại tệp cứu hộ.</p>
 <button type="button" data-purge-entry hidden>Mở chế độ dọn cache riêng</button>
@@ -72,7 +71,7 @@
 <button type="button" data-purge-run disabled>Xác nhận dọn cache và đăng xuất</button>
 <p>Chỉ dọn khi không còn yêu cầu chờ, kết quả gửi chưa rõ, xung đột hoặc nhập dở. Lỗi mạng/kiểm tra trước xóa sẽ giữ cache; nếu đã đăng xuất, đăng nhập lại để kiểm tra. Đây không phải xóa tài khoản, xóa an toàn khỏi ổ đĩa hoặc thu hồi tệp đã tải.</p>
 </div></div>
-<div class="card sync-panel" id="syncPilot">
+<div class="card sync-panel" id="syncPilot" data-surface-hidden>
 <h3>Mục tiêu và check-in · tài khoản pilot</h3>
 <div data-staging-access hidden><p><strong>Thử đồng bộ tài khoản trên staging · chỉ dùng dữ liệu giả.</strong> Có thể thử điểm Học viện, đánh giá, trận đấu và giáo án. Chọn nguồn riêng cho từng nhóm; chỉ gửi khi bấm đồng bộ. Dữ liệu cũ trên thiết bị không tự chuyển lên tài khoản.</p><p data-staging-build></p><button type="button" data-staging-open>Mở thử hoạt động và giáo án tài khoản</button></div>
 <p role="status" aria-live="polite">Đồng bộ pilot chưa bật.</p>
@@ -90,7 +89,7 @@
 <p data-sync-count></p><div data-sync-conflicts></div><div data-sync-detail></div>
 <p>Tệp cache gồm hai nhóm trên, yêu cầu chờ và các bản conflict. Chưa phải backup toàn tài khoản hoặc tệp có thể nhập lại. Bản cứu hộ và backup cũ phía trên chỉ gồm dữ liệu khách trên thiết bị.</p>
 </div></div>
-<div class="card sync-panel" id="activityPilot">
+<div class="card sync-panel" id="activityPilot" data-surface-hidden>
 <h3>Hoạt động tài khoản · Học viện, đánh giá và trận đấu</h3>
 <p role="status" aria-live="polite">Kho hoạt động pilot chưa bật.</p>
 <div data-activity-body hidden>
@@ -103,7 +102,7 @@
 <p data-activity-count></p><div data-activity-reviews></div><div data-activity-detail></div>
 <p>Cache xuất gồm bốn nhóm hoạt động, yêu cầu chờ và bản cần xử lý. Tệp riêng tư, chưa phải backup toàn tài khoản hoặc tệp nhập lại được. Backup V5/raw rescue vẫn chỉ chứa kho khách, không chứa dữ liệu tài khoản.</p>
 </div></div>
-<div class="card sync-panel" id="planPilot">
+<div class="card sync-panel" id="planPilot" data-surface-hidden>
 <h3>Giáo án và lựa chọn cá nhân tài khoản</h3><p role="status" aria-live="polite">Kho giáo án pilot chưa bật.</p><div data-plan-body hidden>
 <p data-plan-staging hidden><strong>Thử nghiệm staging · chỉ dùng dữ liệu giả.</strong> Tạo, chọn và đồng bộ giáo án mới của tài khoản. Giáo án khách cũ không tự chuyển; bản sao lưu đầy đủ và phục hồi tài khoản đang được hoàn thiện.</p>
 <p data-plan-account></p><p>Chọn riêng kho giáo án cơ bản/nâng cao, lựa chọn cá nhân và bài Học viện gần nhất. Không tự nhập dữ liệu khách. Lưu tạo thay đổi trên thiết bị; chỉ gửi khi bấm đồng bộ. Chọn và đồng bộ giáo án trước khi mở Court. Điểm giáo án không tự tạo nhật ký tập hay attendance.</p>
@@ -113,7 +112,7 @@
 <p data-plan-count></p><div data-plan-reviews></div><div data-plan-detail></div><h4>Quản lý giáo án tài khoản</h4><div data-plan-manage></div>
 <p>Đăng xuất giữ cache riêng trên thiết bị, chưa mã hóa hoặc tự xóa. Cache xuất có yêu cầu chờ và bản cần xử lý; giữ tệp riêng tư ngoài trình duyệt. Chưa phải backup đầy đủ hoặc tệp nhập lại được; backup V5 chỉ chứa dữ liệu khách.</p>
 </div></div>
-<div class="card" id="accountPanel" style="padding:20px">
+<div class="card" id="accountPanel" data-surface-hidden style="padding:20px">
 <h3>Tài khoản · thử nghiệm</h3>
 <p>Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Bạn cần chọn riêng nguồn tài khoản; dữ liệu cũ chỉ được nhập sau preview và xác nhận. Mục tiêu/check-in chỉ dùng kho tài khoản sau khi bạn bật riêng ở mục pilot; Học viện có lựa chọn kho hoạt động riêng; giáo án và lựa chọn bài có nguồn riêng; nhật ký tập dùng kho hoạt động đã chọn. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
 <p role="status" aria-live="polite">Chế độ khách</p>
@@ -127,7 +126,11 @@
 <button type="button" data-private hidden>Kiểm tra truy cập dữ liệu riêng</button>
 <button type="button" data-logout hidden>Đăng xuất trên trình duyệt này</button>
 </div>
-<div class="card" style="padding:20px">
+<div class="card" id="pageDiagnostics" data-surface-hidden style="padding:20px">
+<div class="sectionHead" style="margin-bottom:8px"><div><div class="kicker">Chẩn đoán kỹ thuật</div>
+<h3>Tốc độ tải từng trang</h3>
+<p class="sub">Đo thời gian nạp module trên chính trình duyệt này; không gửi thông tin lên máy chủ. Thời gian thay đổi theo mạng và cache.</p></div>
+<button type="button" id="pagePerformanceRefresh" class="linkbtn">Làm mới</button></div>
 <h3>Hiển thị trang đầu · Web Vitals</h3>
 <p class="sub">FCP/LCP/CLS đo lần tải tài liệu ban đầu; INP là ước tính độ trễ tương tác trong phiên. Chỉ hiện khi trình duyệt hỗ trợ.</p>
 <div id="pageVitals" class="performance-grid"></div>
