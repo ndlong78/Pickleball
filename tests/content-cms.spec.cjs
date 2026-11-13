@@ -3,6 +3,10 @@ const fs=require('node:fs');
 const core=require('../modules/content-core.js');
 test.use({serviceWorkers:'block'});
 const VIDEO='dQw4w9WgXcQ';
+// Assert relative to the published lesson: coaches edit curriculum.js, so PU-001
+// may already carry videos or a higher revision.
+const BASE=core.parseCurriculum(fs.readFileSync(require('node:path').join(__dirname,'..','curriculum.js'),'utf8')).lessons.find(l=>l.id==='PU-001');
+const BASE_MEDIA=BASE.media||[];
 for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring locked and exports a valid curriculum.js '+width,async({page})=>{
  await page.setViewportSize({width,height:900});
  await page.goto('/Pickleball/cms/');
@@ -12,12 +16,15 @@ for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring 
  await page.locator('#lessonList button[data-id="PU-001"]').click();
  for(const id of ['#f-zone','#f-assessment','#f-target'])await expect(page.locator(id)).toHaveAttribute('readonly','');
  await page.locator('[data-cue="0"]').fill('Đứng sau baseline, nhìn ô chéo trước khi giao');
+ await expect(page.locator('[data-video]')).toHaveCount(BASE_MEDIA.length);
  await page.locator('#addVideo').click();
+ await expect(page.locator('[data-video]')).toHaveCount(BASE_MEDIA.length+1);
  await expect(page.locator('#errors')).toContainText('ID YouTube');
  await expect(page.locator('#download')).toBeDisabled();
- await page.locator('[data-video] [data-vkey="url"]').fill('https://youtu.be/'+VIDEO);
- await page.locator('[data-video] [data-vkey="angle"]').selectOption('side');
- await page.locator('[data-video] [data-vkey="start"]').fill('3');
+ const added=page.locator('[data-video="'+BASE_MEDIA.length+'"]');
+ await added.locator('[data-vkey="url"]').fill('https://youtu.be/'+VIDEO);
+ await added.locator('[data-vkey="angle"]').selectOption('side');
+ await added.locator('[data-vkey="start"]').fill('3');
  await expect(page.locator('#errors li')).toHaveCount(0);
  await expect(page.locator('#changeSummary')).toContainText('Đã sửa 1 bài: PU-001');
  await expect(page.locator('#lessonList button[data-id="PU-001"]')).toContainText('đã sửa');
@@ -27,8 +34,8 @@ for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring 
  expect(core.validate(doc)).toEqual([]);
  const lesson=doc.lessons.find(l=>l.id==='PU-001');
  expect(lesson.cues[0]).toBe('Đứng sau baseline, nhìn ô chéo trước khi giao');
- expect(lesson.media).toEqual([{kind:'youtube',id:VIDEO,angle:'side',start:3}]);
- expect(lesson.revision).toBe(2);expect(lesson.assessmentVersion).toBe(1);
+ expect(lesson.media).toEqual([...BASE_MEDIA,{kind:'youtube',id:VIDEO,angle:'side',start:3}]);
+ expect(lesson.revision).toBe(BASE.revision+1);expect(lesson.assessmentVersion).toBe(BASE.assessmentVersion);
  // Draft survives reload and can be restored or discarded.
  await page.reload();
  await expect(page.locator('#draftBanner')).toBeVisible();
