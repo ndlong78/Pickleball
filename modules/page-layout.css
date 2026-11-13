@@ -193,3 +193,28 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .sync-panel button{margin:5px 5px 5px 0;min-height:44px;white-space:normal}.sync-actions{display:flex;flex-wrap:wrap}
 .sync-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.sync-comparison>div{padding:12px;border:1px solid #9da9a2;border-radius:10px}
 @media(max-width:600px){.sync-comparison{grid-template-columns:1fr}}
+
+/* V5.19 Academy lesson: layer 1 = diagram, cues, one start action; layer 2 = details. */
+#academyDetail .lesson-head{margin-bottom:12px}
+#academyDetail .lesson-head .kicker{margin:0 0 6px}
+#academyDetail .lesson-head h3{margin:0 0 6px}
+#academyDetail .lesson-meta{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
+#academyDetail .lesson-meta span{display:inline-flex;align-items:center;min-height:32px;padding:5px 11px;border-radius:999px;background:#edf6e6;border:1px solid #cddfc4;color:#2e543d;font-size:13px;font-weight:600;overflow-wrap:anywhere}
+#academyDetail .lesson-cues{margin:16px 0;padding:16px 18px;border-radius:16px;background:#10292a;color:#f4fbef}
+#academyDetail .lesson-cues h4{margin:0 0 10px;color:#c9fa74;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+#academyDetail .lesson-cues ol{margin:0;padding-left:24px;display:grid;gap:10px}
+#academyDetail .lesson-cues li{font-size:18px;line-height:1.4;font-weight:700}
+#academyDetail .lesson-cta{display:grid;gap:8px;margin:0 0 16px}
+#academyDetail .lesson-cta .primary{min-height:56px;width:100%;font-size:17px;font-weight:800;border-radius:14px}
+#academyDetail .lesson-cta .sub{margin:0}
+#academyDetail .lesson-more{margin:8px 0;border:1px solid #d7e5d2;border-radius:14px;background:#fbfdf8}
+#academyDetail .lesson-more>summary{display:flex;align-items:center;min-height:48px;padding:10px 16px;cursor:pointer;font-weight:700;color:#254435;list-style-position:inside}
+#academyDetail .lesson-more>summary:focus-visible{outline:3px solid #75a448;outline-offset:2px;border-radius:12px}
+#academyDetail .lesson-more[open]>summary{border-bottom:1px solid #e1ebdc}
+#academyDetail .lesson-more-body{padding:6px 16px 14px}
+#academyDetail .lesson-more-body .block{margin-top:10px}
+@media(max-width:749px){
+ #academyDetail .lesson-cues{padding:14px 15px}
+ #academyDetail .lesson-cues li{font-size:17px}
+ #academyDetail .lesson-more-body{padding:4px 12px 12px}
+}

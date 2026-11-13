@@ -220,6 +220,39 @@ function choose(){
  show();
 }
 let lastDrawnId=null;
+// V5.19 progressive disclosure: layer 1 answers "how?" (diagram, three cues,
+// one start action); layer 2 keeps rules, mistakes, setup and timeline one tap away.
+function lessonMarkup(x,court){
+ const view=window.PICKLEUP_ACADEMY_LESSON?.summary(x)||{cues:x.cues||[],mistakes:x.mistakes||[],minutes:60,parts:6,rule:null};
+ const block=(minutes,title,body,check)=>'<div class="block"><div class="minute">'+minutes+'<small>phút</small></div><div><h4>'+title+'</h4><p>'+body+'</p>'+(check?'<em>'+check+'</em>':'')+'</div></div>';
+ const more=(key,summary,body,open)=>'<details class="lesson-more" data-lesson-more="'+key+'"'+(open?' open':'')+'><summary>'+summary+'</summary><div class="lesson-more-body">'+body+'</div></details>';
+ const list=items=>'<ul class="noteList">'+items.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>';
+ const timeline=block(10,'Khởi động','Di chuyển nhẹ, xoay khớp và đánh bóng làm quen.')
+  +x.drills.map((d,i)=>block(d.minutes,'Bài '+(i+1)+': '+esc(d.name),esc(d.instruction),esc(d.check))).join('')
+  +block(6,'Kiểm tra',esc(x.assessment.instruction)+' Mục tiêu tham khảo: '+x.assessment.target+'/20.')
+  +block(5,'Thả lỏng','Đi bộ nhẹ, thả lỏng vai và chân, uống nước.');
+ return '<header class="lesson-head"><p class="kicker">Cấp độ '+esc(x.level)+(x.skillName?' · '+esc(x.skillName):'')+'</p>'
+  +'<h3>Tuần '+x.week+' · '+esc(x.title)+'</h3><p class="sub">'+esc(x.goal)+'</p>'
+  +'<p class="lesson-meta"><span>⏱ '+view.minutes+' phút · '+view.parts+' phần</span><span>🎯 '+esc(x.zone||'Trong sân đối phương')+'</span></p></header>'
+  +court
+  +'<section class="lesson-cues" aria-label="Điểm cần nhớ"><h4>Điểm cần nhớ</h4><ol>'+view.cues.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol></section>'
+  +'<div class="lesson-cta"><button type="button" class="primary" data-lesson-start>▶ Bắt đầu tập</button>'
+  +'<p class="sub">Mở đồng hồ từng bước. Chạy hết giờ hoặc đánh dấu bước không tự tính là buổi đã tập.</p></div>'
+  +(view.rule?more('rule',esc(view.rule.title),list(view.rule.items)+'<p class="sub">Tóm tắt tham khảo; giải đấu có thể áp dụng luật địa phương.</p>',view.rule.open):'')
+  +more('mistakes','Cần tránh ('+view.mistakes.length+')',list(view.mistakes),false)
+  +more('setup','Chuẩn bị và vùng mục tiêu','<p><b>Chuẩn bị:</b> '+esc(x.setup||'Hai người chơi, bóng và sân.')+'</p><p class="sub"><b>Vùng mục tiêu:</b> '+esc(x.zone||'Trong sân đối phương')+' · Vùng tô sáng là minh họa kỹ năng; thực hiện theo hướng dẫn và quy tắc sân thực tế.</p>',false)
+  +more('timeline','Lộ trình buổi '+view.minutes+' phút ('+view.parts+' phần)',timeline,false)
+  +'<p class="sub">Giáo án và ngưỡng kiểm tra là tham khảo; xếp hạng 3.0/4.0 cần kiểm chứng trong thi đấu thực tế.</p>';
+}
+// The start action reuses the existing focus mode; it never saves or confirms anything.
+detail.addEventListener('click',event=>{
+ if(!event.target.closest?.('[data-lesson-start]'))return;
+ const toggle=document.getElementById('academyFocusToggle'),focus=document.getElementById('academyFocus');
+ if(toggle&&!toggle.disabled&&toggle.getAttribute('aria-pressed')!=='true')toggle.click();
+ (focus||document.getElementById('academyStepList'))?.scrollIntoView({block:'start'});
+ const start=document.getElementById('academyTimerStart');
+ if(start&&!start.disabled&&start.offsetParent!==null)start.focus();else toggle?.focus();
+});
 function show(persistSelection=false){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
 if(formLesson!==x.id){formLesson=x.id;dirty=false;feedbackVersion=null}
 if(focusTimer&&focusTimer.lessonId!==x.id){stopTick();focusTimer=null}
@@ -230,7 +263,7 @@ drawSteps(x);
 if(lastDrawnId===x.id){paintScore();return}
 lastDrawnId=x.id;
 const court=x.advanced?(window.PICKLEUP_ADVANCED_COURT?window.PICKLEUP_ADVANCED_COURT(x):''):(window.PICKLEUP_COURT?window.PICKLEUP_COURT(x):'');
-detail.innerHTML='<h3>Tuần '+x.week+' · '+esc(x.title)+'</h3><p class="sub">Cấp độ '+esc(x.level)+' · '+esc(x.goal)+'</p><p class="sub"><b>Chuẩn bị:</b> '+esc(x.setup||'Hai người chơi, bóng và sân.')+'</p>'+court+'<p class="sub"><b>Vùng mục tiêu:</b> '+esc(x.zone||'Trong sân đối phương')+' · Vùng tô sáng là minh họa kỹ năng; thực hiện theo hướng dẫn và quy tắc sân thực tế.</p><div class="block"><div class="minute">10<small>phút</small></div><div><h4>Khởi động</h4><p>Di chuyển nhẹ, xoay khớp và đánh bóng làm quen.</p></div></div>'+x.drills.map((d,i)=>'<div class="block"><div class="minute">'+d.minutes+'<small>phút</small></div><div><h4>Bài '+(i+1)+': '+esc(d.name)+'</h4><p>'+esc(d.instruction)+'</p><em>'+esc(d.check)+'</em></div></div>').join('')+'<div class="block"><div class="minute">6<small>phút</small></div><div><h4>Kiểm tra</h4><p>'+esc(x.assessment.instruction)+' Mục tiêu tham khảo: '+x.assessment.target+'/20.</p></div></div><div class="block"><div class="minute">5<small>phút</small></div><div><h4>Thả lỏng</h4><p>Đi bộ nhẹ, thả lỏng vai và chân, uống nước.</p></div></div><h4>Cần tránh</h4><ul class="noteList">'+x.mistakes.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><h4>Điểm cần nhớ</h4><ul class="noteList">'+(x.cues||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p class="sub">Giáo án và ngưỡng kiểm tra là tham khảo; xếp hạng 3.0/4.0 cần kiểm chứng trong thi đấu thực tế.</p>';
+detail.innerHTML=lessonMarkup(x,court);
 paintScore()}
 level.addEventListener('change',()=>{choose();const x=get();if(x)rememberLesson(x.id)});weeks.addEventListener('change',()=>show(true));
 document.getElementById('academyResume').addEventListener('click',()=>{if(resumedId)visitLesson(resumedId)});

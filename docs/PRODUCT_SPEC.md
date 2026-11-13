@@ -28,6 +28,8 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 | `matches` — Thi đấu | Nhật ký trận, chiến thuật và phối hợp đánh đôi | Không tự suy ra chất lượng thi đấu từ bài kỹ thuật |
 | `settings` — Dữ liệu | Xuất/nhập JSON và cứu hộ dữ liệu khách; công cụ tài khoản/pilot và chẩn đoán hiệu năng chỉ hiện trên staging/localhost (V5.18, `debug=1` mở riêng chẩn đoán) | Tương thích ngược, xác nhận trước ghi đè |
 
+**Trang bài Học viện (V5.19):** nội dung trước điều khiển; tầng 1 hiện sơ đồ, 3 điểm cần nhớ và một hành động "Bắt đầu tập" (chỉ mở chế độ tập trung, không lưu/xác nhận); tầng 2 thu gọn gồm luật theo kỹ năng (tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút.
+
 `modules/page-catalog.js` là nguồn đúng cuối cùng cho danh mục route/section. Từ V5.18, menu chính và dock dùng 4 tab (`home`, `academy`, `court`, `progress`) cộng menu **Thêm** (`journey`, `coach`, `matches`, `settings`); không bỏ route nào. Cả menu điều hướng chính, menu cố định và link sâu `?page=...#section` phải hoạt động, kể cả khi đổi trang rồi quay lại. `journey` là trang mới **thêm vào**, không thay thế các trang chuyên môn.
 
 **Phân biệt:** lộ trình roadmap tới 5.0 là định hướng nội dung; đừng viết rằng thư viện đã có bài đến 5.0 khi thực tế chưa có.

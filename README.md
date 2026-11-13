@@ -1,6 +1,8 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
-**V5.18.0 — 13/11/2026 (đang PR):** điều hướng gọn còn 4 tab (Tổng quan · Học viện · Trên sân · Tiến bộ) cộng menu **Thêm** (Hành trình · HLV cá nhân · Thi đấu · Dữ liệu), vẫn đủ 8 route. Trang Dữ liệu trên production chỉ còn sao lưu/cứu hộ khách; panel tài khoản/pilot và Web Vitals chỉ hiện trên staging/localhost (`debug=1` mở riêng chẩn đoán). [Release notes](RELEASE_V5.18.0.md).
+**V5.19.0 — 13/11/2026 (đang PR):** bài Học viện theo bố cục 3 tầng: nội dung đứng trước điều khiển; tầng 1 gồm sơ đồ sân, 3 điểm cần nhớ chữ lớn và một nút **Bắt đầu tập** (không lưu/không xác nhận buổi tập); tầng 2 thu gọn gồm luật theo kỹ năng (Kitchen, giao bóng, hai lần nảy, gọi điểm 0-0-2, tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút. [Release notes](RELEASE_V5.19.0.md).
+
+**V5.18.0 — 13/11/2026 (đã merge #48):** điều hướng gọn còn 4 tab (Tổng quan · Học viện · Trên sân · Tiến bộ) cộng menu **Thêm** (Hành trình · HLV cá nhân · Thi đấu · Dữ liệu), vẫn đủ 8 route. Trang Dữ liệu trên production chỉ còn sao lưu/cứu hộ khách; panel tài khoản/pilot và Web Vitals chỉ hiện trên staging/localhost (`debug=1` mở riêng chẩn đoán). [Release notes](RELEASE_V5.18.0.md).
 
 **Hiện hành — 12/11/2026:** main `5767079` /5.17.0 sau #45 đã merge/deploy Pages và Cloudflare; backend xanh. UI sau merge có603 pass/1 flaky WebKit820 nên **chưa đạt clean run**. [Bản sửa kiểm thử reload](docs/POSTMERGE_V5_17.md) đợi Settings khởi tạo xong và kiểm lại cache A/B/guest; đang PR, chưa merge. Không thay runtime/build/IndexedDB3/SQL/Auth config hoặc mở signup/pilot. Các mốc thấp hơn là lịch sử.
 
