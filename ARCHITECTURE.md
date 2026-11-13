@@ -16,7 +16,7 @@ Chuyển giao diện dài trước V3.4 thành **7 trang (client-side routed pag
 | 🏓 Thi đấu | `?page=matches` | Nhật ký trận đơn/đôi, tactical insights |
 | ⚙️ Dữ liệu | `?page=settings` | Sao lưu/khôi phục JSON, xóa riêng điểm sáu tuần mẫu |
 
-Mở URL theo dạng `https://ndlong78.github.io/Pickleball/?page=coach` (cần GitHub Pages đã được bật và triển khai thành công). Liên kết tới nội dung dùng hash: `?page=court#pcOnCourt`. Hash cũ như `/#matchJournal` sẽ được chuyển sang trang Thi đấu.
+Mở URL theo dạng `https://pickleup-staging.home-309.workers.dev/?page=coach` (Cloudflare Workers; bản GitHub Pages cũ dùng `/Pickleball/?page=coach`) (cần bản đã được triển khai thành công). Liên kết tới nội dung dùng hash: `?page=court#pcOnCourt`. Hash cũ như `/#matchJournal` sẽ được chuyển sang trang Thi đấu.
 
 ## Mã nguồn theo module
 - `modules/page-catalog.js`: mô tả trang, nhóm module thuộc từng trang, tiêu đề và lời giới thiệu.

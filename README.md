@@ -20,7 +20,7 @@ PWA tiếng Việt cho người mới chơi Pickleball, phát triển theo lộ 
 
 Baseline main `cc0d944` sau #40, app5.14.1: [UI42834392634](https://github.com/ndlong78/Pickleball/actions/runs/42834392634), [backend42834392650](https://github.com/ndlong78/Pickleball/actions/runs/42834392650), [Pages42834391795](https://github.com/ndlong78/Pickleball/actions/runs/42834391795) và Cloudflare Production đều success cùng SHA; logs UI/backend sạch0 fail/flaky/retry. Operator đã xác nhận domain chính5.14.1, GitHub tự deploy và A→B lịch tập đề xuất/check-in khớp ngày/trạng thái/phút. [Sổ nghiệm thu](docs/STAGING_AUTH_VERIFICATION.md) tách kết quả này khỏi các nhóm mới/expiry/SMTP/physical QA chưa kiểm. CI exact HEAD của PR6b ghi trong mô tả PR sau đọc logs.
 
-- Website: https://ndlong78.github.io/Pickleball/ — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
+- Website: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers, tự deploy từ `main` trên GitHub) — tám route,80 bài1.0–4.0; nội dung tới5.0 vẫn là định hướng.
 - Guest vẫn dùng được. **Auth đã bật với URL/key công khai sau #36**; ba nguồn chỉ mở trên URL thử đủ điều kiện và phải chọn riêng; importer còn tắt. Login không tự nhập hoặc gửi dữ liệu; chưa mở pilot/signup server.
 - Main có giáo án, nhật ký và lựa chọn bài Học viện tài khoản qua nguồn lựa chọn chung, sparse CAS giữ personal plan, manual sync/retry/clear/review và A→B guards.
 - Main giữ checklist/bước tập trung tài khoản qua reload. Main cho chủ động pause/save/restore điểm dừng Court, không tự chạy lại; Academy timer vẫn RAM. Bản cứu hộ cache V6 đã chứa state được lưu, chưa restore; guest giữ keys/persistence cũ. Không tự tạo attendance hoặc mirror account vào V5.
@@ -44,7 +44,7 @@ Full V6 gồm account OTP/session, dữ liệu tài khoản, offline/manual sync
 
 Bật GitHub Pages trong **Settings → Pages → Deploy from a branch → main → /(root)**.
 
-Địa chỉ đã triển khai: https://ndlong78.github.io/Pickleball/
+Địa chỉ đã triển khai: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers Static Assets, build từ `main`). Bản GitHub Pages cũ tại `https://ndlong78.github.io/Pickleball/` vẫn được build từ `main` nhưng không còn là địa chỉ chính; dữ liệu trình duyệt của hai địa chỉ tách riêng.
 
 Hoặc mở `index.html` để xem giao diện; tính năng service worker/PWA cần nguồn HTTPS hoặc localhost.
 
@@ -230,7 +230,7 @@ Kiểm thử nội dung: `npm run test:unit` (gồm `tests/advanced-curriculum.t
 | Thi đấu | `?page=matches` | Ghi trận đơn/đôi và phân tích chiến thuật |
 | Dữ liệu | `?page=settings` | Sao lưu/khôi phục, xóa riêng điểm sáu tuần mẫu |
 
-Ví dụ: `https://ndlong78.github.io/Pickleball/?page=coach`. Chuyển trang giữ nguyên trạng thái JavaScript và `localStorage`, đồng hồ đã chạy không bị tự đặt lại; nút Back/Forward hoạt động. Các URL hash cũ như `/#academy` vẫn được nhận diện.
+Ví dụ: `https://pickleup-staging.home-309.workers.dev/?page=coach`. Chuyển trang giữ nguyên trạng thái JavaScript và `localStorage`, đồng hồ đã chạy không bị tự đặt lại; nút Back/Forward hoạt động. Các URL hash cũ như `/#academy` vẫn được nhận diện.
 
 **Refactor mã nguồn:** `index.html` chuyển những đoạn JS nhúng sang `modules/weekly-practice.js`, `modules/assessments-and-backup.js`, `modules/academy-page.js`, `modules/pwa-client.js`; router và cấu hình trang ở `modules/page-router.js` / `modules/page-catalog.js`, kiểu trình bày ở `modules/page-layout.css`. Không sao chép mã nguồn thành nhiều file HTML.
 

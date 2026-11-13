@@ -14,4 +14,4 @@
 - Dung lượng tải nội dung sau gzip: 9,6 KB → 13,8 KB.
 - App/assets/PWA `5.21.0` (`pickleup-shell-v5-21-0-stable`); test nâng cấp xóa cache 5.20.0.
 
-Hướng dẫn: [docs/CMS_GUIDE.md](docs/CMS_GUIDE.md) · thiết kế: [docs/CONTENT_VERSIONING_CMS.md](docs/CONTENT_VERSIONING_CMS.md).
+CMS: `https://pickleup-staging.home-309.workers.dev/cms/`. Hướng dẫn: [docs/CMS_GUIDE.md](docs/CMS_GUIDE.md) · thiết kế: [docs/CONTENT_VERSIONING_CMS.md](docs/CONTENT_VERSIONING_CMS.md).

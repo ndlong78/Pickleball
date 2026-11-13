@@ -142,4 +142,4 @@ Không dùng `content/academy/lessons.json` + bước build, vì HLV sửa trên
 - Video: chỉ lưu ID 11 ký tự, góc quay `back/side/top/front`, giây bắt đầu/kết thúc. Trang Học viện chỉ nhúng `youtube-nocookie.com` **sau khi người tập bấm xem**; không tải ảnh hay script YouTube trước đó.
 - Service worker bỏ qua mọi yêu cầu dưới `/cms/` hoặc có tham số `cms`, để trang CMS không thay shell offline của app. Bản nháp CMS lưu ở khóa `pickleupcms_draft_v1`, không dùng tiền tố `pickleup_` của dữ liệu người tập.
 
-Hướng dẫn cho HLV: [CMS_GUIDE.md](CMS_GUIDE.md).
+Host chính là Cloudflare Workers (`https://pickleup-staging.home-309.workers.dev`), build từ `main`; `build-cloudflare` đóng gói `cms/`, nên CMS nằm tại `https://pickleup-staging.home-309.workers.dev/cms/`. Hướng dẫn cho HLV: [CMS_GUIDE.md](CMS_GUIDE.md).

@@ -10,7 +10,7 @@ Dành cho HLV và người quản lý nội dung. Không cần cài đặt hay t
 5. Sau khi tải xong, bấm **Chia sẻ → Sao chép đường liên kết** (dạng `https://youtu.be/xxxxxxxxxxx`).
 
 ## 2. Sửa bài trong CMS
-1. Mở `https://ndlong78.github.io/Pickleball/cms/` trên máy tính (điện thoại vẫn dùng được nhưng màn hình nhỏ).
+1. Mở `https://pickleup-staging.home-309.workers.dev/cms/` trên máy tính (điện thoại vẫn dùng được nhưng màn hình nhỏ).
 2. Chọn bài ở danh sách bên trái (tìm theo mã `PU-012` hoặc tên).
 3. Sửa tên, mục tiêu, chuẩn bị, **3 điểm cần nhớ**, lỗi thường gặp, nội dung drill.
 4. Phần **Video**: bấm **+ Thêm video**, dán link YouTube, chọn góc quay, có thể đặt giây bắt đầu/kết thúc.
@@ -24,7 +24,7 @@ Bản nháp tự lưu trên trình duyệt đang dùng. Đổi máy hoặc xóa 
 2. Mở trang tải tệp của repo: `https://github.com/ndlong78/Pickleball/upload/main`, kéo tệp `curriculum.js` vừa tải vào (thay tệp cũ cùng tên).
 3. Chọn **Create a new branch for this commit and start a pull request**, đặt tên ngắn (ví dụ `content/pu-012-video`), bấm **Propose changes**, rồi **Create pull request**.
 4. Chờ CI chạy xanh. Nếu đỏ, mở log bước *Validate Academy content* để xem lỗi, sửa lại trong CMS và tải tệp mới lên cùng nhánh.
-5. Owner xem thay đổi và merge. GitHub Pages và Cloudflare tự cập nhật sau vài phút.
+5. Owner xem thay đổi và merge vào `main`. Cloudflare Workers tự build từ GitHub và cập nhật `https://pickleup-staging.home-309.workers.dev` sau vài phút.
 
 ## 4. Lưu ý
 - Không sửa tay cấu trúc `curriculum.js` trên GitHub: chỉ xuất từ CMS. CI sẽ từ chối tệp sai định dạng.
