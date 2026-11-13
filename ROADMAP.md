@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.21.0 — 13/11/2026 (đang PR):** host chính là Cloudflare Workers `https://pickleup-staging.home-309.workers.dev/` (trang Dữ liệu ở đây ẩn công cụ thử nghiệm trừ khi URL có `?pilot=` hoặc `?maintenance=`). CMS nội dung Học viện tại `cms/` và video YouTube (Không công khai, chỉ tải khi bấm xem). `curriculum.js` là nguồn nội dung duy nhất, CI kiểm tra và khóa trường chấm điểm. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.21.0.md).
+**V5.21.1 — 13/11/2026 (đang PR):** nút "Sao lưu và dữ liệu trên thiết bị" thay cho "Chọn nguồn / đồng bộ" (đồng bộ chỉ hiện ở URL vận hành); test CMS không phụ thuộc nội dung đang xuất bản. [Release notes](RELEASE_V5.21.1.md).
+
+**V5.21.0 — 13/11/2026 (đã phát hành):** host chính là Cloudflare Workers `https://pickleup-staging.home-309.workers.dev/` (trang Dữ liệu ở đây ẩn công cụ thử nghiệm trừ khi URL có `?pilot=` hoặc `?maintenance=`). CMS nội dung Học viện tại `cms/` và video YouTube (Không công khai, chỉ tải khi bấm xem). `curriculum.js` là nguồn nội dung duy nhất, CI kiểm tra và khóa trường chấm điểm. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.21.0.md).
 
 **Thiết kế phiên bản giáo án và CMS — 13/11/2026 (giai đoạn A triển khai ở V5.21.0):** [CONTENT_VERSIONING_CMS](docs/CONTENT_VERSIONING_CMS.md) chốt ID bài bất biến, `assessmentVersion` theo từng bài để không trộn điểm đề cũ/mới, trường `av` tùy chọn cho lịch sử khách, mở rộng ID ngoài `PU-080` và thứ tự PR C1–C5 trước khi thêm video hoặc bài 4.0–5.0.
 
