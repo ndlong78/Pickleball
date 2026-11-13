@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.19.0 — 13/11/2026 (PR #47, đang PR):** [PR5b2d1](docs/RESTORE_PREVIEW_PR5B2D1.md) đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục. Chỉ đọc, chưa restore/replay/ghi đè; giữ IDB3/SQL/Auth/signup và dữ liệu khách. Nâng từ 5.18.0 vì #48 đã dùng số này. [Release notes](RELEASE_V5.19.0.md).
+**V5.20.0 — 13/11/2026 (đang PR):** bài Học viện theo bố cục 3 tầng: nội dung đứng trước điều khiển; tầng 1 gồm sơ đồ sân, 3 điểm cần nhớ chữ lớn và một nút **Bắt đầu tập** (không lưu/không xác nhận buổi tập); tầng 2 thu gọn gồm luật theo kỹ năng (Kitchen, giao bóng, hai lần nảy, gọi điểm 0-0-2, tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút. [Release notes](RELEASE_V5.20.0.md).
+
+**V5.19.0 — 13/11/2026 (đã merge #47):** [PR5b2d1](docs/RESTORE_PREVIEW_PR5B2D1.md) đối chiếu tệp cứu hộ với cache hiện tại và danh sách việc cần kiểm trước khôi phục. Chỉ đọc, chưa restore/replay/ghi đè; giữ IDB3/SQL/Auth/signup và dữ liệu khách. Nâng từ 5.18.0 vì #48 đã dùng số này. [Release notes](RELEASE_V5.19.0.md).
 
 **V5.18.0 — 13/11/2026 (đã merge #48):** điều hướng gọn còn 4 tab (Tổng quan · Học viện · Trên sân · Tiến bộ) cộng menu **Thêm** (Hành trình · HLV cá nhân · Thi đấu · Dữ liệu), vẫn đủ 8 route. Trang Dữ liệu trên production chỉ còn sao lưu/cứu hộ khách; panel tài khoản/pilot và Web Vitals chỉ hiện trên staging/localhost (`debug=1` mở riêng chẩn đoán). [Release notes](RELEASE_V5.18.0.md).
 

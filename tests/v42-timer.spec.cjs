@@ -8,7 +8,9 @@ for(const width of [390,820,1440]){
    await page.route('https://fonts.googleapis.com/**',route=>route.fulfill({contentType:'text/css',body:'/* timer fixture uses the system font */'}));
    await test.step('load the Academy handlers before interacting',async()=>{
     await page.goto("/?page=academy");
-    await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('academy'));
+    // Late source events or a webfont reflow can re-render or move the lesson;
+    // interact only after both sources and the font layout settle.
+    await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('academy');await Promise.all([window.PICKLEUP_ACTIVITY?.ready,window.PICKLEUP_PLANS?.ready]);await document.fonts.ready;await new Promise(requestAnimationFrame)});
    });
    await test.step('start and pause without advancing the step',async()=>{
    await page.locator("#academyFocusToggle").click();
