@@ -3,7 +3,7 @@
 "use strict";
 const LIMIT=500;
 function validAttempt(a){
- return Boolean(a&&typeof a==="object"&&/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(a.id)&&
+ return Boolean(a&&typeof a==="object"&&/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(a.id)&&
   /^[a-z][a-z-]{0,39}$/.test(a.skill||"")&&typeof a.level==="string"&&a.level.length<=30&&
   Number.isInteger(a.score)&&a.score>=0&&a.score<=20&&
   typeof a.date==="string"&&a.date.length<=40&&!Number.isNaN(Date.parse(a.date)));

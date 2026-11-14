@@ -50,7 +50,7 @@ test('validation rejects unknown keys, bad videos, duplicate IDs and wrong sessi
   [{...base,media:[{kind:'vimeo',id:'dQw4w9WgXcQ',angle:'back'}]},/chỉ hỗ trợ YouTube/],
   [{...base,media:[{kind:'youtube',id:'dQw4w9WgXcQ',angle:'back',start:30,end:10}]},/kết thúc/],
   [{...base,cues:['a','b']},/3 điểm cần nhớ/],
-  [{...base,id:'PU-081'},/PU-001…PU-080/]
+  [{...base,id:'PU-000'},/PU-001…PU-999/],[{...base,id:'PU-0081'},/PU-001…PU-999/],[{...base,id:'PU-81'},/PU-001…PU-999/]
  ];
  for(const [lesson,pattern]of cases){const d=doc();d.lessons[0]=lesson;assert.match(core.validate(d).join('\n'),pattern)}
  const dup=doc();dup.lessons[1]={...dup.lessons[1],id:dup.lessons[0].id};assert.match(core.validate(dup).join('\n'),/trùng ID/);

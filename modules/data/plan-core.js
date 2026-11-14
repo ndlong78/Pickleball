@@ -34,7 +34,7 @@ function payload(kind,value,{action='put',revision='0'}={}){
  if(!KINDS.includes(kind)||!['put','delete','restore'].includes(action)||!decimal(revision))fail('invalid_plan');
  const v=clone(value);safe(v);keys(v,action==='delete'?[]:kind==='user_selections'?SELECTION:action==='restore'||revision!=='0'?RESULTS:[...CONTENT,...RESULTS],action!=='delete'&&kind==='personal_plans'&&action==='put'&&revision==='0'?CONTENT:[]);
  if(kind==='user_selections'){
-  if(v.selected_personal_plan_id!=null&&!uuid(v.selected_personal_plan_id)||v.selected_academy_lesson_id!=null&&!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(v.selected_academy_lesson_id))fail('invalid_selection');
+  if(v.selected_personal_plan_id!=null&&!uuid(v.selected_personal_plan_id)||v.selected_academy_lesson_id!=null&&!/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(v.selected_academy_lesson_id))fail('invalid_selection');
  }else{
   if(Object.hasOwn(v,'plan_snapshot')){if(v.schema_version!==1)fail('invalid_plan');snapshot(v.plan_snapshot,v.source,v.level_band)}
   if(v.check_score!=null&&!int(v.check_score,20)||v.completed_at!=null&&!timestamp(v.completed_at))fail('invalid_plan');

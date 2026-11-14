@@ -201,7 +201,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      if(!value||value.schemaVersion!==1||Object.keys(value).sort().join(',')!=='lessons,schemaVersion'||!value.lessons||Object.getPrototypeOf(value.lessons)!==Object.prototype)fail('invalid_device_state');
      if(Object.keys(value.lessons).length>80)fail('invalid_device_state');
      for(const [id,lesson] of Object.entries(value.lessons)){
-      if(!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(id)||!lesson||Object.keys(lesson).sort().join(',')!=='checked,focus'||!Number.isInteger(lesson.focus)||lesson.focus<0||lesson.focus>5||!Array.isArray(lesson.checked)||lesson.checked.length>6||new Set(lesson.checked).size!==lesson.checked.length||lesson.checked.some(i=>!Number.isInteger(i)||i<0||i>5))fail('invalid_device_state');
+      if(!/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(id)||!lesson||Object.keys(lesson).sort().join(',')!=='checked,focus'||!Number.isInteger(lesson.focus)||lesson.focus<0||lesson.focus>5||!Array.isArray(lesson.checked)||lesson.checked.length>6||new Set(lesson.checked).size!==lesson.checked.length||lesson.checked.some(i=>!Number.isInteger(i)||i<0||i>5))fail('invalid_device_state');
      }
      return value;
     }
@@ -596,7 +596,7 @@ function open({name='pickleup-v6',indexedDB=root.indexedDB,onBlocked=()=>{},onVe
      getAcademyPractice(fence){const captured=copy(fence);return transaction(['metadata','device_state'],'readwrite',async tx=>{await practiceFence(tx,captured);return practiceRow(tx)})},
      changeAcademyPractice(patch,fence){
       const intent=copy(patch),captured=copy(fence);canonical(intent);
-      if(!intent||!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(intent.lessonId)||!['check','focus','reset'].includes(intent.action)||Object.keys(intent).sort().join(',')!==({check:'action,checked,index,lessonId',focus:'action,index,lessonId',reset:'action,lessonId'})[intent.action]||intent.action!=='reset'&&(!Number.isInteger(intent.index)||intent.index<0||intent.index>5)||intent.action==='check'&&typeof intent.checked!=='boolean')fail('invalid_device_state');
+      if(!intent||!/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(intent.lessonId)||!['check','focus','reset'].includes(intent.action)||Object.keys(intent).sort().join(',')!==({check:'action,checked,index,lessonId',focus:'action,index,lessonId',reset:'action,lessonId'})[intent.action]||intent.action!=='reset'&&(!Number.isInteger(intent.index)||intent.index<0||intent.index>5)||intent.action==='check'&&typeof intent.checked!=='boolean')fail('invalid_device_state');
       return transaction(['metadata','device_state'],'readwrite',async tx=>{
        await practiceFence(tx,captured);const row=await practiceRow(tx),lesson=row.value.lessons[intent.lessonId]||{checked:[],focus:0};
        if(intent.action==='focus')lesson.focus=intent.index;

@@ -13,7 +13,7 @@ function selected(){
  const p=state.projection?.selectedPlan;return p?{...structuredClone(p.plan),id:p.id}:null;
 }
 function academySelection(){
- if(state.mode==='guest'){let id=null;try{id=localStorage.getItem(LESSON)}catch(_){}return {id:/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(id)?id:null,status:'guest'}}
+ if(state.mode==='guest'){let id=null;try{id=localStorage.getItem(LESSON)}catch(_){}return {id:/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(id)?id:null,status:'guest'}}
  if(state.mode!=='account')return {id:null,status:state.mode};
  const row=state.snapshot?.records.find(r=>r.kind==='user_selections'&&r.id==='self');
  if(row?.reviewRequired)return {id:null,status:'needs_review'};
@@ -24,9 +24,9 @@ function canSelectLesson(){const s=academySelection();return canWrite()&&!['need
 function selectionNotice(){const s=academySelection();return lessonFeedback||({guest:'Bài Học viện gần nhất: kho thiết bị.',loading:'Đang đọc lựa chọn bài Học viện; chưa lưu lựa chọn mới.',error:'Chưa đọc được lựa chọn tài khoản. Đọc lại trong Dữ liệu; chưa dùng lựa chọn khách.',needs_review:'Lựa chọn bài Học viện cần xem và xử lý trong Dữ liệu.',deleted:'Lựa chọn đã xóa. Khôi phục lựa chọn trống trong Dữ liệu trước khi chọn lại.',pending:'Bài Học viện: đã lưu trên thiết bị · chờ đồng bộ giáo án/lựa chọn.',account:'Bài Học viện: kho tài khoản. Không tự chọn bài hoặc gửi khi đăng nhập.'})[s.status]}
 function paintSelection(){for(const el of document.querySelectorAll('[data-lesson-selection-status]'))el.textContent=selectionNotice()}
 function selectionError(error){return ({quota_exceeded:'Không đủ dung lượng. Lựa chọn chưa lưu; giữ bài đang xem và thử lại.',local_conflict:'Lựa chọn đã đổi ở tab khác. Đọc lại trước khi chọn.',needs_review:'Lựa chọn cần xem và xử lý trong Dữ liệu.',busy:'Đang xử lý lựa chọn. Thử lại sau.',explicit_restore_required:'Khôi phục lựa chọn trống trong Dữ liệu trước khi chọn lại.',storage_unavailable:'Chưa lưu được lựa chọn trên thiết bị.'})[error?.code]||'Chưa lưu được lựa chọn. Kiểm tra nguồn dữ liệu và thử lại.'}
-function rememberGuestLesson(id){if(id!==null&&!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(id))throw Object.assign(Error('invalid_selection'),{code:'invalid_selection'});if(state.mode!=='guest')throw Object.assign(Error('source_unavailable'),{code:'source_unavailable'});if(id===null)localStorage.removeItem(LESSON);else localStorage.setItem(LESSON,id)}
+function rememberGuestLesson(id){if(id!==null&&!/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(id))throw Object.assign(Error('invalid_selection'),{code:'invalid_selection'});if(state.mode!=='guest')throw Object.assign(Error('source_unavailable'),{code:'source_unavailable'});if(id===null)localStorage.removeItem(LESSON);else localStorage.setItem(LESSON,id)}
 function chooseLesson(id){
- if(id!==null&&!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(id))return Promise.reject(new PickleUpPlanController.PlanError('invalid_selection'));
+ if(id!==null&&!/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(id))return Promise.reject(new PickleUpPlanController.PlanError('invalid_selection'));
  if(state.mode==='account'&&canSelectLesson()&&academySelection().id===id)return Promise.resolve({status:'unchanged'});
  const stamp=token,expectedLocalRevision=revision('user_selections','self');lessonFeedback='Đang lưu lựa chọn bài Học viện…';paintSelection();
  const work=state.mode==='guest'?(()=>{try{rememberGuestLesson(id);emit(false);return Promise.resolve({status:'saved_locally'})}catch(_){return Promise.reject(Object.assign(Error('storage_unavailable'),{code:'storage_unavailable'}))}})():command(c=>c.select({operationId:crypto.randomUUID(),expectedLocalRevision,value:{selected_academy_lesson_id:id}}));

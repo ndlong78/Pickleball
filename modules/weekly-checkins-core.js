@@ -4,7 +4,7 @@
 const KEY="pickleup_week_checkins_v48",SCHEMA=1,MAX=1095;
 function dayOK(s){if(typeof s!=="string"||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(s))return false;const d=new Date(s+"T00:00:00.000Z");return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===s}
 function today(now=new Date()){const d=new Date(now);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}
-function entryOK(r){return !!r&&typeof r==="object"&&!Array.isArray(r)&&["done","skipped"].includes(r.status)&&typeof r.updatedAt==="string"&&r.updatedAt.length<=40&&Number.isFinite(Date.parse(r.updatedAt))&&(r.lessonId===null||typeof r.lessonId==="string"&&/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(r.lessonId))&&(r.status==="done"?Number.isInteger(r.minutes)&&r.minutes>=5&&r.minutes<=180:r.minutes===null)}
+function entryOK(r){return !!r&&typeof r==="object"&&!Array.isArray(r)&&["done","skipped"].includes(r.status)&&typeof r.updatedAt==="string"&&r.updatedAt.length<=40&&Number.isFinite(Date.parse(r.updatedAt))&&(r.lessonId===null||typeof r.lessonId==="string"&&/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(r.lessonId))&&(r.status==="done"?Number.isInteger(r.minutes)&&r.minutes>=5&&r.minutes<=180:r.minutes===null)}
 function valid(d){return !!d&&typeof d==="object"&&!Array.isArray(d)&&d.schemaVersion===SCHEMA&&!!d.entries&&typeof d.entries==="object"&&!Array.isArray(d.entries)&&Object.keys(d.entries).length<=MAX&&Object.entries(d.entries).every(([k,v])=>dayOK(k)&&entryOK(v))}
 function empty(){return {schemaVersion:SCHEMA,entries:{}}}
 function read(raw){try{const x=JSON.parse(raw||"null");return valid(x)?{schemaVersion:SCHEMA,entries:{...x.entries}}:empty()}catch(_){return empty()}}

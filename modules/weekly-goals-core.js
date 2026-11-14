@@ -3,7 +3,7 @@
 (function(root){
 "use strict";
 const KEY="pickleup_weekly_goal_v46";
-const LEVELS=Object.freeze(["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0"]);
+const LEVELS=Object.freeze(["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0","4.0–4.5","4.5–5.0"]);
 const DEFAULT=Object.freeze({days:3,level:"1.0–2.0"});
 const isDate=s=>typeof s==="string"&&s.length<=40&&Number.isFinite(Date.parse(s));
 const isScore=n=>Number.isInteger(n)&&n>=0&&n<=20;
