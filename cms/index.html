@@ -58,6 +58,15 @@ ol.steps{padding-left:20px;margin:8px 0}
   <select id="filterLevel"><option value="">Tất cả</option></select>
   <label for="filterText">Tìm theo mã hoặc tên</label>
   <input id="filterText" type="search" autocomplete="off" placeholder="VD: PU-012 hoặc dink">
+  <details id="newLessonBox" style="margin-top:10px">
+   <summary style="cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center">+ Thêm bài mới</summary>
+   <label for="newLevel">Cấp độ</label><select id="newLevel"></select>
+   <label for="newSkill">Kỹ năng</label>
+   <select id="newSkill"><option value="serve">Giao bóng</option><option value="return">Trả giao bóng</option><option value="dink">Dinking</option><option value="volley">Volley</option><option value="position">Di chuyển</option><option value="strategy">Chiến thuật</option></select>
+   <label for="newFocus" id="newFocusLabel">Trọng tâm chiến thuật (bài từ 3.0)</label><select id="newFocus"></select>
+   <button type="button" id="newLesson" style="margin-top:10px">Tạo bài nháp</button>
+   <p class="note">Bài mới nhận mã kế tiếp, ở trạng thái <b>Nháp</b>: chưa hiện cho người tập cho tới khi chuyển sang "Đang dùng" và merge.</p>
+  </details>
   <ul id="lessonList" aria-label="Các bài Học viện"></ul>
  </section>
  <div>
@@ -81,6 +90,11 @@ ol.steps{padding-left:20px;margin:8px 0}
     <p class="note" id="lessonMeta"></p>
     <label for="f-status">Trạng thái</label>
     <select id="f-status" data-field="status"><option value="published">Đang dùng (published)</option><option value="review">Chờ duyệt (review)</option><option value="draft">Nháp (draft)</option><option value="retired">Ngừng dùng (retired)</option></select>
+    <div id="newLessonFields" hidden>
+     <p class="warn">Bài mới, chưa xuất bản. Có thể sửa mọi trường bên dưới; mã bài, cấp độ, kỹ năng và số phút cố định sau khi tạo.</p>
+     <label for="f-skillName">Tên kỹ năng hiển thị</label><input id="f-skillName" maxlength="60">
+     <button type="button" id="removeLesson">Bỏ bài mới này</button>
+    </div>
     <label for="f-title">Tên bài</label><input id="f-title" data-field="title" maxlength="160">
     <label for="f-goal">Mục tiêu</label><textarea id="f-goal" data-field="goal" maxlength="600"></textarea>
     <label for="f-setup">Chuẩn bị</label><textarea id="f-setup" data-field="setup" maxlength="400"></textarea>

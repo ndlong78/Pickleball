@@ -4681,4 +4681,4 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
  ]
 }
 /*CONTENT-END*/;
-window.PICKLEUP_CURRICULUM=window.PICKLEUP_CONTENT_DOC.lessons.filter(function(l){return !l.advanced}).map(function(l){var o={};for(var k in l)if(k!=="assessmentHash")o[k]=l[k];return o});
+window.PICKLEUP_CURRICULUM=window.PICKLEUP_CONTENT_DOC.lessons.filter(function(l){return !l.advanced&&l.status==="published"}).map(function(l){var o={};for(var k in l)if(k!=="assessmentHash")o[k]=l[k];return o});

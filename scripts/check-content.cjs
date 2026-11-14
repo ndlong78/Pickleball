@@ -3,12 +3,12 @@
 const fs=require('node:fs'),path=require('node:path');
 const core=require('../modules/content-core.js');
 const root=path.resolve(__dirname,'..');
-function read(file){return core.parseCurriculum(fs.readFileSync(file,'utf8'))}
+function read(file,options){return core.parseCurriculum(fs.readFileSync(file,'utf8'),options)}
 function check({file=path.join(root,'curriculum.js'),previousFile=null}={}){
  let doc;try{doc=read(file)}catch(error){return {ok:false,errors:[error.message]}}
  let previous=null;
  // The first CMS release replaces the legacy generator, which has no markers.
- if(previousFile&&fs.existsSync(previousFile)){try{previous=read(previousFile)}catch(_){previous=null}}
+ if(previousFile&&fs.existsSync(previousFile)){try{previous=read(previousFile,{previous:true})}catch(_){previous=null}}
  const errors=core.validate(doc,{previous});
  return {ok:!errors.length,errors,lessons:doc.lessons.length,compared:!!previous};
 }
