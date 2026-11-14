@@ -1,6 +1,8 @@
 (function(){
 const data=window.PICKLEUP_CURRICULUM||[];
 const level=document.getElementById('academyLevel'),weeks=document.getElementById('academyWeek'),detail=document.getElementById('academyDetail'),score=document.getElementById('academyScore'),status=document.getElementById('academyStatus');
+window.PICKLEUP_FILL_LEVELS?.(level);
+{const heading=document.querySelector('#academy .sectionHead h2'),range=window.PICKLEUP_LESSON_RANGE;if(heading&&range&&data.length)heading.textContent=data.length+' buổi tập từ '+range.replace('–',' đến ')}
 const activity=window.PICKLEUP_ACTIVITY,plans=window.PICKLEUP_PLANS;
 const privatePractice=()=>plans?.isAccount()||activity?.isAccount();
 const practice=window.PICKLEUP_ACADEMY_PRACTICE;

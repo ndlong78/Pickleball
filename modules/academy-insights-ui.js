@@ -4,6 +4,7 @@
 const core=window.PICKLEUP_ACADEMY_INSIGHTS,historyCore=window.PICKLEUP_ACADEMY_TRENDS,lessons=window.PICKLEUP_CURRICULUM||[];
 const byId=id=>document.getElementById(id),level=byId("aiLevel"),skill=byId("aiSkill"),lesson=byId("aiLesson");
 if(!core||!historyCore||!level||!skill||!lesson)return;
+window.PICKLEUP_FILL_LEVELS?.(level);
 const historyKey="pickleup_academy_history_v44",scoresKey="pickleup_academy_v2";
 function load(){
  let scores={};try{const v=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(scoresKey):localStorage.getItem(scoresKey))||"{}");if(v&&typeof v==="object"&&!Array.isArray(v))scores=v}catch(_){}

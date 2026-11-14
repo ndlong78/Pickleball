@@ -147,7 +147,22 @@ test('a draft or retired lesson in curriculum.js never reaches the player; a pub
  await page.reload();
  await page.locator('#academyWeek').selectOption('PU-082');
  await expect(page.locator('#academyStatus')).toContainText('13/20');
- for(const route of ['home','journey','progress']){await page.goto('/Pickleball/?page='+route);await page.evaluate(r=>PICKLEUP_PAGE_LOADER.ensure(r),route)}
+ // Level filters follow the published library; the retired lesson no longer counts.
+ await page.goto('/Pickleball/?page=academy');
+ await expect(page.locator('#academy .sectionHead h2')).toHaveText('80 buổi tập từ 1.0 đến 4.5');
+ await expect(page.locator('#academyLevel option')).toHaveText(['Tất cả','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5']);
+ await page.locator('#academyLevel').selectOption('4.0–4.5');
+ await expect(page.locator('#academyWeek option')).toHaveCount(1);
+ await expect(page.locator('#academyDetail')).toContainText('Bài 4.0 đã xuất bản');
+ await page.goto('/Pickleball/?page=progress');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));
+ for(const id of ['#wgLevel','#aiLevel','#dbLevel'])await expect(page.locator(id+' option').last()).toHaveText('4.0–4.5');
+ await expect(page.locator('#dbLevel option').first()).toHaveText('Toàn bộ 1.0–4.5');
+ await page.locator('#aiLevel').selectOption('4.0–4.5');
+ await page.locator('#wgLevel').selectOption('4.0–4.5');await page.locator('#wgSave').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('pickleup_weekly_goal_v46')).level)).toBe('4.0–4.5');
+ await page.reload();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));
+ await expect(page.locator('#wgLevel')).toHaveValue('4.0–4.5');
+ for(const route of ['home','journey']){await page.goto('/Pickleball/?page='+route);await page.evaluate(r=>PICKLEUP_PAGE_LOADER.ensure(r),route)}
  expect(errors).toEqual([]);
 });
 test('CMS never registers or uses the app service worker cache',async({page})=>{

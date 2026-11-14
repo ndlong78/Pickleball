@@ -24,7 +24,7 @@ Dành cho HLV và người quản lý nội dung. Không cần cài đặt hay t
 3. Bài mới ở trạng thái **Nháp**: có trong `curriculum.js` nhưng **không hiện cho người tập**. Khi HLV duyệt xong, đổi trạng thái sang **Đang dùng (published)** rồi xuất và merge thì bài mới xuất hiện trong app.
 4. Tạo nhầm thì bấm **Bỏ bài mới này** (chỉ có với bài chưa từng xuất bản).
 
-Lưu ý: bài cấp `4.0–4.5`/`4.5–5.0` chỉ nên chuyển sang **Đang dùng** sau khi migration 8 đã chạy trên Supabase staging và app đã có bộ lọc cấp độ mới; xem [LESSON_DOMAIN_C3.md](LESSON_DOMAIN_C3.md).
+Lưu ý: trước khi chuyển bài cấp `4.0–4.5`/`4.5–5.0` sang **Đang dùng**, xem các điều kiện ở [LESSON_DOMAIN_C3.md mục 7](LESSON_DOMAIN_C3.md).
 
 Bản nháp tự lưu trên trình duyệt đang dùng. Đổi máy hoặc xóa dữ liệu trình duyệt sẽ mất bản nháp chưa xuất.
 

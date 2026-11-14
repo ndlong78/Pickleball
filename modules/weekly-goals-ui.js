@@ -6,6 +6,7 @@ const byId=id=>document.getElementById(id);
 if(!core||!byId("wgDays"))return;
 const historyCore=window.PICKLEUP_ACADEMY_TRENDS,logCore=window.PICKLEUP_TRAINING_LOG;
 const days=byId("wgDays"),level=byId("wgLevel"),data=window.PICKLEUP_DATA;
+window.PICKLEUP_FILL_LEVELS?.(level);
 const goalRaw=()=>data?data.raw(core.KEY):localStorage.getItem(core.KEY);
 let editRevision='0',sourceTag='',dirty=false;
 for(const input of [days,level])input.addEventListener('change',()=>{dirty=true});
