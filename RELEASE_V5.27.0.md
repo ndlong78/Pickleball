@@ -4,6 +4,7 @@
 - **Xuất bản 24 bài mới** `PU-081…PU-104`: 12 bài `4.0–4.5`, 12 bài `4.5–5.0`, hai bài cho mỗi nhóm trọng tâm (quyết định cú thứ ba, reset nâng cao, counter volley, đội đôi nâng cao, thủ sang công, ra quyết định). Học viện thành **104 bài 1.0–5.0**.
 - Bộ lọc cấp độ ở Học viện, mục tiêu tuần, biểu đồ tiến bộ và Tổng quan tiến bộ có thêm `4.0–4.5`, `4.5–5.0`; các dòng mô tả số bài được cập nhật.
 - 80 bài cũ giữ nguyên từng byte.
+- **Sửa tràn ngang ở Học viện:** ô chọn bài rộng theo tên bài dài nhất; với tên bài mới, ô này rộng 783px trong khung 820px (iPad dọc) làm trang tràn ngang 852px và lệch thanh điều hướng dưới. Các ô chọn trong hàng thao tác nay bị giới hạn theo chiều rộng thẻ ở mọi khổ màn hình; có test tràn ngang cho Học viện ở 320/390/820/1180/1440.
 
 ## Giới hạn cần biết
 - Nội dung do Claude soạn và được xuất bản theo yêu cầu owner; **chưa có HLV duyệt, chưa thử trên sân**, mục tiêu /20 là đề xuất ban đầu. Trang Học viện ghi rõ điều này và nhắc giảm lực, dừng khi đau.

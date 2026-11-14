@@ -41,3 +41,18 @@ test('level filters and headings follow the published library, including both 4.
  for(const id of ['#wgLevel','#aiLevel'])await expect(page.locator(id+' option')).toHaveText(['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0']);
  await expect(page.locator('#dbLevel option')).toHaveText(['Toàn bộ 1.0–5.0','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0']);
 });
+// Long lesson titles once widened #academyWeek past the viewport (852px of content in an 820px
+// iPad viewport), which shifted the fixed dock under mobile emulation.
+for(const [width,height] of [[320,568],[390,844],[820,1180],[1180,820],[1440,900]])test.describe('Academy width '+width,()=>{
+ test.use({viewport:{width,height},isMobile:width<1024,hasTouch:width<1024});
+ test('lesson pickers never overflow the page, whatever the longest lesson title',async({page})=>{
+  await page.goto('/Pickleball/?page=academy');
+  await expect(page.locator('#academyWeek option')).toHaveCount(104);
+  for(const level of ['all','4.0–4.5','4.5–5.0']){
+   await page.locator('#academyLevel').selectOption(level);
+   const box=await page.evaluate(()=>{const de=document.documentElement,s=document.getElementById('academyWeek').getBoundingClientRect();return {scroll:de.scrollWidth,client:de.clientWidth,right:Math.round(s.right)}});
+   expect(box.scroll,level).toBeLessThanOrEqual(box.client+1);
+   expect(box.right,level).toBeLessThanOrEqual(box.client);
+  }
+ });
+});
