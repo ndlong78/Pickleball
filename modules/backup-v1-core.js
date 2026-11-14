@@ -20,7 +20,7 @@ function validate(data,env){
   const row=data.assessment;
   if(!object(row)||!object(row.answers)||skills.some(key=>![0,1,2].includes(row.answers[key]))||!optionalDate(row))fail('assessment');
  }
- if(Object.hasOwn(data,'academy')&&(!object(data.academy)||Object.entries(data.academy).some(([key,row])=>!/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(key)||!object(row)||!Number.isInteger(row.score)||row.score<0||row.score>20||!optionalDate(row))))fail('academy');
+ if(Object.hasOwn(data,'academy')&&(!object(data.academy)||Object.entries(data.academy).some(([key,row])=>!/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(key)||!object(row)||!Number.isInteger(row.score)||row.score<0||row.score>20||!optionalDate(row))))fail('academy');
  if(Object.hasOwn(data,'stageChecks')&&(!Array.isArray(data.stageChecks)||data.stageChecks.length>300||data.stageChecks.some(row=>!object(row)||!basic.includes(row.level)||!points(row.values)||!optionalDate(row))))fail('stageChecks');
  if(Object.hasOwn(data,'personalPlans')){
   if(!Array.isArray(data.personalPlans)||data.personalPlans.length>100||data.personalPlans.some(plan=>

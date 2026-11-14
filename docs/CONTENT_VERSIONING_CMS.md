@@ -1,6 +1,6 @@
 # Thiết kế: phiên bản giáo án và CMS nội dung Học viện
 
-Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (mục 10); **C1 (lưu phiên bản đề theo lượt điểm) triển khai ở V5.22.0** (mục 11). **CMS mở khóa đổi đề ở V5.23.0** (mục 12). Mở rộng ID (C3) và CMS trên Supabase (C4) vẫn là đề xuất.
+Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (mục 10); **C1 (lưu phiên bản đề theo lượt điểm) triển khai ở V5.22.0** (mục 11). **CMS mở khóa đổi đề ở V5.23.0** (mục 12). **Nền mở rộng ID và cấp 4.0–5.0 (C3a) ở V5.24.0** ([LESSON_DOMAIN_C3](LESSON_DOMAIN_C3.md)); thêm bài qua CMS (C3b), nội dung 4.0–5.0 (C3c) và CMS trên Supabase (C4) chưa làm.
 
 ## 1. Vì sao cần làm trước khi thêm video hoặc bài mới
 

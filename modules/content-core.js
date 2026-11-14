@@ -4,12 +4,12 @@
 'use strict';
 const SCHEMA=1;
 const SKILLS=['serve','return','dink','volley','position','strategy'];
-const LEVELS=['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0'];
+const LEVELS=['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0'];
 const STATUSES=['draft','review','published','retired'];
 const ANGLES=['back','side','top','front'];
 // Current ID space (DB domain pickleup_private.lesson_id). New IDs need the
 // additive ID-space PR first; see docs/CONTENT_VERSIONING_CMS.md section 6.
-const LESSON_ID=/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/;
+const LESSON_ID=/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/;
 const YOUTUBE_ID=/^[A-Za-z0-9_-]{11}$/;
 // Per-attempt assessment versions are not stored yet, so a new assessment
 // version would mix old and new scores. Lift only together with that change.
@@ -82,7 +82,7 @@ function validateLesson(l,errors){
  const where=(l&&typeof l.id==='string'?l.id:'Bài ?');
  if(!isObject(l)){errors.push('Bài không hợp lệ');return}
  for(const key of Object.keys(l))if(!KNOWN.has(key))errors.push(where+': trường lạ "'+key+'"');
- if(!LESSON_ID.test(l.id||''))errors.push(where+': ID phải trong PU-001…PU-080 (mở rộng ID cần PR riêng)');
+ if(!LESSON_ID.test(l.id||''))errors.push(where+': ID phải có dạng PU-001…PU-999 hoặc PU-1000…PU-9999');
  if(!STATUSES.includes(l.status))errors.push(where+': trạng thái phải là '+STATUSES.join('/'));
  if(!int(l.revision,1,1e6))errors.push(where+': revision phải là số nguyên ≥ 1');
  if(!int(l.assessmentVersion,1,MAX_ASSESSMENT_VERSION))errors.push(where+': phiên bản đề phải là số nguyên từ 1 đến '+MAX_ASSESSMENT_VERSION);

@@ -31,7 +31,7 @@ test('Academy device quota abort keeps prior state and retry is an idempotent ex
 });
 test('Academy device rejects malformed/credential payloads and never replaces corrupt saved data',async()=>{
  const {indexedDB,db,a}=await setup();try{
-  for(const patch of [{...check(),index:6},{...check(),lessonId:'PU-081'},{...check(),checked:1},{...check(),extra:'x'},{...check(),otp:'synthetic'}])assert.throws(()=>a.changeAcademyPractice(patch,fence));
+  for(const patch of [{...check(),index:6},{...check(),lessonId:'PU-000'},{...check(),lessonId:'PU-0081'},{...check(),lessonId:'PU-81'},{...check(),checked:1},{...check(),extra:'x'},{...check(),otp:'synthetic'}])assert.throws(()=>a.changeAcademyPractice(patch,fence));
   const row=await a.changeAcademyPractice(check(),fence);
   await new Promise((resolve,reject)=>{const r=indexedDB.open('pickleup-v6');r.onsuccess=()=>{const conn=r.result,tx=conn.transaction('device_state','readwrite');tx.objectStore('device_state').put({...row,value:null});tx.oncomplete=()=>{conn.close();resolve()};tx.onabort=()=>reject(tx.error)}});
   await assert.rejects(a.getAcademyPractice(fence),{code:'invalid_device_state'});await assert.rejects(a.changeAcademyPractice(check(2),fence),{code:'invalid_device_state'});

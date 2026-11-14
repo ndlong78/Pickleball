@@ -1,7 +1,7 @@
 /* PR4c: validated preferences/check-in projection. Never reads legacy storage. */
 (function(root){
 'use strict';
-const LEVELS=['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0'];
+const LEVELS=['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0'];
 const DEFAULT={target_days:3,level_band:LEVELS[0],session_minutes:45,gentle:false,goal_configured:false};
 const KEYS={goal:'pickleup_weekly_goal_v46',plan:'pickleup_week_plan_v47',checkins:'pickleup_week_checkins_v48'};
 class DomainError extends Error{constructor(code){super(code);this.code=code;this.name='DomainError'}}
@@ -9,7 +9,7 @@ const fail=code=>{throw new DomainError(code)};
 const object=x=>x&&Object.getPrototypeOf(x)===Object.prototype;
 const date=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&Number.isFinite(Date.parse(s+'T00:00:00Z'))&&new Date(s+'T00:00:00Z').toISOString().slice(0,10)===s;
 const timestamp=s=>typeof s==='string'&&s.length<=40&&Number.isFinite(Date.parse(s));
-const lesson=s=>s===null||typeof s==='string'&&/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/.test(s);
+const lesson=s=>s===null||typeof s==='string'&&/^PU-(?:0(?:0[1-9]|[1-9][0-9])|[1-9][0-9]{2,3})$/.test(s);
 function timezone(s){try{return typeof s==='string'&&s.length>0&&s.length<=80&&!!new Intl.DateTimeFormat('en',{timeZone:s})}catch(_){return false}}
 function preferences(value){
  if(!object(value)||!Number.isInteger(value.target_days)||value.target_days<1||value.target_days>5||!LEVELS.includes(value.level_band)||![20,30,45,60].includes(value.session_minutes)||typeof value.gentle!=='boolean'||!(value.goal_configured===null||typeof value.goal_configured==='boolean'))fail('invalid_domain');

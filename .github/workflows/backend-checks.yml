@@ -35,7 +35,9 @@ jobs:
       - name: Install JS integration dependencies
         run: npm ci --no-audit --no-fund
       - name: Verify SQL Editor upgrade matches migration source
-        run: python3 scripts/build_legacy_epoch_upgrade.py --check
+        run: |
+          python3 scripts/build_legacy_epoch_upgrade.py --check
+          python3 scripts/build_lesson_domain_upgrade.py --check
       - uses: supabase/setup-cli@v1
         with:
           version: 2.54.11
@@ -70,6 +72,11 @@ jobs:
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/legacy_epoch_upgrade_seed.sql
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < supabase/manual/staging_upgrade_20261111000100.sql
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/legacy_epoch_upgrade_verify.sql
+      - name: Upgrade existing seven-migration DB through the C3 lesson-domain SQL Editor bundle
+        run: |
+          supabase db reset --local --version 20261111000100
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < supabase/manual/staging_upgrade_20261114000100.sql
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/lesson_domain_upgrade_verify.sql
       - name: Verify migration reset from empty local DB
         run: supabase db reset --local
       - name: pgTAP schema, ownership, constraints and sync tests
