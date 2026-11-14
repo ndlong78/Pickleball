@@ -4,6 +4,7 @@
 const names={serve:"Giao bóng",return:"Trả giao bóng",dink:"Dinking",volley:"Volley",position:"Di chuyển",strategy:"Chiến thuật"};
 const keys=Object.keys(names),sessions=window.PICKLEUP_CURRICULUM||[];
 const byId=Object.fromEntries(sessions.map(s=>[s.id,s]));
+{const select=document.getElementById("dbLevel"),all=select?.querySelector('option[value="all"]');window.PICKLEUP_FILL_LEVELS?.(select);if(all&&window.PICKLEUP_LESSON_RANGE)all.textContent="Toàn bộ "+window.PICKLEUP_LESSON_RANGE}
 const $=id=>document.getElementById(id);
 function read(key){try{const data=JSON.parse((window.PICKLEUP_ACTIVITY?window.PICKLEUP_ACTIVITY.raw(key):localStorage.getItem(key))||"{}");return data&&typeof data==="object"&&!Array.isArray(data)?data:{}}catch(_){return {}}}
 function entries(){

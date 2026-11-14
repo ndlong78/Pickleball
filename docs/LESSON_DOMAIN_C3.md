@@ -1,6 +1,6 @@
 # C3 — Mở rộng mã bài và cấp độ 4.0–5.0
 
-Trạng thái: **C3a (V5.24.0) đã code**: app và migration 8 chấp nhận miền mới. **Chưa có bài mới, chưa đổi giao diện.** Migration 8 chỉ chạy trên Supabase local/CI; **chưa áp dụng trên staging**.
+Trạng thái: **C3a (V5.24.0), C3b (V5.25.0) và bộ lọc cấp độ theo thư viện (V5.26.0) đã code.** Thư viện vẫn 80 bài 1.0–4.0. **Migration 8 đã được owner áp dụng trên Supabase staging ngày 14/11/2026** qua bản SQL Editor, kết quả báo `INSTALLED / 20261114000100` (owner báo; chưa có kiểm chứng độc lập từ CI với DB staging).
 
 ## 1. Quyết định của owner (14/11/2026)
 - Bài 4.0–5.0 chia **hai nhóm `4.0–4.5` và `4.5–5.0`**, cùng cách chia 0,5 điểm như các cấp dưới.
@@ -43,6 +43,17 @@ Bản app cũ (≤ 5.23.0) coi mã `PU-081+` hoặc cấp 4.0+ là dữ liệu h
 - CMS: **+ Thêm bài mới** tạo bài nháp với mã kế tiếp, `revision 1`, phiên bản đề 1, cấu trúc 10 + 12/12/15 + 6 + 5 phút. Bài từ 3.0 là bài chiến thuật (`advanced`, có `focus`); bài dưới 3.0 thì không.
 - Validator: `week` bằng số trong mã bài; bài mới phải có mã lớn hơn mọi mã đã có (không dùng lại mã) và bắt đầu ở revision 1/phiên bản đề 1.
 
-## 6. Việc tiếp theo
-- **Bộ lọc cấp độ trong app** (Học viện, Tiến bộ, mục tiêu tuần) còn viết cứng 5 cấp và chữ "80 buổi"; phải lấy theo thư viện bài **trước khi** xuất bản bài 4.0+. Hiện bài 4.0+ đã xuất bản chỉ thấy được ở bộ lọc "Tất cả".
+## 6. Bộ lọc cấp độ theo thư viện (V5.26.0)
+- `advanced-curriculum.js` công bố `PICKLEUP_LESSON_LEVELS` (các cấp có ít nhất một bài đã xuất bản), `PICKLEUP_LESSON_RANGE` và `PICKLEUP_FILL_LEVELS(select)`.
+- Bốn bộ lọc `#academyLevel`, `#wgLevel` (mục tiêu tuần), `#aiLevel` (biểu đồ tiến bộ), `#dbLevel` (Tổng quan tiến bộ) giữ các lựa chọn trong markup và tự thêm cấp mới khi có bài. Tiêu đề Học viện ("N buổi tập từ … đến …") và nhãn "Toàn bộ …" tính theo thư viện.
+- Với thư viện hiện tại (80 bài) giao diện không đổi; có test cho cả hai trường hợp.
+- Chưa đổi: HLV cá nhân, kiểm tra chuyển cấp/nâng cao, nhật ký trận và đánh giá buổi tập vẫn 1.0–4.0 theo thiết kế C3a. Câu mô tả "44 giáo án chiến thuật…" trong Học viện là văn bản tĩnh, cần sửa cùng lúc xuất bản bài mới.
+
+## 7. Điều kiện để xuất bản bài 4.0+
+1. Migration 8 trên staging: **đã xong** (owner, 14/11/2026).
+2. App có bộ lọc cấp độ mới: từ V5.26.0.
+3. Người dùng đã nhận bản PWA ≥ 5.24.0 (bản cũ hơn có thể ghi đè lịch sử khách khi gặp mã bài mới): nên chờ vài ngày sau khi V5.26.0 phát hành.
+4. HLV duyệt nội dung và chuyển trạng thái sang "Đang dùng" qua CMS.
+
+## 8. Việc tiếp theo
 - **C3c:** bản nháp nội dung `4.0–4.5` và `4.5–5.0` để HLV duyệt.

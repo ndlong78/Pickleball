@@ -31,3 +31,11 @@ test('guest data that references an unknown PU-500 lesson keeps every route work
  expect(Object.values(stored.checkins.entries)[0].lessonId).toBe('PU-500');
  expect(errors).toEqual([]);
 });
+test('with the current library the level filters and headings are unchanged',async({page})=>{
+ await page.goto('/Pickleball/?page=academy');
+ await expect(page.locator('#academy .sectionHead h2')).toHaveText('80 buổi tập từ 1.0 đến 4.0');
+ await expect(page.locator('#academyLevel option')).toHaveText(['Tất cả','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0']);
+ await page.goto('/Pickleball/?page=progress');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));
+ for(const id of ['#wgLevel','#aiLevel'])await expect(page.locator(id+' option')).toHaveText(['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0']);
+ await expect(page.locator('#dbLevel option')).toHaveText(['Toàn bộ 1.0–4.0','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0']);
+});
