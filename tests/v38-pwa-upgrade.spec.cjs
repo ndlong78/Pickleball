@@ -40,9 +40,9 @@ test("V5.24.0 upgrades legacy PWA cache without erasing local training data",asy
   const v523=await caches.open("pickleup-shell-v5-23-0-stable");await v523.put("./v523-probe",new Response("previous CMS test unlock"));
   const v516=await caches.open("pickleup-shell-v5-16-0-stable");await v516.put("./v516-probe",new Response("previous cache transactions"));
   await v513.put('./modules/auth-config.js?v=5.13.0',new Response('window.PICKLEUP_AUTH_CONFIG={enabled:true,url:"missing-scheme.invalid",publishableKey:"sb_publishable_synthetic"};',{headers:{'Content-Type':'application/javascript'}}));
-  const oldRegistration=await navigator.serviceWorker.getRegistration();
-  if(oldRegistration)await oldRegistration.unregister();
-  // A fresh install exercises install/activate and cache cleanup.
+  // A different script URL for the same scope installs and activates a fresh worker, which
+  // exercises install/activate and cache cleanup the way a real release does (the app never
+  // unregisters). If the browser leaves that worker in "waiting", pwa-client asks it again.
   const registration=await navigator.serviceWorker.register("./sw.js?migration-test=1");
   await navigator.serviceWorker.ready;
   await registration.update();
