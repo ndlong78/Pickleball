@@ -65,3 +65,11 @@ test("calendar spans year boundary and data are annotations only, not completion
  assert.ok(result.days.some(d=>d.recorded));
  assert.equal(result.days.filter(x=>x.kind==="practice").length,2);
 });
+test("C1: scores from an earlier assessment version do not create decline or target priorities",()=>{
+ const row=(score,day,av)=>({id:"PU-001",skill:"serve",level:"1.0–2.0",score,date:"2026-10-2"+day+"T00:00:00Z",...(av?{av}:{})});
+ const old=[row(15,1),row(5,2)],top=(lessons,records,history)=>p.rank(lessons,records,history,"1.0–2.0",now).find(x=>x.lesson.id==="PU-001");
+ assert.equal(top(items,{},old).priority,4);
+ const v2=items.map(x=>x.id==="PU-001"?{...x,assessmentVersion:2}:x);
+ assert.equal(top(v2,{"PU-001":{score:5,date:"2026-10-22T00:00:00Z"}},old).priority,1);
+ assert.equal(top(v2,{},old.concat(row(9,3,2))).priority,3);
+});

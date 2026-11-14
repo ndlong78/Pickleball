@@ -36,6 +36,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .badge.changed{background:#fff3d6;color:var(--warn)}
 .badge.error{background:#fde4e4;color:var(--bad)}
 .lock{font-size:12px;color:var(--muted);margin:2px 0 0}
+.warn{font-size:13px;font-weight:600;color:var(--warn);background:#fff3d6;border:1px solid #e6c98a;border-radius:10px;padding:8px 10px;margin:8px 0}
 .drill,.video{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}
 #status{min-height:22px;margin:0}
 #errors{color:var(--bad);margin:6px 0 0;padding-left:20px}
@@ -91,10 +92,12 @@ ol.steps{padding-left:20px;margin:8px 0}
     <textarea id="f-mistakes" data-field="mistakes"></textarea>
     <h3>Bài drill</h3><div id="drills"></div>
     <h3>Đề kiểm tra</h3>
-    <label for="f-zone">Vùng mục tiêu</label><input id="f-zone" readonly>
-    <label for="f-assessment">Hướng dẫn kiểm tra</label><textarea id="f-assessment" readonly></textarea>
-    <label for="f-target">Mục tiêu tham khảo (/20)</label><input id="f-target" readonly>
-    <p class="lock">🔒 Vùng mục tiêu, đề kiểm tra, mục tiêu và số phút drill đang khóa: đổi các trường này làm điểm cũ không còn so được. Sẽ mở khi lượt điểm lưu phiên bản đề.</p>
+    <p class="note">Đổi <b>vùng mục tiêu</b>, <b>hướng dẫn kiểm tra</b> hoặc <b>mục tiêu /20</b> là đổi đề: bài lên phiên bản đề mới, điểm cũ của người tập ở bài này vẫn được giữ nhưng không còn so với điểm mới. Chỉ sửa chính tả thì cũng tính là đổi đề; hãy cân nhắc trước khi sửa.</p>
+    <label for="f-zone">Vùng mục tiêu</label><input id="f-zone" maxlength="200">
+    <label for="f-assessment">Hướng dẫn kiểm tra (đủ 20 lượt)</label><textarea id="f-assessment" maxlength="600"></textarea>
+    <label for="f-target">Mục tiêu tham khảo (1–20)</label><input id="f-target" type="number" min="1" max="20" step="1" inputmode="numeric">
+    <p id="assessmentNotice" class="warn" role="status" hidden></p>
+    <p class="lock">🔒 Số lượt kiểm tra (20), số phút drill, kỹ năng và cấp độ vẫn khóa.</p>
     <h3>Video hướng dẫn (YouTube)</h3>
     <p class="note">Tải video lên YouTube ở chế độ <b>Không công khai (Unlisted)</b>, rồi dán link. Ứng dụng chỉ tải video khi người tập bấm xem.</p>
     <div id="videos"></div>
@@ -105,6 +108,7 @@ ol.steps{padding-left:20px;margin:8px 0}
   <section class="card" aria-labelledby="publishHeading" style="margin-top:14px">
    <h2 id="publishHeading">Xuất bản</h2>
    <p id="changeSummary" class="note">Chưa có thay đổi.</p>
+   <label id="assessmentConfirmRow" class="warn" hidden><input type="checkbox" id="assessmentConfirm" style="width:auto;min-height:0;margin-right:8px">Tôi hiểu: các bài <span id="assessmentConfirmList"></span> đổi đề kiểm tra; điểm cũ của người tập ở các bài này sẽ tách khỏi xu hướng.</label>
    <div class="row">
     <button type="button" class="primary" id="download" disabled>Tải curriculum.js</button>
     <button type="button" id="copy" disabled>Sao chép nội dung</button>

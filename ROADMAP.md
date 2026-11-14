@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.22.0 — 13/11/2026 (đang PR):** C1 — mỗi lượt điểm Học viện lưu phiên bản đề (`av` cho khách, `<mã bài>@a<n>` cho tài khoản); xu hướng và gợi ý chỉ so các lượt cùng bài, cùng phiên bản đề; lượt cũ không có `av` được coi là đề 1. CMS vẫn khóa đổi đề cho tới PR mở khóa riêng. [Release notes](RELEASE_V5.22.0.md).
+**V5.23.0 — 14/11/2026 (đang PR):** CMS cho phép đổi đề kiểm tra (vùng mục tiêu, hướng dẫn kiểm tra, mục tiêu /20) thành phiên bản đề mới, có cảnh báo và ô xác nhận; CI buộc mỗi lần đổi đề tăng đúng 1 phiên bản; lịch tuần không dùng điểm đề cũ. [Release notes](RELEASE_V5.23.0.md).
+
+**V5.22.0 — 13/11/2026 (đã phát hành, #54):** C1 — mỗi lượt điểm Học viện lưu phiên bản đề (`av` cho khách, `<mã bài>@a<n>` cho tài khoản); xu hướng và gợi ý chỉ so các lượt cùng bài, cùng phiên bản đề; lượt cũ không có `av` được coi là đề 1. [Release notes](RELEASE_V5.22.0.md).
 
 **V5.21.1 — 13/11/2026 (đã phát hành, #53):** nút "Sao lưu và dữ liệu trên thiết bị" thay cho "Chọn nguồn / đồng bộ" (đồng bộ chỉ hiện ở URL vận hành); test CMS không phụ thuộc nội dung đang xuất bản. [Release notes](RELEASE_V5.21.1.md).
 

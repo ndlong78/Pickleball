@@ -13,7 +13,8 @@ const LESSON_ID=/^PU-0(?:0[1-9]|[1-7][0-9]|80)$/;
 const YOUTUBE_ID=/^[A-Za-z0-9_-]{11}$/;
 // Per-attempt assessment versions are not stored yet, so a new assessment
 // version would mix old and new scores. Lift only together with that change.
-const MAX_ASSESSMENT_VERSION=1;
+// Since V5.22.0 every score records its assessment version, so the test may change.
+const MAX_ASSESSMENT_VERSION=999;
 const LEGACY_KEYS=['id','week','level','advanced','focus','skill','skillName','title','goal','zone','setup','cues','mistakes','drills','assessment','warmup','testMinutes','cooldown','duration','diagram','coachNote'];
 const META_KEYS=['status','revision','assessmentVersion','assessmentHash','media'];
 const KNOWN=new Set([...LEGACY_KEYS,...META_KEYS]);
@@ -84,7 +85,7 @@ function validateLesson(l,errors){
  if(!LESSON_ID.test(l.id||''))errors.push(where+': ID phải trong PU-001…PU-080 (mở rộng ID cần PR riêng)');
  if(!STATUSES.includes(l.status))errors.push(where+': trạng thái phải là '+STATUSES.join('/'));
  if(!int(l.revision,1,1e6))errors.push(where+': revision phải là số nguyên ≥ 1');
- if(!int(l.assessmentVersion,1,MAX_ASSESSMENT_VERSION))errors.push(where+': chưa cho phép đổi đề kiểm tra (phiên bản đề tối đa '+MAX_ASSESSMENT_VERSION+') cho tới khi lượt điểm lưu phiên bản đề');
+ if(!int(l.assessmentVersion,1,MAX_ASSESSMENT_VERSION))errors.push(where+': phiên bản đề phải là số nguyên từ 1 đến '+MAX_ASSESSMENT_VERSION);
  if(!SKILLS.includes(l.skill))errors.push(where+': kỹ năng không hợp lệ');
  if(!LEVELS.includes(l.level))errors.push(where+': cấp độ không hợp lệ');
  for(const [key,max]of [['title',160],['goal',600],['zone',200],['setup',400],['skillName',60]])if(!text(l[key],max))errors.push(where+': '+key+' trống hoặc quá dài');
@@ -113,6 +114,9 @@ function validate(doc,{previous=null}={}){
    if(!cur){errors.push(old.id+': không được xóa bài (chuyển trạng thái retired)');continue}
    if(cur.revision<old.revision)errors.push(old.id+': revision không được giảm');
    if(cur.assessmentVersion<old.assessmentVersion)errors.push(old.id+': phiên bản đề không được giảm');
+   // One published change of the test is exactly one new version; wording-only edits keep it.
+   else if(cur.assessmentHash!==old.assessmentHash&&cur.assessmentVersion!==old.assessmentVersion+1)errors.push(old.id+': đề kiểm tra đổi thì phiên bản đề phải tăng đúng 1 (từ '+old.assessmentVersion+' lên '+(old.assessmentVersion+1)+')');
+   else if(cur.assessmentHash===old.assessmentHash&&cur.assessmentVersion!==old.assessmentVersion)errors.push(old.id+': đề kiểm tra không đổi nên phiên bản đề phải giữ nguyên');
    if(canonical(cur)!==canonical(old)&&cur.revision===old.revision)errors.push(old.id+': nội dung đổi nhưng chưa tăng revision');
   }
  }

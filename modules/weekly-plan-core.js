@@ -19,6 +19,8 @@ function saveSettings(storage,x){
  return {minutes:x.minutes,gentle:x.gentle};
 }
 function addDay(start,n){const d=new Date(start+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+// C1: guest scores from an earlier assessment version never drive a decline or target reason.
+function sameTest(a,l){const av=Number.isInteger(a?.av)&&a.av>=1&&a.av<=1e6?a.av:1,cur=Number.isInteger(l?.assessmentVersion)&&l.assessmentVersion>=1?l.assessmentVersion:1;return a?.account===true||av===cur}
 function rank(lessons,records,history,level,now=new Date()){
  const available=(Array.isArray(lessons)?lessons:[]).filter(l=>l&&l.level===level&&typeof l.id==="string"&&typeof l.skill==="string"&&Number.isInteger(l.week));
  const nowTime=new Date(now).getTime();
@@ -26,13 +28,13 @@ function rank(lessons,records,history,level,now=new Date()){
  const byId=new Map(available.map(x=>[x.id,x]));
  for(const a of Array.isArray(history)?history:[]){
   const l=byId.get(a?.id);
-  if(l&&a.level===l.level&&a.skill===l.skill&&validScore(a.score)&&validDate(a.date)&&Date.parse(a.date)<=nowTime)grouped.get(a.id).push(a);
+  if(l&&a.level===l.level&&a.skill===l.skill&&validScore(a.score)&&validDate(a.date)&&Date.parse(a.date)<=nowTime&&sameTest(a,l))grouped.get(a.id).push(a);
  }
  for(const l of available){
   const rows=grouped.get(l.id);
   if(rows.length)continue;
   const r=records&&typeof records==="object"&&!Array.isArray(records)?records[l.id]:null;
-  if(r&&validScore(r.score)&&validDate(r.date)&&Date.parse(r.date)<=nowTime)rows.push({...r,id:l.id,level:l.level,skill:l.skill});
+  if(r&&validScore(r.score)&&validDate(r.date)&&Date.parse(r.date)<=nowTime&&sameTest(r,l))rows.push({...r,id:l.id,level:l.level,skill:l.skill});
  }
  return available.map(l=>{
   const rows=grouped.get(l.id).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
