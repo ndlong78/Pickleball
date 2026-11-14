@@ -19,8 +19,10 @@ score.addEventListener('input',()=>{dirty=true});
 function paintScore(){
  const x=get();if(!x)return;
  if(scoreUnavailable()){score.value='';status.textContent=activity.notice();return}
- if(!dirty)score.value=records[x.id]?.score??x.assessment.target;
- if(!dirty&&!saving&&(feedbackVersion===null||feedbackVersion!==statusVersion())){feedbackVersion=null;status.textContent=records[x.id]?(activity?.isAccount()?'Kho tài khoản · ':'Đã lưu: ')+records[x.id].score+'/20 · '+new Date(records[x.id].date).toLocaleDateString('vi-VN')+(records[x.id].pending?' · chờ đồng bộ':''):''}
+ // C1: a guest score from an earlier assessment version is shown as such and never pre-fills the new test.
+ const oldTest=!!records[x.id]&&!trends.sameAssessment(records[x.id],x);
+ if(!dirty)score.value=oldTest?x.assessment.target:records[x.id]?.score??x.assessment.target;
+ if(!dirty&&!saving&&(feedbackVersion===null||feedbackVersion!==statusVersion())){feedbackVersion=null;status.textContent=records[x.id]?(activity?.isAccount()?'Kho tài khoản · ':'Đã lưu: ')+records[x.id].score+'/20 · '+new Date(records[x.id].date).toLocaleDateString('vi-VN')+(oldTest?' · theo đề kiểm tra cũ':'')+(records[x.id].pending?' · chờ đồng bộ':''):''}
 }
 function controls(){
  const blocked=saving||scoreUnavailable()||activity&&!activity.canWrite();
@@ -317,6 +319,7 @@ document.getElementById('academySave').addEventListener('click',async()=>{
   return;
  }
  const date=new Date().toISOString(),nextRecord={score:v,date,skill:x.skill,level:x.level};
+ if(Number.isInteger(x.assessmentVersion))nextRecord.av=trends.lessonVersion(x);
  try{
   localStorage.setItem('pickleup_academy_v2',JSON.stringify({...records,[x.id]:nextRecord}));
  }catch(_){status.textContent='Không lưu được điểm; hãy kiểm tra quyền lưu trữ trình duyệt.';return}

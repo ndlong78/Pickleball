@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.21.1 — 13/11/2026 (đang PR):** nút "Sao lưu và dữ liệu trên thiết bị" thay cho "Chọn nguồn / đồng bộ" (đồng bộ chỉ hiện ở URL vận hành); test CMS không phụ thuộc nội dung đang xuất bản. [Release notes](RELEASE_V5.21.1.md).
+**V5.22.0 — 13/11/2026 (đang PR):** C1 — mỗi lượt điểm Học viện lưu phiên bản đề (`av` cho khách, `<mã bài>@a<n>` cho tài khoản); xu hướng và gợi ý chỉ so các lượt cùng bài, cùng phiên bản đề; lượt cũ không có `av` được coi là đề 1. CMS vẫn khóa đổi đề cho tới PR mở khóa riêng. [Release notes](RELEASE_V5.22.0.md).
+
+**V5.21.1 — 13/11/2026 (đã phát hành, #53):** nút "Sao lưu và dữ liệu trên thiết bị" thay cho "Chọn nguồn / đồng bộ" (đồng bộ chỉ hiện ở URL vận hành); test CMS không phụ thuộc nội dung đang xuất bản. [Release notes](RELEASE_V5.21.1.md).
 
 **V5.21.0 — 13/11/2026 (đã phát hành):** host chính là Cloudflare Workers `https://pickleup-staging.home-309.workers.dev/` (trang Dữ liệu ở đây ẩn công cụ thử nghiệm trừ khi URL có `?pilot=` hoặc `?maintenance=`). CMS nội dung Học viện tại `cms/` và video YouTube (Không công khai, chỉ tải khi bấm xem). `curriculum.js` là nguồn nội dung duy nhất, CI kiểm tra và khóa trường chấm điểm. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.21.0.md).
 

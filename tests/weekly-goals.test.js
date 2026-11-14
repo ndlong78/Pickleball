@@ -77,3 +77,10 @@ test("weekly goal UI hydrates before enabling edits and saves the selected value
  assert.match(nodes.get("wgStatus").textContent,/Đã lưu/);
  assert.equal(values.get("legacy"),"keep");
 });
+test("C1: a decline or missed target under an earlier assessment version does not drive today's suggestion",()=>{
+ const old=[h("PU-001",15,"2026-10-01T00:00:00Z"),h("PU-001",5,"2026-10-02T00:00:00Z")];
+ assert.equal(a.recommend(lessons.map(x=>({...x,assessmentVersion:1})),{},old,"1.0–2.0").code,"decline");
+ const v2=lessons.map(x=>x.id==="PU-001"?{...x,assessmentVersion:2}:x),moved=a.recommend(v2,{"PU-001":{score:5,date:"2026-10-02T00:00:00Z"}},old,"1.0–2.0");
+ assert.equal(moved.code,"new");assert.equal(moved.lesson.id,"PU-001");
+ assert.equal(a.recommend(v2,{},old.concat({...h("PU-001",9,"2026-10-03T00:00:00Z"),av:2}),"1.0–2.0").code,"target");
+});

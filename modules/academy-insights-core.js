@@ -4,23 +4,27 @@
 "use strict";
 const SKILLS={serve:"Giao bóng",return:"Trả giao bóng",dink:"Dinking",volley:"Volley",position:"Di chuyển",strategy:"Chiến thuật"};
 function scoreOK(n){return Number.isInteger(n)&&n>=0&&n<=20}
+// C1: guest attempts scored against an earlier assessment version are kept but
+// never compared with the current test. Missing `av` means version 1.
+function oldTest(a,lesson){const av=Number.isInteger(a?.av)&&a.av>=1&&a.av<=1e6?a.av:1,now=Number.isInteger(lesson?.assessmentVersion)&&lesson.assessmentVersion>=1?lesson.assessmentVersion:1;return a?.account!==true&&av!==now}
 function gather(lessons,records,history,level,skill){
  const allowed=new Map((Array.isArray(lessons)?lessons:[]).filter(x=>x&&x.level===level&&x.skill===skill).map(x=>[x.id,x]));
  const attempts=(Array.isArray(history)?history:[])
   .filter(a=>a&&allowed.has(a.id)&&a.level===level&&a.skill===skill&&scoreOK(a.score)&&typeof a.date==="string"&&Number.isFinite(Date.parse(a.date)))
-  .map((a,i)=>({id:a.id,score:a.score,date:a.date,order:i,lesson:allowed.get(a.id),legacy:false,account:a.account===true,currentContent:a.currentContent===true,comparisonKey:a.comparisonKey||null}));
+  .map((a,i)=>({id:a.id,score:a.score,date:a.date,order:i,lesson:allowed.get(a.id),legacy:false,old:oldTest(a,allowed.get(a.id)),account:a.account===true,currentContent:a.currentContent===true,comparisonKey:a.comparisonKey||null}));
  const recorded=new Set(attempts.map(a=>a.id));
  for(const [id,lesson] of allowed){
   const r=records&&typeof records==="object"?records[id]:null;
   if(!recorded.has(id)&&r&&scoreOK(r.score))
-   attempts.push({id,score:r.score,date:typeof r.date==="string"&&Number.isFinite(Date.parse(r.date))?r.date:"1970-01-01T00:00:00.000Z",order:-1,lesson,legacy:true});
+   attempts.push({id,score:r.score,date:typeof r.date==="string"&&Number.isFinite(Date.parse(r.date))?r.date:"1970-01-01T00:00:00.000Z",order:-1,lesson,legacy:true,old:oldTest(r,lesson)});
  }
  return attempts.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)||a.order-b.order);
 }
 function analyze(lessons,records,history,level,skill,lessonId){
- const attempts=gather(lessons,records,history,level,skill);
+ const all=gather(lessons,records,history,level,skill),attempts=all.filter(a=>!a.old);
+ const oldNote=n=>n?" "+n+" lượt theo đề kiểm tra cũ được giữ riêng, không tính vào xu hướng.":"";
  const empty={count:0,lessonCount:0,mean:null,delta:null,lesson:null,lessons:[],chart:[],status:"Chưa có kết quả kỹ năng này ở cấp độ đã chọn.",advice:"Hãy luyện một giáo án và lưu bài kiểm tra 20 lượt để có mốc ban đầu."};
- if(!attempts.length)return empty;
+ if(!attempts.length)return all.length?{...empty,oldCount:all.length,status:"Đề kiểm tra đã thay đổi; chưa có kết quả theo đề hiện tại."+oldNote(all.length)}:empty;
  const byLesson=new Map();
  for(const a of attempts){const arr=byLesson.get(a.id)||[];arr.push(a);byLesson.set(a.id,arr)}
  const lessonOptions=[...byLesson.values()].map(group=>({id:group[0].id,lesson:group[0].lesson,count:group.length,lastDate:group.at(-1).date}))
@@ -48,7 +52,8 @@ function analyze(lessons,records,history,level,skill,lessonId){
   status="Cùng giáo án “"+target.title+"”: biến động "+(delta===0?"0":delta>0?"+"+delta:String(delta))+" điểm qua "+comparison.length+" lượt gần nhất.";
   advice="Giữ bài tập hiện tại, ưu tiên độ chính xác và luyện thêm một lượt trước khi thay đổi độ khó.";
  }
- return {count:attempts.length,lessonCount:chosen.length,comparableCount:comparable.length,account:latest.account,currentContent:latest.currentContent,mean,delta,lesson:target,lessons:lessonOptions,
+ const oldCount=all.filter(a=>a.old&&a.id===latest.id).length;status+=oldNote(oldCount);
+ return {count:attempts.length,oldCount,lessonCount:chosen.length,comparableCount:comparable.length,account:latest.account,currentContent:latest.currentContent,mean,delta,lesson:target,lessons:lessonOptions,
   chart:recent.map(a=>({score:a.score,date:a.date,week:a.lesson.week,title:a.lesson.title,id:a.id,legacy:a.legacy})),
   status,advice};
 }

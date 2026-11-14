@@ -32,6 +32,8 @@ function plusDays(day,n){
  const d=new Date(day+"T12:00:00.000Z");d.setUTCDate(d.getUTCDate()+n);
  return d.toISOString().slice(0,10);
 }
+// C1: guest scores from an earlier assessment version are not compared with the current test.
+function sameTest(a,x){const av=Number.isInteger(a?.av)&&a.av>=1&&a.av<=1e6?a.av:1,now=Number.isInteger(x?.assessmentVersion)&&x.assessmentVersion>=1?x.assessmentVersion:1;return a?.account===true||av===now}
 function validLessonAttempt(a,byId){
  const x=byId.get(a?.id);
  return x&&a.level===x.level&&a.skill===x.skill&&isScore(a.score)&&isDate(a.date);
@@ -72,12 +74,12 @@ function recommend(lessons,academyRecords,academyHistory,level){
  const grouped=new Map(available.map(x=>[x.id,[]]));
  for(const a of Array.isArray(academyHistory)?academyHistory:[]){
   const x=available.find(l=>l.id===a?.id);
-  if(x&&validLessonAttempt(a,new Map([[x.id,x]])))grouped.get(x.id).push(a);
+  if(x&&validLessonAttempt(a,new Map([[x.id,x]]))&&sameTest(a,x))grouped.get(x.id).push(a);
  }
  for(const x of available){
   if(grouped.get(x.id).length)continue;
   const r=academyRecords&&academyRecords[x.id];
-  if(r&&isScore(r.score)&&isDate(r.date))grouped.get(x.id).push({id:x.id,skill:x.skill,level:x.level,score:r.score,date:r.date});
+  if(r&&isScore(r.score)&&isDate(r.date)&&sameTest(r,x))grouped.get(x.id).push({id:x.id,skill:x.skill,level:x.level,score:r.score,date:r.date});
  }
  for(const rows of grouped.values())rows.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
  const repeated=available.map(x=>{const rows=grouped.get(x.id),last=rows.at(-1);return {lesson:x,rows:last?.account?(last.comparisonKey?rows.filter(a=>a.account&&a.comparisonKey===last.comparisonKey):[last]):rows}}).filter(x=>x.rows.length>=2);

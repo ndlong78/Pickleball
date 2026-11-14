@@ -31,3 +31,9 @@ test('capture detects observed changes and credential-shaped data is never expor
  assert.throws(()=>core.capture(source,env,FIELDS),{code:'source_changed'});
  assert.throws(()=>core.parse(JSON.stringify({...minimal(),refresh_token:'synthetic'}),env),{code:'credentials_detected'});
 });
+test('C1: V1 backups with the optional av field on Academy scores and history stay valid',()=>{
+ const row={id:'PU-001',skill:'serve',level:'1.0–2.0',score:9,date:'2026-11-11T10:00:00.000Z',av:1};
+ const data=core.parse(JSON.stringify({...minimal(),academy:{'PU-001':{score:9,date:row.date,skill:'serve',level:'1.0–2.0',av:1}},academyHistory:[row]}),env),patch=core.patch(data,FIELDS);
+ const value=key=>{const v=patch.find(x=>x.key===key).value;return typeof v==='string'?JSON.parse(v):v};
+ assert.deepEqual(value(FIELDS.academyHistory),[row]);assert.equal(value(FIELDS.academy)['PU-001'].av,1);
+});
