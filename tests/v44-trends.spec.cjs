@@ -20,7 +20,7 @@ for(const width of [390,820,1440]){
 }
 test("V4.4 does not invent trend for preexisting V4.3 single-score data",async({page})=>{
  await page.goto("/?page=academy");
- await expect(page.locator("#academyWeek option")).toHaveCount(80);
+ await expect(page.locator("#academyWeek option")).toHaveCount(104);
    const id=await page.locator("#academyWeek").inputValue();
  await page.evaluate(id=>localStorage.setItem("pickleup_academy_v2",JSON.stringify({[id]:{score:5,date:new Date().toISOString()}})),id);
  await page.reload();
@@ -43,7 +43,7 @@ test('Academy score stays disabled until delayed feature hydration completes',as
 });
 test("C1: guest scores record the assessment version and still compare with earlier scores of the same test",async({page})=>{
  await page.goto("/?page=academy");
- await expect(page.locator("#academyWeek option")).toHaveCount(80);
+ await expect(page.locator("#academyWeek option")).toHaveCount(104);
  const id=await page.locator("#academyWeek").inputValue();
  await page.evaluate(id=>{const x=PICKLEUP_CURRICULUM.find(l=>l.id===id);localStorage.setItem("pickleup_academy_history_v44",JSON.stringify([{id,skill:x.skill,level:x.level,score:5,date:"2026-01-01T00:00:00.000Z"}]))},id);
  await page.reload();
@@ -60,7 +60,7 @@ test.describe("C1 changed assessment",()=>{
 test("C1: after a lesson's test changes, earlier scores are labelled and kept out of the trend",async({page})=>{
  await page.route("**/curriculum.js*",async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text())+";window.PICKLEUP_CURRICULUM[0].assessmentVersion=2;window.PICKLEUP_CONTENT_DOC.lessons[0].assessmentVersion=2;"})});
  await page.goto("/?page=academy");
- await expect(page.locator("#academyWeek option")).toHaveCount(80);
+ await expect(page.locator("#academyWeek option")).toHaveCount(104);
  const lesson=await page.evaluate(()=>{const x=PICKLEUP_CURRICULUM[0];return {id:x.id,skill:x.skill,level:x.level,target:x.assessment.target}});
  await page.evaluate(x=>{const row=(score,day)=>({id:x.id,skill:x.skill,level:x.level,score,date:"2026-01-0"+day+"T00:00:00.000Z",av:1});
   localStorage.setItem("pickleup_academy_history_v44",JSON.stringify([row(3,1),row(18,2)]));

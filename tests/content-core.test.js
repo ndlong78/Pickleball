@@ -3,18 +3,25 @@ const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const core=require('../modules/content-core.js'),{check}=require('../scripts/check-content.cjs');
 const source=fs.readFileSync(path.join(__dirname,'../curriculum.js'),'utf8');
 const doc=()=>core.parseCurriculum(source);
-test('curriculum.js is the canonical, valid content source for all 80 lessons',()=>{
+// The original 1.0–4.0 library (PU-001…080); the C3b rule tests build new lessons on top of it.
+const live=()=>{const d=doc();return {...d,lessons:d.lessons.slice(0,80)}};
+test('curriculum.js is the canonical, valid content source; 104 lessons are published',()=>{
  const d=doc();
- assert.equal(d.lessons.length,80);
+ assert.equal(d.lessons.filter(l=>l.status==='published').length,104);
+ assert.equal(d.lessons.slice(0,80).every((l,i)=>l.id==='PU-'+String(i+1).padStart(3,'0')),true);
  assert.deepEqual(core.validate(d),[]);
  assert.equal(core.renderCurriculum(d),source);
  assert.equal(check().ok,true);
- assert.ok(d.lessons.every(l=>l.status==='published'&&l.revision>=1&&l.assessmentVersion===1&&Array.isArray(l.media)));
+ assert.ok(d.lessons.every(l=>core.STATUSES.includes(l.status)&&l.revision>=1&&l.assessmentVersion>=1&&Array.isArray(l.media)));
+  // PU-081…104: both 4.0–5.0 bands, tactical lessons with the non-certification wording.
+ const added=d.lessons.slice(80);
+ assert.deepEqual([added.length,added.filter(l=>l.level==='4.0–4.5').length,added.filter(l=>l.level==='4.5–5.0').length],[24,12,12]);
+ assert.equal(added.every(l=>['4.0–4.5','4.5–5.0'].includes(l.level)&&l.advanced===true&&l.revision===1&&l.assessmentVersion===1&&/không phải chứng nhận trình độ\.$/.test(l.assessment.instruction)),true);
 });
 test('runtime globals keep the legacy shape without leaking the change-detection hash',()=>{
  const context={};context.window=context;require('node:vm').runInNewContext(source+fs.readFileSync(path.join(__dirname,'../advanced-curriculum.js'),'utf8'),context);
- assert.equal(context.PICKLEUP_CURRICULUM.length,80);
- assert.equal(context.PICKLEUP_ADVANCED_CURRICULUM.length,44);
+ assert.equal(context.PICKLEUP_CURRICULUM.length,104);
+ assert.equal(context.PICKLEUP_ADVANCED_CURRICULUM.length,68);
  assert.ok(context.PICKLEUP_CURRICULUM.every(l=>!('assessmentHash' in l)));
  assert.equal(JSON.stringify(context.PICKLEUP_CURRICULUM.slice(0,36).map(l=>l.id)),JSON.stringify(doc().lessons.filter(l=>!l.advanced).map(l=>l.id)));
 });
@@ -72,12 +79,12 @@ test('the content file must keep its exact header, adapter and formatting',()=>{
  assert.equal(check({previousFile:file}).ok,true,'legacy base without markers is ignored');
 });
 test('C3b: the adapter publishes only published lessons; drafts, review and retired stay in the file',()=>{
- const d=doc(),draft=core.newLesson(d,{level:'4.0–4.5',skill:'strategy',focus:'tactical-choice'});
+ const d=live(),draft=core.newLesson(d,{level:'4.0–4.5',skill:'strategy',focus:'tactical-choice'});
  const fill=l=>({...l,title:'T',goal:'G',zone:'Z',setup:'S',cues:['a','b','c'],mistakes:['m'],drills:l.drills.map(x=>({...x,name:'n',instruction:'i',check:'c'})),assessment:{...l.assessment,instruction:'A'}});
  const ready=fill(draft);ready.assessmentHash=core.scoringHash(ready);
  d.lessons.push(ready);d.lessons[1]={...d.lessons[1],status:'retired',revision:d.lessons[1].revision+1};d.lessons[40]={...d.lessons[40],status:'review',revision:d.lessons[40].revision+1};
- assert.deepEqual(core.validate(d,{previous:doc()}),[]);
- const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path'),context={window:{}};context.window.window=context.window;
+ assert.deepEqual(core.validate(d,{previous:live()}),[]);
+ const vm=require('node:vm'),context={window:{}};context.window.window=context.window;
  vm.runInNewContext(core.renderCurriculum(d),context);
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','advanced-curriculum.js'),'utf8'),context.window);
  const ids=context.window.PICKLEUP_CURRICULUM.map(l=>l.id);
@@ -87,22 +94,22 @@ test('C3b: the adapter publishes only published lessons; drafts, review and reti
  assert.equal(context.window.PICKLEUP_CURRICULUM.some(l=>'assessmentHash' in l),false);
 });
 test('C3b: new lessons take the next id, start at version 1 and follow the level structure',()=>{
- const d=doc(),low=core.newLesson(d,{level:'2.0–2.5',skill:'dink',focus:'third-drop'}),high=core.newLesson(d,{level:'4.5–5.0',skill:'volley',focus:'counter-volley'});
+ const d=live(),low=core.newLesson(d,{level:'2.0–2.5',skill:'dink',focus:'third-drop'}),high=core.newLesson(d,{level:'4.5–5.0',skill:'volley',focus:'counter-volley'});
  assert.equal(low.id,'PU-081');assert.equal(low.week,81);assert.equal('advanced' in low,false);assert.equal('focus' in low,false);
  assert.equal(high.advanced,true);assert.equal(high.focus,'counter-volley');assert.deepEqual(high.drills.map(x=>x.minutes),[12,12,15]);
  const fill=l=>{const x={...l,title:'T',goal:'G',zone:'Z',setup:'S',cues:['a','b','c'],mistakes:['m'],drills:l.drills.map(y=>({...y,name:'n',instruction:'i',check:'c'})),assessment:{...l.assessment,instruction:'A'}};x.assessmentHash=core.scoringHash(x);return x};
- const errors=x=>core.validate({...d,lessons:[...d.lessons,x]},{previous:doc()}).join('\n');
+ const errors=x=>core.validate({...d,lessons:[...d.lessons,x]},{previous:live()}).join('\n');
  assert.equal(errors(fill(high)),'');
  assert.match(errors({...fill(high),revision:2}),/bắt đầu ở revision 1/);
  assert.match(errors({...fill(high),advanced:undefined}),/advanced=true/);
  assert.match(errors({...fill(high),focus:'made-up'}),/focus/);
  assert.match(errors({...fill(low),advanced:true,focus:'third-drop'}),/dưới 3\.0/);
  assert.match(errors({...fill(high),week:5}),/week/);
- const reused={...fill(high),id:'PU-090',week:90},prior={...doc(),lessons:[...doc().lessons,{...fill(high),id:'PU-095',week:95}]};
+ const reused={...fill(high),id:'PU-090',week:90},prior={...live(),lessons:[...live().lessons,{...fill(high),id:'PU-095',week:95}]};
  assert.match(core.validate({...d,lessons:[...prior.lessons,reused]},{previous:prior}).join('\n'),/lớn hơn mã lớn nhất/);
 });
 test('C3b: the current file must use the status-filtering adapter; only a base file may use the earlier one',()=>{
- const fs=require('node:fs'),path=require('node:path'),current=fs.readFileSync(path.join(__dirname,'..','curriculum.js'),'utf8');
+ const current=core.renderCurriculum(live());
  assert.match(current,/l\.status==="published"/);
  const legacy=current.replace('return !l.advanced&&l.status==="published"}','return !l.advanced}');
  assert.notEqual(legacy,current);

@@ -4677,6 +4677,1374 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "assessmentVersion": 1,
    "assessmentHash": "7e703a89",
    "media": []
+  },
+  {
+   "id": "PU-081",
+   "week": 81,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "third-choice",
+   "skill": "strategy",
+   "skillName": "Quyết định cú thứ ba",
+   "title": "Drop chéo sân vào chân người đang tiến",
+   "goal": "Tập thả cú thứ ba chéo sân vào chân người trả giao đang tiến lên, rồi cùng đồng đội lên lưới theo chất lượng cú thả.",
+   "zone": "Chéo sân, trong kitchen phía người trả giao, cách lưới tối đa 1,5 m.",
+   "setup": "Bốn người đánh đôi; đội giao bắt đầu sau baseline, đội trả giao một người đã ở kitchen, một người đang tiến. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Nhìn vị trí người đang tiến trước khi chọn hướng.",
+    "Mặt vợt mở, đẩy bóng bằng vai, không vẩy cổ tay.",
+    "Thả tốt thì tiến hai bước; thả cao thì dừng và sẵn sàng thủ."
+   ],
+   "mistakes": [
+    "Thả thẳng vào người đã đứng vững ở kitchen.",
+    "Chạy lên lưới dù cú thả bay cao.",
+    "Nhìn bóng mình đánh mà quên đồng đội."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Người cấp trả giao sâu; thả chéo 10 quả mỗi bên, bóng phải rơi trong kitchen. Ba hiệp, nghỉ 30 giây giữa hiệp.",
+     "check": "Đếm số quả rơi trong kitchen và thấp hơn hông đối thủ."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Thêm người đang tiến: chỉ tính điểm khi bóng buộc họ đánh từ dưới lên. Bốn lượt, mỗi lượt năm quả.",
+     "check": "Đếm số quả buộc đối thủ đánh từ dưới lên, trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Chơi pha bóng từ cú giao; sau cú thứ ba, cả đội tự gọi \"lên\" hoặc \"dừng\". Ba lượt năm phút, đổi vai.",
+     "check": "Ghi số lần gọi đúng với chất lượng cú thả."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Trong 20 cú thứ ba từ trả giao sâu, đếm số quả rơi trong kitchen chéo sân và buộc đối thủ đánh từ dưới lên. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "9846dbb6",
+   "media": []
+  },
+  {
+   "id": "PU-082",
+   "week": 82,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "advanced-reset",
+   "skill": "position",
+   "skillName": "Reset nâng cao",
+   "title": "Reset từ vùng chuyển tiếp khi bị đánh vào chân",
+   "goal": "Tập đưa bóng bị ép vào chân trở về kitchen bằng một cú reset mềm, giữ thăng bằng để bước tiếp lên lưới.",
+   "zone": "Kitchen đối phương, ưu tiên giữa sân, bóng không cao quá vai đối thủ.",
+   "setup": "Hai người ở kitchen cấp bóng nhanh vừa vào chân; người tập đứng giữa vùng chuyển tiếp. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Dừng chân (split step) trước khi đối thủ chạm bóng.",
+    "Vợt thấp phía trước, tay cầm lỏng để hấp thụ lực.",
+    "Reset xong mới bước; không vừa chạy vừa đánh."
+   ],
+   "mistakes": [
+    "Vung vợt đáp trả tốc độ thay vì hấp thụ.",
+    "Lùi về baseline sau mỗi cú bị ép.",
+    "Đứng thẳng gối khi bóng vào chân."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Cấp bóng vào chân từng bên; reset vào kitchen 10 quả forehand, 10 quả backhand. Ba hiệp.",
+     "check": "Đếm số quả rơi trong kitchen và không bị đập lại."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Cấp ngẫu nhiên hai bên, xen một quả cao: quả cao được phép đánh xuống, quả thấp phải reset. Bốn lượt năm quả.",
+     "check": "Đếm số lựa chọn đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Bắt đầu ở vùng chuyển tiếp, đối thủ ép; chỉ được lên kitchen sau một reset tốt. Ba lượt năm phút.",
+     "check": "Ghi số pha lên được kitchen mà không mất điểm."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Nhận 20 quả ép vào chân ở vùng chuyển tiếp; đếm số quả reset rơi trong kitchen mà đối thủ không tấn công được. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "1fa535a5",
+   "media": []
+  },
+  {
+   "id": "PU-083",
+   "week": 83,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "counter-volley",
+   "skill": "volley",
+   "skillName": "Counter volley",
+   "title": "Counter volley vào hông tay thuận đối thủ",
+   "goal": "Tập phản đòn cú tăng tốc bằng volley ngắn vào hông hoặc vai bên tay thuận của người vừa tấn công.",
+   "zone": "Hông/vai bên tay thuận của người tấn công, hoặc khoảng giữa hai đối thủ.",
+   "setup": "Bốn người ở kitchen; một bên được phép tăng tốc từ bóng dink cao hơn lưới. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Vợt chờ ngang ngực, hơi nghiêng về backhand.",
+    "Động tác đẩy ngắn dưới 30 cm, không kéo vợt ra sau.",
+    "Sau cú counter, vợt về lại vị trí chờ ngay."
+   ],
+   "mistakes": [
+    "Lùi ra khỏi kitchen khi bị tăng tốc.",
+    "Đánh trả thật mạnh ra ngoài baseline.",
+    "Counter cả những quả sẽ bay ra ngoài sân."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Người cấp tăng tốc vừa vào thân; counter 10 quả mỗi bên tay vào nón đặt ở hông đối thủ. Ba hiệp.",
+     "check": "Đếm số quả trúng vùng nón và thấp hơn vai."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Xen quả tăng tốc cao sẽ ra ngoài: phải thả cho bóng ra. Bốn lượt năm quả.",
+     "check": "Đếm số quyết định đúng (counter hoặc thả) trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink chéo, bên tấn công chọn lúc tăng tốc; chơi tiếp tới hết pha. Ba lượt năm phút, đổi vai.",
+     "check": "Ghi số pha thắng hoặc trung hòa sau cú counter."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Nhận 20 cú tăng tốc tại kitchen; đếm số quả counter đúng vùng hoặc thả đúng quả ra ngoài. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "a4a94a03",
+   "media": []
+  },
+  {
+   "id": "PU-084",
+   "week": 84,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "doubles-switch",
+   "skill": "strategy",
+   "skillName": "Chiến thuật đội đôi nâng cao",
+   "title": "Stacking khi giao bóng: đổi bên có tín hiệu",
+   "goal": "Tập stacking ở lượt giao để giữ forehand ở giữa, với tín hiệu tay rõ ràng và vị trí hợp lệ khi giao.",
+   "zone": "Vị trí đứng sau cú giao: mỗi người về đúng bên đã thống nhất trước khi bóng trả giao qua lưới.",
+   "setup": "Bốn người đánh đôi; đội giao thống nhất bên ưu tiên của từng người và tín hiệu tay (nắm tay = giữ, xòe tay = đổi). Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Thống nhất tín hiệu trước mỗi điểm, người ở kitchen ra hiệu sau lưng.",
+    "Người giao đúng ô, đúng thứ tự; đồng đội đứng ngoài sân bên cạnh.",
+    "Di chuyển ngang ngay sau cú giao, mắt vẫn theo bóng."
+   ],
+   "mistakes": [
+    "Đứng sai ô hoặc giao sai thứ tự khi stacking.",
+    "Đổi bên chậm, hở cả nửa sân.",
+    "Hai người hiểu khác tín hiệu."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Không bóng: tập vị trí xuất phát và đường chạy cho cả điểm chẵn và lẻ. Sau đó thêm cú giao, 10 lần mỗi phía.",
+     "check": "Đếm số lần cả hai về đúng vị trí trước khi bóng trả qua lưới."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Người ở kitchen ra tín hiệu ngẫu nhiên giữ/đổi; đội trả giao đánh trả sâu vào người đang chạy. Bốn lượt năm quả.",
+     "check": "Đếm số lần thực hiện đúng tín hiệu trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Chơi tới 7 điểm, đội giao bắt buộc stacking mọi lượt giao; trọng tài phụ kiểm vị trí và thứ tự.",
+     "check": "Ghi số lỗi vị trí và số điểm thắng khi stacking."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 lượt giao có stacking, đếm số lần đúng ô, đúng thứ tự, đúng tín hiệu và cả hai về vị trí trước cú thứ ba. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "e668b94d",
+   "media": []
+  },
+  {
+   "id": "PU-085",
+   "week": 85,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "defense-attack",
+   "skill": "dink",
+   "skillName": "Từ phòng thủ sang phản công",
+   "title": "Reset rồi tấn công quả bóng nảy cao đầu tiên",
+   "goal": "Tập kiên nhẫn reset khi bị ép và chỉ chuyển sang tấn công ở quả đầu tiên nảy cao hơn lưới.",
+   "zone": "Khi tấn công: chân hoặc hông đối thủ gần nhất. Khi reset: kitchen giữa sân.",
+   "setup": "Hai đấu hai tại kitchen; một bên ép bằng dink sâu và tăng tốc nhẹ, bên tập bắt đầu ở thế bị ép. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Bóng dưới mép lưới: reset. Bóng trên mép lưới và trong tầm: tấn công.",
+    "Tấn công xuống chân, không cần hết lực.",
+    "Sau cú tấn công, chờ quả counter."
+   ],
+   "mistakes": [
+    "Tấn công quả thấp hơn lưới.",
+    "Reset mãi dù có quả nảy cao.",
+    "Tấn công xong thả vợt xuống."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Người cấp xen 4 quả thấp, 1 quả cao; tập gọi to \"reset\" hoặc \"đánh\" trước khi chạm bóng. 20 quả, ba hiệp.",
+     "check": "Đếm số lần gọi đúng."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Như trên nhưng thực hiện cú đánh; quả cao phải vào nón ở chân đối thủ. Bốn lượt năm quả.",
+     "check": "Đếm số quả chọn đúng và đánh đúng vùng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng tự do bắt đầu bằng dink sâu vào bên tập. Ba lượt năm phút, đổi vai.",
+     "check": "Ghi số pha thua do tấn công sai quả."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Trong 20 quả xen thấp/cao khi đang bị ép, đếm số quả chọn đúng (reset hoặc tấn công) và đưa bóng vào đúng vùng. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "c97d1973",
+   "media": []
+  },
+  {
+   "id": "PU-086",
+   "week": 86,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "tactical-choice",
+   "skill": "strategy",
+   "skillName": "Ra quyết định dưới áp lực",
+   "title": "Chọn mục tiêu theo vị trí chân đối thủ",
+   "goal": "Tập quan sát chân và thăng bằng của hai đối thủ trước khi đánh, rồi chọn người đang di chuyển hoặc lệch trọng tâm.",
+   "zone": "Chân người đang di chuyển, hoặc khoảng giữa khi cả hai đứng lệch ra biên.",
+   "setup": "Bốn người; đội đối diện di chuyển theo hiệu lệnh của HLV (một người lùi, hoặc cả hai dạt biên) ngay trước cú đánh. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Liếc nhìn đối thủ lúc bóng đang bay tới, không phải lúc chạm bóng.",
+    "Người đang lùi hoặc đang chạy là mục tiêu.",
+    "Không thấy điểm yếu thì đánh an toàn vào giữa, thấp."
+   ],
+   "mistakes": [
+    "Chỉ nhìn bóng, đánh theo thói quen.",
+    "Nhắm sát biên khi không cần.",
+    "Đổi ý giữa chừng làm hỏng cú đánh."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "HLV giơ màu cho đối thủ di chuyển; người tập chỉ gọi tên mục tiêu, chưa đánh. 20 tình huống, hai hiệp.",
+     "check": "Đếm số lần gọi đúng mục tiêu."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Thực hiện cú đánh vào mục tiêu đã gọi từ bóng cấp ở vùng chuyển tiếp. Bốn lượt năm quả.",
+     "check": "Đếm số quả đúng mục tiêu trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Chơi pha bóng; sau mỗi pha, người tập nói mình đã thấy gì trước cú quyết định. Ba lượt năm phút.",
+     "check": "Ghi số pha có quan sát trước khi đánh."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Trong 20 tình huống đối thủ di chuyển trước cú đánh, đếm số quả vào đúng mục tiêu hợp lý (người đang di chuyển hoặc giữa sân). Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "75797929",
+   "media": []
+  },
+  {
+   "id": "PU-087",
+   "week": 87,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "third-choice",
+   "skill": "strategy",
+   "skillName": "Quyết định cú thứ ba",
+   "title": "Drive rồi drop: phối hợp cú thứ ba và thứ năm",
+   "goal": "Tập drive cú thứ ba vào người trả giao đang tiến để tạo quả volley yếu, rồi thả cú thứ năm vào kitchen và lên lưới.",
+   "zone": "Cú thứ ba: hông người đang tiến. Cú thứ năm: kitchen giữa sân.",
+   "setup": "Bốn người; đội trả giao trả sâu vừa và tiến lên lưới bình thường. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Drive khoảng 70% lực, thấp sát lưới, không cần thắng điểm.",
+    "Đồng đội của người drive tiến trước một bước để bắt quả volley ngắn.",
+    "Cú thứ năm thả mềm rồi cả đội lên."
+   ],
+   "mistakes": [
+    "Drive hết lực ra ngoài baseline.",
+    "Drive xong đứng nhìn.",
+    "Drive tiếp cú thứ năm dù đối thủ đã đứng vững ở kitchen."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Cấp trả giao vừa; drive vào nón ở hông người tiến, 10 quả mỗi bên. Ba hiệp.",
+     "check": "Đếm số quả thấp hơn vai và trong sân."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Đối thủ volley lại; người tập thả cú thứ năm vào kitchen. Bốn lượt năm quả.",
+     "check": "Đếm số cặp drive–drop hoàn thành trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng từ cú giao; đội giao tự chọn drop ngay hoặc drive–drop theo độ sâu của cú trả. Ba lượt năm phút.",
+     "check": "Ghi số lần lên được kitchen sau cú thứ năm."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Trong 20 pha bắt đầu từ trả giao, đếm số pha hoàn thành drive trong sân rồi drop cú thứ năm vào kitchen. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "cabee98a",
+   "media": []
+  },
+  {
+   "id": "PU-088",
+   "week": 88,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "advanced-reset",
+   "skill": "position",
+   "skillName": "Reset nâng cao",
+   "title": "Reset backhand một tay khi bị kéo dạt biên",
+   "goal": "Tập reset bằng backhand khi bị kéo ra ngoài đường biên dọc, đưa bóng chéo về kitchen để có thời gian trở lại vị trí.",
+   "zone": "Chéo sân vào kitchen, tránh thẳng dọc biên gần người đang chờ.",
+   "setup": "Người cấp ở kitchen dink sâu ra biên backhand; đồng đội của người tập giữ giữa sân. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Bước chân ngoài ra trước, không với tay.",
+    "Reset chéo sân để có thêm khoảng cách và thời gian.",
+    "Đánh xong trở về bằng bước ngang, mặt vẫn hướng lưới."
+   ],
+   "mistakes": [
+    "Đánh thẳng dọc biên vào người đang chờ sẵn.",
+    "Quay lưng chạy về vị trí.",
+    "Đồng đội không dịch sang che giữa."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Cấp 10 quả ra biên backhand; reset chéo vào kitchen rồi trở về vạch giữa. Ba hiệp.",
+     "check": "Đếm số quả rơi trong kitchen chéo sân."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Đồng đội phải dịch che giữa khi người tập bị kéo; người cấp thử đánh vào giữa nếu hở. Bốn lượt năm quả.",
+     "check": "Đếm số lần cả hai phối hợp đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng dink, bên đối diện được kéo biên bất kỳ lúc nào. Ba lượt năm phút.",
+     "check": "Ghi số pha không bị mất điểm ngay sau khi bị kéo."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Nhận 20 quả kéo ra biên backhand; đếm số quả reset chéo rơi trong kitchen và kịp trở về vị trí trước quả kế tiếp. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "99903177",
+   "media": []
+  },
+  {
+   "id": "PU-089",
+   "week": 89,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "counter-volley",
+   "skill": "volley",
+   "skillName": "Counter volley",
+   "title": "Phòng thủ pha đấu tay (hands battle) ba chạm",
+   "goal": "Tập giữ ba cú volley liên tiếp trong pha đấu tay tại kitchen, mỗi cú thấp hơn và gọn hơn cú trước.",
+   "zone": "Thân người đối thủ từ hông xuống; không nhắm đầu, mặt.",
+   "setup": "Hai người đối diện tại kitchen, một người khởi động pha đấu tay bằng cú tăng tốc vừa. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Khuỷu tay phía trước thân, vợt không rời tầm mắt.",
+    "Mỗi cú thấp hơn cú trước; quả cao thì thả nếu sẽ ra ngoài.",
+    "Thở ra khi chạm bóng để giữ tay mềm."
+   ],
+   "mistakes": [
+    "Vung to dần theo tốc độ pha bóng.",
+    "Nhắm vào mặt đối thủ.",
+    "Nín thở, gồng vai."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Tốc độ 50%: giữ ba chạm liên tiếp với bạn tập, 10 chuỗi. Tăng lên 70% khi ổn định.",
+     "check": "Đếm số chuỗi đủ ba chạm."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Một bên được đổi hướng ở chạm thứ hai; bên kia phải kịp đưa vợt sang. Bốn lượt năm chuỗi.",
+     "check": "Đếm số chuỗi xử lý được cú đổi hướng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink tự do, ai cũng được khởi động đấu tay; chơi hết pha. Ba lượt năm phút. Dừng nếu mỏi vai hoặc cổ tay.",
+     "check": "Ghi số pha đấu tay thắng hoặc trung hòa."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Trong 20 pha đấu tay ở tốc độ thi đấu, đếm số pha giữ được ba cú volley trong sân, thấp hơn vai đối thủ. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "a16d423d",
+   "media": []
+  },
+  {
+   "id": "PU-090",
+   "week": 90,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "doubles-switch",
+   "skill": "strategy",
+   "skillName": "Chiến thuật đội đôi nâng cao",
+   "title": "Poach có hiệu lệnh và đồng đội đổi bên",
+   "goal": "Tập cắt bóng (poach) ở giữa sân có báo trước, đồng đội lập tức đổi sang bên trống.",
+   "zone": "Cú poach: xuống chân đối thủ gần nhất hoặc giữa sân. Vị trí sau poach: hai người đã đổi bên.",
+   "setup": "Bốn người tại kitchen; đội tập thống nhất từ khóa \"của tôi\" và \"đổi\". Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Người poach gọi sớm, bước chéo tới trước, không bước ngang.",
+    "Đồng đội nghe \"đổi\" là dịch ngay ra sau lưng người poach.",
+    "Poach xong ở lại bên mới, không chạy về."
+   ],
+   "mistakes": [
+    "Poach không gọi, hai người cùng bỏ một bên.",
+    "Với tay poach quả ngoài tầm.",
+    "Poach xong chạy về làm hở giữa."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Người cấp dink chéo chậm qua giữa; poach 10 quả, đồng đội đổi bên. Ba hiệp, đổi vai.",
+     "check": "Đếm số lần đổi bên xong trước khi đối thủ đánh lại."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Người cấp xen quả không thể poach (thấp, xa): người tập phải bỏ và gọi \"của bạn\". Bốn lượt năm quả.",
+     "check": "Đếm số quyết định đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng tự do; mỗi đội phải thử ít nhất một poach mỗi lượt. Ba lượt năm phút.",
+     "check": "Ghi số poach thắng điểm và số lần hở sân sau poach."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 quả qua giữa sân, đếm số lần quyết định đúng (poach có gọi hoặc bỏ) và đồng đội che đúng bên. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "977d2dd6",
+   "media": []
+  },
+  {
+   "id": "PU-091",
+   "week": 91,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "defense-attack",
+   "skill": "dink",
+   "skillName": "Từ phòng thủ sang phản công",
+   "title": "Tấn công quả dink chết sau khi bóng nảy trong kitchen",
+   "goal": "Tập nhận ra quả dink \"chết\" (nảy cao, sát lưới) và tấn công bằng cú đẩy xuống chân thay vì dink lại.",
+   "zone": "Chân đối thủ đối diện hoặc khoảng giữa hai người.",
+   "setup": "Hai đấu hai tại kitchen, dink chéo; người cấp thỉnh thoảng để bóng nảy cao. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Quả nảy tới ngang mép lưới và gần lưới là quả \"chết\".",
+    "Bước vào kitchen sau khi bóng nảy, đánh xong bước ra ngay.",
+    "Đẩy xuống chân, giữ đồng đội che giữa."
+   ],
+   "mistakes": [
+    "Volley khi chân còn trong kitchen.",
+    "Tấn công quả dink tốt, thấp.",
+    "Đánh xong đứng lại trong kitchen."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Người cấp cho 10 quả nảy cao sát lưới; bước vào, đẩy xuống nón ở chân đối thủ, bước ra. Ba hiệp.",
+     "check": "Đếm số quả đúng vùng và không lỗi kitchen."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Xen quả dink tốt: phải dink lại. Bốn lượt năm quả.",
+     "check": "Đếm số lựa chọn đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink tự do, tấn công khi có quả chết. Ba lượt năm phút, đổi vai.",
+     "check": "Ghi số lần tấn công đúng quả và số lỗi kitchen."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 14,
+    "instruction": "Trong 20 quả dink xen kẽ tốt/chết, đếm số quả chọn đúng và tấn công vào đúng vùng mà không phạm lỗi kitchen. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "6f7e5c4a",
+   "media": []
+  },
+  {
+   "id": "PU-092",
+   "week": 92,
+   "level": "4.0–4.5",
+   "advanced": true,
+   "focus": "tactical-choice",
+   "skill": "strategy",
+   "skillName": "Ra quyết định dưới áp lực",
+   "title": "Quản lý điểm số: chơi tỉ lệ cao ở điểm quan trọng",
+   "goal": "Tập chọn cú đánh an toàn hơn ở các điểm quyết định (9–9, 10–10) và chấp nhận rủi ro có tính toán khi đang dẫn.",
+   "zone": "Điểm quan trọng: giữa sân, thấp, vào chân. Khi dẫn xa: được nhắm góc rộng hơn.",
+   "setup": "Bốn người; mỗi pha HLV đọc một tỉ số giả định trước khi giao. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Trước khi giao, tự nói kế hoạch một câu.",
+    "Điểm quyết định: giao và trả vào sân trước, sâu vừa.",
+    "Thua một điểm thì giữ nguyên nhịp chuẩn bị ở điểm sau."
+   ],
+   "mistakes": [
+    "Giao thật mạnh ở 10–10 rồi lỗi.",
+    "Đổi chiến thuật đang hiệu quả khi dẫn điểm.",
+    "Vội vàng sau một lỗi."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "HLV đọc tỉ số; người tập nói kế hoạch cú giao hoặc trả và thực hiện. 20 tình huống.",
+     "check": "Đếm số cú vào sân và đúng kế hoạch."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Chơi pha bóng ngắn từ tỉ số giả định; không lỗi tự đánh hỏng trong ba chạm đầu. Bốn lượt năm pha.",
+     "check": "Đếm số pha không lỗi tự đánh hỏng ở ba chạm đầu, trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Chơi game bắt đầu từ 8–8, thắng cách 2. Ba game, đổi cặp.",
+     "check": "Ghi số lỗi tự đánh hỏng ở các điểm từ 9 trở lên."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 pha bắt đầu từ tỉ số quyết định giả định, đếm số pha không có lỗi tự đánh hỏng trong ba chạm đầu và đúng kế hoạch đã nói. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "4194fb04",
+   "media": []
+  },
+  {
+   "id": "PU-093",
+   "week": 93,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "third-choice",
+   "skill": "strategy",
+   "skillName": "Quyết định cú thứ ba",
+   "title": "Drop có xoáy lên (topspin) từ trả giao sâu",
+   "goal": "Tập thả cú thứ ba có xoáy lên để bóng chúi nhanh sau lưới, từ quả trả giao sâu sát baseline.",
+   "zone": "Kitchen chéo sân, bóng qua lưới thấp hơn 30 cm và chúi xuống trước vạch kitchen.",
+   "setup": "Bốn người; đội trả giao trả sâu trong 1 m cuối sân và lên lưới. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Chân sau baseline đã ổn định trước khi chạm bóng.",
+    "Vợt đi từ thấp lên cao, chạm bóng trước thân.",
+    "Quan sát độ cao bóng qua lưới để quyết định lên hay dừng."
+   ],
+   "mistakes": [
+    "Vẩy cổ tay tạo xoáy làm mất kiểm soát.",
+    "Thả khi đang lùi, bóng bay cao.",
+    "Cả hai lên lưới dù bóng cao."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Cấp trả giao sâu; thả có xoáy 10 quả mỗi bên qua dây căng cao hơn lưới 30 cm. Ba hiệp.",
+     "check": "Đếm số quả qua dưới dây và rơi trong kitchen."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Thêm đối thủ ở kitchen tìm cách volley: chỉ tính quả họ phải để nảy hoặc đánh từ dưới lên. Bốn lượt năm quả.",
+     "check": "Đếm số quả đạt trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng từ cú giao với trả giao sâu bắt buộc. Ba lượt năm phút.",
+     "check": "Ghi số lần lên kitchen được sau cú thứ ba hoặc thứ năm."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 cú thứ ba từ trả giao rơi ở 1 m cuối sân, đếm số quả thả rơi trong kitchen mà đối thủ không volley tấn công được. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "ddc60592",
+   "media": []
+  },
+  {
+   "id": "PU-094",
+   "week": 94,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "advanced-reset",
+   "skill": "position",
+   "skillName": "Reset nâng cao",
+   "title": "Reset từ cú đập (overhead) của đối thủ",
+   "goal": "Tập phòng thủ cú đập bằng block mềm hoặc lob phòng thủ, kéo pha bóng về trạng thái trung hòa.",
+   "zone": "Block: kitchen giữa sân. Lob phòng thủ: 1,5 m cuối sân phía backhand đối thủ.",
+   "setup": "Đối thủ đập từ bóng cấp cao ở vùng giữa sân; đội tập bắt đầu ở baseline. Kiểm soát lực đập ở mức 70%. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Lùi sớm, thấp người, vợt trước thân.",
+    "Chỉ đưa mặt vợt ra đón, không vung.",
+    "Sau một block tốt mới tiến lên từng bước."
+   ],
+   "mistakes": [
+    "Đứng yên ở vùng chuyển tiếp khi đối thủ đập.",
+    "Vung vợt đánh trả cú đập.",
+    "Lob ngắn cho đối thủ đập tiếp."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Đối thủ đập 70% lực vào vùng định trước; block về kitchen 10 quả mỗi bên. Ba hiệp, nghỉ đủ.",
+     "check": "Đếm số quả rơi trong kitchen."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Hướng đập ngẫu nhiên; người tập chọn block hoặc lob phòng thủ. Bốn lượt năm quả.",
+     "check": "Đếm số quả đưa pha bóng về trung hòa trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng bắt đầu bằng lob ngắn cho đối thủ đập; chơi hết pha. Ba lượt năm phút. Dừng nếu đau vai.",
+     "check": "Ghi số pha sống sót qua hai cú đập."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Nhận 20 cú đập ở lực thi đấu có kiểm soát; đếm số quả phòng thủ rơi trong kitchen hoặc lob sâu khiến đối thủ không đập tiếp được. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "c52c9333",
+   "media": []
+  },
+  {
+   "id": "PU-095",
+   "week": 95,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "counter-volley",
+   "skill": "volley",
+   "skillName": "Counter volley",
+   "title": "Counter đổi hướng: tốc độ sang góc",
+   "goal": "Tập dùng lực của đối thủ để đổi hướng cú counter sang góc mở thay vì trả thẳng lại.",
+   "zone": "Góc chéo ngắn hoặc dọc biên phía người không tấn công, thấp hơn hông.",
+   "setup": "Bốn người tại kitchen; người đối diện chéo tăng tốc, người tập counter đổi hướng. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Mặt vợt quyết định hướng; tay gần như đứng yên.",
+    "Chạm bóng sớm trước thân để mở được góc.",
+    "Đổi hướng chỉ khi đã cân bằng; nếu không thì counter vào giữa."
+   ],
+   "mistakes": [
+    "Xoay cả người để đổi hướng, chậm một nhịp.",
+    "Nhắm sát biên, bóng ra ngoài.",
+    "Đổi hướng quả đã vào thân quá sâu."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Cấp tăng tốc vừa; counter sang nón góc chéo 10 quả, dọc biên 10 quả. Ba hiệp.",
+     "check": "Đếm số quả vào vùng nón."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Người cấp tăng tốc ngẫu nhiên vào thân hoặc ngoài tầm: quả vào thân sâu phải counter giữa. Bốn lượt năm quả.",
+     "check": "Đếm số lựa chọn hướng đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink chéo, tăng tốc tự do, chơi hết pha. Ba lượt năm phút, đổi vai.",
+     "check": "Ghi số pha thắng trực tiếp từ cú counter đổi hướng."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Nhận 20 cú tăng tốc ở tốc độ thi đấu; đếm số quả counter đổi hướng vào đúng góc mở hoặc counter giữa đúng tình huống. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "146fce70",
+   "media": []
+  },
+  {
+   "id": "PU-096",
+   "week": 96,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "doubles-switch",
+   "skill": "strategy",
+   "skillName": "Chiến thuật đội đôi nâng cao",
+   "title": "Stacking toàn phần và đổi bên khi trả giao",
+   "goal": "Tập stacking cả khi trả giao: người trả giao chạy chéo về bên ưu tiên, đồng đội ở kitchen giữ bên còn lại.",
+   "zone": "Cú trả giao: sâu, cao vừa để có thời gian chạy. Vị trí: cả hai đúng bên trước cú thứ ba.",
+   "setup": "Bốn người; đội trả giao thống nhất bên ưu tiên, đồng đội đứng sẵn ở kitchen lệch về bên của mình. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Trả giao sâu và cao hơn bình thường để mua thời gian.",
+    "Chạy chéo ngay sau khi chạm bóng, mắt theo bóng.",
+    "Đồng đội ở kitchen che giữa tới khi người trả giao vào vị trí."
+   ],
+   "mistakes": [
+    "Trả giao ngắn rồi không kịp chạy.",
+    "Đứng sai ô khi nhận giao.",
+    "Đồng đội dịch quá sớm, hở dọc biên."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Không bóng rồi có bóng: trả giao sâu và chạy chéo, 10 lần mỗi ô. Ba hiệp.",
+     "check": "Đếm số lần vào vị trí trước cú thứ ba."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Đội giao drive cú thứ ba vào người đang chạy; đồng đội ở kitchen quyết định poach hay để. Bốn lượt năm quả.",
+     "check": "Đếm số pha đội trả giao không mất điểm ở cú thứ ba, trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Chơi tới 7 điểm, stacking bắt buộc cả giao và trả. Trọng tài phụ kiểm ô và thứ tự.",
+     "check": "Ghi số lỗi vị trí và số điểm mất do chậm chân."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 lượt trả giao có stacking, đếm số lần đúng ô, trả giao sâu và cả hai vào vị trí trước cú thứ ba. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "6fb7cefc",
+   "media": []
+  },
+  {
+   "id": "PU-097",
+   "week": 97,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "defense-attack",
+   "skill": "dink",
+   "skillName": "Từ phòng thủ sang phản công",
+   "title": "Erne: nhận biết và thực hiện hợp lệ",
+   "goal": "Tập nhận ra quả dink dọc biên có thể đánh Erne, di chuyển ra ngoài sân hợp lệ và volley xuống chân.",
+   "zone": "Chân đối thủ đối diện hoặc giữa sân; bóng đi xuống.",
+   "setup": "Hai đấu hai tại kitchen, dink dọc biên; người tập ở bên có đường biên dọc. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Hai chân phải chạm đất ngoài sân, ngoài kitchen, trước khi volley.",
+    "Đồng đội dink chéo sâu để dụ quả dọc biên.",
+    "Không kịp thì bỏ, trở về vị trí ngay."
+   ],
+   "mistakes": [
+    "Chạm vạch kitchen hoặc đáp vào kitchen khi volley.",
+    "Lộ ý định quá sớm.",
+    "Erne hụt để hở cả dọc biên."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Không bóng: tập đường chạy vòng hoặc nhảy qua góc kitchen, đáp ngoài sân. Sau đó người cấp dink dọc biên chậm, 10 quả. Ba hiệp.",
+     "check": "Đếm số lần hợp lệ (chân ngoài kitchen) và bóng trong sân."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Người cấp xen dink chéo: phải bỏ ý định và giữ vị trí. Bốn lượt năm quả.",
+     "check": "Đếm số quyết định đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink tự do; mỗi lượt được thử Erne tối đa hai lần. Ba lượt năm phút. Mặt sân trơn thì bỏ bài này.",
+     "check": "Ghi số Erne hợp lệ và số lần hở sân."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 quả dink (xen dọc biên và chéo), đếm số lần quyết định đúng và mọi cú Erne thực hiện đều hợp lệ, bóng trong sân. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "457d70b0",
+   "media": []
+  },
+  {
+   "id": "PU-098",
+   "week": 98,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "tactical-choice",
+   "skill": "strategy",
+   "skillName": "Ra quyết định dưới áp lực",
+   "title": "Tìm và khai thác thói quen đối thủ trong một game",
+   "goal": "Tập ghi nhận hai thói quen của đối thủ trong sáu điểm đầu và điều chỉnh kế hoạch cho phần còn lại của game.",
+   "zone": "Theo kế hoạch đã nêu: ví dụ backhand của người yếu hơn, hoặc giữa sân khi họ hay tranh bóng.",
+   "setup": "Bốn người chơi game tới 11; đội tập có một phút hội ý sau điểm thứ sáu. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Sáu điểm đầu: quan sát cú thứ ba, hướng dink và ai nhận bóng giữa.",
+    "Hội ý nêu đúng hai thói quen và một điều chỉnh.",
+    "Giữ điều chỉnh ít nhất bốn điểm rồi mới đánh giá."
+   ],
+   "mistakes": [
+    "Chơi theo cảm tính cả game.",
+    "Đổi kế hoạch sau mỗi điểm thua.",
+    "Chỉ nói về lỗi của mình, không nhìn đối thủ."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Xem hai đồng đội khác chơi sáu điểm; mỗi người ghi hai thói quen và so với ghi chú của HLV.",
+     "check": "Đếm số thói quen ghi đúng."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Chơi sáu điểm, hội ý, rồi chơi tám pha chỉ dùng điều chỉnh đã chọn. Lặp hai lần.",
+     "check": "Đếm số pha áp dụng đúng điều chỉnh trên 16, quy về 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Chơi một game đủ tới 11 với hội ý sau điểm thứ sáu.",
+     "check": "Ghi tỉ lệ thắng điểm trước và sau hội ý."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 pha sau hội ý, đếm số pha thực hiện đúng điều chỉnh đã thống nhất (không tính thắng thua). Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "78bda0ed",
+   "media": []
+  },
+  {
+   "id": "PU-099",
+   "week": 99,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "third-choice",
+   "skill": "strategy",
+   "skillName": "Quyết định cú thứ ba",
+   "title": "Cú thứ ba vào giữa: drop giữa hai người hay drive khoảng trống",
+   "goal": "Tập chọn giữa drop vào giữa hai đối thủ và drive vào khoảng trống giữa, dựa trên việc họ đã khép giữa hay chưa.",
+   "zone": "Vạch giữa sân: drop rơi trong kitchen ở giữa, hoặc drive thấp qua khoảng trống.",
+   "setup": "Bốn người; hai đối thủ ở kitchen đứng khép hoặc hở theo hiệu lệnh HLV. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Hở giữa hơn một sải tay: drive thấp vào giữa.",
+    "Đã khép giữa: drop giữa để hai người lúng túng ai đánh.",
+    "Sau cú đánh giữa, đội mình cũng khép giữa khi lên."
+   ],
+   "mistakes": [
+    "Drive vào giữa khi họ đã khép, bị counter.",
+    "Drop ra biên, mở góc cho đối thủ.",
+    "Lên lưới lệch, hở giữa của chính mình."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "HLV ra hiệu khép/hở; người tập gọi \"drop\" hoặc \"drive\" rồi đánh. 20 quả, hai hiệp.",
+     "check": "Đếm số lựa chọn đúng và bóng trong sân."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Đối thủ tự do khép/hở muộn hơn, ngay khi bóng trả giao nảy. Bốn lượt năm quả.",
+     "check": "Đếm số quả chọn đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng từ cú giao, mọi cú thứ ba phải vào hành lang giữa rộng 2 m. Ba lượt năm phút.",
+     "check": "Ghi số lần đối thủ đánh hỏng hoặc trả yếu do nhầm ai đánh."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 cú thứ ba với đối thủ khép hoặc hở giữa ngẫu nhiên, đếm số quả chọn đúng loại cú và rơi trong hành lang giữa. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "5d086c8e",
+   "media": []
+  },
+  {
+   "id": "PU-100",
+   "week": 100,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "advanced-reset",
+   "skill": "position",
+   "skillName": "Reset nâng cao",
+   "title": "Reset liên tiếp khi cả đội bị dồn về baseline",
+   "goal": "Tập cùng đồng đội reset nhiều quả liên tiếp từ cuối sân và tiến lên từng nấc, không ai lên trước bỏ người kia.",
+   "zone": "Kitchen giữa sân; hai người giữ khoảng cách ngang không quá 3 m.",
+   "setup": "Hai đối thủ ở kitchen ép liên tục; đội tập bắt đầu cả hai ở baseline. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Hai người tiến và dừng cùng nhịp, nói \"lên\" – \"dừng\".",
+    "Quả reset tốt cho phép cả hai tiến hai bước.",
+    "Bị đánh giữa: người có forehand ở giữa nhận."
+   ],
+   "mistakes": [
+    "Một người lao lên, một người ở lại.",
+    "Reset cao rồi vẫn tiến.",
+    "Cả hai cùng bỏ quả giữa."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Đối thủ ép 60%; đội tập reset và tiến từng nấc tới kitchen, 10 lần. Ba hiệp.",
+     "check": "Đếm số lần cả hai lên tới kitchen."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Đối thủ được đánh vào giữa và vào chân người tiến nhanh hơn. Bốn lượt năm pha.",
+     "check": "Đếm số pha lên được kitchen mà không lệch đội hình, trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Pha bóng bắt đầu bằng lob sâu đẩy đội tập về baseline. Ba lượt năm phút.",
+     "check": "Ghi số pha chuyển được từ thủ sang trung hòa."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 pha bắt đầu với cả đội ở baseline, đếm số pha cả hai lên được kitchen cùng nhịp mà không mất điểm. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "ea8a04c2",
+   "media": []
+  },
+  {
+   "id": "PU-101",
+   "week": 101,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "counter-volley",
+   "skill": "volley",
+   "skillName": "Counter volley",
+   "title": "Giả động tác rồi tăng tốc (và đọc đòn tương tự)",
+   "goal": "Tập tăng tốc từ tư thế giống hệt cú dink để đối thủ khó đọc, đồng thời đọc dấu hiệu khi đối thủ làm điều tương tự.",
+   "zone": "Vai tay thuận hoặc hông đối thủ đối diện; thấp hơn vai.",
+   "setup": "Hai đấu hai tại kitchen, dink chéo; một bên được tăng tốc từ quả dink ngang hông. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Chuẩn bị dink và tăng tốc phải giống nhau tới lúc chạm bóng.",
+    "Chỉ tăng tốc quả trong tầm, trước thân.",
+    "Khi thủ: nhìn vai và mặt vợt đối thủ, không nhìn bóng một mình."
+   ],
+   "mistakes": [
+    "Kéo vợt ra sau, lộ ý định.",
+    "Tăng tốc quả dưới lưới vào lưới.",
+    "Tăng tốc xong không sẵn sàng cho quả counter."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Xen dink và tăng tốc theo tỉ lệ 4:1 với cùng một tư thế; bạn tập gọi \"đánh\" khi đoán được. 20 quả, hai hiệp.",
+     "check": "Đếm số lần bạn tập không đoán được trước khi chạm bóng."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Đổi vai: người tập phòng thủ, đọc và counter. Bốn lượt năm quả.",
+     "check": "Đếm số quả đọc đúng và counter trong sân trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink tự do, tăng tốc tự do. Ba lượt năm phút, đổi vai.",
+     "check": "Ghi số điểm thắng từ tăng tốc và từ counter."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 quả (10 tấn công, 10 phòng thủ), đếm số quả tăng tốc trong sân không bị đọc trước cộng số quả đọc đúng và counter trong sân. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "1fbf9a06",
+   "media": []
+  },
+  {
+   "id": "PU-102",
+   "week": 102,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "doubles-switch",
+   "skill": "strategy",
+   "skillName": "Chiến thuật đội đôi nâng cao",
+   "title": "Che lob: ai lùi, ai đổi bên",
+   "goal": "Tập xử lý quả lob qua đầu ở kitchen: người chéo sân lùi lấy bóng, đồng đội đổi bên và lùi theo để giữ đội hình.",
+   "zone": "Cú đánh sau lob: drop về kitchen hoặc lob phòng thủ sâu. Vị trí: hai người ngang hàng sau khi đổi.",
+   "setup": "Bốn người tại kitchen; đối thủ lob qua vai trái hoặc phải ngẫu nhiên. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Gọi \"của tôi\" hoặc \"đổi\" khi bóng vừa rời vợt đối thủ.",
+    "Người lấy bóng chạy vòng, không chạy lùi.",
+    "Sau khi lấy bóng, cả hai ngang hàng trước khi tiến lên lại."
+   ],
+   "mistakes": [
+    "Chạy lùi thẳng, dễ ngã.",
+    "Hai người cùng lùi lấy một quả.",
+    "Đập quả lob quá sâu khi đang mất thăng bằng."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Lob chậm định trước; tập gọi, chạy vòng và drop về kitchen, 10 lần mỗi bên. Ba hiệp.",
+     "check": "Đếm số lần gọi đúng và bóng về trong sân."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Lob ngẫu nhiên hai phía, xen quả ngắn có thể đập: phải quyết định đập hay lùi. Bốn lượt năm quả.",
+     "check": "Đếm số quyết định đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Dink tự do, đối thủ được lob bất kỳ lúc nào. Ba lượt năm phút. Kiểm tra mặt sân sau lưng trước khi tập.",
+     "check": "Ghi số pha lấy lại được đội hình sau lob."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 quả lob ngẫu nhiên, đếm số lần gọi đúng người, bóng trả về trong sân và cả hai ngang hàng trước quả kế tiếp. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "4744c7f0",
+   "media": []
+  },
+  {
+   "id": "PU-103",
+   "week": 103,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "defense-attack",
+   "skill": "dink",
+   "skillName": "Từ phòng thủ sang phản công",
+   "title": "ATP (vòng qua cột lưới) và phòng thủ ATP",
+   "goal": "Tập nhận ra quả dink chéo kéo ra ngoài đường biên có thể đánh vòng qua cột lưới, và cách che khi đối thủ có cơ hội đó.",
+   "zone": "Dọc biên trong sân đối phương, bóng đi thấp; không cần qua trên lưới.",
+   "setup": "Hai đấu hai, dink chéo góc rộng; người cấp cố ý kéo bóng ra ngoài đường biên. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Để bóng rơi thấp, ra ngoài cột lưới rồi mới đánh.",
+    "Đánh dọc theo đường biên, thấp.",
+    "Khi mình dink quá rộng: người gần biên bước ra che dọc biên."
+   ],
+   "mistakes": [
+    "Đánh sớm khi bóng còn trong cột lưới, vào lưới.",
+    "Cố ATP quả chưa đủ rộng.",
+    "Dink quá rộng mà không che."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Người cấp kéo bóng rộng; để bóng rơi thấp và đánh ATP vào hành lang 1 m dọc biên, 10 quả. Ba hiệp.",
+     "check": "Đếm số quả trong sân."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Xen quả không đủ rộng: phải dink chéo lại. Bốn lượt năm quả.",
+     "check": "Đếm số lựa chọn đúng trên 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Đổi vai phòng thủ: mình dink rộng, đối thủ thử ATP, mình che và block. Ba lượt năm phút.",
+     "check": "Ghi số ATP của đối thủ bị chặn."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 15,
+    "instruction": "Trong 20 quả dink chéo (xen đủ rộng và chưa đủ rộng), đếm số quyết định đúng và mọi cú ATP thực hiện đều trong sân. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "389c7d47",
+   "media": []
+  },
+  {
+   "id": "PU-104",
+   "week": 104,
+   "level": "4.5–5.0",
+   "advanced": true,
+   "focus": "tactical-choice",
+   "skill": "strategy",
+   "skillName": "Ra quyết định dưới áp lực",
+   "title": "Thi đấu mô phỏng giải: hai game có time-out",
+   "goal": "Tập duy trì kế hoạch và nhịp chuẩn bị qua hai game liên tiếp, dùng time-out có mục đích khi mất chuỗi điểm.",
+   "zone": "Theo kế hoạch trận đã ghi trước: mục tiêu chính và phương án dự phòng.",
+   "setup": "Bốn người, hai game tới 11 thắng cách 2, mỗi đội hai time-out mỗi game; ghi kế hoạch một câu trước trận. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
+   "cues": [
+    "Trước mỗi lượt giao: một hơi thở, một câu kế hoạch.",
+    "Mất ba điểm liên tiếp: gọi time-out, chỉ bàn một điều chỉnh.",
+    "Giữa hai game: uống nước, xem lại ghi chú, không tranh luận lỗi."
+   ],
+   "mistakes": [
+    "Bỏ nhịp chuẩn bị khi bị dẫn.",
+    "Dùng time-out để trách nhau.",
+    "Tập tiếp khi đã đau hoặc quá mệt."
+   ],
+   "drills": [
+    {
+     "minutes": 12,
+     "name": "Kỹ thuật nền",
+     "instruction": "Chơi 10 điểm có tỉ số giả định đang bị dẫn 3 điểm; tập nhịp chuẩn bị trước mỗi lượt giao.",
+     "check": "Đếm số lượt giao có đủ nhịp chuẩn bị."
+    },
+    {
+     "minutes": 12,
+     "name": "Biến thể có mục tiêu",
+     "instruction": "Chơi game tới 7; bắt buộc dùng một time-out và ghi điều chỉnh. Hai game.",
+     "check": "Đếm số pha sau time-out thực hiện đúng điều chỉnh, quy về 20."
+    },
+    {
+     "minutes": 15,
+     "name": "Áp dụng vào pha bóng",
+     "instruction": "Một game đủ tới 11 thắng cách 2. Dừng ngay nếu đau; nghỉ đủ giữa các game.",
+     "check": "Ghi số chuỗi mất từ ba điểm trở lên và cách xử lý."
+    }
+   ],
+   "assessment": {
+    "attempts": 20,
+    "target": 16,
+    "instruction": "Trong 20 lượt giao và trả giao của game cuối, đếm số lượt có đủ nhịp chuẩn bị và cú đầu tiên vào sân đúng kế hoạch. Đây là chỉ tiêu nội bộ để chọn giáo án, không phải chứng nhận trình độ."
+   },
+   "warmup": 10,
+   "testMinutes": 6,
+   "cooldown": 5,
+   "duration": 60,
+   "status": "published",
+   "revision": 1,
+   "assessmentVersion": 1,
+   "assessmentHash": "db2e3f0c",
+   "media": []
   }
  ]
 }

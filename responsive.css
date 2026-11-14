@@ -27,6 +27,10 @@ button:disabled{cursor:not-allowed}
 .top-shortcuts a{display:flex;align-items:center;justify-content:center;color:#e0eee1;text-decoration:none;
  font-size:12px;font-weight:700;padding:10px 13px;border-radius:9px;min-height:44px;white-space:nowrap}
 .top-shortcuts a:hover,.top-shortcuts a:focus-visible{background:#284e43;color:#c9fa74}
+/* A select takes the width of its longest option. Lesson titles can be longer than the card
+   (measured: #academyWeek 783px in an 820px viewport), so cap selects in action rows at every width. */
+.backupactions label{min-width:0;max-width:100%}
+.backupactions label select{min-width:0;max-width:100%;text-overflow:ellipsis}
 /* Unified persistent four tabs plus "Thêm" on ALL screen sizes. */
 body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 .mobile-dock{

@@ -7,11 +7,15 @@ const VIDEO='dQw4w9WgXcQ';
 // may already carry videos or a higher revision.
 const BASE=core.parseCurriculum(fs.readFileSync(require('node:path').join(__dirname,'..','curriculum.js'),'utf8')).lessons.find(l=>l.id==='PU-001');
 const BASE_MEDIA=BASE.media||[];
+// The file also holds drafts, so counts and the next id come from the file itself.
+const FILE=core.parseCurriculum(fs.readFileSync(require('node:path').join(__dirname,'..','curriculum.js'),'utf8'));
+const TOTAL=FILE.lessons.length,LIVE=FILE.lessons.filter(l=>l.status==='published').length,NEXT=core.nextId(FILE),NEXT_N=Number(NEXT.slice(3));
+const AFTER='PU-'+String(NEXT_N+1).padStart(3,'0');
 for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring locked and exports a valid curriculum.js '+width,async({page})=>{
  await page.setViewportSize({width,height:900});
  await page.goto('/Pickleball/cms/');
- await expect(page.locator('#status')).toContainText('Đã tải 80 bài');
- await expect(page.locator('#lessonList button')).toHaveCount(80);
+ await expect(page.locator('#status')).toContainText('Đã tải '+TOTAL+' bài');
+ await expect(page.locator('#lessonList button')).toHaveCount(TOTAL);
  await page.locator('#filterText').fill('PU-001');
  await page.locator('#lessonList button[data-id="PU-001"]').click();
  await expect(page.locator('#f-target')).toHaveValue(String(BASE.assessment.target));
@@ -48,7 +52,7 @@ for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring 
 });
 test('CMS changes a lesson test only as a new assessment version, after explicit confirmation',async({page})=>{
  await page.goto('/Pickleball/cms/');
- await expect(page.locator('#status')).toContainText('Đã tải 80 bài');
+ await expect(page.locator('#status')).toContainText('Đã tải '+TOTAL+' bài');
  await page.locator('#lessonList button[data-id="PU-001"]').click();
  const target=BASE.assessment.target===20?19:BASE.assessment.target+1;
  await page.locator('#f-target').fill('25');
@@ -80,7 +84,7 @@ test('CMS changes a lesson test only as a new assessment version, after explicit
 test('CMS adds a new 4.0–4.5 lesson as a draft with the next id, and it can be removed again',async({page})=>{
  await page.setViewportSize({width:390,height:900});
  await page.goto('/Pickleball/cms/');
- await expect(page.locator('#status')).toContainText('Đã tải 80 bài');
+ await expect(page.locator('#status')).toContainText('Đã tải '+TOTAL+' bài');
  await page.locator('#newLessonBox summary').click();
  await page.locator('#newLevel').selectOption('2.0–2.5');
  await expect(page.locator('#newFocus')).toBeHidden();
@@ -89,12 +93,12 @@ test('CMS adds a new 4.0–4.5 lesson as a draft with the next id, and it can be
  await page.locator('#newSkill').selectOption('strategy');
  await page.locator('#newFocus').selectOption('doubles-switch');
  await page.locator('#newLesson').click();
- await expect(page.locator('#lessonList button')).toHaveCount(81);
- await expect(page.locator('#lessonList button[data-id="PU-081"]')).toContainText('bài mới');
- await expect(page.locator('#lessonMeta')).toContainText('PU-081 · 4.0–4.5');
+ await expect(page.locator('#lessonList button')).toHaveCount(TOTAL+1);
+ await expect(page.locator('#lessonList button[data-id="'+NEXT+'"]')).toContainText('bài mới');
+ await expect(page.locator('#lessonMeta')).toContainText(NEXT+' · 4.0–4.5');
  await expect(page.locator('#f-status')).toHaveValue('draft');
  await expect(page.locator('#download')).toBeDisabled();
- await expect(page.locator('#errors')).toContainText('PU-081: title');
+ await expect(page.locator('#errors')).toContainText(NEXT+': title');
  await page.locator('#f-skillName').fill('Phối hợp đôi');
  await page.locator('#f-title').fill('Đổi vị trí khi bị lốp');
  await page.locator('#f-goal').fill('Hai người đổi bên có gọi tên khi bóng lốp qua đầu.');
@@ -108,21 +112,21 @@ test('CMS adds a new 4.0–4.5 lesson as a draft with the next id, and it can be
  await expect(page.locator('#errors li')).toHaveCount(0);
  // A lesson that was never published has no earlier test: no "new test version" confirmation.
  await expect(page.locator('#assessmentConfirmRow')).toBeHidden();
- await expect(page.locator('#changeSummary')).toContainText('PU-081');
+ await expect(page.locator('#changeSummary')).toContainText(NEXT);
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#download').click()]);
  const text=fs.readFileSync(await download.path(),'utf8'),doc=core.parseCurriculum(text);
  const previous=core.parseCurriculum(fs.readFileSync(require('node:path').join(__dirname,'..','curriculum.js'),'utf8'));
  expect(core.validate(doc,{previous})).toEqual([]);
  const lesson=doc.lessons.at(-1);
- expect([lesson.id,lesson.week,lesson.level,lesson.advanced,lesson.focus,lesson.status,lesson.revision,lesson.assessmentVersion,lesson.assessment.target,lesson.skillName]).toEqual(['PU-081',81,'4.0–4.5',true,'doubles-switch','draft',1,1,15,'Phối hợp đôi']);
+ expect([lesson.id,lesson.week,lesson.level,lesson.advanced,lesson.focus,lesson.status,lesson.revision,lesson.assessmentVersion,lesson.assessment.target,lesson.skillName]).toEqual([NEXT,NEXT_N,'4.0–4.5',true,'doubles-switch','draft',1,1,15,'Phối hợp đôi']);
  expect(lesson.drills.map(d=>d.minutes)).toEqual([12,12,15]);
  // The exported file hides the draft from the player's library.
  const vm=require('node:vm'),context={window:{}};vm.runInNewContext(text,context);
- expect(context.window.PICKLEUP_CURRICULUM.length+context.window.PICKLEUP_CONTENT_DOC.lessons.filter(l=>l.advanced&&l.status==='published').length).toBe(80);
+ expect(context.window.PICKLEUP_CURRICULUM.length+context.window.PICKLEUP_CONTENT_DOC.lessons.filter(l=>l.advanced&&l.status==='published').length).toBe(LIVE);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
  expect(overflow).toBeLessThanOrEqual(2);
  await page.locator('#removeLesson').click();
- await expect(page.locator('#lessonList button')).toHaveCount(80);
+ await expect(page.locator('#lessonList button')).toHaveCount(TOTAL);
  await expect(page.locator('#changeSummary')).toContainText('Chưa có thay đổi');
 });
 test('a draft or retired lesson in curriculum.js never reaches the player; a published 4.0–4.5 lesson does',async({page})=>{
@@ -135,28 +139,29 @@ test('a draft or retired lesson in curriculum.js never reaches the player; a pub
  await page.route('**/curriculum.js*',route=>route.fulfill({contentType:'text/javascript',body:core.renderCurriculum(doc)}));
  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
  await page.goto('/Pickleball/?page=academy');
- await expect(page.locator('#academyWeek option')).toHaveCount(80);
+ await expect(page.locator('#academyWeek option')).toHaveCount(LIVE);
  const ids=await page.evaluate(()=>PICKLEUP_CURRICULUM.map(l=>l.id));
- expect(ids).not.toContain('PU-002');expect(ids).not.toContain('PU-081');expect(ids).toContain('PU-082');
+ expect(ids).not.toContain('PU-002');expect(ids).not.toContain(NEXT);expect(ids).toContain(AFTER);for(const l of FILE.lessons.filter(l=>l.status!=='published'))expect(ids).not.toContain(l.id);
  await expect(page.locator('#academy')).not.toContainText('Bài nháp bí mật');
- await page.locator('#academyWeek').selectOption('PU-082');
+ await page.locator('#academyWeek').selectOption(AFTER);
  await expect(page.locator('#academyDetail')).toContainText('Bài 4.0 đã xuất bản');
  await page.locator('#academyScore').fill('13');await page.locator('#academySave').click();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('pickleup_academy_history_v44')));
- expect(saved).toEqual([expect.objectContaining({id:'PU-082',level:'4.0–4.5',skill:'volley',score:13,av:1})]);
+ expect(saved).toEqual([expect.objectContaining({id:AFTER,level:'4.0–4.5',skill:'volley',score:13,av:1})]);
  await page.reload();
- await page.locator('#academyWeek').selectOption('PU-082');
+ await page.locator('#academyWeek').selectOption(AFTER);
  await expect(page.locator('#academyStatus')).toContainText('13/20');
  // Level filters follow the published library; the retired lesson no longer counts.
  await page.goto('/Pickleball/?page=academy');
- await expect(page.locator('#academy .sectionHead h2')).toHaveText('80 buổi tập từ 1.0 đến 4.5');
- await expect(page.locator('#academyLevel option')).toHaveText(['Tất cả','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5']);
+ await expect(page.locator('#academy .sectionHead h2')).toHaveText(LIVE+' buổi tập từ 1.0 đến 5.0');
+ await expect(page.locator('#academyLevel option')).toHaveText(['Tất cả',...core.LEVELS]);
  await page.locator('#academyLevel').selectOption('4.0–4.5');
- await expect(page.locator('#academyWeek option')).toHaveCount(1);
+ await expect(page.locator('#academyWeek option')).toHaveCount(FILE.lessons.filter(l=>l.status==='published'&&l.level==='4.0–4.5').length+1);
+ await page.locator('#academyWeek').selectOption(AFTER);
  await expect(page.locator('#academyDetail')).toContainText('Bài 4.0 đã xuất bản');
  await page.goto('/Pickleball/?page=progress');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));
- for(const id of ['#wgLevel','#aiLevel','#dbLevel'])await expect(page.locator(id+' option').last()).toHaveText('4.0–4.5');
- await expect(page.locator('#dbLevel option').first()).toHaveText('Toàn bộ 1.0–4.5');
+ for(const id of ['#wgLevel','#aiLevel','#dbLevel'])await expect(page.locator(id+' option').last()).toHaveText('4.5–5.0');
+ await expect(page.locator('#dbLevel option').first()).toHaveText('Toàn bộ 1.0–5.0');
  await page.locator('#aiLevel').selectOption('4.0–4.5');
  await page.locator('#wgLevel').selectOption('4.0–4.5');await page.locator('#wgSave').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('pickleup_weekly_goal_v46')).level)).toBe('4.0–4.5');
