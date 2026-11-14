@@ -55,5 +55,5 @@ Bản app cũ (≤ 5.23.0) coi mã `PU-081+` hoặc cấp 4.0+ là dữ liệu h
 3. Người dùng đã nhận bản PWA ≥ 5.24.0 (bản cũ hơn có thể ghi đè lịch sử khách khi gặp mã bài mới): nên chờ vài ngày sau khi V5.26.0 phát hành.
 4. HLV duyệt nội dung và chuyển trạng thái sang "Đang dùng" qua CMS.
 
-## 8. Việc tiếp theo
-- **C3c:** bản nháp nội dung `4.0–4.5` và `4.5–5.0` để HLV duyệt.
+## 8. C3c (V5.27.0): bản nháp nội dung
+24 bài nháp `PU-081…104` đã có trong `curriculum.js` ở trạng thái `draft`; xem [DRAFT_LESSONS_4_0_5_0.md](DRAFT_LESSONS_4_0_5_0.md). Việc còn lại thuộc HLV/owner: duyệt, sửa và xuất bản theo mục 7.

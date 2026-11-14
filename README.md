@@ -1,6 +1,8 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
-**V5.26.0 — 14/11/2026 (đang PR):** bộ lọc cấp độ ở Học viện, Tiến bộ và mục tiêu tuần lấy theo thư viện bài đã xuất bản (tự có `4.0–4.5`, `4.5–5.0` khi có bài); tiêu đề số buổi và dải cấp độ tính theo thư viện. Owner đã áp dụng migration 8 trên Supabase staging ngày 14/11 (`INSTALLED / 20261114000100`). Vẫn 80 bài. [Release notes](RELEASE_V5.26.0.md).
+**V5.27.0 — 14/11/2026 (đang PR):** C3c — 24 bài **nháp** 4.0–4.5 và 4.5–5.0 (`PU-081…104`) do Claude soạn, chờ HLV duyệt trong CMS; chưa hiện cho người tập, thư viện vẫn 80 bài. [Danh sách và cách duyệt](docs/DRAFT_LESSONS_4_0_5_0.md) · [Release notes](RELEASE_V5.27.0.md).
+
+**V5.26.0 — 14/11/2026 (đã phát hành, #58):** bộ lọc cấp độ ở Học viện, Tiến bộ và mục tiêu tuần lấy theo thư viện bài đã xuất bản (tự có `4.0–4.5`, `4.5–5.0` khi có bài); tiêu đề số buổi và dải cấp độ tính theo thư viện. Owner đã áp dụng migration 8 trên Supabase staging ngày 14/11 (`INSTALLED / 20261114000100`). Vẫn 80 bài. [Release notes](RELEASE_V5.26.0.md).
 
 **V5.25.0 — 14/11/2026 (đã phát hành, #57):** C3b — CMS thêm được bài mới (mã kế tiếp, trạng thái Nháp); app chỉ nạp bài **Đang dùng**, bài nháp/chờ duyệt/ngừng dùng không hiện cho người tập. Chưa thêm bài nào. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.25.0.md).
 
