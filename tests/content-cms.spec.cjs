@@ -14,7 +14,7 @@ for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring 
  await expect(page.locator('#lessonList button')).toHaveCount(80);
  await page.locator('#filterText').fill('PU-001');
  await page.locator('#lessonList button[data-id="PU-001"]').click();
- for(const id of ['#f-zone','#f-assessment','#f-target'])await expect(page.locator(id)).toHaveAttribute('readonly','');
+ await expect(page.locator('#f-target')).toHaveValue(String(BASE.assessment.target));
  await page.locator('[data-cue="0"]').fill('Đứng sau baseline, nhìn ô chéo trước khi giao');
  await expect(page.locator('[data-video]')).toHaveCount(BASE_MEDIA.length);
  await page.locator('#addVideo').click();
@@ -27,6 +27,8 @@ for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring 
  await added.locator('[data-vkey="start"]').fill('3');
  await expect(page.locator('#errors li')).toHaveCount(0);
  await expect(page.locator('#changeSummary')).toContainText('Đã sửa 1 bài: PU-001');
+ // Wording and video edits are not a new test: no confirmation is asked.
+ await expect(page.locator('#assessmentConfirmRow')).toBeHidden();
  await expect(page.locator('#lessonList button[data-id="PU-001"]')).toContainText('đã sửa');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#download').click()]);
  expect(download.suggestedFilename()).toBe('curriculum.js');
@@ -43,6 +45,37 @@ for(const width of [390,1440])test('CMS edits wording and videos, keeps scoring 
  await expect(page.locator('#changeSummary')).toContainText('PU-001');
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
  expect(overflow).toBeLessThanOrEqual(2);
+});
+test('CMS changes a lesson test only as a new assessment version, after explicit confirmation',async({page})=>{
+ await page.goto('/Pickleball/cms/');
+ await expect(page.locator('#status')).toContainText('Đã tải 80 bài');
+ await page.locator('#lessonList button[data-id="PU-001"]').click();
+ const target=BASE.assessment.target===20?19:BASE.assessment.target+1;
+ await page.locator('#f-target').fill('25');
+ await expect(page.locator('#errors')).toContainText('mục tiêu 1–20');
+ await expect(page.locator('#download')).toBeDisabled();
+ await page.locator('#f-target').fill(String(target));
+ await expect(page.locator('#errors li')).toHaveCount(0);
+ await expect(page.locator('#assessmentNotice')).toContainText('phiên bản '+(BASE.assessmentVersion+1));
+ await expect(page.locator('#lessonList button[data-id="PU-001"]')).toContainText('đổi đề');
+ await expect(page.locator('#assessmentConfirmRow')).toContainText('PU-001');
+ await expect(page.locator('#download')).toBeDisabled();
+ // Returning to the published value is not a new test.
+ await page.locator('#f-target').fill(String(BASE.assessment.target));
+ await expect(page.locator('#assessmentConfirmRow')).toBeHidden();
+ await expect(page.locator('#changeSummary')).toContainText('Chưa có thay đổi');
+ await page.locator('#f-target').fill(String(target));
+ await page.locator('#f-zone').fill('Ô giao bóng chéo, nửa sau');
+ await page.locator('#assessmentConfirm').check();
+ await expect(page.locator('#download')).toBeEnabled();
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#download').click()]);
+ const doc=core.parseCurriculum(fs.readFileSync(await download.path(),'utf8'));
+ const previous=core.parseCurriculum(fs.readFileSync(require('node:path').join(__dirname,'..','curriculum.js'),'utf8'));
+ expect(core.validate(doc,{previous})).toEqual([]);
+ const lesson=doc.lessons.find(l=>l.id==='PU-001');
+ expect([lesson.assessmentVersion,lesson.revision,lesson.assessment.target,lesson.zone]).toEqual([BASE.assessmentVersion+1,BASE.revision+1,target,'Ô giao bóng chéo, nửa sau']);
+ expect(lesson.assessment.attempts).toBe(20);
+ expect(doc.lessons.filter(l=>l.id!=='PU-001').every(l=>core.canonical(l)===core.canonical(previous.lessons.find(x=>x.id===l.id)))).toBe(true);
 });
 test('CMS never registers or uses the app service worker cache',async({page})=>{
  await page.goto('/Pickleball/cms/');

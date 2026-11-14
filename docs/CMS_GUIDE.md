@@ -15,7 +15,8 @@ Dành cho HLV và người quản lý nội dung. Không cần cài đặt hay t
 3. Sửa tên, mục tiêu, chuẩn bị, **3 điểm cần nhớ**, lỗi thường gặp, nội dung drill.
 4. Phần **Video**: bấm **+ Thêm video**, dán link YouTube, chọn góc quay, có thể đặt giây bắt đầu/kết thúc.
 5. Ô đỏ ở mục Trạng thái liệt kê lỗi cần sửa. Nút xuất chỉ bật khi không còn lỗi.
-6. Trường có dấu 🔒 (vùng mục tiêu, đề kiểm tra, mục tiêu /20, số phút drill) đang khóa để không làm sai lệch so sánh điểm của người tập.
+6. **Đổi đề kiểm tra** (vùng mục tiêu, hướng dẫn kiểm tra, mục tiêu /20): sửa được từ V5.23.0, nhưng mỗi lần sửa là một **phiên bản đề mới**. Điểm cũ của người tập ở bài đó vẫn được giữ, nhưng không còn so với điểm mới và xu hướng bắt đầu lại. CMS hiện cảnh báo vàng và yêu cầu đánh dấu ô **"Tôi hiểu…"** ở mục Xuất bản thì mới xuất được. Sửa chính tả trong các ô này cũng tính là đổi đề, nên chỉ sửa khi thật sự cần.
+7. Trường có dấu 🔒 (số lượt kiểm tra 20, số phút drill, kỹ năng, cấp độ) vẫn khóa.
 
 Bản nháp tự lưu trên trình duyệt đang dùng. Đổi máy hoặc xóa dữ liệu trình duyệt sẽ mất bản nháp chưa xuất.
 
@@ -30,4 +31,4 @@ Bản nháp tự lưu trên trình duyệt đang dùng. Đổi máy hoặc xóa 
 - Không sửa tay cấu trúc `curriculum.js` trên GitHub: chỉ xuất từ CMS. CI sẽ từ chối tệp sai định dạng.
 - Không xóa bài: chuyển trạng thái **Ngừng dùng (retired)** để lịch sử điểm vẫn hiển thị đúng tên bài.
 - Video cần mạng để xem. YouTube có thể tự chèn quảng cáo vào video nhúng.
-- Muốn đổi đề kiểm tra hoặc thêm bài mới (PU-081 trở đi) cần PR kỹ thuật riêng; xem [CONTENT_VERSIONING_CMS.md](CONTENT_VERSIONING_CMS.md).
+- Muốn thêm bài mới (PU-081 trở đi) hoặc đổi số phút drill, kỹ năng, cấp độ cần PR kỹ thuật riêng; xem [CONTENT_VERSIONING_CMS.md](CONTENT_VERSIONING_CMS.md).

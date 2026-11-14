@@ -42,6 +42,7 @@ function renderList(){
   if(Array.isArray(l.media)&&l.media.length)add('🎬 '+l.media.length);
   if(l.status!=='published')add(l.status);
   if(changed.has(l.id))add('đã sửa','changed');
+  {const b=find(base,l.id);if(b&&l.assessmentVersion!==b.assessmentVersion)add('đổi đề','changed')}
   if(errored.has(l.id))add('lỗi','error');
   li.append(b);return li;
  }));
@@ -99,7 +100,18 @@ function readForm(l){
   if(title)m.title=title;if(start!=='')m.start=Number(start);if(end!=='')m.end=Number(end);
   return m;
  });
+ next.zone=$('f-zone').value;
+ const target=$('f-target').value.trim();
+ next.assessment={...next.assessment,instruction:$('f-assessment').value,target:/^\d+$/.test(target)?Number(target):target};
  return next;
+}
+// Lessons whose test changed in this draft compared with the published file.
+function retested(){return work.lessons.filter(l=>{const b=find(base,l.id);return b&&l.assessmentVersion!==b.assessmentVersion}).map(l=>l.id)}
+function paintAssessment(){
+ const l=selected&&find(work,selected),b=l&&find(base,l.id),changed=!!l&&!!b&&l.assessmentVersion!==b.assessmentVersion;
+ $('assessmentNotice').hidden=!changed;
+ if(changed)$('assessmentNotice').textContent='Đề kiểm tra của '+l.id+' sẽ lên phiên bản '+l.assessmentVersion+'. Điểm cũ của người tập ở bài này được giữ nhưng tách khỏi xu hướng.';
+ if(l)$('lessonMeta').textContent=l.id+' · '+l.level+' · '+l.skillName+' · revision '+l.revision+' · phiên bản đề '+l.assessmentVersion;
 }
 function onEdit(){
  const i=work.lessons.findIndex(l=>l.id===selected);if(i<0)return;
@@ -111,9 +123,12 @@ function refresh(redraw=true){
  lastErrors=core.validate(work,{previous:base});
  $('errors').replaceChildren(...lastErrors.slice(0,30).map(e=>{const li=document.createElement('li');li.textContent=e;return li}));
  const changed=changedIds();
- $('changeSummary').textContent=changed.length?'Đã sửa '+changed.length+' bài: '+changed.join(', ')+(lastErrors.length?'. Còn '+lastErrors.length+' lỗi cần sửa trước khi xuất.':'. Sẵn sàng xuất.'):'Chưa có thay đổi.';
- $('download').disabled=$('copy').disabled=!changed.length||lastErrors.length>0;
- renderList();if(redraw)renderEditor();
+ const tests=retested(),confirm=$('assessmentConfirm');
+ if($('assessmentConfirmList').textContent!==tests.join(', ')){confirm.checked=false;$('assessmentConfirmList').textContent=tests.join(', ')}
+ $('assessmentConfirmRow').hidden=!tests.length;
+ $('changeSummary').textContent=changed.length?'Đã sửa '+changed.length+' bài: '+changed.join(', ')+(lastErrors.length?'. Còn '+lastErrors.length+' lỗi cần sửa trước khi xuất.':tests.length&&!confirm.checked?'. Đánh dấu ô xác nhận đổi đề bên dưới để xuất.':'. Sẵn sàng xuất.'):'Chưa có thay đổi.';
+ $('download').disabled=$('copy').disabled=!changed.length||lastErrors.length>0||tests.length>0&&!confirm.checked;
+ renderList();if(redraw)renderEditor();paintAssessment();
 }
 $('lessonList').addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;selected=b.dataset.id;refresh()});
 $('filterLevel').addEventListener('change',()=>renderList());
@@ -121,6 +136,7 @@ $('filterText').addEventListener('input',()=>renderList());
 $('editor').addEventListener('input',onEdit);
 $('editor').addEventListener('change',onEdit);
 $('editor').addEventListener('submit',e=>e.preventDefault());
+$('assessmentConfirm').addEventListener('change',()=>refresh(false));
 $('addVideo').addEventListener('click',()=>{const l=find(work,selected);if(!l)return;$('videos').append(videoRow({kind:'youtube',id:'',angle:'back'},(l.media||[]).length));onEdit();renderEditor()});
 $('videos').addEventListener('click',e=>{const b=e.target.closest('[data-remove-video]');if(!b)return;b.closest('[data-video]').remove();onEdit();renderEditor()});
 $('reload').addEventListener('click',fetchSource);
@@ -129,12 +145,12 @@ $('draftRestore').addEventListener('click',()=>{const d=readDraft();if(!d)return
 $('draftDiscard').addEventListener('click',()=>{clearDraft();$('draftBanner').hidden=true;setStatus('Đã bỏ bản nháp.')});
 function exportText(){return core.renderCurriculum(work)}
 $('download').addEventListener('click',()=>{
- if(lastErrors.length)return;
+ if($('download').disabled)return;
  const url=URL.createObjectURL(new Blob([exportText()],{type:'text/javascript'})),a=document.createElement('a');
  a.href=url;a.download='curriculum.js';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
  setStatus('Đã tải curriculum.js. Làm tiếp các bước tải lên GitHub bên dưới.');
 });
-$('copy').addEventListener('click',async()=>{if(lastErrors.length)return;try{await navigator.clipboard.writeText(exportText());setStatus('Đã sao chép toàn bộ nội dung curriculum.js.')}catch(_){setStatus('Không sao chép được; hãy dùng nút tải tệp.')}});
+$('copy').addEventListener('click',async()=>{if($('copy').disabled)return;try{await navigator.clipboard.writeText(exportText());setStatus('Đã sao chép toàn bộ nội dung curriculum.js.')}catch(_){setStatus('Không sao chép được; hãy dùng nút tải tệp.')}});
 if(!core){setStatus('Thiếu modules/content-core.js.');return}
 fetchSource();
 })();

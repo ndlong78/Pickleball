@@ -26,7 +26,11 @@ test('wording, cues and videos bump only the revision; scoring edits are blocked
  d.lessons[0]=edited;assert.deepEqual(core.validate(d,{previous:doc()}),[]);
  const scoring=core.applyEdit(before,{...before,assessment:{...before.assessment,target:before.assessment.target+1}});
  assert.equal(scoring.assessmentVersion,2);
- d.lessons[0]=scoring;assert.match(core.validate(d).join('\n'),/chưa cho phép đổi đề/);
+ d.lessons[0]=scoring;assert.deepEqual(core.validate(d,{previous:doc()}),[]);
+ // A changed test must be exactly one new version; an unchanged test keeps its version.
+ d.lessons[0]={...scoring,assessmentVersion:3};assert.match(core.validate(d,{previous:doc()}).join('\n'),/phải tăng đúng 1/);
+ d.lessons[0]={...before,revision:before.revision+1,title:before.title+' x',assessmentVersion:before.assessmentVersion+1};assert.match(core.validate(d,{previous:doc()}).join('\n'),/phải giữ nguyên/);
+ d.lessons[0]={...scoring,assessmentVersion:1000};assert.match(core.validate(d).join('\n'),/từ 1 đến 999/);
  const sneaky={...before,assessment:{...before.assessment,instruction:'Khác'}};
  d.lessons[0]=sneaky;assert.match(core.validate(d).join('\n'),/chưa tăng phiên bản đề/);
  assert.deepEqual(core.applyEdit(before,{...before}),before);

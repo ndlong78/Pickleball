@@ -1,6 +1,6 @@
 # Thiết kế: phiên bản giáo án và CMS nội dung Học viện
 
-Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (mục 10); **C1 (lưu phiên bản đề theo lượt điểm) triển khai ở V5.22.0** (mục 11). Mở khóa đổi đề trong CMS, mở rộng ID (C3) và CMS trên Supabase (C4) vẫn là đề xuất.
+Trạng thái: **Giai đoạn A và video YouTube đã triển khai ở V5.21.0** (mục 10); **C1 (lưu phiên bản đề theo lượt điểm) triển khai ở V5.22.0** (mục 11). **CMS mở khóa đổi đề ở V5.23.0** (mục 12). Mở rộng ID (C3) và CMS trên Supabase (C4) vẫn là đề xuất.
 
 ## 1. Vì sao cần làm trước khi thêm video hoặc bài mới
 
@@ -155,4 +155,12 @@ Owner xác nhận `https://pickleup-staging.home-309.workers.dev` là host chín
 - **Nhập vào tài khoản (pilot):** `import-core` chấp nhận `av`; lượt có `av` nhập với `content_version` `<mã bài>@a<av>`, lượt không có giữ `legacy-unknown` như trước (không đổi fingerprint của dữ liệu đã nhập). `av` sai định dạng bị đánh dấu không hợp lệ, không đoán.
 - **Tương thích ngược:** bản app cũ đọc lịch sử khách có `av` bình thường (validator cũ không kiểm khóa lạ). Bản cũ còn cache sẽ coi lượt tài khoản `PU-xxx@a1` là khác phiên bản với `academy-80-v1` cho tới khi PWA cập nhật; không mất dữ liệu. Công cụ nhập của bản cũ từ chối lượt có `av` (báo trường lạ), cũng không mất dữ liệu.
 - **Chưa làm:** `MAX_ASSESSMENT_VERSION` vẫn là 1 và CMS vẫn khóa trường chấm điểm. Mở khóa là PR riêng, sau khi bản này đã phát hành và người dùng đã nhận bản PWA mới.
+
+## 12. Mở khóa đổi đề trong CMS (V5.23.0)
+
+- `MAX_ASSESSMENT_VERSION` = 999. CMS cho sửa **vùng mục tiêu, hướng dẫn kiểm tra, mục tiêu /20**; số lượt (20), số phút drill, kỹ năng và cấp độ vẫn khóa vì gắn với cấu trúc buổi 60 phút và miền dữ liệu.
+- CMS tự tăng `assessmentVersion` đúng 1 so với bản đang xuất bản (sửa nhiều lần trong một bản nháp vẫn chỉ +1; trả về giá trị cũ thì không tăng), hiện cảnh báo trên bài, nhãn "đổi đề" trong danh sách, và chỉ cho xuất khi người sửa đánh dấu ô xác nhận liệt kê các bài đổi đề.
+- Validator (CMS và CI `check-content --previous`): đề đổi thì phiên bản phải tăng **đúng 1**; đề không đổi thì phiên bản phải **giữ nguyên**; không giảm.
+- `weekly-plan-core` (xếp lịch tuần) cũng bỏ qua điểm khách theo đề cũ khi xét "giảm điểm" và "chưa đạt mốc", giống gợi ý và biểu đồ ở mục 11.
+- **Giới hạn đã biết:** Tổng quan (`dashboard.js`) và điểm nền của HLV cá nhân (`personalized-ui.js`) vẫn dùng điểm gần nhất của bài kể cả khi đó là điểm theo đề cũ; đây là số liệu "đã từng đạt", không phải so sánh tiến bộ. Tiến độ "đã có điểm" của bài cũng không đặt lại khi đổi đề.
 
