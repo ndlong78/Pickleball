@@ -90,7 +90,7 @@ test("V5.27.0 caches a visited advanced page for later offline reuse",async({pag
  await page.reload(); // ensure the active service worker controls the document
  await expect.poll(async()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
  await navigate(page,'academy');
- await expect(page.locator("#academyWeek option")).toHaveCount(80);
+ await expect(page.locator("#academyWeek option")).toHaveCount(104);
  const cached=await page.evaluate(async()=>{
   const c=await caches.open("pickleup-shell-v5-27-0-stable");
   const keys=await c.keys();
@@ -99,7 +99,7 @@ test("V5.27.0 caches a visited advanced page for later offline reuse",async({pag
  expect(cached.some(x=>x.endsWith("/pages/academy.html"))).toBe(true);
  await context.setOffline(true);
  await page.reload();
- await expect(page.locator("#academyWeek option")).toHaveCount(80);
+ await expect(page.locator("#academyWeek option")).toHaveCount(104);
  await context.setOffline(false);
 });
 test('V5.27.0 restores the visited match route and its new activity modules offline under Pickleball',async({page,context})=>{
@@ -116,7 +116,7 @@ test('V5.27.0 caches the visited plan runtime and restores direct Court offline 
  await page.goto('/Pickleball/?page=court');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('court'));await expect.poll(()=>page.evaluate(async()=>{const c=await caches.open('pickleup-shell-v5-27-0-stable'),keys=(await c.keys()).map(x=>new URL(x.url).pathname);return ['modules/data/activity-source-core.js','modules/data/activity-runtime.js','modules/data/plan-config.js','modules/data/plan-core.js','modules/data/plan-controller.js','modules/data/plan-runtime.js','modules/data/court-checkpoint-runtime.js','practice-runner.js','pages/court.html'].every(x=>keys.includes('/Pickleball/'+x))})).toBe(true);await context.setOffline(true);await page.reload();await expect(page.locator('#pcRunEmpty')).toBeVisible();expect(await page.evaluate(()=>PICKLEUP_PLANS.getState().mode)).toBe('guest');
 });
 
-test('V5.27.0 restores guest Academy choice and practice state offline under Pickleball',async({page,context})=>{await page.goto('/Pickleball/');await page.evaluate(()=>navigator.serviceWorker.ready);await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);await page.goto('/Pickleball/?page=academy');await expect(page.locator('#academyWeek option')).toHaveCount(80);await page.locator('#academyWeek').selectOption('PU-037');await page.locator('#academyStepList input').first().check();await expect.poll(()=>page.evaluate(async()=>{const cache=await caches.open('pickleup-shell-v5-27-0-stable'),keys=(await cache.keys()).map(x=>new URL(x.url).pathname);return ['modules/academy-page.js','modules/data/plan-runtime.js','modules/data/academy-practice-runtime.js','pages/academy.html'].every(x=>keys.includes('/Pickleball/'+x))})).toBe(true);await context.setOffline(true);await page.reload();await expect(page.locator('#academyWeek')).toHaveValue('PU-037');await expect(page.locator('#academyStepList input').first()).toBeChecked();expect(await page.evaluate(()=>localStorage.getItem('pickleup_academy_last_lesson_v4'))).toBe('PU-037');expect(await page.evaluate(()=>PICKLEUP_PLANS.isAccount())).toBe(false);await context.setOffline(false)});
+test('V5.27.0 restores guest Academy choice and practice state offline under Pickleball',async({page,context})=>{await page.goto('/Pickleball/');await page.evaluate(()=>navigator.serviceWorker.ready);await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);await page.goto('/Pickleball/?page=academy');await expect(page.locator('#academyWeek option')).toHaveCount(104);await page.locator('#academyWeek').selectOption('PU-037');await page.locator('#academyStepList input').first().check();await expect.poll(()=>page.evaluate(async()=>{const cache=await caches.open('pickleup-shell-v5-27-0-stable'),keys=(await cache.keys()).map(x=>new URL(x.url).pathname);return ['modules/academy-page.js','modules/data/plan-runtime.js','modules/data/academy-practice-runtime.js','pages/academy.html'].every(x=>keys.includes('/Pickleball/'+x))})).toBe(true);await context.setOffline(true);await page.reload();await expect(page.locator('#academyWeek')).toHaveValue('PU-037');await expect(page.locator('#academyStepList input').first()).toBeChecked();expect(await page.evaluate(()=>localStorage.getItem('pickleup_academy_last_lesson_v4'))).toBe('PU-037');expect(await page.evaluate(()=>PICKLEUP_PLANS.isAccount())).toBe(false);await context.setOffline(false)});
 
 
 test('V5.27.0 restores visited Settings and account rescue modules offline with guest controls disabled',async({page,context})=>{

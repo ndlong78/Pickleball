@@ -22,7 +22,7 @@ Trước khi thiết kế/sửa tính năng, đọc **cả ba** tài liệu có 
 - **Học viện ≠ Trên sân:** đồng hồ từng bước trong Học viện dùng giáo án trong thư viện; đồng hồ Trên sân yêu cầu giáo án cá nhân hợp lệ đã tạo/chọn. Không giả định hai định dạng tương thích.
 - **Điểm kiểm tra ≠ DUPR ≠ attendance.** So sánh tiến bộ chỉ khi **cùng bài, cùng cấp độ, điều kiện kiểm tra tương đương**. Không tự nâng cấp trình độ.
 - **Lịch sử không có snapshot mục tiêu tuần cũ.** V4.9 dùng mục tiêu **hiện tại** để tham chiếu lịch sử; không được ghi thành tỷ lệ hoàn thành kế hoạch đã lưu của các tuần trước. Ngày chưa check-in không có nghĩa đã bỏ tập.
-- Sáu kỹ năng: `serve`, `return`, `dink`, `volley`, `position`, `strategy`. Học viện hiện có **80 bài 1.0–4.0**; lộ trình nội dung dài hạn đến 5.0 không có nghĩa đã có đủ bài 4.0–5.0.
+- Sáu kỹ năng: `serve`, `return`, `dink`, `volley`, `position`, `strategy`. Học viện hiện có **104 bài 1.0–5.0** (80 bài 1.0–4.0 và 24 bài 4.0–5.0 xuất bản ở V5.27.0 theo yêu cầu owner, **chưa có HLV duyệt hay hiệu chỉnh trên sân**); số bài 4.0–5.0 còn ít hơn các cấp dưới.
 - Buổi tập đầy đủ 60′ gồm 10′ khởi động, 12′+12′+15′ kỹ thuật, 6′ kiểm tra, 5′ thả lỏng. Buổi 20/30/45′ phải được gọi là **phiên rút gọn**; khuyến khích hồi phục, giảm cường độ khi đau/mệt, không tập bù quá sức.
 
 ## 3. Hợp đồng kiến trúc và dữ liệu

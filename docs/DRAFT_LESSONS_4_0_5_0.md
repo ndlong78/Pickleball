@@ -1,6 +1,6 @@
-# Bản nháp bài 4.0–4.5 và 4.5–5.0 (chờ HLV duyệt)
+# Bài 4.0–4.5 và 4.5–5.0 (đã xuất bản, chưa có HLV duyệt)
 
-Trạng thái: **24 bài nháp** `PU-081…PU-104` nằm trong `curriculum.js` từ V5.27.0, trạng thái `draft`. **Người tập không thấy các bài này**; thư viện đã xuất bản vẫn là 80 bài 1.0–4.0.
+Trạng thái: **24 bài `PU-081…PU-104` đã xuất bản ở V5.27.0** theo yêu cầu trực tiếp của owner ngày 14/11/2026 ("public luôn các bài này để bất kì ai cũng có thể xem được"). Người tập thấy các bài này trong Học viện; thư viện là 104 bài 1.0–5.0. Tên tệp giữ chữ "DRAFT" vì nội dung vẫn là bản đầu, chưa qua duyệt chuyên môn.
 
 ## Nguồn gốc và giới hạn
 - Nội dung do Claude soạn theo yêu cầu của owner (14/11/2026), dựa trên cấu trúc sáu nhóm trọng tâm của các bài 3.5–4.0 hiện có. **Chưa có HLV nào duyệt, chưa thử trên sân.**
@@ -44,14 +44,16 @@ Trạng thái: **24 bài nháp** `PU-081…PU-104` nằm trong `curriculum.js` t
 
 Mỗi bài theo cấu trúc buổi đầy đủ 60 phút: khởi động 10, ba drill 12 + 12 + 15, kiểm tra 6, thả lỏng 5. Mỗi nhóm trọng tâm có hai bài ở mỗi cấp; mỗi cấp 12 bài (các cấp 3.0–3.5 và 3.5–4.0 hiện có 20 và 24 bài, nên có thể bổ sung sau).
 
-## Cách duyệt (HLV)
-1. Mở `https://pickleup-staging.home-309.workers.dev/cms/`, lọc cấp độ `4.0–4.5` hoặc `4.5–5.0`. Bài nháp có nhãn **draft**.
-2. Đọc và sửa trực tiếp: tên bài, mục tiêu, chuẩn bị, 3 điểm cần nhớ, lỗi thường gặp, 3 drill, vùng mục tiêu, hướng dẫn kiểm tra, mục tiêu /20. Bài chưa xuất bản nên sửa đề không tạo "phiên bản đề mới".
-3. Bài chưa muốn dùng: để nguyên **Nháp**. Bài cần người khác xem: chuyển **Chờ duyệt (review)**. Bài bỏ hẳn: chuyển **Ngừng dùng (retired)** (không xóa được vì mã bài không dùng lại).
-4. Bài đã duyệt: chuyển **Đang dùng (published)**, thêm video nếu có, rồi xuất `curriculum.js` và mở pull request như [CMS_GUIDE.md](CMS_GUIDE.md).
+## Cách sửa sau khi đã xuất bản (HLV)
+1. Mở `https://pickleup-staging.home-309.workers.dev/cms/`, lọc cấp độ `4.0–4.5` hoặc `4.5–5.0`.
+2. Sửa tên bài, mục tiêu, chuẩn bị, 3 điểm cần nhớ, lỗi thường gặp, nội dung drill, video: không ảnh hưởng điểm đã lưu.
+3. Sửa **vùng mục tiêu, hướng dẫn kiểm tra hoặc mục tiêu /20** là đổi đề: bài lên phiên bản đề mới, điểm người tập đã lưu ở bài đó tách khỏi xu hướng. Nên gom các chỉnh đề của một bài vào một lần xuất bản.
+4. Bài không phù hợp: chuyển **Ngừng dùng (retired)**; bài biến khỏi Học viện, điểm cũ của người tập vẫn được giữ.
+5. Xuất `curriculum.js` và mở pull request như [CMS_GUIDE.md](CMS_GUIDE.md).
 
-## Trước khi xuất bản bài đầu tiên
-Xem điều kiện ở [LESSON_DOMAIN_C3.md mục 7](LESSON_DOMAIN_C3.md). Tóm tắt: migration 8 đã chạy trên staging; app từ V5.26.0 đã có bộ lọc cấp độ; nên chờ vài ngày sau V5.26.0 để máy người tập nhận bản mới; khi xuất bản cần sửa câu mô tả tĩnh "44 giáo án chiến thuật…" ở trang Học viện.
+## Điều kiện phát hành đã chấp nhận
+- Migration 8 đã chạy trên Supabase staging (owner báo, 14/11/2026); app có bộ lọc cấp độ theo thư viện từ V5.26.0.
+- **Rủi ro còn lại, owner đã chọn phát hành ngay:** (1) nội dung chưa có HLV duyệt; (2) V5.24.0–V5.26.0 mới phát hành trong ngày, nên một máy còn chạy bản ≤ 5.23.0 mà đọc dữ liệu có bài `PU-081+` (ví dụ nhập tệp sao lưu tạo từ bản mới, hoặc một tab cũ chưa tải lại chung trình duyệt với tab mới) sẽ coi là dữ liệu hỏng và có thể ghi đè lịch sử điểm khách. Bản cũ tự nó không tạo được điểm cho bài mới vì không có bài đó trong thư viện.
 
 ## Dung lượng
-`curriculum.js` sau gzip tăng từ 13,9 KB lên 24,0 KB vì tệp chứa cả bài nháp. Người tập tải phần này dù chưa thấy bài; nếu cần giảm, có thể tách bài chưa xuất bản sang tệp riêng chỉ CMS đọc (chưa làm).
+`curriculum.js` sau gzip tăng từ 13,9 KB lên 24,0 KB (đo bằng `gzip -c`) do thêm 24 bài.

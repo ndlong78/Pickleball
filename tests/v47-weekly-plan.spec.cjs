@@ -22,7 +22,7 @@ for(const width of [390,820,1440]){
    const id=await page.locator("#wpDays a[data-lesson-id]").first().getAttribute("data-lesson-id");
    expect(id).toMatch(/^PU-0/);
    await page.locator("#wpDays a[data-lesson-id]").first().click();
-   await expect(page.locator("#academyWeek option")).toHaveCount(80);
+   await expect(page.locator("#academyWeek option")).toHaveCount(104);
    await expect(page.locator("#academyWeek")).toHaveValue(id);
   });
  });

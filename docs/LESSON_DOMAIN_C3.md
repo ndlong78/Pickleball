@@ -1,6 +1,6 @@
 # C3 — Mở rộng mã bài và cấp độ 4.0–5.0
 
-Trạng thái: **C3a (V5.24.0), C3b (V5.25.0) và bộ lọc cấp độ theo thư viện (V5.26.0) đã code.** Thư viện vẫn 80 bài 1.0–4.0. **Migration 8 đã được owner áp dụng trên Supabase staging ngày 14/11/2026** qua bản SQL Editor, kết quả báo `INSTALLED / 20261114000100` (owner báo; chưa có kiểm chứng độc lập từ CI với DB staging).
+Trạng thái: **C3a (V5.24.0), C3b (V5.25.0) và bộ lọc cấp độ theo thư viện (V5.26.0) đã code.** Từ V5.27.0 thư viện có 104 bài 1.0–5.0 (mục 8). **Migration 8 đã được owner áp dụng trên Supabase staging ngày 14/11/2026** qua bản SQL Editor, kết quả báo `INSTALLED / 20261114000100` (owner báo; chưa có kiểm chứng độc lập từ CI với DB staging).
 
 ## 1. Quyết định của owner (14/11/2026)
 - Bài 4.0–5.0 chia **hai nhóm `4.0–4.5` và `4.5–5.0`**, cùng cách chia 0,5 điểm như các cấp dưới.
@@ -55,5 +55,5 @@ Bản app cũ (≤ 5.23.0) coi mã `PU-081+` hoặc cấp 4.0+ là dữ liệu h
 3. Người dùng đã nhận bản PWA ≥ 5.24.0 (bản cũ hơn có thể ghi đè lịch sử khách khi gặp mã bài mới): nên chờ vài ngày sau khi V5.26.0 phát hành.
 4. HLV duyệt nội dung và chuyển trạng thái sang "Đang dùng" qua CMS.
 
-## 8. C3c (V5.27.0): bản nháp nội dung
-24 bài nháp `PU-081…104` đã có trong `curriculum.js` ở trạng thái `draft`; xem [DRAFT_LESSONS_4_0_5_0.md](DRAFT_LESSONS_4_0_5_0.md). Việc còn lại thuộc HLV/owner: duyệt, sửa và xuất bản theo mục 7.
+## 8. C3c (V5.27.0): xuất bản 24 bài 4.0–5.0
+`PU-081…104` được xuất bản ngay ở V5.27.0 theo yêu cầu owner, không chờ điều kiện 3 và 4 của mục 7 (chờ người dùng nhận bản mới; HLV duyệt). Rủi ro đã chấp nhận và cách sửa sau xuất bản: [DRAFT_LESSONS_4_0_5_0.md](DRAFT_LESSONS_4_0_5_0.md).

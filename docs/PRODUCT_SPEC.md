@@ -23,7 +23,7 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 | `journey` — Hành trình | Hành trình sáu bước V5.0, gợi ý hành động tiếp theo, check-in hôm nay | Không tự đánh dấu hoàn thành từ timer/điểm |
 | `coach` — HLV cá nhân | Đánh giá sáu kỹ năng, giáo án cá nhân 1.0–4.0 theo module hiện có | Đánh giá nội bộ, không phải chứng nhận |
 | `court` — Trên sân | Đồng hồ sáu phần, sơ đồ sân, nhập kết quả giáo án cá nhân | Chỉ áp dụng khi đã có kế hoạch cá nhân tương thích |
-| `academy` — Học viện | **80 giáo án hiện có trong khoảng 1.0–4.0**, chọn bài, lưu điểm, đồng hồ từng bước | Bài Học viện và giáo án cá nhân là hai dạng khác nhau |
+| `academy` — Học viện | **104 giáo án hiện có trong khoảng 1.0–5.0** (24 bài 4.0–5.0 từ V5.27.0, chưa có HLV duyệt), chọn bài, lưu điểm, đồng hồ từng bước | Bài Học viện và giáo án cá nhân là hai dạng khác nhau |
 | `progress` — Tiến bộ | Lịch sử kiểm tra, mục tiêu tuần, lịch đề xuất, check-in và kế hoạch–thực tế | Phân biệt các nguồn dữ liệu theo nghĩa |
 | `matches` — Thi đấu | Nhật ký trận, chiến thuật và phối hợp đánh đôi | Không tự suy ra chất lượng thi đấu từ bài kỹ thuật |
 | `settings` — Dữ liệu | Xuất/nhập JSON và cứu hộ dữ liệu khách; công cụ tài khoản/pilot và chẩn đoán hiệu năng chỉ hiện trên staging/localhost (V5.18, `debug=1` mở riêng chẩn đoán) | Tương thích ngược, xác nhận trước ghi đè |

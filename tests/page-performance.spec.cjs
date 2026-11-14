@@ -20,7 +20,7 @@ test.describe("PickleUp V3.5 lazy page loading",()=>{
   await page.goto("/?page=home");
   await expect(page.locator("#weekList .week").first()).toBeVisible();
   await navigate(page,'academy');
-  await expect(page.locator("#academyWeek option")).toHaveCount(80);
+  await expect(page.locator("#academyWeek option")).toHaveCount(104);
   await expect(page.locator("#academyDetail")).not.toBeEmpty();
   const old=await page.evaluate(()=>window.PICKLEUP_PAGE_LOADER.readMetrics().find(m=>m.page==="academy"));
   expect(old.scripts).toBeGreaterThan(0);
@@ -45,7 +45,7 @@ test.describe("PickleUp V3.5 lazy page loading",()=>{
   expect(scripts.some(x=>x.includes("web-vitals.js?v=5.27.0"))).toBe(true);
   expect(await page.evaluate(()=>typeof window.PICKLEUP_METRICS?.collect)).toBe("function");
   await navigate(page,'academy');
-  await expect(page.locator("#academyWeek option")).toHaveCount(80);
+  await expect(page.locator("#academyWeek option")).toHaveCount(104);
   await navigate(page,'settings');
   await expect(page.locator("#pageVitals .performance-item")).toHaveCount(4);
   await expect(page.locator("#pageRouteMetrics")).toContainText("Học viện");
