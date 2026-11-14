@@ -15,6 +15,7 @@ const YOUTUBE_ID=/^[A-Za-z0-9_-]{11}$/;
 // version would mix old and new scores. Lift only together with that change.
 // Since V5.22.0 every score records its assessment version, so the test may change.
 const MAX_ASSESSMENT_VERSION=999;
+const FOCI=['third-drop','transition-reset','serve-return','kitchen-pressure','doubles-coverage','third-choice','advanced-reset','counter-volley','doubles-switch','defense-attack','tactical-choice'];
 const LEGACY_KEYS=['id','week','level','advanced','focus','skill','skillName','title','goal','zone','setup','cues','mistakes','drills','assessment','warmup','testMinutes','cooldown','duration','diagram','coachNote'];
 const META_KEYS=['status','revision','assessmentVersion','assessmentHash','media'];
 const KNOWN=new Set([...LEGACY_KEYS,...META_KEYS]);
@@ -86,7 +87,13 @@ function validateLesson(l,errors){
  if(!STATUSES.includes(l.status))errors.push(where+': trạng thái phải là '+STATUSES.join('/'));
  if(!int(l.revision,1,1e6))errors.push(where+': revision phải là số nguyên ≥ 1');
  if(!int(l.assessmentVersion,1,MAX_ASSESSMENT_VERSION))errors.push(where+': phiên bản đề phải là số nguyên từ 1 đến '+MAX_ASSESSMENT_VERSION);
+ if(!Number.isInteger(l.week)||l.week!==Number(String(l.id||'').slice(3)))errors.push(where+': week phải bằng số trong mã bài');
  if(!SKILLS.includes(l.skill))errors.push(where+': kỹ năng không hợp lệ');
+ // Lessons from 3.0 up are tactical ("advanced") lessons with a focus; lower ones are not.
+ if(LEVELS.includes(l.level)){
+  if(LEVELS.indexOf(l.level)>=3){if(l.advanced!==true||!FOCI.includes(l.focus))errors.push(where+': bài từ 3.0 trở lên cần advanced=true và trọng tâm (focus) hợp lệ')}
+  else if(l.advanced!==undefined||l.focus!==undefined)errors.push(where+': bài dưới 3.0 không có advanced/focus');
+ }
  if(!LEVELS.includes(l.level))errors.push(where+': cấp độ không hợp lệ');
  for(const [key,max]of [['title',160],['goal',600],['zone',200],['setup',400],['skillName',60]])if(!text(l[key],max))errors.push(where+': '+key+' trống hoặc quá dài');
  if(!Array.isArray(l.cues)||l.cues.length!==3||l.cues.some(c=>!text(c,200)))errors.push(where+': cần đúng 3 điểm cần nhớ, mỗi điểm ≤ 200 ký tự');
@@ -108,7 +115,14 @@ function validate(doc,{previous=null}={}){
   seen.add(l?.id);validateLesson(l,errors);
  }
  if(previous&&Array.isArray(previous.lessons)){
-  const now=new Map(doc.lessons.map(l=>[l?.id,l]));
+  const now=new Map(doc.lessons.map(l=>[l?.id,l])),known=new Set(previous.lessons.map(l=>l.id)),top=Math.max(0,...previous.lessons.map(l=>Number(String(l.id).slice(3))||0));
+  // A new lesson starts at revision 1 / assessment version 1 and takes an id above every
+  // published or retired one, so an id is never reused for different content.
+  for(const l of doc.lessons){
+   if(!l||known.has(l.id))continue;
+   if(l.revision!==1||l.assessmentVersion!==1)errors.push(l.id+': bài mới phải bắt đầu ở revision 1 và phiên bản đề 1');
+   if(!(Number(String(l.id).slice(3))>top))errors.push(l.id+': mã bài mới phải lớn hơn mã lớn nhất hiện có (PU-'+String(top).padStart(3,'0')+')');
+  }
   for(const old of previous.lessons){
    const cur=now.get(old.id);
    if(!cur){errors.push(old.id+': không được xóa bài (chuyển trạng thái retired)');continue}
@@ -134,6 +148,16 @@ function applyEdit(previous,edited){
  else{next.assessmentVersion=previous.assessmentVersion;next.assessmentHash=previous.assessmentHash}
  return next;
 }
+// CMS: a blank draft lesson. Text fields are left empty on purpose so validation lists
+// what the author still has to write; structure and minutes follow the 60-minute session.
+const SKILL_NAMES={serve:'Giao bóng',return:'Trả giao bóng',dink:'Dinking',volley:'Volley',position:'Di chuyển',strategy:'Chiến thuật'};
+function nextId(doc){const n=Math.max(0,...doc.lessons.map(l=>Number(String(l.id).slice(3))||0))+1;if(n>9999)throw new Error('Hết mã bài');return 'PU-'+String(n).padStart(3,'0')}
+function newLesson(doc,{level,skill,focus}){
+ const id=nextId(doc),advanced=LEVELS.indexOf(level)>=3;
+ const lesson={id,week:Number(id.slice(3)),level,...(advanced?{advanced:true,focus}:{}),skill,skillName:SKILL_NAMES[skill]||'',title:'',goal:'',zone:'',setup:'',cues:['','',''],mistakes:[''],
+  drills:[12,12,15].map(minutes=>({minutes,name:'',instruction:'',check:''})),assessment:{attempts:20,target:14,instruction:''},warmup:10,testMinutes:6,cooldown:5,duration:60};
+ return {...lesson,status:'draft',revision:1,assessmentVersion:1,assessmentHash:scoringHash(lesson),media:[]};
+}
 // Runtime lesson objects keep the legacy shape plus revision/version/media.
 function runtime(lesson){const {assessmentHash,...rest}=lesson;return rest}
 const stringify=doc=>JSON.stringify(doc,null,1)+'\n';
@@ -141,15 +165,21 @@ const stringify=doc=>JSON.stringify(doc,null,1)+'\n';
 // around the JSON document. The CMS writes it; CI parses it back exactly.
 const BEGIN='/*CONTENT-BEGIN*/',END='/*CONTENT-END*/';
 const HEAD='/* PickleUp Academy content (schema 1). Edit lessons through cms/index.html;\n   keep the markers. scripts/check-content.cjs validates this file in CI. */\nwindow.PICKLEUP_CONTENT_DOC='+BEGIN+'\n';
-const TAIL='\n'+END+';\nwindow.PICKLEUP_CURRICULUM=window.PICKLEUP_CONTENT_DOC.lessons.filter(function(l){return !l.advanced}).map(function(l){var o={};for(var k in l)if(k!=="assessmentHash")o[k]=l[k];return o});\n';
+// The adapter exposes only published lessons: drafts, lessons in review and retired
+// lessons stay in the file for the CMS and history, never in the player's library.
+const TAIL='\n'+END+';\nwindow.PICKLEUP_CURRICULUM=window.PICKLEUP_CONTENT_DOC.lessons.filter(function(l){return !l.advanced&&l.status==="published"}).map(function(l){var o={};for(var k in l)if(k!=="assessmentHash")o[k]=l[k];return o});\n';
+// V5.21–V5.24 adapter, without the status filter. Accepted only for the base file that a
+// change is compared against; the current file must use TAIL so drafts cannot leak.
+const TAIL_V521='\n'+END+';\nwindow.PICKLEUP_CURRICULUM=window.PICKLEUP_CONTENT_DOC.lessons.filter(function(l){return !l.advanced}).map(function(l){var o={};for(var k in l)if(k!=="assessmentHash")o[k]=l[k];return o});\n';
 function renderCurriculum(doc){return HEAD+JSON.stringify(doc,null,1)+TAIL}
-function parseCurriculum(source){
- if(typeof source!=='string'||!source.startsWith(HEAD)||!source.endsWith(TAIL))throw new Error('curriculum.js phải giữ nguyên phần đầu và phần adapter quanh dữ liệu');
- const doc=JSON.parse(source.slice(HEAD.length,source.length-TAIL.length));
- if(renderCurriculum(doc)!==source)throw new Error('curriculum.js chưa đúng định dạng chuẩn; xuất lại từ cms/');
+function parseCurriculum(source,{previous=false}={}){
+ const tail=typeof source==='string'&&source.startsWith(HEAD)?(source.endsWith(TAIL)?TAIL:previous&&source.endsWith(TAIL_V521)?TAIL_V521:null):null;
+ if(!tail)throw new Error('curriculum.js phải giữ nguyên phần đầu và phần adapter quanh dữ liệu; xuất lại từ cms/ bản mới nhất');
+ const doc=JSON.parse(source.slice(HEAD.length,source.length-tail.length));
+ if(HEAD+JSON.stringify(doc,null,1)+tail!==source)throw new Error('curriculum.js chưa đúng định dạng chuẩn; xuất lại từ cms/');
  return doc;
 }
-const api=Object.freeze({SCHEMA,SKILLS,LEVELS,STATUSES,ANGLES,MAX_ASSESSMENT_VERSION,canonical,scoringHash,withMeta,youtubeId,embedUrl,validate,applyEdit,runtime,stringify,renderCurriculum,parseCurriculum});
+const api=Object.freeze({SCHEMA,SKILLS,LEVELS,STATUSES,ANGLES,FOCI,MAX_ASSESSMENT_VERSION,newLesson,nextId,canonical,scoringHash,withMeta,youtubeId,embedUrl,validate,applyEdit,runtime,stringify,renderCurriculum,parseCurriculum});
 root.PICKLEUP_CONTENT=api;
 if(typeof module!=='undefined')module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

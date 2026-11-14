@@ -5,6 +5,7 @@
 const core=window.PICKLEUP_CONTENT;
 const DRAFT='pickleupcms_draft_v1';
 const ANGLES={back:'Sau lưng',side:'Bên hông',top:'Trên cao',front:'Phía trước'};
+const FOCUS={'third-drop':'Third shot drop','transition-reset':'Reset vùng chuyển tiếp','serve-return':'Giao và trả giao','kitchen-pressure':'Áp lực tại Kitchen','doubles-coverage':'Bao sân đánh đôi','third-choice':'Chọn cú thứ ba','advanced-reset':'Reset nâng cao','counter-volley':'Counter volley','doubles-switch':'Đổi vị trí đánh đôi','defense-attack':'Thủ chuyển công','tactical-choice':'Ra quyết định chiến thuật'};
 const $=id=>document.getElementById(id);
 let base=null,work=null,selected=null,lastErrors=[];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -17,7 +18,9 @@ function changedIds(){return work.lessons.filter(l=>{const b=find(base,l.id);ret
 function load(doc,{fromDraft=false}={}){
  base=doc;work=clone(doc);selected=null;
  const levels=[...new Set(base.lessons.map(l=>l.level))];
- const select=$('filterLevel');select.replaceChildren(new Option('Tất cả',''),...levels.map(l=>new Option(l,l)));
+ const select=$('filterLevel');select.replaceChildren(new Option('Tất cả',''),...core.LEVELS.map(l=>new Option(l,l)));
+ $('newLevel').replaceChildren(...core.LEVELS.map(l=>new Option(l,l)));$('newLevel').value=core.LEVELS.at(-2);
+ $('newFocus').replaceChildren(...core.FOCI.map(f=>new Option(FOCUS[f]||f,f)));paintNew();
  if(!fromDraft){const draft=readDraft();if(draft&&core.canonical(draft.doc)!==core.canonical(base)){$('draftText').textContent='Có bản nháp chưa xuất lưu lúc '+new Date(draft.savedAt).toLocaleString('vi-VN')+'.';$('draftBanner').hidden=false}}
  refresh();
 }
@@ -30,7 +33,9 @@ async function fetchSource(){
   setStatus('Đã tải '+base.lessons.length+' bài từ trang.');
  }catch(error){setStatus('Không tải được nội dung: '+error.message+'. Có thể mở tệp curriculum.js từ máy.')}
 }
-function lessonLabel(l){return l.id+' · '+l.title}
+function lessonLabel(l){return l.id+' · '+(l.title||'(chưa đặt tên)')}
+const isNew=l=>!!l&&!find(base,l.id);
+function paintNew(){const advanced=core.LEVELS.indexOf($('newLevel').value)>=3;$('newFocus').hidden=$('newFocusLabel').hidden=!advanced}
 function renderList(){
  const level=$('filterLevel').value,q=$('filterText').value.trim().toLowerCase(),changed=new Set(changedIds());
  const errored=new Set(lastErrors.map(e=>e.split(':')[0]));
@@ -40,6 +45,7 @@ function renderList(){
   b.setAttribute('aria-current',String(l.id===selected));b.textContent=lessonLabel(l);
   const add=(textValue,cls)=>{const s=document.createElement('span');s.className='badge'+(cls?' '+cls:'');s.textContent=textValue;b.append(s)};
   if(Array.isArray(l.media)&&l.media.length)add('🎬 '+l.media.length);
+  if(isNew(l))add('bài mới','changed');
   if(l.status!=='published')add(l.status);
   if(changed.has(l.id))add('đã sửa','changed');
   {const b=find(base,l.id);if(b&&l.assessmentVersion!==b.assessmentVersion)add('đổi đề','changed')}
@@ -84,6 +90,7 @@ function renderEditor(){
  $('lessonMeta').textContent=l.id+' · '+l.level+' · '+l.skillName+' · revision '+l.revision+' · phiên bản đề '+l.assessmentVersion;
  for(const el of document.querySelectorAll('[data-field]')){const key=el.dataset.field;el.value=key==='mistakes'?l.mistakes.join('\n'):l[key]}
  for(const el of document.querySelectorAll('[data-cue]'))el.value=l.cues[Number(el.dataset.cue)]||'';
+ $('newLessonFields').hidden=!isNew(l);$('f-skillName').value=l.skillName;
  $('f-zone').value=l.zone;$('f-assessment').value=l.assessment.instruction;$('f-target').value=String(l.assessment.target);
  $('drills').replaceChildren(...l.drills.map(drillRow));
  $('videos').replaceChildren(...(l.media||[]).map(videoRow));
@@ -100,7 +107,7 @@ function readForm(l){
   if(title)m.title=title;if(start!=='')m.start=Number(start);if(end!=='')m.end=Number(end);
   return m;
  });
- next.zone=$('f-zone').value;
+ next.zone=$('f-zone').value;if(isNew(l))next.skillName=$('f-skillName').value;
  const target=$('f-target').value.trim();
  next.assessment={...next.assessment,instruction:$('f-assessment').value,target:/^\d+$/.test(target)?Number(target):target};
  return next;
@@ -115,8 +122,9 @@ function paintAssessment(){
 }
 function onEdit(){
  const i=work.lessons.findIndex(l=>l.id===selected);if(i<0)return;
- const original=find(base,selected)||work.lessons[i];
- work.lessons[i]=core.applyEdit(original,readForm(work.lessons[i]));
+ const original=find(base,selected),edited=readForm(work.lessons[i]);
+ // A lesson that is not published yet has no earlier version to protect: keep revision 1 / test version 1.
+ work.lessons[i]=original?core.applyEdit(original,edited):{...edited,revision:1,assessmentVersion:1,assessmentHash:core.scoringHash(edited)};
  saveDraft();refresh(false);
 }
 function refresh(redraw=true){
@@ -139,8 +147,20 @@ $('editor').addEventListener('submit',e=>e.preventDefault());
 $('assessmentConfirm').addEventListener('change',()=>refresh(false));
 $('addVideo').addEventListener('click',()=>{const l=find(work,selected);if(!l)return;$('videos').append(videoRow({kind:'youtube',id:'',angle:'back'},(l.media||[]).length));onEdit();renderEditor()});
 $('videos').addEventListener('click',e=>{const b=e.target.closest('[data-remove-video]');if(!b)return;b.closest('[data-video]').remove();onEdit();renderEditor()});
+$('newLevel').addEventListener('change',paintNew);
+$('newLesson').addEventListener('click',()=>{
+ const level=$('newLevel').value;
+ try{const lesson=core.newLesson(work,{level,skill:$('newSkill').value,focus:$('newFocus').value});work.lessons.push(lesson);selected=lesson.id}
+ catch(error){setStatus('Không tạo được bài: '+error.message);return}
+ $('filterLevel').value='';$('filterText').value='';$('newLessonBox').open=false;
+ saveDraft();refresh();setStatus('Đã tạo bài nháp '+selected+'. Điền nội dung rồi xuất.');
+});
+$('removeLesson').addEventListener('click',()=>{
+ const l=find(work,selected);if(!isNew(l))return;
+ work.lessons=work.lessons.filter(x=>x.id!==l.id);selected=null;saveDraft();refresh();setStatus('Đã bỏ bài mới '+l.id+'.');
+});
 $('reload').addEventListener('click',fetchSource);
-$('openFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{load(core.parseCurriculum(await file.text()));setStatus('Đã mở '+file.name+'.')}catch(error){setStatus('Tệp không hợp lệ: '+error.message)}finally{e.target.value=''}});
+$('openFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{load(core.parseCurriculum(await file.text(),{previous:true}));setStatus('Đã mở '+file.name+'.')}catch(error){setStatus('Tệp không hợp lệ: '+error.message)}finally{e.target.value=''}});
 $('draftRestore').addEventListener('click',()=>{const d=readDraft();if(!d)return;work=clone(d.doc);$('draftBanner').hidden=true;setStatus('Đã khôi phục bản nháp.');refresh()});
 $('draftDiscard').addEventListener('click',()=>{clearDraft();$('draftBanner').hidden=true;setStatus('Đã bỏ bản nháp.')});
 function exportText(){return core.renderCurriculum(work)}

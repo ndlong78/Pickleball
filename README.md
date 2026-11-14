@@ -1,6 +1,8 @@
 # PickleUp – Huấn luyện Pickleball cá nhân
 
-**V5.24.0 — 14/11/2026 (đang PR):** C3a — nền cho bài 4.0–5.0: mã bài mở rộng tới `PU-999`/`PU-1000…9999` và hai cấp `4.0–4.5`, `4.5–5.0` được chấp nhận ở mọi chỗ kiểm tra dữ liệu (app và migration 8 additive). Chưa thêm bài, chưa đổi giao diện; migration 8 **chưa áp dụng trên Supabase staging**. [Hướng dẫn](docs/LESSON_DOMAIN_C3.md) · [Release notes](RELEASE_V5.24.0.md).
+**V5.25.0 — 14/11/2026 (đang PR):** C3b — CMS thêm được bài mới (mã kế tiếp, trạng thái Nháp); app chỉ nạp bài **Đang dùng**, bài nháp/chờ duyệt/ngừng dùng không hiện cho người tập. Chưa thêm bài nào. [Hướng dẫn HLV](docs/CMS_GUIDE.md) · [Release notes](RELEASE_V5.25.0.md).
+
+**V5.24.0 — 14/11/2026 (đã phát hành, #56):** C3a — nền cho bài 4.0–5.0: mã bài mở rộng tới `PU-999`/`PU-1000…9999` và hai cấp `4.0–4.5`, `4.5–5.0` được chấp nhận ở mọi chỗ kiểm tra dữ liệu (app và migration 8 additive). Migration 8 **chưa áp dụng trên Supabase staging**. [Hướng dẫn](docs/LESSON_DOMAIN_C3.md) · [Release notes](RELEASE_V5.24.0.md).
 
 **V5.23.0 — 14/11/2026 (đã phát hành, #55):** CMS cho phép đổi đề kiểm tra (vùng mục tiêu, hướng dẫn kiểm tra, mục tiêu /20) thành phiên bản đề mới, có cảnh báo và ô xác nhận; CI buộc mỗi lần đổi đề tăng đúng 1 phiên bản; lịch tuần không dùng điểm đề cũ. [Release notes](RELEASE_V5.23.0.md).
 

@@ -18,6 +18,14 @@ Dành cho HLV và người quản lý nội dung. Không cần cài đặt hay t
 6. **Đổi đề kiểm tra** (vùng mục tiêu, hướng dẫn kiểm tra, mục tiêu /20): sửa được từ V5.23.0, nhưng mỗi lần sửa là một **phiên bản đề mới**. Điểm cũ của người tập ở bài đó vẫn được giữ, nhưng không còn so với điểm mới và xu hướng bắt đầu lại. CMS hiện cảnh báo vàng và yêu cầu đánh dấu ô **"Tôi hiểu…"** ở mục Xuất bản thì mới xuất được. Sửa chính tả trong các ô này cũng tính là đổi đề, nên chỉ sửa khi thật sự cần.
 7. Trường có dấu 🔒 (số lượt kiểm tra 20, số phút drill, kỹ năng, cấp độ) vẫn khóa.
 
+### Thêm bài mới (từ V5.25.0)
+1. Ở cột trái bấm **+ Thêm bài mới**, chọn cấp độ, kỹ năng và (với bài từ 3.0) trọng tâm chiến thuật, rồi bấm **Tạo bài nháp**. Bài nhận mã kế tiếp (ví dụ `PU-081`); mã, cấp độ, kỹ năng và số phút không đổi được sau khi tạo.
+2. Điền đủ tên bài, mục tiêu, chuẩn bị, 3 điểm cần nhớ, lỗi thường gặp, 3 drill, vùng mục tiêu, hướng dẫn kiểm tra và mục tiêu /20. Còn ô trống thì chưa xuất được.
+3. Bài mới ở trạng thái **Nháp**: có trong `curriculum.js` nhưng **không hiện cho người tập**. Khi HLV duyệt xong, đổi trạng thái sang **Đang dùng (published)** rồi xuất và merge thì bài mới xuất hiện trong app.
+4. Tạo nhầm thì bấm **Bỏ bài mới này** (chỉ có với bài chưa từng xuất bản).
+
+Lưu ý: bài cấp `4.0–4.5`/`4.5–5.0` chỉ nên chuyển sang **Đang dùng** sau khi migration 8 đã chạy trên Supabase staging và app đã có bộ lọc cấp độ mới; xem [LESSON_DOMAIN_C3.md](LESSON_DOMAIN_C3.md).
+
 Bản nháp tự lưu trên trình duyệt đang dùng. Đổi máy hoặc xóa dữ liệu trình duyệt sẽ mất bản nháp chưa xuất.
 
 ## 3. Xuất bản
@@ -31,4 +39,4 @@ Bản nháp tự lưu trên trình duyệt đang dùng. Đổi máy hoặc xóa 
 - Không sửa tay cấu trúc `curriculum.js` trên GitHub: chỉ xuất từ CMS. CI sẽ từ chối tệp sai định dạng.
 - Không xóa bài: chuyển trạng thái **Ngừng dùng (retired)** để lịch sử điểm vẫn hiển thị đúng tên bài.
 - Video cần mạng để xem. YouTube có thể tự chèn quảng cáo vào video nhúng.
-- Muốn thêm bài mới (PU-081 trở đi) hoặc đổi số phút drill, kỹ năng, cấp độ cần PR kỹ thuật riêng; xem [CONTENT_VERSIONING_CMS.md](CONTENT_VERSIONING_CMS.md).
+- Muốn đổi số phút drill, kỹ năng hoặc cấp độ của một bài đã có cần PR kỹ thuật riêng; xem [CONTENT_VERSIONING_CMS.md](CONTENT_VERSIONING_CMS.md).

@@ -37,6 +37,12 @@ Bản app cũ (≤ 5.23.0) coi mã `PU-081+` hoặc cấp 4.0+ là dữ liệu h
 2. **Áp dụng migration 8 trên staging** trước khi có bài mới được xuất bản; nếu chưa, lượt điểm bài mới của tài khoản bị server từ chối và nằm chờ trên thiết bị (không mất).
 3. **Bài `PU-081+` chỉ được xuất bản ở bản phát hành sau V5.24.0**, khi người dùng đã nhận bản PWA mới. Không gộp bài mới vào cùng bản với C3a.
 
-## 5. Việc tiếp theo
-- **C3b:** CMS thêm bài mới; runtime chỉ nạp bài `published` (hiện runtime chưa lọc trạng thái); các bộ lọc cấp độ trong app lấy từ thư viện bài thay vì viết cứng; kiểm tra các chỗ giả định đúng 80 bài.
+## 5. C3b (V5.25.0): thêm bài qua CMS, chỉ nạp bài đã xuất bản
+- Adapter trong `curriculum.js` và `advanced-curriculum.js` chỉ đưa bài `status = published` vào thư viện của app. Bài `draft`, `review`, `retired` vẫn nằm trong tệp cho CMS và lịch sử. Dữ liệu người tập trỏ tới bài không còn trong thư viện được giữ nguyên (đã có test từ C3a).
+- Tệp hiện hành **bắt buộc** dùng adapter mới; adapter V5.21–V5.24 chỉ được chấp nhận cho tệp base khi CI so sánh, để một bản CMS cũ không thể xuất tệp làm lộ bài nháp.
+- CMS: **+ Thêm bài mới** tạo bài nháp với mã kế tiếp, `revision 1`, phiên bản đề 1, cấu trúc 10 + 12/12/15 + 6 + 5 phút. Bài từ 3.0 là bài chiến thuật (`advanced`, có `focus`); bài dưới 3.0 thì không.
+- Validator: `week` bằng số trong mã bài; bài mới phải có mã lớn hơn mọi mã đã có (không dùng lại mã) và bắt đầu ở revision 1/phiên bản đề 1.
+
+## 6. Việc tiếp theo
+- **Bộ lọc cấp độ trong app** (Học viện, Tiến bộ, mục tiêu tuần) còn viết cứng 5 cấp và chữ "80 buổi"; phải lấy theo thư viện bài **trước khi** xuất bản bài 4.0+. Hiện bài 4.0+ đã xuất bản chỉ thấy được ở bộ lọc "Tất cả".
 - **C3c:** bản nháp nội dung `4.0–4.5` và `4.5–5.0` để HLV duyệt.
