@@ -2,7 +2,7 @@
 (function(root){
 'use strict';
 if(root.PICKLEUP_DATA)return;
-const keys=new Set(Object.values(PickleUpDomainCore.KEYS));let controller=null,adopt=null;
+const keys=new Set(Object.values(PickleUpDomainCore.KEYS));let controller=null,adopt=null,sender=null;
 let state={mode:'loading',owner:null,busy:false,error:null,snapshot:null,projection:null};
 const emit=()=>document.dispatchEvent(new CustomEvent('pickleup:domain-data'));
 const messages={guest:'Dữ liệu thiết bị · mục tiêu và check-in vẫn ở kho khách trên máy này.',loading:'Đang xác định nguồn dữ liệu…',error:'Không đọc được kho tài khoản. Chưa chuyển sang ghi dữ liệu khách.'};
@@ -26,15 +26,17 @@ const ready=(async()=>{
   const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);await auth.ready;
   const db=await PickleUpLocalRepository.open({onVersionChange:()=>{controller?.close();state={mode:'error',owner:null,busy:false,error:'storage_unavailable',snapshot:null,projection:null};emit()}});
   const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('pickleup-domains-1'):null;
-  controller=PickleUpDomainController.create({auth,repository:db,enabled:()=>root.PICKLEUP_SYNC_CONFIG?.enabled===true,onChange:next=>{state=next;emit();adopt?.schedule(false)},notify:owner=>channel?.postMessage({type:'changed',owner})});
+  controller=PickleUpDomainController.create({auth,repository:db,enabled:()=>root.PICKLEUP_SYNC_CONFIG?.enabled===true,onChange:next=>{state=next;emit();adopt?.schedule(false);sender?.changed()},notify:owner=>channel?.postMessage({type:'changed',owner})});
   channel?.addEventListener('message',event=>{if(event.data?.type==='changed'&&event.data.owner===state.owner)controller.refreshLocal().catch(()=>{})});
   root.addEventListener('focus',()=>controller.refreshLocal().catch(()=>{}));
   await controller.ready;
   // V5.31: signed in on the main host means the account source, with this device's time zone unless one was chosen.
   const zone=()=>{try{const z=new Intl.DateTimeFormat().resolvedOptions().timeZone;return PickleUpDomainCore.timezone(z)?z:null}catch(_){return null}};
   adopt=root.PickleUpStagingPilot?.adopter?.({state:()=>state,useAccount:()=>controller.useAccount(),refresh:()=>controller.refresh(),settle:s=>!s.timezone&&!!zone(),applySettle:()=>controller.setTimezone(zone())},()=>root.PICKLEUP_SYNC_CONFIG?.auto===true)||null;
-  for(const name of ['focus','online'])root.addEventListener(name,()=>adopt?.schedule(true));
-  adopt?.schedule(false);
+  // A2: send queued changes on their own; the Sync button still sends immediately.
+  sender=root.PickleUpStagingPilot?.syncer?.({state:()=>state,sync:()=>controller.sync()},()=>root.PICKLEUP_SYNC_CONFIG?.auto===true)||null;
+  for(const name of ['focus','online'])root.addEventListener(name,()=>{adopt?.schedule(true);sender?.wake()});
+  adopt?.schedule(false);sender?.changed();
  }catch(_){state={mode:'error',owner:null,busy:false,error:'storage_unavailable',snapshot:null,projection:null};emit()}
 })();
 root.PICKLEUP_DATA={ready,raw,getState:()=>structuredClone(state),

@@ -14,7 +14,7 @@ function sourceNotice(){
  if(state.mode==='error')return 'Không đọc được kho hoạt động tài khoản. Chưa chuyển sang ghi dữ liệu khách; đọc lại hoặc xuất cache trong Dữ liệu.';
  return 'Học viện, đánh giá, nhật ký tập và trận đấu: kho tài khoản trên thiết bị · chỉ gửi khi bấm đồng bộ. Giáo án và lựa chọn cá nhân có nguồn riêng trong Dữ liệu. Lựa chọn bài Học viện có nguồn giáo án riêng. Checklist/bước tập trung Học viện lưu riêng theo tài khoản trên trình duyệt này; timer chỉ giữ trong phiên trang, không gửi lên cloud. Điểm và trận đấu không phải attendance hoặc DUPR.';
 }
-function notice(){return (root.PICKLEUP_ACTIVITY_CONFIG?.scope==='staging-activity-events'?'Thử nghiệm staging · chỉ dùng dữ liệu giả. ':'')+sourceNotice()}
+function notice(){const text=(root.PICKLEUP_ACTIVITY_CONFIG?.scope==='staging-activity-events'?'Thử nghiệm staging · chỉ dùng dữ liệu giả. ':'')+sourceNotice();return root.PICKLEUP_ACTIVITY_CONFIG?.auto===true?text.replace('chỉ gửi khi bấm đồng bộ','tự gửi khi có mạng'):text}
 function emit(){
  for(const element of document.querySelectorAll('[data-activity-notice]')){element.textContent=notice();element.dataset.source=state.mode}
  document.dispatchEvent(new Event('pickleup:activity-data'));
@@ -23,9 +23,9 @@ function accept(next){
  state=next;const nextTag=next.owner+':'+next.mode+':'+(next.consent?.localRevision||'0');if(nextTag!==tag){token++;tag=nextTag}
  try{view=next.mode==='account'?core.project(next.projection,root.PICKLEUP_CURRICULUM||[],{activityCore:root.PickleUpActivityCore}):empty();domains=projectDomains(next.mode==='account'?next.projection:null)}
  catch(_){state={...next,mode:'error',error:'invalid_activity',snapshot:null,projection:null};view=empty();domains=projectDomains(null);token++}
- emit();adopt?.schedule(false);
+ emit();adopt?.schedule(false);sender?.changed();
 }
-let adopt=null;
+let adopt=null,sender=null;
 const ready=(async()=>{
  if(root.PICKLEUP_ACTIVITY_CONFIG?.enabled!==true||root.PICKLEUP_AUTH_CONFIG?.enabled!==true||!root.PICKLEUP_AUTH_CONFIG.url||!root.PICKLEUP_AUTH_CONFIG.publishableKey){accept({...state,mode:'guest'});return}
  if(typeof extra?.project!=='function'||typeof extra?.assessment!=='function'||typeof extra?.match!=='function'||typeof extra?.training!=='function'||root.PickleUpActivityController?.TRAINING_LIFECYCLE!==1){accept({mode:'error',owner:null,busy:false,error:'upgrade_required',snapshot:null,projection:null});return}
@@ -37,8 +37,9 @@ const ready=(async()=>{
   root.addEventListener('focus',()=>controller.refreshLocal().catch(()=>{}));await controller.ready;
   // V5.31: signed in on the main host means the account source.
   adopt=root.PickleUpStagingPilot?.adopter?.({state:()=>state,useAccount:()=>controller.useAccount(),refresh:()=>controller.refresh()},()=>root.PICKLEUP_ACTIVITY_CONFIG?.auto===true)||null;
-  for(const name of ['focus','online'])root.addEventListener(name,()=>adopt?.schedule(true));
-  adopt?.schedule(false);
+  sender=root.PickleUpStagingPilot?.syncer?.({state:()=>state,sync:()=>controller.sync()},()=>root.PICKLEUP_ACTIVITY_CONFIG?.auto===true)||null;
+  for(const name of ['focus','online'])root.addEventListener(name,()=>{adopt?.schedule(true);sender?.wake()});
+  adopt?.schedule(false);sender?.changed();
  }catch(error){accept({mode:'error',owner:null,busy:false,error:error.code==='upgrade_required'?'upgrade_required':'storage_unavailable',snapshot:null,projection:null})}
 })();
 function canWrite(){if(state.busy)return false;return state.mode==='guest'||state.mode==='account'&&!state.busy&&!!state.snapshot?.cursor?.epoch}
