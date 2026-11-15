@@ -9,7 +9,7 @@ const checks=[
  ["doubles","Phối hợp đánh đôi","Trong 20 tình huống mô phỏng, gọi bóng và giữ khoảng giữa an toàn."],
  ["decision","Chọn cú đánh","Trong 20 pha bóng, lựa chọn drop, reset, dink hay tấn công phù hợp."]
 ];
-const $=id=>document.getElementById(id),KEY="pickleup_advanced_checks_v3",levels={"3.0–3.5":{average:13,min:8},"3.5–4.0":{average:15,min:10}};
+const $=id=>document.getElementById(id),KEY="pickleup_advanced_checks_v3",levels={"3.0–3.5":{average:13,min:8},"3.5–4.0":{average:15,min:10},"4.0–4.5":{average:16,min:11},"4.5–5.0":{average:17,min:12}};
 const data=window.PICKLEUP_ACTIVITY;let sourceToken=data.token(),saving=false,accountHistory=null;
 function read(){try{const rows=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(rows)?rows:[]}catch(_){return []}}
 function validateRecord(r){return !!r&&typeof r==="object"&&!Array.isArray(r)&&typeof r.id==="string"&&r.id.length>0&&r.id.length<=90&&Object.prototype.hasOwnProperty.call(levels,r.level)&&r.values&&checks.every(c=>Number.isInteger(r.values[c[0]])&&r.values[c[0]]>=0&&r.values[c[0]]<=20)&&typeof r.average==="number"&&Number.isFinite(r.average)&&r.average>=0&&r.average<=20&&typeof r.ready==="boolean"&&typeof r.date==="string"&&Number.isFinite(Date.parse(r.date))}

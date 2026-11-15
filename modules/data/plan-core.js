@@ -2,7 +2,7 @@
 (function(root){
 'use strict';
 const POLICY='plans-selections-1',KINDS=Object.freeze(['personal_plans','user_selections']);
-const LEVELS=['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0'],SKILLS=['serve','return','dink','volley','position','strategy'],ADV=['third','reset','movement','counter','doubles','decision'];
+const LEVELS=['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0'],SKILLS=['serve','return','dink','volley','position','strategy'],ADV=['third','reset','movement','counter','doubles','decision'];
 const FOCI=['third-drop','transition-reset','serve-return','kitchen-pressure','doubles-coverage','third-choice','advanced-reset','counter-volley','doubles-switch','defense-attack','tactical-choice'];
 const CONTENT=['source','schema_version','level_band','plan_snapshot'],RESULTS=['check_score','completed_at'],SELECTION=['selected_personal_plan_id','selected_academy_lesson_id'];
 class PlanError extends Error{constructor(code){super(code);this.name='PlanError';this.code=code}}
@@ -24,7 +24,7 @@ function snapshot(value,source,band){
  v.exercises.forEach((e,i)=>{
   const fields=['id','skill','name','setup','instructions','measure','mistake','skillName','minutes','baseline','target',...(advanced?['week','advanced','focus','metric']:[])];keys(e,fields,fields);
   if(!SKILLS.includes(e.skill)||!text(e.name,200,1)||!text(e.setup,1000)||!text(e.instructions,1800)||!text(e.measure,1800)||!text(e.mistake,1800)||!text(e.skillName,100)||!int(e.baseline,20)||!int(e.target,20)||e.minutes!==[12,12,15][i])fail('invalid_plan');
-  if(advanced?(!/^ADV-PU-0(?:3[7-9]|[4-7][0-9]|80)$/.test(e.id)||e.advanced!==true||!int(e.week,80,1)||!FOCI.includes(e.focus)||!ADV.includes(e.metric)):!new RegExp('^'+e.skill+'-[1-4]$').test(e.id))fail('invalid_plan');
+  if(advanced?(!/^ADV-PU-(?:0(?:3[7-9]|[4-9][0-9])|[1-9][0-9]{2,3})$/.test(e.id)||e.advanced!==true||!int(e.week,9999,1)||!FOCI.includes(e.focus)||!ADV.includes(e.metric)):!new RegExp('^'+e.skill+'-[1-4]$').test(e.id))fail('invalid_plan');
  });
  keys(v.checkpoint,['skill','baseline','target','attempts'],['skill','baseline','target','attempts']);
  if(!metrics.includes(v.checkpoint.skill)||!int(v.checkpoint.baseline,20)||!int(v.checkpoint.target,20)||v.checkpoint.attempts!==20||canonical(v.minutes)!==canonical({warmup:10,drills:[12,12,15],assessment:6,cooldown:5})||v.checkScore!=null&&!int(v.checkScore,20)||v.completedAt!=null&&!timestamp(v.completedAt)||v.matchFocus!=null&&!ADV.includes(v.matchFocus))fail('invalid_plan');

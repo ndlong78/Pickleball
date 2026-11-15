@@ -3,7 +3,7 @@
 (function(root){
 "use strict";
 const cond=root.PICKLEUP_PRACTICE_CONDITIONS;
-const VALID_LEVELS=["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0"];
+const VALID_LEVELS=["1.0–2.0","2.0–2.5","2.5–3.0","3.0–3.5","3.5–4.0","4.0–4.5","4.5–5.0"];
 function evaluate(attempts=[],level="3.0–3.5"){
  if(!VALID_LEVELS.includes(level))throw Error("Cấp độ không hợp lệ.");
  const log=root.PICKLEUP_TRAINING_LOG;

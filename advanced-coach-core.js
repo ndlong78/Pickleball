@@ -1,4 +1,4 @@
-/* PickleUp V3.1 — adaptive 3.0–4.0 plan selection.
+/* PickleUp V3.1 — adaptive 3.0–5.0 plan selection (4.0–5.0 since V5.28).
  * Does not modify the 1.0–3.0 planner or any existing training records. */
 (function(root){
 "use strict";
@@ -11,7 +11,7 @@ const categories=[
 {key:"doubles",name:"Phối hợp đánh đôi",foci:["doubles-coverage","doubles-switch"]},
 {key:"decision",name:"Quyết định chiến thuật",foci:["tactical-choice","third-choice","defense-attack","kitchen-pressure"]}
 ];
-const levels=["3.0–3.5","3.5–4.0"];
+const levels=["3.0–3.5","3.5–4.0","4.0–4.5","4.5–5.0"];
 const names=Object.fromEntries(categories.map(x=>[x.key,x.name]));
 function validScores(values){
  return !!values&&typeof values==="object"&&categories.every(c=>Number.isInteger(values[c.key])&&values[c.key]>=0&&values[c.key]<=20);
@@ -25,7 +25,7 @@ function priorities(values,focusMetric=null){
 }
 function validPlan(p){
  if(!p||p.version!=="3.1"||!levels.includes(p.level)||typeof p.id!=="string"||p.id.length>100||typeof p.createdAt!=="string"||!Number.isFinite(Date.parse(p.createdAt))||!validScores(p.scores)||!Array.isArray(p.exercises)||p.exercises.length!==3||!p.checkpoint||!names[p.checkpoint.skill])return false;
- if(p.exercises.some(e=>!e||!/^ADV-PU-0(?:3[7-9]|[4-7][0-9]|80)$/.test(e.id)||typeof e.skill!=="string"||!names[e.metric]||typeof e.name!=="string"||typeof e.instructions!=="string"||![12,15].includes(e.minutes)||typeof e.setup!=="string"||e.setup.length>1000||e.instructions.length>1800))return false;
+ if(p.exercises.some(e=>!e||!/^ADV-PU-(?:0(?:3[7-9]|[4-9][0-9])|[1-9][0-9]{2,3})$/.test(e.id)||typeof e.skill!=="string"||!names[e.metric]||typeof e.name!=="string"||typeof e.instructions!=="string"||![12,15].includes(e.minutes)||typeof e.setup!=="string"||e.setup.length>1000||e.instructions.length>1800))return false;
  if(p.matchFocus!==undefined&&p.matchFocus!==null&&!names[p.matchFocus])return false;
  if(p.exercises.map(e=>e.minutes).join(",")!=="12,12,15")return false;
  if(!Number.isInteger(p.checkpoint.baseline)||p.checkpoint.baseline<0||p.checkpoint.baseline>20||!Number.isInteger(p.checkpoint.target)||p.checkpoint.target<0||p.checkpoint.target>20)return false;
@@ -35,7 +35,7 @@ function validPlan(p){
 function validateList(value){return Array.isArray(value)&&value.length<=100&&value.every(validPlan)}
 function createPlan(values,previous=[],level="3.0–3.5",createdAt=new Date().toISOString(),curriculum=root.PICKLEUP_ADVANCED_CURRICULUM||[],options={}){
  if(!validScores(values))throw Error("Cần đủ sáu kết quả nguyên từ 0 đến 20.");
- if(!levels.includes(level))throw Error("Chọn nhóm 3.0–3.5 hoặc 3.5–4.0.");
+ if(!levels.includes(level))throw Error("Chọn một nhóm từ 3.0–3.5 đến 4.5–5.0.");
  if(!Array.isArray(previous))throw Error("Lịch sử giáo án không hợp lệ.");
  const recent=previous.filter(p=>validPlan(p)).slice(-100);
  const requested=options?.focusMetric||null;
