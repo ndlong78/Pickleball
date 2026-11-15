@@ -88,4 +88,6 @@ Thiết kế dựa trên đọc mã `local-repository.js` (ràng buộc `tailOpe
 - Thao tác `sending` vẫn được đề xuất nhưng chỉ ghi được nếu bản ghi máy chủ chưa đổi (tức máy chủ chưa nhận).
 Mã trạng thái cố định hiển thị cho người dùng: `queued`, `blocked:<unsupported_kind|dependency|device_unsent|needs_review|record_changed|invalid_record|invalid_payload|nothing_to_restore>`, `failed:<offline|pilot_disabled|source_unavailable|bootstrap_required|busy|account_changed|network_error|unknown>`.
 
+**Lát 2d:** checklist thử trên Managed staging, kèm bảng điền kết quả: [RESTORE_2D_STAGING_CHECKLIST.md](RESTORE_2D_STAGING_CHECKLIST.md).
+
 **Kiểm thử:** `restore-plan-core.test.js` (17), `domain-controller.test.js` (+3, controller thật với server mô phỏng), `account-rescue-controller.test.js` (+5), `restore-queue.spec.cjs` (6 ca Playwright, bốn viewport 390/820/1180/1440, mock Auth/RPC). **Chưa chạy trên Managed staging thật**; lát 2d do owner thực hiện (hai thiết bị, mất mạng giữa chừng, hết hạn phiên).
