@@ -1,4 +1,4 @@
-# Bài 4.0–4.5 và 4.5–5.0 (đã xuất bản, chưa có HLV duyệt)
+# Bài 4.0–4.5 và 4.5–5.0 (đã xuất bản; rà soát nội bộ, chưa có HLV người duyệt)
 
 Trạng thái: **24 bài `PU-081…PU-104` đã xuất bản ở V5.27.0** theo yêu cầu trực tiếp của owner ngày 14/11/2026 ("public luôn các bài này để bất kì ai cũng có thể xem được"). Người tập thấy các bài này trong Học viện; thư viện là 104 bài 1.0–5.0; V5.29.0 bổ sung 16 bài `PU-105…120` (bảng cuối trang) nên thư viện là 120 bài. Tên tệp giữ chữ "DRAFT" vì nội dung vẫn là bản đầu, chưa qua duyệt chuyên môn.
 
@@ -79,4 +79,4 @@ Mỗi bài theo cấu trúc buổi đầy đủ 60 phút: khởi động 10, ba 
 | PU-119 | 4.5–5.0 | doubles-coverage | Dịch chuyển cùng nhịp khi đối thủ tấn công mạnh | 15 |
 | PU-120 | 4.5–5.0 | doubles-coverage | Bao sân khi cả hai đánh thuận cùng tay | 16 |
 
-Gói rà soát từng bài cho HLV: [COACH_REVIEW_PACK_4_0_5_0.md](COACH_REVIEW_PACK_4_0_5_0.md).
+Kết quả rà soát nội bộ từng bài (15/11/2026, không có HLV người): [CONTENT_REVIEW_4_0_5_0.md](CONTENT_REVIEW_4_0_5_0.md).

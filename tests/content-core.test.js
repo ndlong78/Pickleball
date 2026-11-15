@@ -2,6 +2,8 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const core=require('../modules/content-core.js'),{check}=require('../scripts/check-content.cjs');
 const source=fs.readFileSync(path.join(__dirname,'../curriculum.js'),'utf8');
+// V5.29.1 review fixes: wording only (revision 2), scoring untouched (assessmentVersion 1).
+const REVIEWED=['PU-087','PU-089','PU-094','PU-097','PU-098','PU-109'];
 const doc=()=>core.parseCurriculum(source);
 // The original 1.0–4.0 library (PU-001…080); the C3b rule tests build new lessons on top of it.
 const live=()=>{const d=doc();return {...d,lessons:d.lessons.slice(0,80)}};
@@ -16,7 +18,7 @@ test('curriculum.js is the canonical, valid content source; 120 lessons are publ
   // PU-081…120: both 4.0–5.0 bands, tactical lessons with the non-certification wording.
  const added=d.lessons.slice(80);
  assert.deepEqual([added.length,added.filter(l=>l.level==='4.0–4.5').length,added.filter(l=>l.level==='4.5–5.0').length],[40,20,20]);
- assert.equal(added.every(l=>['4.0–4.5','4.5–5.0'].includes(l.level)&&l.advanced===true&&l.revision===1&&l.assessmentVersion===1&&/không phải chứng nhận trình độ\.$/.test(l.assessment.instruction)),true);
+ assert.equal(added.every(l=>['4.0–4.5','4.5–5.0'].includes(l.level)&&l.advanced===true&&l.revision===(REVIEWED.includes(l.id)?2:1)&&l.assessmentVersion===1&&/không phải chứng nhận trình độ\.$/.test(l.assessment.instruction)),true);
 });
 test('runtime globals keep the legacy shape without leaking the change-detection hash',()=>{
  const context={};context.window=context;require('node:vm').runInNewContext(source+fs.readFileSync(path.join(__dirname,'../advanced-curriculum.js'),'utf8'),context);
