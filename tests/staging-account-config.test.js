@@ -6,8 +6,8 @@ function config(href,authentication=auth){const window={location:{href},PICKLEUP
 const flags=w=>[w.PICKLEUP_SYNC_CONFIG.enabled,w.PICKLEUP_ACTIVITY_CONFIG.enabled,w.PICKLEUP_PLAN_CONFIG.enabled,w.PICKLEUP_IMPORT_CONFIG.enabled];
 const autos=w=>[w.PICKLEUP_SYNC_CONFIG.auto,w.PICKLEUP_ACTIVITY_CONFIG.auto,w.PICKLEUP_PLAN_CONFIG.auto];
 const scopesOf=w=>[w.PICKLEUP_SYNC_CONFIG.scope,w.PICKLEUP_ACTIVITY_CONFIG.scope,w.PICKLEUP_PLAN_CONFIG.scope];
-test('V5.31: the main host turns the three account sources on by default (auto, no trial banner); importer stays off',()=>{
- for(const href of [origin+'/',origin+'/?page=settings',origin+'/Pickleball/?page=journey#x']){const w=config(href);assert.deepEqual(flags(w),[true,true,true,false],href);assert.deepEqual(autos(w),[true,true,true]);assert.deepEqual(scopesOf(w),[null,null,null]);assert.equal(w.PickleUpStagingPilot.auto(),true)}
+test('V5.31/V5.33: the main host turns the three account sources and the importer on by default (auto, no trial banner)',()=>{
+ for(const href of [origin+'/',origin+'/?page=settings',origin+'/Pickleball/?page=journey#x']){const w=config(href);assert.deepEqual(flags(w),[true,true,true,true],href);assert.equal(Object.isFrozen(w.PICKLEUP_IMPORT_CONFIG),true);assert.deepEqual(autos(w),[true,true,true]);assert.deepEqual(scopesOf(w),[null,null,null]);assert.equal(w.PickleUpStagingPilot.auto(),true)}
 });
 test('operator URLs keep their old meaning: legacy trial opens one gate, maintenance closes every gate, none is auto',()=>{
  let w=config(origin+'/?pilot=preferences-checkins');assert.deepEqual(flags(w),[true,false,false,false]);assert.deepEqual(autos(w),[false,false,false]);assert.equal(w.PICKLEUP_SYNC_CONFIG.scope,'staging-preferences-checkins');

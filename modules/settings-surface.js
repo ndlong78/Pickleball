@@ -5,9 +5,10 @@
 (function(root){
 'use strict';
 // V5.31: sign-in, the three account sources and cache rescue are part of the product on the main host.
-// Import and cache purge stay operator tools behind an explicit ?pilot=… or ?maintenance=… URL.
-const ACCOUNT_CARDS=['accountPanel','syncPilot','activityPilot','planPilot','accountRescue'];
-const OPERATOR_CARDS=['importPilot','accountPurge'];
+// V5.33: importing this device's legacy data is offered there too. Cache purge stays an operator tool behind an
+// explicit ?pilot=… or ?maintenance=… URL.
+const ACCOUNT_CARDS=['accountPanel','syncPilot','activityPilot','planPilot','importPilot','accountRescue'];
+const OPERATOR_CARDS=['accountPurge'];
 const DIAGNOSTIC_CARDS=['pageDiagnostics'];
 function decide(location,auth,origin){
  let url=null;try{url=new URL(location.href)}catch(_){}

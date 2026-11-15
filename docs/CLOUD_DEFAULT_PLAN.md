@@ -1,6 +1,6 @@
 # Chuyển dữ liệu người tập lên cloud (kế hoạch V5.31+)
 
-Trạng thái: **A1 (V5.31.0, mục 7) và A2 (V5.32.0, mục 8) đã có mã**; các bước C, B, D chưa làm. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
+Trạng thái: **A1 (V5.31.0, mục 7), A2 (V5.32.0, mục 8) và C (V5.33.0, mục 9) đã có mã**; các bước B, D chưa làm. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
 
 ## 1. Quyết định của owner (15/11/2026)
 1. **Chưa đăng nhập thì không lưu được.** Khách vẫn xem nội dung; mọi thao tác lưu yêu cầu đăng nhập.
@@ -56,3 +56,12 @@ Kế hoạch dựa trên đọc mã; chưa bước nào được cài đặt. H�
 - Thao tác `sending` (đã gửi, chưa rõ kết quả), `conflict`, `blocked` **không** tự gửi lại: vẫn cần nút "Thử lại" hoặc quyết định của người dùng như trước.
 - Không có lịch đọc định kỳ: đọc lại diễn ra sau mỗi lần gửi, khi đăng nhập và khi bấm "Đọc dữ liệu tài khoản". Thay đổi từ thiết bị khác chỉ xuất hiện sau một trong các thời điểm đó.
 - Kiểm thử: `source-syncer.test.js` (7 ca, đồng hồ giả: debounce, không gửi khi chưa đủ điều kiện, lùi dần có trần và số lần thử trong một giờ bị chặn, đổi tài khoản), `staging-account.spec` (tự gửi đúng một lần ở bốn viewport; lưu khi offline rồi gửi khi có mạng; xung đột gửi một lần rồi dừng). **Chưa thử trên project Supabase thật.**
+
+## 9. Bước C — đã cài đặt (V5.33.0)
+- `import-config.js`: bộ nhập bật khi `auto()` (host chính, không có `pilot`/`maintenance`). URL vận hành và host khác vẫn tắt.
+- Settings hiện thẻ "Nhập dữ liệu cũ trên máy vào tài khoản" trên host chính. Dọn cache vẫn là công cụ vận hành.
+- **Lời mời (chỉ đọc):** khi đã đăng nhập và máy có dữ liệu cũ thuộc các nhóm nhập được, thẻ hiển thị số nhóm và tên nhóm. Nếu dữ liệu đúng fingerprint này đã nhập xong cho tài khoản, hiển thị "đã được nhập"; nếu có phiên dở, mời tiếp tục. Lời mời không gửi hay ghi gì.
+- **Nút "Dùng dữ liệu đang có trên máy này":** tạo bản raw-rescue từ 18 khóa trong trang (cùng lõi với phần Cứu hộ), nạp vào bộ nhập như một tệp, chọn sẵn các nhóm có dữ liệu và điền múi giờ thiết bị. Sau đó vẫn bắt buộc: lập preview → xử lý mục cần quyết định → ba ô xác nhận → nhập. Chọn tệp thủ công vẫn dùng được.
+- Sau khi nhập xong ở chế độ tự động, ba nguồn tài khoản được đọc lại để hiển thị dữ liệu vừa nhập.
+- **Không đổi:** không tự nhập; không ghi/xóa localStorage; lõi mapper, checkpoint, idempotency và RPC nhập giữ nguyên. Ô "đã giữ tệp gốc/bản cứu hộ" vẫn bắt buộc — nên tải bản cứu hộ ở phần phía trên trước khi nhập.
+- Kiểm thử: `import-pilot.spec` thêm 2 ca (luồng đầy đủ từ dữ liệu máy với RPC nhập mô phỏng: mời → nạp → preview → xác nhận → nhập → "đã được nhập", localStorage không đổi; không có dữ liệu thì không mời), `staging-account.spec` thêm 2 ca trên host chính (mời và nạp không gửi gì; URL vận hành tắt bộ nhập). **Chưa thử trên project Supabase thật.**
