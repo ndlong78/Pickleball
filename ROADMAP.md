@@ -55,6 +55,7 @@ Cập nhật: **10/11/2026** — main `cc0d944` sau #40/app5.14.1, UI/backend/Pa
 | Đã merge #37 | [Static build/Wrangler và cấu hình domain](docs/CLOUDFLARE_WORKERS_STAGING.md) | Main CI và Pages sạch; deployment Cloudflare thực tế chưa đối chiếu SHA |
 | Staging Auth cơ bản | [Operator xác nhận ngày 09/11](docs/STAGING_AUTH_VERIFICATION.md) | Đã nhận email/login/kiểm dữ liệu riêng; tiếp theo A→B/expiry, SMTP và A/B dữ liệu riêng |
 | PR6a đang triển khai | [URL thử mục tiêu/check-in staging](docs/STAGING_SYNC_PR6A.md) | Gate origin/project/query; manual opt-in/read/send; mock/native IDB + Auth local CI, Managed A/B/conflict còn cần owner thử |
+| Kế hoạch cloud mặc định | [CLOUD_DEFAULT_PLAN](docs/CLOUD_DEFAULT_PLAN.md) | Owner quyết 15/11: đăng nhập mới lưu, mời nhập dữ liệu cũ, mở đăng ký; lộ trình A1→A2→C→B→D, chưa có mã |
 | PR5b2d2 | [Khôi phục từ tệp cứu hộ](docs/RESTORE_DESIGN_PR5B2D2.md) | 2a–2c đã code (V5.30.0): chỉ cứu thao tác chưa gửi của mục tiêu/check-in, từng mục; 2d thử Managed staging còn chờ owner |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
