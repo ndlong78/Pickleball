@@ -20,7 +20,7 @@ test('guest data that references an unknown PU-500 lesson keeps every route work
   await expect(page.locator('[data-pickleup-page="'+route+'"]').first()).toBeVisible();
  }
  await page.goto('/Pickleball/?page=academy');
- await expect(page.locator('#academyWeek option')).toHaveCount(104);
+ await expect(page.locator('#academyWeek option')).toHaveCount(120);
  await expect(page.locator('#academyDetail')).not.toBeEmpty();
  await page.locator('#academyWeek').selectOption('PU-001');
  await expect(page.locator('#academyStatus')).toContainText('9/20');
@@ -33,10 +33,10 @@ test('guest data that references an unknown PU-500 lesson keeps every route work
 });
 test('level filters and headings follow the published library, including both 4.0–5.0 bands',async({page})=>{
  await page.goto('/Pickleball/?page=academy');
- await expect(page.locator('#academy .sectionHead h2')).toHaveText('104 buổi tập từ 1.0 đến 5.0');
+ await expect(page.locator('#academy .sectionHead h2')).toHaveText('120 buổi tập từ 1.0 đến 5.0');
  await expect(page.locator('#academyLevel option')).toHaveText(['Tất cả','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0']);
  await page.locator('#academyLevel').selectOption('4.5–5.0');
- await expect(page.locator('#academyWeek option')).toHaveCount(12);
+ await expect(page.locator('#academyWeek option')).toHaveCount(20);
  await page.goto('/Pickleball/?page=progress');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('progress'));
  for(const id of ['#wgLevel','#aiLevel'])await expect(page.locator(id+' option')).toHaveText(['1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0']);
  await expect(page.locator('#dbLevel option')).toHaveText(['Toàn bộ 1.0–5.0','1.0–2.0','2.0–2.5','2.5–3.0','3.0–3.5','3.5–4.0','4.0–4.5','4.5–5.0']);
@@ -47,7 +47,7 @@ for(const [width,height] of [[320,568],[390,844],[820,1180],[1180,820],[1440,900
  test.use({viewport:{width,height},isMobile:width<1024,hasTouch:width<1024});
  test('lesson pickers never overflow the page, whatever the longest lesson title',async({page})=>{
   await page.goto('/Pickleball/?page=academy');
-  await expect(page.locator('#academyWeek option')).toHaveCount(104);
+  await expect(page.locator('#academyWeek option')).toHaveCount(120);
   for(const level of ['all','4.0–4.5','4.5–5.0']){
    await page.locator('#academyLevel').selectOption(level);
    const box=await page.evaluate(()=>{const de=document.documentElement,s=document.getElementById('academyWeek').getBoundingClientRect();return {scroll:de.scrollWidth,client:de.clientWidth,right:Math.round(s.right)}});

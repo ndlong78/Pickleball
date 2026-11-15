@@ -31,7 +31,7 @@ for(const level of Object.keys(GATES))for(const width of [390,1440])test.describ
   await expect(page.locator('#acCoachPlan')).toContainText('Giáo án nâng cao · '+level);
   const plan=await page.evaluate(()=>JSON.parse(localStorage.getItem('pickleup_advanced_plans_v31')).at(-1));
   expect(plan.level).toBe(level);
-  expect(plan.exercises.every(e=>/^ADV-PU-(08[1-9]|09[0-9]|10[0-4])$/.test(e.id)&&e.week>=81)).toBe(true);
+  expect(plan.exercises.every(e=>/^ADV-PU-(08[1-9]|09[0-9]|1[01][0-9]|120)$/.test(e.id)&&e.week>=81)).toBe(true);
   expect(await page.evaluate(p=>PICKLEUP_ADVANCED_COACH.validPlan(p),plan)).toBe(true);
   const lessonLevels=await page.evaluate(ids=>ids.map(id=>PICKLEUP_ADVANCED_CURRICULUM.find(l=>'ADV-'+l.id===id).level),plan.exercises.map(e=>e.id));
   expect(new Set(lessonLevels)).toEqual(new Set([level]));

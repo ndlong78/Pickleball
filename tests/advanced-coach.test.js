@@ -28,9 +28,8 @@ for(const level of coach.levels){
  test("rotates advanced exercises across four successive "+level+" sessions",()=>{
   const plans=[];
   for(let i=0;i<4;i++)plans.push(coach.createPlan(scores,plans,level,"2026-10-"+(20+i)+"T14:00:00.000Z"));
-  // 3.0–4.0 have 20–24 lessons: four sessions never repeat an exercise in a slot. 4.0–5.0 have 12
-  // lessons (two per focus), so a slot can run out of unused lessons and repeats after a pair.
-  const distinct=coach.levels.indexOf(level)<2?4:2;
+  // Every band now has 20–24 lessons covering each focus group: four sessions never repeat an exercise in a slot.
+  const distinct=4;
   for(let i=0;i<3;i++)assert.ok(new Set(plans.map(p=>p.exercises[i].id)).size>=distinct,level+" slot "+i);
   for(const p of plans)assert.equal(new Set(p.exercises.map(e=>e.id)).size,3,"no exercise twice in one plan");
   assert.equal(coach.validateList(plans),true);
