@@ -78,3 +78,5 @@ Mỗi bài theo cấu trúc buổi đầy đủ 60 phút: khởi động 10, ba 
 | PU-118 | 4.5–5.0 | kitchen-pressure | Chuỗi dink có mục tiêu thay đổi để tìm quả cao | 16 |
 | PU-119 | 4.5–5.0 | doubles-coverage | Dịch chuyển cùng nhịp khi đối thủ tấn công mạnh | 15 |
 | PU-120 | 4.5–5.0 | doubles-coverage | Bao sân khi cả hai đánh thuận cùng tay | 16 |
+
+Gói rà soát từng bài cho HLV: [COACH_REVIEW_PACK_4_0_5_0.md](COACH_REVIEW_PACK_4_0_5_0.md).
