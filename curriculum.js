@@ -5058,7 +5058,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
     {
      "minutes": 15,
      "name": "Áp dụng vào pha bóng",
-     "instruction": "Pha bóng từ cú giao; đội giao tự chọn drop ngay hoặc drive–drop theo độ sâu của cú trả. Ba lượt năm phút.",
+     "instruction": "Pha bóng từ cú giao; đội giao tự chọn drop ngay hoặc drive–drop theo độ sâu của cú trả. Ba lượt năm phút. Đeo kính bảo hộ khi tập bóng nhanh; không nhắm vào đầu hoặc mặt.",
      "check": "Ghi số lần lên được kitchen sau cú thứ năm."
     }
    ],
@@ -5072,7 +5072,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "cooldown": 5,
    "duration": 60,
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "cabee98a",
    "media": []
@@ -5172,7 +5172,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
     {
      "minutes": 15,
      "name": "Áp dụng vào pha bóng",
-     "instruction": "Dink tự do, ai cũng được khởi động đấu tay; chơi hết pha. Ba lượt năm phút. Dừng nếu mỏi vai hoặc cổ tay.",
+     "instruction": "Dink tự do, ai cũng được khởi động đấu tay; chơi hết pha. Ba lượt năm phút. Dừng nếu mỏi vai hoặc cổ tay. Đeo kính bảo hộ khi tập bóng nhanh; không nhắm vào đầu hoặc mặt.",
      "check": "Ghi số pha đấu tay thắng hoặc trung hòa."
     }
    ],
@@ -5186,7 +5186,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "cooldown": 5,
    "duration": 60,
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "a16d423d",
    "media": []
@@ -5457,7 +5457,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
     {
      "minutes": 15,
      "name": "Áp dụng vào pha bóng",
-     "instruction": "Pha bóng bắt đầu bằng lob ngắn cho đối thủ đập; chơi hết pha. Ba lượt năm phút. Dừng nếu đau vai.",
+     "instruction": "Pha bóng bắt đầu bằng lob ngắn cho đối thủ đập; chơi hết pha. Ba lượt năm phút. Dừng nếu đau vai. Đeo kính bảo hộ khi tập bóng nhanh; không nhắm vào đầu hoặc mặt.",
      "check": "Ghi số pha sống sót qua hai cú đập."
     }
    ],
@@ -5471,7 +5471,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "cooldown": 5,
    "duration": 60,
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "c52c9333",
    "media": []
@@ -5603,12 +5603,12 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "zone": "Chân đối thủ đối diện hoặc giữa sân; bóng đi xuống.",
    "setup": "Hai đấu hai tại kitchen, dink dọc biên; người tập ở bên có đường biên dọc. Thiết bị: vợt, 12 bóng, 4 nón đánh dấu mềm.",
    "cues": [
-    "Hai chân phải chạm đất ngoài sân, ngoài kitchen, trước khi volley.",
+    "Bật lên từ ngoài kitchen, volley khi đang trên không và đáp xuống ngoài kitchen; không chạm vùng kitchen hay vạch kitchen.",
     "Đồng đội dink chéo sâu để dụ quả dọc biên.",
     "Không kịp thì bỏ, trở về vị trí ngay."
    ],
    "mistakes": [
-    "Chạm vạch kitchen hoặc đáp vào kitchen khi volley.",
+    "Chạm vùng hoặc vạch kitchen khi bật, volley hay tiếp đất.",
     "Lộ ý định quá sớm.",
     "Erne hụt để hở cả dọc biên."
    ],
@@ -5616,8 +5616,8 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
     {
      "minutes": 12,
      "name": "Kỹ thuật nền",
-     "instruction": "Không bóng: tập đường chạy vòng hoặc nhảy qua góc kitchen, đáp ngoài sân. Sau đó người cấp dink dọc biên chậm, 10 quả. Ba hiệp.",
-     "check": "Đếm số lần hợp lệ (chân ngoài kitchen) và bóng trong sân."
+     "instruction": "Không bóng: tập đường chạy vòng ra ngoài đường biên rồi bật lên tại chỗ và đáp ngoài kitchen; không nhảy qua góc kitchen. Sau đó người cấp dink dọc biên chậm, 10 quả. Ba hiệp.",
+     "check": "Đếm số lần bật và đáp ngoài kitchen, không chạm vạch, và bóng trong sân."
     },
     {
      "minutes": 12,
@@ -5642,7 +5642,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "cooldown": 5,
    "duration": 60,
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "457d70b0",
    "media": []
@@ -5673,7 +5673,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
     {
      "minutes": 12,
      "name": "Kỹ thuật nền",
-     "instruction": "Xem hai đồng đội khác chơi sáu điểm; mỗi người ghi hai thói quen và so với ghi chú của HLV.",
+     "instruction": "Xem hai đồng đội khác chơi sáu điểm; mỗi người ghi hai thói quen và so với ghi chú của người điều phối (HLV hoặc bạn tập).",
      "check": "Đếm số thói quen ghi đúng."
     },
     {
@@ -5699,7 +5699,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "cooldown": 5,
    "duration": 60,
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "78bda0ed",
    "media": []
@@ -6294,7 +6294,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "mistakes": [
     "Dink ngắn rơi sát lưới nên đối thủ không phải di chuyển.",
     "Dink sâu nhưng cao, đối thủ chờ để tấn công.",
-    "Quên đứng sau vạch kitchen khi vươn bóng."
+    "Volley khi chân chạm vùng hoặc vạch kitchen lúc vươn bóng."
    ],
    "drills": [
     {
@@ -6326,7 +6326,7 @@ window.PICKLEUP_CONTENT_DOC=/*CONTENT-BEGIN*/
    "cooldown": 5,
    "duration": 60,
    "status": "published",
-   "revision": 1,
+   "revision": 2,
    "assessmentVersion": 1,
    "assessmentHash": "1689c50b",
    "media": []

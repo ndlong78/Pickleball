@@ -21,9 +21,9 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 |---|---|---|
 | `home` — Tổng quan | Chương trình, phần luyện tập và điều hướng nhanh | Home tải gọn; có lối tắt sang Hành trình |
 | `journey` — Hành trình | Hành trình sáu bước V5.0, gợi ý hành động tiếp theo, check-in hôm nay | Không tự đánh dấu hoàn thành từ timer/điểm |
-| `coach` — HLV cá nhân | Đánh giá sáu kỹ năng; giáo án cá nhân cơ bản 1.0–3.0 và nâng cao 3.0–5.0 (V5.28.0; nhóm 4.0–5.0 dựa trên 40 bài chưa có HLV duyệt, mốc đạt là đề xuất ban đầu) | Đánh giá nội bộ, không phải chứng nhận |
+| `coach` — HLV cá nhân | Đánh giá sáu kỹ năng; giáo án cá nhân cơ bản 1.0–3.0 và nâng cao 3.0–5.0 (V5.28.0; nhóm 4.0–5.0 dựa trên 40 bài rà soát nội bộ, không có HLV người duyệt, mốc đạt là đề xuất ban đầu) | Đánh giá nội bộ, không phải chứng nhận |
 | `court` — Trên sân | Đồng hồ sáu phần, sơ đồ sân, nhập kết quả giáo án cá nhân | Chỉ áp dụng khi đã có kế hoạch cá nhân tương thích |
-| `academy` — Học viện | **120 giáo án hiện có trong khoảng 1.0–5.0** (40 bài 4.0–5.0 từ V5.27.0/V5.29.0, chưa có HLV duyệt), chọn bài, lưu điểm, đồng hồ từng bước | Bài Học viện và giáo án cá nhân là hai dạng khác nhau |
+| `academy` — Học viện | **120 giáo án hiện có trong khoảng 1.0–5.0** (40 bài 4.0–5.0 từ V5.27.0/V5.29.0, rà soát nội bộ, không có HLV người duyệt), chọn bài, lưu điểm, đồng hồ từng bước | Bài Học viện và giáo án cá nhân là hai dạng khác nhau |
 | `progress` — Tiến bộ | Lịch sử kiểm tra, mục tiêu tuần, lịch đề xuất, check-in và kế hoạch–thực tế | Phân biệt các nguồn dữ liệu theo nghĩa |
 | `matches` — Thi đấu | Nhật ký trận, chiến thuật và phối hợp đánh đôi | Không tự suy ra chất lượng thi đấu từ bài kỹ thuật |
 | `settings` — Dữ liệu | Xuất/nhập JSON và cứu hộ dữ liệu khách; công cụ tài khoản/pilot và chẩn đoán hiệu năng chỉ hiện trên staging/localhost (V5.18, `debug=1` mở riêng chẩn đoán) | Tương thích ngược, xác nhận trước ghi đè |
