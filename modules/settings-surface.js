@@ -4,7 +4,10 @@
    explicit pilot/maintenance URL; loopback keeps every tool for tests. */
 (function(root){
 'use strict';
-const ACCOUNT_CARDS=['accountPanel','syncPilot','activityPilot','planPilot','importPilot','accountRescue','accountPurge'];
+// V5.31: sign-in, the three account sources and cache rescue are part of the product on the main host.
+// Import and cache purge stay operator tools behind an explicit ?pilot=… or ?maintenance=… URL.
+const ACCOUNT_CARDS=['accountPanel','syncPilot','activityPilot','planPilot','accountRescue'];
+const OPERATOR_CARDS=['importPilot','accountPurge'];
 const DIAGNOSTIC_CARDS=['pageDiagnostics'];
 function decide(location,auth,origin){
  let url=null;try{url=new URL(location.href)}catch(_){}
@@ -14,10 +17,10 @@ function decide(location,auth,origin){
  // The Workers host is also the public site: operator tools appear there only
  // with an explicit ?pilot=… or ?maintenance=… URL; loopback keeps them for tests.
  const tools=!!params&&(params.has('pilot')||params.has('maintenance'));
- return {account:loopback||internal&&tools,diagnostics:loopback||params?.get('debug')==='1'};
+ return {account:internal,tools:loopback||internal&&tools,diagnostics:loopback||params?.get('debug')==='1'};
 }
 function apply(document,surface){
- for(const [ids,visible]of [[ACCOUNT_CARDS,surface.account],[DIAGNOSTIC_CARDS,surface.diagnostics]]){
+ for(const [ids,visible]of [[ACCOUNT_CARDS,surface.account],[OPERATOR_CARDS,surface.tools],[DIAGNOSTIC_CARDS,surface.diagnostics]]){
   for(const id of ids){
    const card=document.getElementById(id);
    if(!card)continue;
@@ -26,11 +29,13 @@ function apply(document,surface){
   }
  }
 }
-const api={ACCOUNT_CARDS,DIAGNOSTIC_CARDS,decide,apply};
+const api={ACCOUNT_CARDS,OPERATOR_CARDS,DIAGNOSTIC_CARDS,decide,apply};
 if(typeof module!=='undefined')module.exports=api;
 if(root.document){
  const surface=decide(root.location,root.PICKLEUP_AUTH_CONFIG,root.PickleUpAuthOrigin);
  apply(root.document,surface);
  root.PICKLEUP_SETTINGS_SURFACE=Object.freeze(surface);
+ // Presentation only: mark that the account source is automatic so the manual source controls stay hidden.
+ if(root.PickleUpStagingPilot?.auto?.()===true)root.document.documentElement?.setAttribute('data-source-auto','');
 }
 })(typeof window==='undefined'?globalThis:window);

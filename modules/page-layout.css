@@ -54,6 +54,10 @@ html.pickleup-routing .hero[data-page-current]+main .page-header{margin-top:18px
 .mobile-dock button[aria-expanded=true]{box-shadow:inset 0 0 0 2px #b8ef49}
 /* Production keeps advanced Settings tools out of the default surface. */
 [data-surface-hidden]{display:none!important}
+/* V5.31: on the main host the account source is chosen automatically, so the manual source controls are hidden. */
+[data-auto-source]{display:none}
+[data-source-auto] [data-auto-source]{display:revert}
+[data-source-auto] [data-manual-source]{display:none!important}
 
 /* Visible loading feedback while only this page's JavaScript is being fetched. */
 .page-load-status{display:inline-flex;align-items:center;gap:9px;margin:10px 0 2px;padding:9px 12px;

@@ -8,10 +8,11 @@ function config(href,authentication=auth){
  const window={location:href===undefined?undefined:{href},PICKLEUP_AUTH_CONFIG:authentication};
  const context=vm.createContext({window,URL});vm.runInContext(pilot,context);vm.runInContext(source,context);return window.PICKLEUP_SYNC_CONFIG;
 }
-test('staging sync requires explicit URL opt-in, with the normal staging URL staying disabled',()=>{
- for(const href of [origin+'/',origin+'/?page=settings',origin+'/?pilot=',origin+'/?pilot=all',origin+'/?pilot=preferences-checkins&pilot=preferences-checkins'])assert.equal(config(href).enabled,false);
+test('V5.31: the normal main-host URL enables the account source by default; a malformed operator query still fails closed',()=>{
+ for(const href of [origin+'/',origin+'/?page=settings']){const c=config(href);assert.equal(c.enabled,true,href);assert.equal(c.auto,true);assert.equal(c.scope,null);assert.equal(Object.isFrozen(c),true)}
+ for(const href of [origin+'/?pilot=',origin+'/?pilot=all',origin+'/?pilot=preferences-checkins&pilot=preferences-checkins',origin+'/?maintenance=account-cache']){const c=config(href);assert.equal(c.enabled,false,href);assert.equal(c.auto,false)}
  for(const prefix of ['/', '/index.html', '/Pickleball/', '/Pickleball/index.html']){
-  const c=config(origin+prefix+'?page=settings&pilot=preferences-checkins');assert.equal(c.enabled,true);assert.equal(c.scope,'staging-preferences-checkins');assert.equal(Object.isFrozen(c),true);
+  const c=config(origin+prefix+'?page=settings&pilot=preferences-checkins');assert.equal(c.enabled,true);assert.equal(c.scope,'staging-preferences-checkins');assert.equal(c.auto,false);assert.equal(Object.isFrozen(c),true);
  }
 });
 test('the trial stays disabled on Pages, custom domains, lookalike hosts, HTTP, ports and other paths',()=>{
@@ -27,5 +28,6 @@ test('the trial is bound to enabled Auth on the intended staging project',()=>{
 test('absent or malformed location fails closed and cached code reevaluates the current URL',()=>{
  for(const href of [undefined,'not-a-url','about:blank'])assert.equal(config(href).enabled,false);
  assert.equal(config(origin+'/?pilot=preferences-checkins').enabled,true);
- assert.equal(config(origin+'/?page=settings').enabled,false);
+ assert.equal(config(origin+'/?page=settings').enabled,true);
+ assert.equal(config(origin+'/?page=settings',{...auth,enabled:false}).enabled,false);
 });

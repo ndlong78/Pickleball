@@ -1,5 +1,7 @@
 # PICKLEUP — PRODUCT ROADMAP
 
+**V5.31.0 — 15/11/2026 (đang PR):** bước A1 của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, người đã đăng nhập **tự dùng dữ liệu tài khoản** cho mục tiêu/check-in, hoạt động và giáo án (không cần URL `?pilot=` hay bấm bật từng nguồn); Settings hiện phần Tài khoản và ba mục đồng bộ. Gửi lên máy chủ vẫn thủ công; dữ liệu cũ trên máy không bị xóa và chưa tự nhập; khách và host không có đăng nhập giữ hành vi cũ. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.31.0.md).
+
 **V5.30.0 — 15/11/2026 (đã phát hành, #66):** [PR5b2d2b/c](docs/RESTORE_DESIGN_PR5B2D2.md) — Settings → Cứu hộ cache V6 xem được thao tác **chưa gửi** có trong tệp mà máy không còn (chỉ đọc) và đưa lại **từng mục** Mục tiêu/lịch tập hoặc Check-in vào hàng chờ trên máy, sau khi pull dữ liệu mới và chỉ khi bản ghi máy chủ chưa đổi và máy không có thay đổi mới hơn; không tự gửi, không ghi đè dữ liệu đã tải. Chỉ có tác dụng ở địa chỉ thử nghiệm bật nguồn tài khoản; chưa thử trên Managed staging. [Release notes](RELEASE_V5.30.0.md).
 
 **V5.29.1 — 15/11/2026 (đã phát hành, #63):** owner yêu cầu duyệt 40 bài 4.0–5.0 không qua HLV người. Claude rà toàn bộ và sửa 6 bài (`PU-087/089/094/097/098/109`: luật Erne, nhắc kính bảo hộ, wording); điểm cũ vẫn so sánh được. Đây là **rà soát nội bộ trên văn bản, không phải đánh giá của HLV**, chưa thử trên sân. [Kết quả](docs/CONTENT_REVIEW_4_0_5_0.md) · [Release notes](RELEASE_V5.29.1.md).

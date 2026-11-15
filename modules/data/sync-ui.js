@@ -16,7 +16,7 @@ function render(){
  const sourceChanged=previous!==source;
  if(sourceChanged){serial++;running=false;syncFeedback=false;selection=null;detail.replaceChildren();status.textContent=data.notice();previous=source}
  const configured=PICKLEUP_SYNC_CONFIG?.enabled===true&&PICKLEUP_AUTH_CONFIG?.enabled===true;
- $('[data-staging-access]').hidden=window.PickleUpStagingPilot?.available()!==true;
+ $('[data-staging-access]').hidden=window.PickleUpStagingPilot?.available()!==true||window.PickleUpStagingPilot?.auto?.()===true;
  $('[data-staging-build]').textContent='Phiên bản '+(window.PICKLEUP_BUILD||'chưa rõ');
  $('[data-staging-open]').hidden=window.PickleUpStagingPilot?.mode()==='account-data';
  body.hidden=!configured;

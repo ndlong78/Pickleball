@@ -45,10 +45,15 @@ function emit(changed){
  // Always clear stale A selections, including the loader's unmounted Court cache.
  if(state.mode!=='guest'||changed)document.dispatchEvent(new CustomEvent('pickleup:plan-selected',{detail:{plan:selected()}}));
 }
-function accept(next){const nextTag=next.owner+':'+next.mode+':'+(next.consent?.localRevision||'0'),changed=nextTag!==tag;state=next;if(changed){tag=nextTag;token++;navigation++;lessonFeedback=''}emit(changed)}
+function accept(next){const nextTag=next.owner+':'+next.mode+':'+(next.consent?.localRevision||'0'),changed=nextTag!==tag;state=next;if(changed){tag=nextTag;token++;navigation++;lessonFeedback=''}emit(changed);adopt?.schedule(false)}
+let adopt=null;
 const ready=(async()=>{
  if(root.PICKLEUP_PLAN_CONFIG?.enabled!==true||root.PICKLEUP_AUTH_CONFIG?.enabled!==true||!root.PICKLEUP_AUTH_CONFIG.url||!root.PICKLEUP_AUTH_CONFIG.publishableKey){accept({...state,mode:'guest'});return}
- try{const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);await auth.ready;const db=await PickleUpLocalRepository.open({onVersionChange:()=>{controller?.close();accept({mode:'error',owner:null,busy:false,error:'upgrade_required',snapshot:null,projection:null})}});controller=PickleUpPlanController.create({auth,repository:db,enabled:()=>root.PICKLEUP_PLAN_CONFIG?.enabled===true,onChange:accept});root.addEventListener('focus',()=>controller.refreshLocal().catch(()=>{}));await controller.ready}catch(_){accept({mode:'error',owner:null,busy:false,error:'storage_unavailable',snapshot:null,projection:null})}
+ try{const auth=await PickleUpAuth.getShared(PICKLEUP_AUTH_CONFIG);await auth.ready;const db=await PickleUpLocalRepository.open({onVersionChange:()=>{controller?.close();accept({mode:'error',owner:null,busy:false,error:'upgrade_required',snapshot:null,projection:null})}});controller=PickleUpPlanController.create({auth,repository:db,enabled:()=>root.PICKLEUP_PLAN_CONFIG?.enabled===true,onChange:accept});root.addEventListener('focus',()=>controller.refreshLocal().catch(()=>{}));await controller.ready;
+  // V5.31: signed in on the main host means the account source.
+  adopt=root.PickleUpStagingPilot?.adopter?.({state:()=>state,useAccount:()=>controller.useAccount(),refresh:()=>controller.refresh()},()=>root.PICKLEUP_PLAN_CONFIG?.auto===true)||null;
+  for(const name of ['focus','online'])root.addEventListener(name,()=>adopt?.schedule(true));
+  adopt?.schedule(false)}catch(_){accept({mode:'error',owner:null,busy:false,error:'storage_unavailable',snapshot:null,projection:null})}
 })();
 function canWrite(id=null){return state.mode==='guest'||state.mode==='account'&&!state.busy&&!!state.snapshot?.cursor?.epoch&&(!id||!state.snapshot.records.find(r=>r.kind==='personal_plans'&&r.id===id)?.reviewRequired)}
 async function command(work){const stamp=token;await ready;if(stamp!==token)throw Object.assign(Error('account_changed'),{code:'account_changed'});if(state.mode!=='account'||!controller||!canWrite())throw Object.assign(Error('source_unavailable'),{code:'source_unavailable'});const result=await work(controller);if(stamp!==token)throw Object.assign(Error('account_changed'),{code:'account_changed'});return result}

@@ -1,13 +1,13 @@
 const {test,expect}=require('@playwright/test'),{model}=require('./helpers/sync-model.cjs');
-const {route,save:academySave}=require('./helpers/academy-ui-fixture.cjs');
+const {route,save:academySave}=require('./helpers/academy-ui-fixture.cjs'),virtual=require('./helpers/virtual-origin.cjs');
 test.use({serviceWorkers:'block',trace:'off',screenshot:'off',video:'off'});
 const A='11111111-1111-4111-8111-111111111111',B='22222222-2222-4222-8222-222222222222';
-const origin='https://pickleup-staging.home-309.workers.dev',normal=origin+'/?page=settings',trial=normal+'&pilot=account-data';
+const origin='https://pickleup-staging.home-309.workers.dev',normal=origin+'/?page=settings',trial=normal+'&pilot=account-data',off=normal+'&maintenance=account-cache';
 const activityStatus='#activityPilot [role=status]',planStatus='#planPilot [role=status]';
 async function setup(context,servers=new Map([A,B].map(owner=>[owner,model({owner,domainRows:true,activityRows:true,planRows:true})])),site=origin){
  const calls=[];let held=null;
- // Only a virtual staging origin: app bytes come from loopback, Auth/RPC are mocked.
- await context.route(site+'/**',async request=>{const u=new URL(request.request().url()),response=await request.fetch({url:'http://127.0.0.1:4173'+u.pathname+u.search});await request.fulfill({response})});
+ // Only a virtual staging origin: app bytes come from the built dist/ on disk, Auth/RPC are mocked.
+ await virtual.serve(context,site);
  await context.route('**/modules/auth-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.PICKLEUP_AUTH_CONFIG={enabled:true,url:"https://rfeoeagklmaqmkcdhprb.supabase.co",publishableKey:"sb_publishable_synthetic"}'}));
  await context.route('**/modules/auth-adapter.js*',r=>r.fulfill({contentType:'text/javascript',body:`(()=>{
   let owner=localStorage.getItem('fixture-owner')||'${A}';const listeners=new Set(),state=()=>({status:owner?'authenticated':'guest',user:owner?{id:owner,email:'fixture@example.invalid'}:null});
@@ -25,13 +25,13 @@ async function visit(page,url=trial){await page.goto(url);await page.evaluate(as
 async function enable(page,kind){await page.locator('[data-'+kind+'-consent]').check();await page.locator('[data-'+kind+'-enable]').click();await expect.poll(()=>page.evaluate(kind=>{const s=(kind==='activity'?PICKLEUP_ACTIVITY:PICKLEUP_PLANS).getState();return s.mode==='account'&&!s.busy&&!!s.snapshot},kind)).toBe(true)}
 async function send(page,kind){await route(page,'settings');await page.locator('[data-'+kind+'-send]').click();await expect(page.locator(kind==='activity'?activityStatus:planStatus)).toContainText('Đã đồng bộ');await expect(page.locator('[data-'+kind+'-count]')).toContainText('0 ')}
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([key])=>key.startsWith('pickleup_')&&key!=='pickleup_auth_v6').sort()));
-for(const width of [390,820,1180,1440])test('real account-data flags, mock RPC: entry, independent source, manual queue and safe exit '+width,async({page,context})=>{
- await page.setViewportSize({width,height:900});const f=await setup(context);await visit(page,normal);await expect(page.locator('#syncPilot')).toBeHidden();await expect(page.locator('#accountPanel')).toBeHidden();await expect(page.locator('[data-activity-body]')).toBeHidden();await expect(page.locator('[data-plan-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
- await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.30.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
+for(const width of [390,820,1180,1440])test('real account-data flags, mock RPC: entry, independent source, manual queue and maintenance off-switch '+width,async({page,context})=>{
+ await page.setViewportSize({width,height:900});const f=await setup(context);await visit(page,off);await expect(page.locator('[data-sync-body]')).toBeHidden();await expect(page.locator('[data-activity-body]')).toBeHidden();await expect(page.locator('[data-plan-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
+ await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.31.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
  expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode,PICKLEUP_IMPORT_CONFIG.enabled])).toEqual(['guest','guest','guest',false]);
  const before=await legacy(page);await enable(page,'activity');expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest']);await academySave(page,17);expect(new URL(page.url()).searchParams.get('pilot')).toBe('account-data');expect(f.calls.some(c=>c.name==='apply_event_operation')).toBe(false);await send(page,'activity');
  await academySave(page,18);await route(page,'settings');await expect(page.locator(activityStatus)).toContainText('Còn thay đổi chờ gửi');const count=f.calls.length;
- await visit(page,normal);await expect(page.locator('[data-activity-body]')).toBeHidden();expect(f.calls).toHaveLength(count);await visit(page);await expect(page.locator('[data-activity-count]')).toContainText('1 hoạt động');expect(f.calls).toHaveLength(count);await send(page,'activity');expect(f.calls.filter(c=>c.name==='apply_event_operation')).toHaveLength(2);expect(await legacy(page)).toBe(before);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ await visit(page,off);await expect(page.locator('[data-activity-body]')).toBeHidden();expect(f.calls).toHaveLength(count);await visit(page);await expect(page.locator('[data-activity-count]')).toContainText('1 hoạt động');expect(f.calls).toHaveLength(count);await send(page,'activity');expect(f.calls.filter(c=>c.name==='apply_event_operation')).toHaveLength(2);expect(await legacy(page)).toBe(before);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 test('real flags, independent browser stores: Academy, self assessment and match reach a fresh same-account reader',async({page,context,browser})=>{
  const f=await setup(context);await visit(page);await enable(page,'activity');const before=await legacy(page);await academySave(page,16);await route(page,'coach');for(const key of ['serve','return','dink','volley','position','strategy'])await page.locator('#assess-'+key).selectOption('1');await page.locator('#assessBtn').click();await expect(page.locator('#assessResult')).toContainText('chờ đồng bộ');await route(page,'matches');await page.locator('#matchOurs').fill('11');await page.locator('#matchTheirs').fill('7');await page.locator('#matchSave').click();await expect(page.locator('#matchStatus')).toContainText('chờ đồng bộ');await send(page,'activity');expect(f.servers.get(A).changes).toHaveLength(3);
@@ -47,4 +47,36 @@ test('real flags: late account A read cannot repopulate B or move pending A acti
 });
 test('preview URL cannot activate account-data trial or show the entry action',async({page,context})=>{
  const site='https://preview-pickleup-staging.home-309.workers.dev',f=await setup(context,undefined,site);await visit(page,site+'/?page=settings&pilot=account-data');await expect(page.locator('[data-staging-access]')).toBeHidden();await expect(page.locator('[data-activity-body]')).toBeHidden();await expect(page.locator('[data-plan-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
+});
+
+// ---- V5.31 (plan A1): on the main host a signed-in user gets the account source by default ----
+const modes=page=>page.evaluate(()=>[PICKLEUP_DATA.getState(),PICKLEUP_ACTIVITY.getState(),PICKLEUP_PLANS.getState()].map(s=>s.mode+':'+(s.busy?'busy':s.snapshot?.cursor?.epoch?'ready':'empty')));
+const adopted=async page=>expect.poll(()=>modes(page),{timeout:15000}).toEqual(['account:ready','account:ready','account:ready']);
+for(const width of [390,820,1180,1440])test('default URL, mock RPC: signed-in user gets all three account sources without any choice; nothing is sent or imported '+width,async({page,context})=>{
+ await page.setViewportSize({width,height:900});const f=await setup(context);const before=await (async()=>{await visit(page,normal);return legacy(page)})();
+ await adopted(page);
+ for(const id of ['accountPanel','syncPilot','activityPilot','planPilot','accountRescue'])await expect(page.locator('#'+id)).toBeVisible();
+ for(const id of ['importPilot','accountPurge'])await expect(page.locator('#'+id)).toBeHidden();
+ for(const sel of ['[data-sync-enable]','[data-sync-device]','[data-activity-consent]','[data-activity-enable]','[data-activity-device]','[data-plan-consent]','[data-plan-enable]','[data-plan-device]','[data-staging-access]','[data-sync-staging]','[data-activity-staging]','[data-plan-staging]'])await expect(page.locator(sel)).toBeHidden();
+ await expect(page.locator('#syncPilot [data-auto-source]')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getView().timezone)).toBeTruthy();
+ expect(f.calls.some(c=>c.name.startsWith('apply_'))).toBe(false);expect(f.calls.some(c=>/import/.test(c.name))).toBe(false);expect(await legacy(page)).toBe(before);
+ await academySave(page,16);expect(new URL(page.url()).searchParams.has('pilot')).toBe(false);expect(f.calls.some(c=>c.name==='apply_event_operation')).toBe(false);
+ await send(page,'activity');expect(f.calls.filter(c=>c.name==='apply_event_operation')).toHaveLength(1);expect(await legacy(page)).toBe(before);
+ await page.reload();await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await Promise.all([PICKLEUP_DATA.ready,PICKLEUP_ACTIVITY.ready,PICKLEUP_PLANS.ready])});await adopted(page);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+test('default URL: sign-out returns to the device source; another account adopts its own empty source and never sees A',async({page,context})=>{
+ const f=await setup(context);await visit(page,normal);await adopted(page);await academySave(page,15);await route(page,'settings');
+ await page.evaluate(()=>SWITCH_STAGING_OWNER(null));await expect.poll(()=>page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest','guest']);
+ const quiet=f.calls.length;await page.waitForTimeout(300);expect(f.calls).toHaveLength(quiet);
+ await page.evaluate(B=>SWITCH_STAGING_OWNER(B),B);await adopted(page);
+ expect(await page.evaluate(()=>[PICKLEUP_ACTIVITY.getState().owner,PICKLEUP_ACTIVITY.events().length])).toEqual([B,0]);
+ expect(f.calls.some(c=>c.owner===B&&c.name.startsWith('apply_'))).toBe(false);
+ expect(await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open();try{return (await db.scope('user:'+owner).listOutbox()).filter(o=>o.state==='pending').length}finally{db.close()}},A)).toBe(1);
+});
+test('default URL on a preview or other host stays device-only',async({page,context})=>{
+ const site='https://preview-pickleup-staging.home-309.workers.dev',f=await setup(context,undefined,site);await visit(page,site+'/?page=settings');
+ expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest','guest']);
+ await expect(page.locator('#accountPanel')).toBeHidden();expect(f.calls).toHaveLength(0);
 });
