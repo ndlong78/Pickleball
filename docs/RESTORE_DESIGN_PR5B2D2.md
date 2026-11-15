@@ -1,6 +1,6 @@
 # PR5b2d2 — thiết kế khôi phục từ tệp cứu hộ (chỉ tài liệu)
 
-Trạng thái: **thiết kế; lát 2a (lõi thuần `modules/data/restore-plan-core.js`) đã có mã nhưng chưa được trang nào nạp.** Baseline main `abe38d9` / V5.29.1. Theo [AGENTS.md](../AGENTS.md) mục 3 owner đã giao các quyết định kỹ thuật backup/restore; tài liệu này ghi quyết định và chia lát cắt. Không SQL, RLS, Auth, signup, dependency hay thay đổi IndexedDB 3 trong PR này.
+Trạng thái: **lát 2a, 2b và 2c đã có mã (V5.30.0); lát 2d (thử trên Managed staging) còn chờ owner.** Mục 9 ghi cách 2b/2c được cài đặt, kể cả chỗ khác với bản thiết kế ban đầu. Theo [AGENTS.md](../AGENTS.md) mục 3 owner đã giao các quyết định kỹ thuật backup/restore; tài liệu này ghi quyết định và chia lát cắt. Không SQL, RLS, Auth, signup, dependency hay thay đổi IndexedDB 3 trong PR này.
 
 ## 1. Vấn đề
 [PR5b2d1](RESTORE_PREVIEW_PR5B2D1.md) chỉ so tệp cứu hộ với cache trên máy (`canRestore=false`). Câu hỏi còn lại: **khôi phục cái gì, và bằng cách nào mà không phá cache?**
@@ -71,3 +71,21 @@ Thiết kế dựa trên đọc mã `local-repository.js` (ràng buộc `tailOpe
 - Mỗi mục chỉ có `operationId, kind, id, action, state, dependsOn, warnings`; **không payload**. `summary` chỉ có số đếm và mã cố định, không id/chuỗi tùy ý. Luôn `canRestore=false`, `cloudVerified=false`. Các store khác trong tệp bị bỏ qua hoàn toàn.
 - Thứ tự đầu ra xác định, thao tác phụ thuộc luôn đứng sau thao tác nó phụ thuộc. Chưa phải xác nhận từ server.
 - Kiểm thử: `tests/restore-plan-core.test.js` (12 ca). Chưa nạp vào Settings/page-loader/PWA nên không đổi phiên bản app.
+
+## 9. Lát 2b và 2c — đã cài đặt (V5.30.0) và điều chỉnh so với thiết kế
+**2b — kế hoạch chỉ đọc.** Settings → Cứu hộ cache V6 có nút "Xem thao tác chưa gửi có thể cứu", chỉ bật sau khi chọn tệp hợp lệ. `controller.planRestore()` đọc snapshot cache hiện tại, gọi `restore-plan-core.plan()` và chỉ hiển thị loại dữ liệu, hành động, cảnh báo và mã loại cố định. `operationId`, id bản ghi và payload ở lại trong RAM của controller, không vào DOM/log/URL.
+
+**2c — đưa lại một mục vào hàng chờ.** Mỗi mục có nút riêng; một lần bấm = một thao tác. Đi qua `PICKLEUP_DATA.restoreIntent` → `domain-controller.restoreIntent`:
+1. yêu cầu nguồn tài khoản đang bật và đã bootstrap (cờ pilot tắt thì dừng với `pilot_disabled`);
+2. **pull dữ liệu mới từ máy chủ** (không có mạng thì dừng, chưa ghi gì);
+3. `restore-plan-core.assess()` so với bản ghi vừa pull, chỉ cho phép khi thao tác độc lập, máy không có thay đổi chưa gửi/cần xem xét của bản ghi đó, **`expectedRevision` trong tệp vẫn bằng revision máy chủ hiện tại**, và payload qua đúng validator của `domain-core`;
+4. ghi bằng `scope.write` với `operationId` **mới** và `expectedLocalRevision` hiện tại (một giao dịch IndexedDB). Không tự gửi; người dùng vẫn đồng bộ thủ công, và CAS của máy chủ vẫn quyết định.
+
+**Khác với thiết kế ban đầu (mục 3):**
+- Chỉ **`user_preferences` và `practice_checkins`** được đưa lại; các loại khác (điểm Học viện, đánh giá, nhật ký, giáo án, lựa chọn, hồ sơ) được liệt kê nhưng không có nút. Lý do: ghi trực tiếp qua `scope.write` bỏ qua validator và chính sách đồng ý của từng domain; chỉ hai loại này có validator và đường ghi một bản ghi đã được kiểm chứng.
+- Không tạo luồng xung đột mới: nếu máy chủ đã đổi sau thao tác (`record_changed`) hoặc máy có thay đổi mới hơn (`device_unsent`), **không ghi gì** thay vì đẩy vào xem xét xung đột, để không ghi đè ý định mới hơn bằng dữ liệu cũ.
+- Không cần rollback nhiều mục vì mỗi mục độc lập và một giao dịch ghi duy nhất.
+- Thao tác `sending` vẫn được đề xuất nhưng chỉ ghi được nếu bản ghi máy chủ chưa đổi (tức máy chủ chưa nhận).
+Mã trạng thái cố định hiển thị cho người dùng: `queued`, `blocked:<unsupported_kind|dependency|device_unsent|needs_review|record_changed|invalid_record|invalid_payload|nothing_to_restore>`, `failed:<offline|pilot_disabled|source_unavailable|bootstrap_required|busy|account_changed|network_error|unknown>`.
+
+**Kiểm thử:** `restore-plan-core.test.js` (17), `domain-controller.test.js` (+3, controller thật với server mô phỏng), `account-rescue-controller.test.js` (+5), `restore-queue.spec.cjs` (6 ca Playwright, bốn viewport 390/820/1180/1440, mock Auth/RPC). **Chưa chạy trên Managed staging thật**; lát 2d do owner thực hiện (hai thiết bị, mất mạng giữa chừng, hết hạn phiên).

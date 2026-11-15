@@ -56,3 +56,50 @@ test('resolving an old partial intent previews its original defaults, without me
 test('account switch during a state notification cannot run the old opt-in against the new scope',async()=>{
  const f=await fixture(),c=f.make({onChange:s=>{if(s.owner===A&&s.busy)f.switch(B)}});try{await c.ready;await assert.rejects(c.useAccount(),{code:'account_changed'});await settled(c);assert.equal(c.getState().owner,B);assert.equal(c.getState().mode,'guest');assert.equal(await f.db.scope('user:'+A).getDomainConsent(),false);assert.equal(await f.db.scope('user:'+B).getDomainConsent(),false);assert.equal(f.calls.length,0)}finally{f.close()}
 });
+
+// ---- 2c: restoreIntent re-queues one recovered unsent operation, only when it is still safe ----
+const lost=(value,revision,extra={})=>({kind:'user_preferences',id:'self',action:'put',payload:value,expectedRevision:revision,dependsOn:null,...extra});
+const FULL={target_days:5,level_band:'3.0–3.5',session_minutes:60,gentle:true,goal_configured:true};
+test('restoreIntent pulls fresh, queues a NEW operation locally, never sends, and sync then applies it',async()=>{
+ const f=await fixture(),c=f.make();try{
+  await c.ready;await c.useAccount();await c.savePreferences({target_days:4},'0');assert.equal((await c.sync()).status,'synced');
+  const before=f.calls.length,oldOp=c.getState().snapshot.outbox[0].operationId,baseRevision=c.getState().projection.prefRow.baseRevision;
+  const result=await c.restoreIntent({kind:'user_preferences',id:'self',op:lost(FULL,baseRevision,{operationId:uid()})});
+  assert.deepEqual(result,{status:'queued',action:'put'});
+  const names=f.calls.slice(before).map(x=>x.name);assert.ok(names.includes('prepare_sync'));assert.ok(!names.includes('apply_sync_operation'),'restore must not send');
+  const row=c.getState().projection.prefRow,ops=c.getState().snapshot.outbox;
+  assert.ok(row.tailOperationId);assert.notEqual(row.tailOperationId,oldOp);assert.equal(ops.filter(o=>o.state==='pending').length,1);
+  assert.equal(c.getState().projection.goal.days,5);
+  assert.equal((await c.sync()).status,'synced');assert.equal(c.getState().projection.prefRow.tailOperationId??null,null);
+ }finally{f.close()}
+});
+test('restoreIntent refuses (and writes nothing) when the server record moved on, the device has unsent changes, or the source is off',async()=>{
+ const f=await fixture(),c=f.make(),server=f.servers.get(A);try{
+  await c.ready;await c.useAccount();await c.savePreferences({target_days:4},'0');await c.sync();
+  const rev=c.getState().projection.prefRow.baseRevision;
+  remote(server,{target_days:2},rev);                                                      // someone else changed it
+  await assert.rejects(c.restoreIntent({kind:'user_preferences',id:'self',op:lost(FULL,rev)}),{code:'restore_record_changed'});
+  assert.equal(c.getState().projection.prefRow.tailOperationId??null,null);assert.equal(c.getState().snapshot.outbox.filter(o=>o.state==='pending').length,0);
+  const fresh=c.getState().projection.prefRow.baseRevision;
+  await assert.rejects(c.restoreIntent({kind:'user_preferences',id:'self',op:lost({...FULL,target_days:99},fresh)}),{code:'restore_invalid_payload'});
+  await c.savePreferences({gentle:true},c.getState().projection.prefRow.localRevision);       // newer unsent intent on the device
+  await assert.rejects(c.restoreIntent({kind:'user_preferences',id:'self',op:lost(FULL,fresh)}),{code:'restore_device_unsent'});
+  assert.equal(c.getState().snapshot.outbox.filter(o=>o.state==='pending').length,1);
+  await assert.rejects(c.restoreIntent({kind:'user_preferences',id:'self',op:lost(FULL,fresh,{dependsOn:uid()})}),{code:'restore_dependency'});
+  await assert.rejects(c.restoreIntent({kind:'academy_attempts',id:uid(),op:{kind:'academy_attempts',id:'x'}}),{code:'restore_invalid_record'});
+  await assert.rejects(c.restoreIntent({kind:'academy_attempts',id:'x',op:{kind:'academy_attempts',id:'x'}}),{code:'restore_unsupported_kind'});
+  f.disable();await assert.rejects(c.restoreIntent({kind:'user_preferences',id:'self',op:lost(FULL,fresh)}),{code:'pilot_disabled'});
+ }finally{f.close()}
+});
+test('restoreIntent needs the account source and a bootstrapped cache, and re-queues a lost check-in',async()=>{
+ const f=await fixture(),c=f.make();try{
+  await c.ready;await assert.rejects(c.restoreIntent({kind:'practice_checkins',id:'2026-10-30',op:{kind:'practice_checkins',id:'2026-10-30'}}),{code:'source_unavailable'});
+  await c.useAccount();
+  const op={kind:'practice_checkins',id:'2026-10-30',action:'put',payload:{status:'done',minutes:45,lesson_id:'PU-001',timezone_at_entry:'Asia/Ho_Chi_Minh'},expectedRevision:'0',dependsOn:null};
+  assert.deepEqual(await c.restoreIntent({kind:'practice_checkins',id:'2026-10-30',op}),{status:'queued',action:'put'});
+  assert.equal(c.getState().projection.rows['practice_checkins:2026-10-30'].tailOperationId!==null,true);
+  await assert.rejects(c.restoreIntent({kind:'practice_checkins',id:'2026-10-30',op}),{code:'restore_device_unsent'});
+  assert.equal((await c.sync()).status,'synced');
+  await assert.rejects(c.restoreIntent({kind:'practice_checkins',id:'2026-10-30',op}),{code:'restore_record_changed'});
+ }finally{f.close()}
+});

@@ -19,7 +19,7 @@
 <div class="card" id="accountRescue" data-surface-hidden style="padding:20px;min-width:0">
 <h3>Cứu hộ toàn bộ cache V6 trên máy</h3>
 <p>Xuất cache của tài khoản đang đăng nhập: bản đã tải về, thay đổi chưa gửi, yêu cầu chưa rõ kết quả, conflict, checkpoint nhập, checklist/focus và điểm dừng Court. Không lấy dữ liệu khách hoặc phiên đăng nhập.</p>
-<p>Cache trên máy có thể chưa chứa hết dữ liệu cloud. Đây chưa là backup toàn tài khoản/DB và chưa có chức năng khôi phục từ tệp. Dọn cache là thao tác riêng trong mục bên dưới. Timer đang chạy và dữ liệu RAM chưa lưu không có trong tệp. Tệp riêng tư, chưa mã hóa; giữ ở nơi an toàn.</p>
+<p>Cache trên máy có thể chưa chứa hết dữ liệu cloud. Đây chưa là backup toàn tài khoản/DB và chưa khôi phục toàn bộ từ tệp; chỉ có phần cứu từng thao tác chưa gửi (mục tiêu/lịch tập, check-in) ở bên dưới. Dọn cache là thao tác riêng trong mục bên dưới. Timer đang chạy và dữ liệu RAM chưa lưu không có trong tệp. Tệp riêng tư, chưa mã hóa; giữ ở nơi an toàn.</p>
 <button type="button" data-account-capture disabled>Đọc cache tài khoản</button>
 <a class="linkbtn" data-account-download hidden>Tải bản cứu hộ cache V6</a>
 <label style="display:block;margin-top:12px">Kiểm tra lại tệp cache V6 (chỉ xem, tối đa 32 MiB)<input type="file" accept=".json,application/json" disabled style="display:block;max-width:100%"></label>
@@ -33,6 +33,15 @@
 <table style="width:100%;table-layout:fixed;overflow-wrap:anywhere"><thead><tr><th scope="col">Phần dữ liệu</th><th scope="col">Giống</th><th scope="col">Chỉ tệp</th><th scope="col">Chỉ máy</th><th scope="col">Khác</th><th scope="col">Chưa đối chiếu: tệp/máy</th></tr></thead><tbody data-restore-rows></tbody></table>
 <ul data-restore-risks></ul>
 <p>Tệp đúng checksum vẫn chưa phải bằng chứng dữ liệu đã được server xác nhận. Chưa khôi phục; không bật lại nguồn tài khoản, dùng lại thông tin đồng bộ hoặc gửi lại yêu cầu từ tệp. Giữ tệp gốc riêng tư ngoài trình duyệt, kể cả phần chưa nhận diện.</p>
+</div>
+<h4>Cứu thao tác chưa gửi</h4>
+<p>Xem thao tác chưa gửi nào trong tệp mà máy chưa có. Chỉ <strong>Mục tiêu/lịch tập</strong> và <strong>Check-in</strong> có thể được đưa lại vào hàng chờ, từng mục một, sau khi tải dữ liệu mới từ máy chủ, và chỉ khi bản ghi trên máy chủ vẫn như lúc thao tác đó được tạo và máy không có thay đổi mới hơn. Không ghi đè dữ liệu đã tải về hay trạng thái khác; không tự gửi — bạn vẫn đồng bộ thủ công. Cần địa chỉ thử nghiệm đã bật nguồn dữ liệu tài khoản.</p>
+<button type="button" data-account-plan disabled>Xem thao tác chưa gửi có thể cứu</button>
+<div data-restore-plan hidden>
+<p data-restore-plan-summary></p>
+<ul data-restore-plan-list></ul>
+<ul data-restore-plan-excluded></ul>
+<p>Danh sách này chỉ tính từ tệp và cache trên máy, chưa phải xác nhận từ máy chủ. Chi tiết nội dung không hiển thị ở đây.</p>
 </div>
 </div>
 <div class="card" id="importPilot" data-surface-hidden style="padding:20px;min-width:0">

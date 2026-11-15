@@ -37,6 +37,7 @@ root.PICKLEUP_DATA={ready,raw,getState:()=>structuredClone(state),
  pending:(kind,id)=>!!state.projection?.rows[kind+':'+id]?.tailOperationId,isAccount:()=>state.mode!=='guest',canWrite,notice,
  revision(kind,id){return state.projection?.rows[kind+':'+id]?.localRevision||'0'},
  deleted(kind,id){return state.projection?.rows[kind+':'+id]?.deleted===true},
+ async restoreIntent(...args){await ready;if(!controller)throw new PickleUpDomainCore.DomainError('source_unavailable');return controller.restoreIntent(...args)},
  async savePreferences(...args){await ready;if(!controller)throw new PickleUpDomainCore.DomainError('source_unavailable');return controller.savePreferences(...args)},
  async saveCheckin(args){await ready;if(!controller)throw new PickleUpDomainCore.DomainError('source_unavailable');return controller.saveCheckin(args)},
  controller:()=>controller};

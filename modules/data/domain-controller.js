@@ -72,6 +72,22 @@ function create({auth,repository,core=root.PickleUpDomainCore,enabled=()=>false,
    const action=status==='clear'?'delete':row?.deleted?'restore':'put',value=status==='clear'?{timezone_at_entry:timezone}:core.checkin({status,minutes:status==='done'?minutes:null,lesson_id:lessonId,timezone_at_entry:timezone});
    return task(async stamp=>{await scope.write({kind:'practice_checkins',id:day,value,action,operationId:uuid(),expectedLocalRevision});guard(stamp);await load(stamp);notify(owner)});
   },
+  // 2c: queue ONE unsent operation recovered from a rescue file. Fresh pull first; the write only happens when the
+  // record is still exactly what the lost operation was written against. Sending stays the user's manual action.
+  async restoreIntent({kind,id,op}={}){
+   return task(async stamp=>{
+    const restore=typeof module!=='undefined'?require('./restore-plan-core.js'):root.PickleUpRestorePlanCore;
+    if(!restore||typeof restore.assess!=='function')fail('source_unavailable');
+    if(!state.snapshot?.cursor?.epoch)fail('bootstrap_required');
+    if(typeof kind!=='string'||typeof id!=='string'||op?.kind!==kind||op?.id!==id)fail('restore_invalid_record');
+    if(!restore.SUPPORTED.has(kind))fail('restore_unsupported_kind');
+    await read(stamp);
+    const row=state.projection.rows[kind+':'+id]||null,verdict=restore.assess(op,row,{core,today:core.localDay(now())});
+    if(!verdict.ok)fail('restore_'+verdict.code);
+    await scope.write({kind,id,value:verdict.value,action:verdict.action,operationId:uuid(),expectedLocalRevision:row?.localRevision||'0'});guard(stamp);
+    await load(stamp);notify(owner);return {status:'queued',action:verdict.action};
+   });
+  },
   async previewConflict(id){ensureAccount();const stamp=generation,view=await scope.inspectSyncConflict(id);guard(stamp);return view},
   async resolveConflict(view,mode,{acknowledgeEpochChange=false,restore=false}={}){
    const decision=core.resolution(view,mode);if(mode==='local'&&decision.action==='restore'&&restore!==true)fail('explicit_restore_required');

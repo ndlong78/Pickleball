@@ -1,7 +1,7 @@
 {
   "name": "pickleup",
   "private": true,
-  "version": "5.29.1",
+  "version": "5.30.0",
   "description": "PickleUp responsive PWA",
   "scripts": {
     "test:responsive": "playwright test",
