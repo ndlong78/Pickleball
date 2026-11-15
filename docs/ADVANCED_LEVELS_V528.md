@@ -60,6 +60,6 @@ Chỉ **nới**; không viết lại hàng, không đổi quyền, chủ sở h�
 - **Chưa kiểm chứng:** PostgreSQL 17 và pgTAP thật, Supabase local đầy đủ — chỉ CI chạy được; DB staging thật; thiết bị thật.
 
 ## 7. Giới hạn đã biết
-- **Luân phiên bài ngắn hơn ở 4.0–5.0:** mỗi nhóm 12 bài (hai bài cho mỗi nhóm trọng tâm) và không có bài `third-drop`, `kitchen-pressure`, `transition-reset`, `doubles-coverage`, nên sau khoảng hai buổi một ô tập có thể lặp lại bài (đo: ở 4.0–4.5 và 4.5–5.0, ô "third" lặp liên tiếp ở buổi thứ ba). Không bài nào lặp trong cùng một buổi. Cách khắc phục là bổ sung bài, không phải sửa thuật toán.
+- **Luân phiên ở 4.0–5.0 (đã khắc phục ở V5.29.0):** V5.28.0 chỉ có 12 bài mỗi nhóm nên ô "third" lặp ở buổi thứ ba. V5.29.0 bổ sung 16 bài (`PU-105…120`, mỗi nhóm 20 bài) cho `third-drop`, `transition-reset`, `kitchen-pressure`, `doubles-coverage`; đo trên sáu buổi liên tiếp: hai ô đầu không lặp, ô thứ ba có 4 bài khác nhau; không bài nào lặp trong cùng một buổi.
 - Mục tiêu /20, mốc đạt và nội dung 24 bài chưa có HLV duyệt.
 - Kiểm tra chuyển cấp V2.3 vẫn dừng ở 3.0; từ 3.0 dùng Đánh giá kỹ năng nâng cao.

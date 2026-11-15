@@ -5,23 +5,23 @@ const source=fs.readFileSync(path.join(__dirname,'../curriculum.js'),'utf8');
 const doc=()=>core.parseCurriculum(source);
 // The original 1.0–4.0 library (PU-001…080); the C3b rule tests build new lessons on top of it.
 const live=()=>{const d=doc();return {...d,lessons:d.lessons.slice(0,80)}};
-test('curriculum.js is the canonical, valid content source; 104 lessons are published',()=>{
+test('curriculum.js is the canonical, valid content source; 120 lessons are published',()=>{
  const d=doc();
- assert.equal(d.lessons.filter(l=>l.status==='published').length,104);
+ assert.equal(d.lessons.filter(l=>l.status==='published').length,120);
  assert.equal(d.lessons.slice(0,80).every((l,i)=>l.id==='PU-'+String(i+1).padStart(3,'0')),true);
  assert.deepEqual(core.validate(d),[]);
  assert.equal(core.renderCurriculum(d),source);
  assert.equal(check().ok,true);
  assert.ok(d.lessons.every(l=>core.STATUSES.includes(l.status)&&l.revision>=1&&l.assessmentVersion>=1&&Array.isArray(l.media)));
-  // PU-081…104: both 4.0–5.0 bands, tactical lessons with the non-certification wording.
+  // PU-081…120: both 4.0–5.0 bands, tactical lessons with the non-certification wording.
  const added=d.lessons.slice(80);
- assert.deepEqual([added.length,added.filter(l=>l.level==='4.0–4.5').length,added.filter(l=>l.level==='4.5–5.0').length],[24,12,12]);
+ assert.deepEqual([added.length,added.filter(l=>l.level==='4.0–4.5').length,added.filter(l=>l.level==='4.5–5.0').length],[40,20,20]);
  assert.equal(added.every(l=>['4.0–4.5','4.5–5.0'].includes(l.level)&&l.advanced===true&&l.revision===1&&l.assessmentVersion===1&&/không phải chứng nhận trình độ\.$/.test(l.assessment.instruction)),true);
 });
 test('runtime globals keep the legacy shape without leaking the change-detection hash',()=>{
  const context={};context.window=context;require('node:vm').runInNewContext(source+fs.readFileSync(path.join(__dirname,'../advanced-curriculum.js'),'utf8'),context);
- assert.equal(context.PICKLEUP_CURRICULUM.length,104);
- assert.equal(context.PICKLEUP_ADVANCED_CURRICULUM.length,68);
+ assert.equal(context.PICKLEUP_CURRICULUM.length,120);
+ assert.equal(context.PICKLEUP_ADVANCED_CURRICULUM.length,84);
  assert.ok(context.PICKLEUP_CURRICULUM.every(l=>!('assessmentHash' in l)));
  assert.equal(JSON.stringify(context.PICKLEUP_CURRICULUM.slice(0,36).map(l=>l.id)),JSON.stringify(doc().lessons.filter(l=>!l.advanced).map(l=>l.id)));
 });

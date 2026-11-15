@@ -6,7 +6,7 @@
 - **Phân tích chiến thuật** trang Thi đấu và **đánh giá buổi tập** nhận các nhóm mới; lượt đo ở các nhóm không bao giờ trộn nhau.
 - Nhật ký trận không gắn cấp độ nên không đổi. HLV cơ bản và Kiểm tra chuyển cấp V2.3 vẫn 1.0–3.0 (phần chuyển cấp V2.3 nay trỏ sang Đánh giá nâng cao từ 3.0).
 - Mã bài tập nâng cao hợp lệ từ `ADV-PU-037` đến `ADV-PU-9999` (trước đây dừng ở 080); `week` tới 9999.
-- **Migration 9** `20261115000100` (additive) cho Supabase staging, kèm bản SQL Editor, pgTAP 008 và bước CI nâng cấp. **Chưa áp dụng trên staging**; chế độ khách không cần.
+- **Migration 9** `20261115000100` (additive) cho Supabase staging, kèm bản SQL Editor, pgTAP 008 và bước CI nâng cấp. Owner báo đã áp dụng trên staging (15/11/2026, chưa được tôi kiểm chứng); chế độ khách không cần.
 - Lưu ý nội dung: ở 4.0–5.0 mỗi nhóm chỉ 12 bài nên luân phiên ngắn hơn (có thể lặp lại bài sau khoảng hai buổi); trang HLV có ghi chú.
 
 ## Tương thích và dữ liệu

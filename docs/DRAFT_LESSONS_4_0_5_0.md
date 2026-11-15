@@ -1,6 +1,6 @@
 # Bài 4.0–4.5 và 4.5–5.0 (đã xuất bản, chưa có HLV duyệt)
 
-Trạng thái: **24 bài `PU-081…PU-104` đã xuất bản ở V5.27.0** theo yêu cầu trực tiếp của owner ngày 14/11/2026 ("public luôn các bài này để bất kì ai cũng có thể xem được"). Người tập thấy các bài này trong Học viện; thư viện là 104 bài 1.0–5.0. Tên tệp giữ chữ "DRAFT" vì nội dung vẫn là bản đầu, chưa qua duyệt chuyên môn.
+Trạng thái: **24 bài `PU-081…PU-104` đã xuất bản ở V5.27.0** theo yêu cầu trực tiếp của owner ngày 14/11/2026 ("public luôn các bài này để bất kì ai cũng có thể xem được"). Người tập thấy các bài này trong Học viện; thư viện là 104 bài 1.0–5.0; V5.29.0 bổ sung 16 bài `PU-105…120` (bảng cuối trang) nên thư viện là 120 bài. Tên tệp giữ chữ "DRAFT" vì nội dung vẫn là bản đầu, chưa qua duyệt chuyên môn.
 
 ## Nguồn gốc và giới hạn
 - Nội dung do Claude soạn theo yêu cầu của owner (14/11/2026), dựa trên cấu trúc sáu nhóm trọng tâm của các bài 3.5–4.0 hiện có. **Chưa có HLV nào duyệt, chưa thử trên sân.**
@@ -57,3 +57,24 @@ Mỗi bài theo cấu trúc buổi đầy đủ 60 phút: khởi động 10, ba 
 
 ## Dung lượng
 `curriculum.js` sau gzip tăng từ 13,9 KB lên 24,0 KB (đo bằng `gzip -c`) do thêm 24 bài.
+
+## Bổ sung V5.29.0 (PU-105…120)
+
+| Mã | Cấp | Nhóm trọng tâm | Tên bài | Mốc /20 |
+|---|---|---|---|---|
+| PU-105 | 4.0–4.5 | third-drop | Drop khi bóng trả giao rơi sát chân | 14 |
+| PU-106 | 4.0–4.5 | third-drop | Drop đổi hướng theo vị trí người trả giao | 15 |
+| PU-107 | 4.0–4.5 | transition-reset | Dừng – reset – tiến: tiến lên theo từng nhịp | 14 |
+| PU-108 | 4.0–4.5 | transition-reset | Chặn mềm bóng ngang ngực ở vùng chuyển tiếp | 15 |
+| PU-109 | 4.0–4.5 | kitchen-pressure | Dink sâu buộc đối thủ lùi khỏi vạch kitchen | 14 |
+| PU-110 | 4.0–4.5 | kitchen-pressure | Dink ngắn chéo kéo đối thủ ra biên | 15 |
+| PU-111 | 4.0–4.5 | doubles-coverage | Giữ đội hình song song khi tiến từ baseline | 14 |
+| PU-112 | 4.0–4.5 | doubles-coverage | Phân vùng bóng giữa: gọi "của tôi" hay "của bạn" | 15 |
+| PU-113 | 4.5–5.0 | third-drop | Drop khi người trả giao tiến sớm vào kitchen | 15 |
+| PU-114 | 4.5–5.0 | third-drop | Cú thả thứ năm liên tiếp khi bị volley chặn | 16 |
+| PU-115 | 4.5–5.0 | transition-reset | Reset khi đối thủ xen kẽ bóng chậm và nhanh | 15 |
+| PU-116 | 4.5–5.0 | transition-reset | Reset rồi đọc quả kế tiếp để quyết định tiến thêm | 16 |
+| PU-117 | 4.5–5.0 | kitchen-pressure | Dink vào chân người đang chờ tăng tốc | 15 |
+| PU-118 | 4.5–5.0 | kitchen-pressure | Chuỗi dink có mục tiêu thay đổi để tìm quả cao | 16 |
+| PU-119 | 4.5–5.0 | doubles-coverage | Dịch chuyển cùng nhịp khi đối thủ tấn công mạnh | 15 |
+| PU-120 | 4.5–5.0 | doubles-coverage | Bao sân khi cả hai đánh thuận cùng tay | 16 |

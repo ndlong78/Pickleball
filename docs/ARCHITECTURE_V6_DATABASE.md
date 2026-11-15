@@ -39,7 +39,7 @@ Flaky baseline xác minh từ job123379507791: WebKit `tests/v44-trends.spec.cjs
 | Journey / `training-journey-*` | Goal/plan prefs/checkins, Academy history/latest/selection, stage checks, personal plan selection + danh sách plan, training log; ghi selection và check-in thủ công; summary V5.1 dựa check-in |
 | Matches / `match-journal.js`, `tactical-insights-*` | Matches và doublesIssue; focus đưa sang Coach chỉ khi người dùng chọn |
 | Settings / `assessments-and-backup.js`, `page-performance.js` | Backup/restore và diagnostics; loader nạp validator advanced/match/training trước backup |
-| `curriculum.js`, `advanced-curriculum.js`, diagrams | Nội dung công khai read-only, 104 bài 1.0–5.0 (từ V5.27.0); giữ trong asset |
+| `curriculum.js`, `advanced-curriculum.js`, diagrams | Nội dung công khai read-only, 120 bài 1.0–5.0 (từ V5.29.0); giữ trong asset |
 | `sw.js`, `pwa-client.js`, mobile UI, web vitals | Cache asset/điều hướng/cài đặt/đo hiệu năng; không phải database hay cloud sync |
 
 Hiện tại UI vừa giữ bản sao trong bộ nhớ vừa đọc localStorage; thay đổi được truyền bằng DOM event `pickleup:*` và `storage`. `storage` không phát trên tab vừa ghi. Adapter mới phải phát domain event sau transaction và khi nhận remote change, đồng thời refresh các UI đã mount, hủy snapshot của tài khoản cũ. Không dual-write tự do vào hai nguồn rồi đọc tùy nơi. [Dictionary](DATA_DICTIONARY.md) liệt kê toàn bộ 18 keys, giới hạn và backup gaps.

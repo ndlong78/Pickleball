@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.28.0 — 15/11/2026 (đang PR):** HLV cá nhân nâng cao, Đánh giá kỹ năng nâng cao và phân tích chiến thuật trên trang Thi đấu mở rộng từ 3.0–4.0 lên **3.0–5.0** (thêm nhóm 4.0–4.5 và 4.5–5.0). Mốc đạt đề xuất 16/11 và 17/12 (trung bình / từng mục), **chưa hiệu chỉnh trên sân**. Có migration 9 cho Supabase staging (chưa áp dụng). [Chi tiết](docs/ADVANCED_LEVELS_V528.md) · [Release notes](RELEASE_V5.28.0.md).
+**V5.29.0 — 15/11/2026 (đang PR):** bổ sung 16 bài 4.0–4.5 và 4.5–5.0 (`PU-105…120`) cho bốn nhóm trọng tâm còn thiếu (third-drop, transition-reset, kitchen-pressure, doubles-coverage); Học viện thành 120 bài, luân phiên HLV nâng cao ở 4.0–5.0 không còn lặp ô trong bốn buổi liên tiếp. Nội dung do Claude soạn, **chưa có HLV duyệt và chưa thử trên sân**. Không đổi dữ liệu/SQL. [Release notes](RELEASE_V5.29.0.md).
+
+**V5.28.0 — 15/11/2026 (đã phát hành, #60):** HLV cá nhân nâng cao, Đánh giá kỹ năng nâng cao và phân tích chiến thuật trên trang Thi đấu mở rộng từ 3.0–4.0 lên **3.0–5.0** (thêm nhóm 4.0–4.5 và 4.5–5.0). Mốc đạt đề xuất 16/11 và 17/12 (trung bình / từng mục), **chưa hiệu chỉnh trên sân**. Có migration 9 cho Supabase staging (chưa áp dụng). [Chi tiết](docs/ADVANCED_LEVELS_V528.md) · [Release notes](RELEASE_V5.28.0.md).
 
 **V5.27.0 — 14/11/2026 (đã phát hành, #59):** C3c — xuất bản 24 bài 4.0–4.5 và 4.5–5.0 (`PU-081…104`) theo yêu cầu owner; Học viện thành 104 bài 1.0–5.0. Nội dung do Claude soạn, **chưa có HLV duyệt và chưa thử trên sân**. [Danh sách và giới hạn](docs/DRAFT_LESSONS_4_0_5_0.md) · [Release notes](RELEASE_V5.27.0.md).
 
