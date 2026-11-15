@@ -28,14 +28,18 @@ for(const level of coach.levels){
  test("rotates advanced exercises across four successive "+level+" sessions",()=>{
   const plans=[];
   for(let i=0;i<4;i++)plans.push(coach.createPlan(scores,plans,level,"2026-10-"+(20+i)+"T14:00:00.000Z"));
-  for(let i=0;i<3;i++)assert.equal(new Set(plans.map(p=>p.exercises[i].id)).size,4);
+  // 3.0–4.0 have 20–24 lessons: four sessions never repeat an exercise in a slot. 4.0–5.0 have 12
+  // lessons (two per focus), so a slot can run out of unused lessons and repeats after a pair.
+  const distinct=coach.levels.indexOf(level)<2?4:2;
+  for(let i=0;i<3;i++)assert.ok(new Set(plans.map(p=>p.exercises[i].id)).size>=distinct,level+" slot "+i);
+  for(const p of plans)assert.equal(new Set(p.exercises.map(e=>e.id)).size,3,"no exercise twice in one plan");
   assert.equal(coach.validateList(plans),true);
  });
 }
 test("rejects incomplete scores, wrong stages and corrupted stored plans",()=>{
  assert.throws(()=>coach.createPlan({third:12}),/đủ sáu/);
  assert.throws(()=>coach.createPlan({...scores,reset:21}),/đủ sáu/);
- assert.throws(()=>coach.createPlan(scores,[],"4.0–4.5"),/Chọn nhóm/);
+ for(const stage of ["2.5–3.0","5.0–5.5","4.0–5.0",""])assert.throws(()=>coach.createPlan(scores,[],stage),/Chọn một nhóm/);
  const plan=coach.createPlan(scores);
  assert.equal(coach.validateList([{...plan,checkScore:22}]),false);
  assert.equal(coach.validateList([{...plan,exercises:[...plan.exercises.slice(0,2)]}]),false);

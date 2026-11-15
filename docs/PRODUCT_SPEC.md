@@ -21,7 +21,7 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 |---|---|---|
 | `home` — Tổng quan | Chương trình, phần luyện tập và điều hướng nhanh | Home tải gọn; có lối tắt sang Hành trình |
 | `journey` — Hành trình | Hành trình sáu bước V5.0, gợi ý hành động tiếp theo, check-in hôm nay | Không tự đánh dấu hoàn thành từ timer/điểm |
-| `coach` — HLV cá nhân | Đánh giá sáu kỹ năng, giáo án cá nhân 1.0–4.0 theo module hiện có | Đánh giá nội bộ, không phải chứng nhận |
+| `coach` — HLV cá nhân | Đánh giá sáu kỹ năng; giáo án cá nhân cơ bản 1.0–3.0 và nâng cao 3.0–5.0 (V5.28.0; nhóm 4.0–5.0 dựa trên 24 bài chưa có HLV duyệt, mốc đạt là đề xuất ban đầu) | Đánh giá nội bộ, không phải chứng nhận |
 | `court` — Trên sân | Đồng hồ sáu phần, sơ đồ sân, nhập kết quả giáo án cá nhân | Chỉ áp dụng khi đã có kế hoạch cá nhân tương thích |
 | `academy` — Học viện | **104 giáo án hiện có trong khoảng 1.0–5.0** (24 bài 4.0–5.0 từ V5.27.0, chưa có HLV duyệt), chọn bài, lưu điểm, đồng hồ từng bước | Bài Học viện và giáo án cá nhân là hai dạng khác nhau |
 | `progress` — Tiến bộ | Lịch sử kiểm tra, mục tiêu tuần, lịch đề xuất, check-in và kế hoạch–thực tế | Phân biệt các nguồn dữ liệu theo nghĩa |

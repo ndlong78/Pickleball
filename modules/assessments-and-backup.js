@@ -6,8 +6,8 @@ const levels=[
 ['2.5–3.0','Kiểm soát','Dink, volley và phối hợp đánh đôi','16 tuần'],
 ['3.0–3.5','Chiến thuật','Third-shot, reset và chuyển tiếp','20 tuần'],
 ['3.5–4.0','Thi đấu','Đọc trận, phối hợp và giữ nhịp','24 tuần'],
-['4.0–4.5','Nâng cao','Counterattack, speed-up chọn lọc','24 tuần'],
-['4.5–5.0','Chuyên sâu','Điều chỉnh trận đấu và hiệu suất','32 tuần']
+['4.0–4.5','Nâng cao','Counterattack, speed-up chọn lọc','12 tuần (bản đầu)'],
+['4.5–5.0','Chuyên sâu','Điều chỉnh trận đấu và hiệu suất','12 tuần (bản đầu)']
 ];
 const root=document.getElementById('levelCards');
 root.innerHTML=levels.map(x=>'<article class="level"><strong>'+x[0]+'</strong><h3>'+x[1]+'</h3><p>'+x[2]+'</p><small>Giáo án dự kiến: '+x[3]+'</small></article>').join('');

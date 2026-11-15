@@ -5,7 +5,7 @@ const KEYS={self:'pickleup_assessment_v1',stage:'pickleup_stage_checks_v23',adva
 const SKILLS=['serve','return','dink','volley','position','strategy'],ADVANCED=['third','reset','movement','counter','doubles','decision'];
 const FOCUS_LABELS={"third-drop":"Third-shot drop","transition-reset":"Reset và di chuyển","serve-return":"Giao – trả – bóng ba","kitchen-pressure":"Dinking tại kitchen","doubles-coverage":"Vị trí đánh đôi","third-choice":"Chọn cú thứ ba","advanced-reset":"Reset nâng cao","counter-volley":"Counter volley","doubles-switch":"Phối hợp đánh đôi","defense-attack":"Phòng thủ/phản công","tactical-choice":"Quyết định chiến thuật"};
 const NAMES={serve:'Giao bóng',return:'Trả giao',dink:'Dink',volley:'Volley',position:'Vị trí',strategy:'Chiến thuật',third:'Bóng ba',reset:'Reset',movement:'Di chuyển',counter:'Counter',doubles:'Đánh đôi',decision:'Quyết định'};
-const GATES={'1.0–2.0':[11,1],'2.0–2.5':[14,2],'2.5–3.0':[16,2],'3.0–3.5':[13,8],'3.5–4.0':[15,10]};
+const GATES={'1.0–2.0':[11,1],'2.0–2.5':[14,2],'2.5–3.0':[16,2],'3.0–3.5':[13,8],'3.5–4.0':[15,10],'4.0–4.5':[16,11],'4.5–5.0':[17,12]};
 function instant(value){const fraction=value.match(/T\d{2}:\d{2}:\d{2}\.(\d+)/)?.[1]||'';return BigInt(Date.parse(value))*1000n+BigInt(fraction.slice(3,6).padEnd(3,'0')||'0')}
 function order(a,b){return a.occurred_at===null?(b.occurred_at===null?a.id.localeCompare(b.id):1):b.occurred_at===null?-1:instant(a.occurred_at)>instant(b.occurred_at)?-1:instant(a.occurred_at)<instant(b.occurred_at)?1:a.id.localeCompare(b.id)}
 function project(projection,{now=new Date()}={}){
