@@ -27,7 +27,7 @@ async function send(page,kind){await route(page,'settings');await page.locator('
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([key])=>key.startsWith('pickleup_')&&key!=='pickleup_auth_v6').sort()));
 for(const width of [390,820,1180,1440])test('real account-data flags, mock RPC: entry, independent source, manual queue and maintenance off-switch '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});const f=await setup(context);await visit(page,off);await expect(page.locator('[data-sync-body]')).toBeHidden();await expect(page.locator('[data-activity-body]')).toBeHidden();await expect(page.locator('[data-plan-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
- await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.32.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
+ await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.33.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
  expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode,PICKLEUP_IMPORT_CONFIG.enabled])).toEqual(['guest','guest','guest',false]);
  const before=await legacy(page);await enable(page,'activity');expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest']);await academySave(page,17);expect(new URL(page.url()).searchParams.get('pilot')).toBe('account-data');expect(f.calls.some(c=>c.name==='apply_event_operation')).toBe(false);await send(page,'activity');
  await academySave(page,18);await route(page,'settings');await expect(page.locator(activityStatus)).toContainText('Còn thay đổi chờ gửi');const count=f.calls.length;
@@ -55,8 +55,8 @@ const adopted=async page=>expect.poll(()=>modes(page),{timeout:15000}).toEqual([
 for(const width of [390,820,1180,1440])test('default URL, mock RPC: signed-in user gets all three account sources without any choice; saves sync on their own, nothing is imported '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});const f=await setup(context);const before=await (async()=>{await visit(page,normal);return legacy(page)})();
  await adopted(page);
- for(const id of ['accountPanel','syncPilot','activityPilot','planPilot','accountRescue'])await expect(page.locator('#'+id)).toBeVisible();
- for(const id of ['importPilot','accountPurge'])await expect(page.locator('#'+id)).toBeHidden();
+ for(const id of ['accountPanel','syncPilot','activityPilot','planPilot','importPilot','accountRescue'])await expect(page.locator('#'+id)).toBeVisible();
+ await expect(page.locator('#accountPurge')).toBeHidden();
  for(const sel of ['[data-sync-enable]','[data-sync-device]','[data-activity-consent]','[data-activity-enable]','[data-activity-device]','[data-plan-consent]','[data-plan-enable]','[data-plan-device]','[data-staging-access]','[data-sync-staging]','[data-activity-staging]','[data-plan-staging]'])await expect(page.locator(sel)).toBeHidden();
  await expect(page.locator('#syncPilot [data-auto-source]')).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getView().timezone)).toBeTruthy();
@@ -106,4 +106,19 @@ test('default URL: a conflicting change is sent once, stops for review and is no
  await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getState().snapshot.conflicts.filter(c=>c.state==='open').length)).toBe(1);
  await page.waitForTimeout(4000);expect(applied(f,'apply_sync_operation')).toBe(2);expect(server.rows.get('user_preferences:self').target_days).toBe(2);
  await route(page,'settings');await expect(page.locator('[data-sync-conflicts] button').first()).toBeVisible();
+});
+
+// ---- V5.33 (plan C): legacy device data is offered for import, never imported on its own ----
+test('default URL: a signed-in user with legacy device data is invited to import; loading it sends nothing and keeps the device data',async({page,context})=>{
+ const f=await setup(context);await visit(page,normal);await adopted(page);const before=await legacy(page);
+ expect(await page.evaluate(()=>PICKLEUP_IMPORT_CONFIG.enabled)).toBe(true);
+ await expect(page.locator('[data-import-invite]')).toContainText('dữ liệu cũ chưa nhập');await expect(page.locator('[data-import-invite]')).toContainText('nhóm');
+ await expect(page.locator('[data-import-device]')).toBeEnabled();expect(f.calls.some(c=>/import/.test(c.name))).toBe(false);
+ await page.locator('[data-import-device]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Đã đọc dữ liệu trên máy này');
+ expect(await page.locator('[data-import-groups] input:checked').count()).toBeGreaterThan(0);await expect(page.locator('[data-import-timezone]')).not.toHaveValue('');
+ await expect(page.locator('[data-import-start]')).toBeDisabled();expect(f.calls.some(c=>/import/.test(c.name))).toBe(false);expect(await legacy(page)).toBe(before);
+ await page.evaluate(()=>SWITCH_STAGING_OWNER(null));await expect(page.locator('[data-import-invite]')).toBeHidden();await expect(page.locator('[data-import-device]')).toBeDisabled();
+});
+test('operator and maintenance URLs keep the importer off',async({page,context})=>{
+ await setup(context);for(const url of [trial,off]){await visit(page,url);expect(await page.evaluate(()=>PICKLEUP_IMPORT_CONFIG.enabled)).toBe(false);await expect(page.locator('[data-import-body]')).toBeHidden()}
 });

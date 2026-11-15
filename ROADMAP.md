@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.32.0 — 15/11/2026 (đang PR):** bước A2 của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, thay đổi của người đã đăng nhập **tự gửi lên máy chủ** sau khi lưu và khi có mạng lại (lùi dần khi lỗi, dừng chờ người dùng khi xung đột); nút Đồng bộ vẫn gửi ngay. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.32.0.md).
+**V5.33.0 — 16/11/2026 (đang PR):** bước C của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, người đã đăng nhập có dữ liệu cũ trên máy được **mời nhập vào tài khoản**: nút "Dùng dữ liệu đang có trên máy này" nạp thẳng dữ liệu máy (không cần xuất tệp), sau đó vẫn là xem trước → xác nhận → nhập như bộ nhập sẵn có. Không tự nhập; dữ liệu trên máy không bị xóa. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.33.0.md).
+
+**V5.32.0 — 15/11/2026 (đã phát hành, #71):** bước A2 của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, thay đổi của người đã đăng nhập **tự gửi lên máy chủ** sau khi lưu và khi có mạng lại (lùi dần khi lỗi, dừng chờ người dùng khi xung đột); nút Đồng bộ vẫn gửi ngay. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.32.0.md).
 
 **V5.31.0 — 15/11/2026 (đã phát hành, #70):** bước A1 của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, người đã đăng nhập **tự dùng dữ liệu tài khoản** cho mục tiêu/check-in, hoạt động và giáo án (không cần URL `?pilot=` hay bấm bật từng nguồn); Settings hiện phần Tài khoản và ba mục đồng bộ. Gửi lên máy chủ vẫn thủ công; dữ liệu cũ trên máy không bị xóa và chưa tự nhập; khách và host không có đăng nhập giữ hành vi cũ. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.31.0.md).
 
