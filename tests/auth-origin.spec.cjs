@@ -10,9 +10,7 @@ for(const site of ['https://ndlong78.github.io','https://preview-pickleup-stagin
   localStorage.setItem('pickleup_auth_v6',JSON.stringify({access_token:'synthetic-access',refresh_token:'synthetic-refresh',expires_at:1,user:{id:'11111111-1111-4111-8111-111111111111',email:'fixture@example.invalid'}}));
   localStorage.setItem('pickleup_origin_guest_probe','keep');
  });
- await context.route(site+'/**',async route=>{
-  const u=new URL(route.request().url()),response=await route.fetch({url:'http://127.0.0.1:4173'+u.pathname+u.search});await route.fulfill({response});
- });
+ await require('./helpers/virtual-origin.cjs').serve(context,site);
  await context.route('**/modules/auth-config.js*',r=>r.fulfill({contentType:'text/javascript',body:config}));
  await context.route('https://*.supabase.co/**',r=>{backend++;return r.abort()});
  page.on('request',request=>{if(new URL(request.url()).pathname.endsWith('/vendor/supabase.js'))sdk++});
@@ -31,12 +29,12 @@ for(const site of ['https://ndlong78.github.io','https://preview-pickleup-stagin
  for(const id of MANAGED)await expect(page.locator('#'+id)).toBeHidden();
  await expect(page.locator('#rescuePanel')).toBeVisible();
  await expect(page.locator('#backup')).toBeVisible();
- expect(await page.evaluate(()=>PICKLEUP_SETTINGS_SURFACE)).toEqual({account:false,diagnostics:false});
+ expect(await page.evaluate(()=>PICKLEUP_SETTINGS_SURFACE)).toEqual({account:false,tools:false,diagnostics:false});
 });
 
 test('production debug flag reveals only diagnostics; loopback keeps every Settings tool',async({page,context})=>{
  const site='https://ndlong78.github.io';
- await context.route(site+'/**',async route=>{const u=new URL(route.request().url()),response=await route.fetch({url:'http://127.0.0.1:4173'+u.pathname+u.search});await route.fulfill({response})});
+ await require('./helpers/virtual-origin.cjs').serve(context,site);
  await context.route('**/modules/auth-config.js*',r=>r.fulfill({contentType:'text/javascript',body:config}));
  await context.route('https://*.supabase.co/**',r=>r.abort());
  await page.goto(site+'/Pickleball/?page=settings&debug=1');
@@ -47,5 +45,5 @@ test('production debug flag reveals only diagnostics; loopback keeps every Setti
  await page.goto('/Pickleball/?page=settings');
  await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
  for(const id of MANAGED)await expect(page.locator('#'+id)).toBeVisible();
- expect(await page.evaluate(()=>PICKLEUP_SETTINGS_SURFACE)).toEqual({account:true,diagnostics:true});
+ expect(await page.evaluate(()=>PICKLEUP_SETTINGS_SURFACE)).toEqual({account:true,tools:true,diagnostics:true});
 });

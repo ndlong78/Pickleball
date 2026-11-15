@@ -23,8 +23,9 @@ function accept(next){
  state=next;const nextTag=next.owner+':'+next.mode+':'+(next.consent?.localRevision||'0');if(nextTag!==tag){token++;tag=nextTag}
  try{view=next.mode==='account'?core.project(next.projection,root.PICKLEUP_CURRICULUM||[],{activityCore:root.PickleUpActivityCore}):empty();domains=projectDomains(next.mode==='account'?next.projection:null)}
  catch(_){state={...next,mode:'error',error:'invalid_activity',snapshot:null,projection:null};view=empty();domains=projectDomains(null);token++}
- emit();
+ emit();adopt?.schedule(false);
 }
+let adopt=null;
 const ready=(async()=>{
  if(root.PICKLEUP_ACTIVITY_CONFIG?.enabled!==true||root.PICKLEUP_AUTH_CONFIG?.enabled!==true||!root.PICKLEUP_AUTH_CONFIG.url||!root.PICKLEUP_AUTH_CONFIG.publishableKey){accept({...state,mode:'guest'});return}
  if(typeof extra?.project!=='function'||typeof extra?.assessment!=='function'||typeof extra?.match!=='function'||typeof extra?.training!=='function'||root.PickleUpActivityController?.TRAINING_LIFECYCLE!==1){accept({mode:'error',owner:null,busy:false,error:'upgrade_required',snapshot:null,projection:null});return}
@@ -34,6 +35,10 @@ const ready=(async()=>{
   if(db.trainingLifecycle!==1)throw Object.assign(Error('upgrade_required'),{code:'upgrade_required'});
   controller=PickleUpActivityController.create({auth,repository:db,enabled:()=>root.PICKLEUP_ACTIVITY_CONFIG?.enabled===true,onChange:accept});
   root.addEventListener('focus',()=>controller.refreshLocal().catch(()=>{}));await controller.ready;
+  // V5.31: signed in on the main host means the account source.
+  adopt=root.PickleUpStagingPilot?.adopter?.({state:()=>state,useAccount:()=>controller.useAccount(),refresh:()=>controller.refresh()},()=>root.PICKLEUP_ACTIVITY_CONFIG?.auto===true)||null;
+  for(const name of ['focus','online'])root.addEventListener(name,()=>adopt?.schedule(true));
+  adopt?.schedule(false);
  }catch(error){accept({mode:'error',owner:null,busy:false,error:error.code==='upgrade_required'?'upgrade_required':'storage_unavailable',snapshot:null,projection:null})}
 })();
 function canWrite(){if(state.busy)return false;return state.mode==='guest'||state.mode==='account'&&!state.busy&&!!state.snapshot?.cursor?.epoch}

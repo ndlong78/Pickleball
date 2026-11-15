@@ -1,6 +1,6 @@
 # Chuyển dữ liệu người tập lên cloud (kế hoạch V5.31+)
 
-Trạng thái: **kế hoạch, chưa có mã.** Baseline main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
+Trạng thái: **bước A1 đã có mã ở V5.31.0** (mục 7); các bước A2, C, B, D chưa làm. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
 
 ## 1. Quyết định của owner (15/11/2026)
 1. **Chưa đăng nhập thì không lưu được.** Khách vẫn xem nội dung; mọi thao tác lưu yêu cầu đăng nhập.
@@ -42,3 +42,10 @@ Thứ tự A1 → A2 → C → B → D: chỉ chặn lưu của khách (B) sau k
 
 ## 6. Chưa kiểm chứng
 Kế hoạch dựa trên đọc mã; chưa bước nào được cài đặt. Hành vi trên project Supabase thật (SMTP, giới hạn, hai thiết bị) chỉ owner thử được.
+
+## 7. Bước A1 — đã cài đặt (V5.31.0)
+- `staging-pilot.js`: `auto()` đúng khi ở host chính, Auth bật và URL **không có** `pilot`/`maintenance`. Khi đó ba cờ nguồn bật với `auto:true` và không có nhãn "dữ liệu giả". URL `?pilot=…` giữ nguyên luồng thủ công cho người vận hành; URL `?maintenance=…` **tắt mọi nguồn** (công tắc tắt và điều kiện của công cụ dọn cache). Query `pilot` sai/trùng vẫn đóng.
+- `adopter()` dùng chung cho ba runtime: khi `auto` và đã đăng nhập, gọi đúng hành động có sẵn của controller — chọn nguồn tài khoản nếu máy chưa chọn, đọc lại nếu lần đọc đầu chưa xong, và (mục tiêu/check-in) đặt múi giờ của thiết bị nếu chưa có. Mỗi nhu cầu thử một lần cho mỗi tài khoản; thử lại khi cửa sổ được focus hoặc có mạng lại; không chạy khi đang bận/offline/trạng thái lỗi; đổi tài khoản hay đăng xuất thì đặt lại.
+- Settings: hiện Tài khoản, ba mục nguồn và Cứu hộ cache trên host chính; Nhập dữ liệu và Dọn cache vẫn là công cụ vận hành (cần `?pilot=`/`?maintenance=`). Ở chế độ tự động, các nút/ô chọn nguồn thủ công bị ẩn và thay bằng mô tả ngắn.
+- **Không đổi:** gửi vẫn thủ công; không nhập dữ liệu cũ; không ghi/xóa 18 khóa localStorage; khách (chưa đăng nhập) vẫn lưu trên máy cho tới bước B; đăng ký vẫn đóng cho tới bước D; host khác (bản phụ Pages, preview) giữ hành vi thiết bị.
+- Kiểm thử: `source-adopter.test.js` (7), cấu hình cổng và bề mặt Settings (đã cập nhật), `staging-account.spec` thêm 6 ca cho URL thường ở bốn viewport (tự chọn nguồn, không gửi/nhập, đổi tài khoản, host khác). **Chưa thử trên project Supabase thật.**

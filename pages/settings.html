@@ -81,15 +81,16 @@
 <p>Chỉ dọn khi không còn yêu cầu chờ, kết quả gửi chưa rõ, xung đột hoặc nhập dở. Lỗi mạng/kiểm tra trước xóa sẽ giữ cache; nếu đã đăng xuất, đăng nhập lại để kiểm tra. Đây không phải xóa tài khoản, xóa an toàn khỏi ổ đĩa hoặc thu hồi tệp đã tải.</p>
 </div></div>
 <div class="card sync-panel" id="syncPilot" data-surface-hidden>
-<h3>Mục tiêu và check-in · tài khoản pilot</h3>
+<h3>Mục tiêu và check-in · tài khoản</h3>
 <div data-staging-access hidden><p><strong>Thử đồng bộ tài khoản trên staging · chỉ dùng dữ liệu giả.</strong> Có thể thử điểm Học viện, đánh giá, trận đấu và giáo án. Chọn nguồn riêng cho từng nhóm; chỉ gửi khi bấm đồng bộ. Dữ liệu cũ trên thiết bị không tự chuyển lên tài khoản.</p><p data-staging-build></p><button type="button" data-staging-open>Mở thử hoạt động và giáo án tài khoản</button></div>
 <p role="status" aria-live="polite">Đồng bộ pilot chưa bật.</p>
 <div data-sync-body hidden>
 <p data-sync-staging hidden><strong>Thử nghiệm trên staging · chỉ dùng dữ liệu giả.</strong> Phạm vi gồm mục tiêu/lịch tập và check-in. Chỉ gửi khi bạn bấm đồng bộ; dữ liệu khách không tự nhập. Bản sao lưu đầy đủ và phục hồi tài khoản đang được hoàn thiện.</p>
 <p data-sync-account></p>
-<p>Bật nguồn tài khoản riêng cho mục tiêu/lịch tập và check-in. Đăng nhập không tự chuyển nguồn. Dữ liệu khách cũ không được nhập hoặc ghi đè; Học viện, đánh giá và trận đấu có lựa chọn nguồn hoạt động riêng phía dưới; giáo án, nhật ký tập, đồng hồ và checklist vẫn trên thiết bị.</p>
-<button type="button" data-sync-enable>Dùng mục tiêu và check-in của tài khoản</button>
-<button type="button" data-sync-device>Dùng lại dữ liệu thiết bị</button>
+<p data-auto-source>Khi đã đăng nhập, mục tiêu/lịch tập và check-in dùng dữ liệu tài khoản. Dữ liệu cũ trên thiết bị không bị xóa và chưa tự nhập vào tài khoản.</p>
+<p data-manual-source>Bật nguồn tài khoản riêng cho mục tiêu/lịch tập và check-in. Đăng nhập không tự chuyển nguồn. Dữ liệu khách cũ không được nhập hoặc ghi đè; Học viện, đánh giá và trận đấu có lựa chọn nguồn hoạt động riêng phía dưới; giáo án, nhật ký tập, đồng hồ và checklist vẫn trên thiết bị.</p>
+<button type="button" data-manual-source data-sync-enable>Dùng mục tiêu và check-in của tài khoản</button>
+<button type="button" data-manual-source data-sync-device>Dùng lại dữ liệu thiết bị</button>
 <p>Thay đổi được lưu vào kho tài khoản trên thiết bị trước. Chỉ gửi khi bạn bấm đồng bộ. Đăng xuất giữ queue riêng; tránh thiết bị dùng chung vì cache chưa được mã hóa hoặc tự xóa.</p>
 <label>Múi giờ cho ghi nhận mới <input data-sync-timezone placeholder="Ví dụ: Asia/Ho_Chi_Minh" maxlength="80"></label>
 <button type="button" data-sync-zone-save>Xác nhận múi giờ</button>
@@ -104,26 +105,28 @@
 <div data-activity-body hidden>
 <p data-activity-staging hidden><strong>Thử nghiệm staging · chỉ dùng dữ liệu giả.</strong> Chỉ các lượt mới lưu sau khi chọn kho hoạt động mới được xếp hàng gửi. Lịch sử khách cũ vẫn trên thiết bị; chưa tự nhập và chưa có backup/phục hồi toàn tài khoản.</p>
 <p data-activity-account></p>
-<p>Kho hoạt động gồm lượt Học viện, đánh giá, nhật ký tập và trận đấu. Nguồn này áp dụng cho Học viện, tự đánh giá, kiểm tra cơ bản/nâng cao, nhật ký tập và trận đấu. Ghi lượt tập tài khoản cần giáo án cùng tài khoản đã đồng bộ; giáo án có lựa chọn nguồn riêng bên dưới. Lựa chọn này độc lập với mục tiêu/check-in.</p>
+<p data-auto-source>Khi đã đăng nhập, điểm Học viện, đánh giá, nhật ký tập và trận đấu dùng dữ liệu tài khoản. Ghi lượt tập cần giáo án của cùng tài khoản đã đồng bộ. Lịch sử cũ trên thiết bị không bị xóa và chưa tự nhập.</p>
+<p data-manual-source>Kho hoạt động gồm lượt Học viện, đánh giá, nhật ký tập và trận đấu. Nguồn này áp dụng cho Học viện, tự đánh giá, kiểm tra cơ bản/nâng cao, nhật ký tập và trận đấu. Ghi lượt tập tài khoản cần giáo án cùng tài khoản đã đồng bộ; giáo án có lựa chọn nguồn riêng bên dưới. Lựa chọn này độc lập với mục tiêu/check-in.</p>
 <p>Không tự nhập dữ liệu khách. Mở kho chỉ đọc; lưu điểm, đánh giá hoặc trận đấu tạo lượt riêng trong kho tài khoản trên thiết bị. Chỉ gửi các thay đổi đã xếp hàng khi bạn bấm đồng bộ; đăng xuất giữ cache riêng, chưa mã hóa hoặc tự xóa.</p>
-<label><input type="checkbox" data-activity-consent> Tôi chọn kho hoạt động của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
-<div class="sync-actions"><button type="button" data-activity-enable>Dùng kho hoạt động tài khoản</button><button type="button" data-activity-device>Dùng lại hoạt động trên thiết bị</button><button type="button" data-activity-read>Đọc hoạt động tài khoản</button><button type="button" data-activity-send disabled>Đồng bộ hoạt động</button><button type="button" data-activity-retry hidden>Thử lại yêu cầu hoạt động đang chờ</button><button type="button" data-activity-export>Xuất cache hoạt động</button></div>
+<label data-manual-source><input type="checkbox" data-activity-consent> Tôi chọn kho hoạt động của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
+<div class="sync-actions"><button type="button" data-manual-source data-activity-enable>Dùng kho hoạt động tài khoản</button><button type="button" data-manual-source data-activity-device>Dùng lại hoạt động trên thiết bị</button><button type="button" data-activity-read>Đọc hoạt động tài khoản</button><button type="button" data-activity-send disabled>Đồng bộ hoạt động</button><button type="button" data-activity-retry hidden>Thử lại yêu cầu hoạt động đang chờ</button><button type="button" data-activity-export>Xuất cache hoạt động</button></div>
 <p data-activity-count></p><div data-activity-reviews></div><div data-activity-detail></div>
 <p>Cache xuất gồm bốn nhóm hoạt động, yêu cầu chờ và bản cần xử lý. Tệp riêng tư, chưa phải backup toàn tài khoản hoặc tệp nhập lại được. Backup V5/raw rescue vẫn chỉ chứa kho khách, không chứa dữ liệu tài khoản.</p>
 </div></div>
 <div class="card sync-panel" id="planPilot" data-surface-hidden>
 <h3>Giáo án và lựa chọn cá nhân tài khoản</h3><p role="status" aria-live="polite">Kho giáo án pilot chưa bật.</p><div data-plan-body hidden>
 <p data-plan-staging hidden><strong>Thử nghiệm staging · chỉ dùng dữ liệu giả.</strong> Tạo, chọn và đồng bộ giáo án mới của tài khoản. Giáo án khách cũ không tự chuyển; bản sao lưu đầy đủ và phục hồi tài khoản đang được hoàn thiện.</p>
-<p data-plan-account></p><p>Chọn riêng kho giáo án cơ bản/nâng cao, lựa chọn cá nhân và bài Học viện gần nhất. Không tự nhập dữ liệu khách. Lưu tạo thay đổi trên thiết bị; chỉ gửi khi bấm đồng bộ. Chọn và đồng bộ giáo án trước khi mở Court. Điểm giáo án không tự tạo nhật ký tập hay attendance.</p>
+<p data-plan-account></p><p data-auto-source>Khi đã đăng nhập, giáo án cá nhân, lựa chọn giáo án và bài Học viện gần nhất dùng dữ liệu tài khoản. Chọn và đồng bộ giáo án trước khi mở Trên sân. Giáo án cũ trên thiết bị không bị xóa và chưa tự nhập.</p><p data-manual-source>Chọn riêng kho giáo án cơ bản/nâng cao, lựa chọn cá nhân và bài Học viện gần nhất. Không tự nhập dữ liệu khách. Lưu tạo thay đổi trên thiết bị; chỉ gửi khi bấm đồng bộ. Chọn và đồng bộ giáo án trước khi mở Court. Điểm giáo án không tự tạo nhật ký tập hay attendance.</p>
 <p>Lựa chọn bài Học viện dùng cùng kho giáo án; điểm Học viện có nguồn hoạt động riêng. Checklist/bước tập trung khi dùng tài khoản chỉ giữ trong phiên trang, không đồng bộ hoặc ghi vào khóa khách. Nhật ký tập thuộc kho hoạt động riêng; điểm giáo án không tự tạo lượt tập. Đồng hồ của giáo án tài khoản chỉ giữ trong phiên trang đang mở, đặt lại khi reload hoặc đổi tài khoản; không gửi lên cloud.</p>
-<label><input type="checkbox" data-plan-consent> Tôi chọn kho giáo án của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
-<div class="sync-actions"><button type="button" data-plan-enable>Dùng kho giáo án tài khoản</button><button type="button" data-plan-device>Dùng lại giáo án trên thiết bị</button><button type="button" data-plan-read>Đọc giáo án tài khoản</button><button type="button" data-plan-send disabled>Đồng bộ giáo án</button><button type="button" data-plan-retry hidden>Thử lại yêu cầu giáo án đang chờ</button><button type="button" data-plan-export>Xuất cache giáo án</button><button type="button" data-plan-clear>Bỏ chọn giáo án cá nhân</button><button type="button" data-plan-clear-lesson>Bỏ chọn bài Học viện</button><button type="button" data-plan-restore-selection hidden>Khôi phục lựa chọn trống</button></div>
+<label data-manual-source><input type="checkbox" data-plan-consent> Tôi chọn kho giáo án của tài khoản đang đăng nhập và đã hiểu phạm vi trên.</label>
+<div class="sync-actions"><button type="button" data-manual-source data-plan-enable>Dùng kho giáo án tài khoản</button><button type="button" data-manual-source data-plan-device>Dùng lại giáo án trên thiết bị</button><button type="button" data-plan-read>Đọc giáo án tài khoản</button><button type="button" data-plan-send disabled>Đồng bộ giáo án</button><button type="button" data-plan-retry hidden>Thử lại yêu cầu giáo án đang chờ</button><button type="button" data-plan-export>Xuất cache giáo án</button><button type="button" data-plan-clear>Bỏ chọn giáo án cá nhân</button><button type="button" data-plan-clear-lesson>Bỏ chọn bài Học viện</button><button type="button" data-plan-restore-selection hidden>Khôi phục lựa chọn trống</button></div>
 <p data-plan-count></p><div data-plan-reviews></div><div data-plan-detail></div><h4>Quản lý giáo án tài khoản</h4><div data-plan-manage></div>
 <p>Đăng xuất giữ cache riêng trên thiết bị, chưa mã hóa hoặc tự xóa. Cache xuất có yêu cầu chờ và bản cần xử lý; giữ tệp riêng tư ngoài trình duyệt. Chưa phải backup đầy đủ hoặc tệp nhập lại được; backup V5 chỉ chứa dữ liệu khách.</p>
 </div></div>
 <div class="card" id="accountPanel" data-surface-hidden style="padding:20px">
-<h3>Tài khoản · thử nghiệm</h3>
-<p>Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Bạn cần chọn riêng nguồn tài khoản; dữ liệu cũ chỉ được nhập sau preview và xác nhận. Mục tiêu/check-in chỉ dùng kho tài khoản sau khi bạn bật riêng ở mục pilot; Học viện có lựa chọn kho hoạt động riêng; giáo án và lựa chọn bài có nguồn riêng; nhật ký tập dùng kho hoạt động đã chọn. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
+<h3>Tài khoản</h3>
+<p data-auto-source>Đăng nhập để dùng dữ liệu tài khoản cho mục tiêu, check-in, điểm, nhật ký và giáo án. Thay đổi được lưu trên thiết bị trước và chỉ gửi lên máy chủ khi bạn bấm đồng bộ ở từng mục bên trên. Dữ liệu cũ trên thiết bị không bị xóa và chưa tự nhập vào tài khoản. Tránh dùng trên thiết bị chung.</p>
+<p data-manual-source>Đăng nhập không nhập hoặc đồng bộ dữ liệu lên tài khoản. Bạn cần chọn riêng nguồn tài khoản; dữ liệu cũ chỉ được nhập sau preview và xác nhận. Mục tiêu/check-in chỉ dùng kho tài khoản sau khi bạn bật riêng ở mục pilot; Học viện có lựa chọn kho hoạt động riêng; giáo án và lựa chọn bài có nguồn riêng; nhật ký tập dùng kho hoạt động đã chọn. Tránh dùng dữ liệu cá nhân trên thiết bị chung.</p>
 <p role="status" aria-live="polite">Chế độ khách</p>
 <form hidden>
 <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>

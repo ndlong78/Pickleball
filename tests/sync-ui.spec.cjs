@@ -43,18 +43,17 @@ test('mock Auth/RPC, native IDB: another tab invalidates the previous successful
  await expect(page.locator('[data-sync-count]')).toContainText('1 thay đổi');await expect(page.locator(status)).toContainText('Còn thay đổi chờ gửi');expect(f.calls.filter(c=>c.name==='apply_sync_operation')).toHaveLength(1);
  await page.locator('[data-sync-send]').click();await expect(page.locator(status)).toContainText('Đã đồng bộ');await expect(page.locator('[data-sync-count]')).toContainText('0 thay đổi');await tab.close();
 });
-for(const [prefix,width] of [['/',390],['/',820],['/Pickleball/',1180],['/Pickleball/',1440]])test('real staging flag, mock RPC: explicit trial, manual send and safe exit at '+prefix+' '+width,async({page,context})=>{
+for(const [prefix,width] of [['/',390],['/',820],['/Pickleball/',1180],['/Pickleball/',1440]])// V5.31: the plain URL now selects the account source by default (see staging-account.spec); the operator's
+// explicit trial URL keeps its manual flow and the maintenance URL is the switch that turns every source off.
+test('real staging flag, mock RPC: explicit trial, manual send and maintenance off-switch at '+prefix+' '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});
  const origin='https://pickleup-staging.home-309.workers.dev';
- // Virtual origin only: serve all app bytes from loopback, never contact Managed/Cloudflare.
- await context.route(origin+'/**',async request=>{
-  const url=new URL(request.request().url());
-  const response=await request.fetch({url:'http://127.0.0.1:4173'+url.pathname+url.search});await request.fulfill({response});
- });
+ // Virtual origin only: serve all app bytes from the built dist/ on disk, never contact Managed/Cloudflare.
+ await require('./helpers/virtual-origin.cjs').serve(context,origin);
  const f=await fixture(context,undefined,{staging:true});
  await context.route('https://rfeoeagklmaqmkcdhprb.supabase.co/**',request=>request.abort());
  await page.addInitScript(()=>localStorage.setItem('pickleup_weekly_goal_v46',JSON.stringify({days:5,level:'2.0–2.5'})));
- const normal=origin+prefix+'?page=settings',trial=normal+'&pilot=preferences-checkins';
+ const normal=origin+prefix+'?page=settings&maintenance=account-cache',trial=origin+prefix+'?page=settings&pilot=preferences-checkins';
  const visit=async url=>{await page.goto(url);await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await PICKLEUP_DATA.ready})};
  await visit(normal);await expect(page.locator('#syncPilot [data-sync-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
  await visit(trial);await expect(page.locator('[data-sync-staging]')).toBeVisible();await expect(page.locator('[data-sync-enable]')).toBeEnabled();expect(f.calls).toHaveLength(0);
