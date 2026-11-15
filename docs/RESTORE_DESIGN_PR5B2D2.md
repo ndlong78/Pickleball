@@ -1,6 +1,6 @@
 # PR5b2d2 — thiết kế khôi phục từ tệp cứu hộ (chỉ tài liệu)
 
-Trạng thái: **thiết kế, chưa có mã.** Baseline main `1deac6a` / V5.29.1. Theo [AGENTS.md](../AGENTS.md) mục 3 owner đã giao các quyết định kỹ thuật backup/restore; tài liệu này ghi quyết định và chia lát cắt. Không SQL, RLS, Auth, signup, dependency hay thay đổi IndexedDB 3 trong PR này.
+Trạng thái: **thiết kế; lát 2a (lõi thuần `modules/data/restore-plan-core.js`) đã có mã nhưng chưa được trang nào nạp.** Baseline main `abe38d9` / V5.29.1. Theo [AGENTS.md](../AGENTS.md) mục 3 owner đã giao các quyết định kỹ thuật backup/restore; tài liệu này ghi quyết định và chia lát cắt. Không SQL, RLS, Auth, signup, dependency hay thay đổi IndexedDB 3 trong PR này.
 
 ## 1. Vấn đề
 [PR5b2d1](RESTORE_PREVIEW_PR5B2D1.md) chỉ so tệp cứu hộ với cache trên máy (`canRestore=false`). Câu hỏi còn lại: **khôi phục cái gì, và bằng cách nào mà không phá cache?**
@@ -62,3 +62,12 @@ Lát 2a–2b không thay đổi dữ liệu; chỉ 2c ghi, và chỉ vào outbox
 
 ## 7. Kiểm chứng thiết kế
 Thiết kế dựa trên đọc mã `local-repository.js` (ràng buộc `tailOperationId`, trạng thái outbox, epoch/cursor) và `account-rescue-core.js`/`restore-preview-core.js`; **chưa chạy thử hành vi nào mới.** Không phải kết quả test.
+
+## 8. Lát 2a — hợp đồng đã cài đặt
+`plan(fileSnapshot,deviceSnapshot,{expectedOwner})` (thuần, không IDB/mạng/ghi): dùng lại `account-rescue-core.validateSnapshot` (owner, credential, trùng khóa, kích thước) cho cả hai ảnh chụp, chỉ đọc `outbox` của tệp.
+- **Đề xuất** thao tác có trạng thái `pending|deferred|sending|blocked|conflict`, `protocol 1`, `kind` thuộc tập đã biết, `action` là `put|delete`, `operationId` UUID và **chưa có** trên máy (mọi trạng thái).
+- **Loại với mã cố định:** `settled` (acked/resolved), `already_on_device`, `invalid_operation`, `unknown_kind`, `unsupported_protocol`, `dependency_missing`, `dependency_excluded`, `dependency_cycle`. Phụ thuộc đã settled hoặc đã có trên máy thì không chặn; phụ thuộc chưa xong phải tự được đề xuất.
+- **Cảnh báo:** `uncertain_send` (đang `sending`), `device_has_unsent_change` (máy có thao tác chưa xong cùng bản ghi), `device_has_open_conflict`.
+- Mỗi mục chỉ có `operationId, kind, id, action, state, dependsOn, warnings`; **không payload**. `summary` chỉ có số đếm và mã cố định, không id/chuỗi tùy ý. Luôn `canRestore=false`, `cloudVerified=false`. Các store khác trong tệp bị bỏ qua hoàn toàn.
+- Thứ tự đầu ra xác định, thao tác phụ thuộc luôn đứng sau thao tác nó phụ thuộc. Chưa phải xác nhận từ server.
+- Kiểm thử: `tests/restore-plan-core.test.js` (12 ca). Chưa nạp vào Settings/page-loader/PWA nên không đổi phiên bản app.
