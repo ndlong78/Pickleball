@@ -71,5 +71,44 @@ function plan(fileSnapshot,deviceSnapshot,{expectedOwner}={}){
   canRestore:false,cloudVerified:false
  };
 }
-const api={KINDS,UNFINISHED,EXCLUDED,plan};if(typeof module!=='undefined')module.exports=api;else root.PickleUpRestorePlanCore=api;
+// 2c: the only kinds that can be re-queued, because only they have a domain validator and a single-record write path.
+const SUPPORTED=new Set(['user_preferences','practice_checkins']);
+const BLOCKS=['unsupported_kind','dependency','device_unsent','needs_review','invalid_record','record_changed','invalid_payload','nothing_to_restore'];
+const REVISION=/^(0|[1-9][0-9]*)$/,DAY=/^\d{4}-\d{2}-\d{2}$/;
+const validDay=id=>{try{return DAY.test(id)&&new Date(id+'T00:00:00Z').toISOString().slice(0,10)===id}catch(_){return false}};
+const isPlain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.getPrototypeOf(v)===Object.prototype;
+/* Decide, against the freshly pulled local row, whether one unsent operation from the file may be queued again.
+   It is allowed only when the server record is still exactly what the lost operation was written against and the
+   device has nothing newer for that record; otherwise nothing is written. Pure: returns the write to perform. */
+function assess(op,row,{core,today}={}){
+ const block=code=>({ok:false,code});
+ if(!isPlain(op)||!SUPPORTED.has(op.kind))return block('unsupported_kind');
+ if(op.dependsOn!==null&&op.dependsOn!==undefined)return block('dependency');
+ if(row&&row.tailOperationId)return block('device_unsent');
+ if(row&&row.reviewRequired)return block('needs_review');
+ if(typeof op.id!=='string'||!['put','delete'].includes(op.action)||typeof op.expectedRevision!=='string'||!REVISION.test(op.expectedRevision))return block('invalid_record');
+ if(op.expectedRevision!==(row?.baseRevision||'0'))return block('record_changed');
+ if(!core||typeof core.preferences!=='function'||typeof core.checkin!=='function'||typeof core.timezone!=='function')return block('invalid_record');
+ let value,same=false;
+ try{
+  if(op.kind==='user_preferences'){
+   if(op.id!=='self'||op.action!=='put')return block('invalid_record');
+   value=core.preferences(op.payload);
+   if(row?.base&&!row.deleted){try{same=JSON.stringify(core.preferences(row.base))===JSON.stringify(value)}catch(_){}}
+  }else{
+   if(!validDay(op.id)||typeof today!=='string'||op.id>today)return block('invalid_record');
+   if(op.action==='delete'){
+    if(!isPlain(op.payload)||Object.keys(op.payload).join()!=='timezone_at_entry'||!core.timezone(op.payload.timezone_at_entry))return block('invalid_payload');
+    if(!row||row.deleted)return block('nothing_to_restore');
+    value={timezone_at_entry:op.payload.timezone_at_entry};
+   }else{
+    value=core.checkin(op.payload);
+    if(row?.base&&!row.deleted){try{same=JSON.stringify(core.checkin(row.base))===JSON.stringify(value)}catch(_){}}
+   }
+  }
+ }catch(_){return block('invalid_payload')}
+ if(same)return block('nothing_to_restore');
+ return {ok:true,action:op.action==='delete'?'delete':row?.deleted?'restore':'put',value};
+}
+const api={KINDS,UNFINISHED,EXCLUDED,SUPPORTED,BLOCKS,plan,assess};if(typeof module!=='undefined')module.exports=api;else root.PickleUpRestorePlanCore=api;
 })(typeof window==='undefined'?globalThis:window);

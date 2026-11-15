@@ -22,7 +22,7 @@ test('native rescue/mock Auth: late snapshot and file read cannot expose A under
  await page.evaluate(A=>{SWITCH_PLAN_OWNER(A);File.prototype.text=async function(){return await new Response(this).text()}},A);await page.locator(file).setInputFiles({name:'b.json',mimeType:'application/json',buffer:Buffer.from(fromB)});await expect(page.locator(status)).toContainText('không thuộc tài khoản');await expect(page.locator(link)).toBeHidden();
 });
 test('rescue remains disabled without Auth configuration and guest backup remains available',async({page})=>{
- await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator(capture)).toBeDisabled();await expect(page.locator(file)).toBeDisabled();await expect(page.locator(status)).toContainText('chưa được cấu hình');await expect(page.locator('#rescuePanel [data-refresh]')).toBeEnabled();
+ await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator(capture)).toBeDisabled();await expect(page.locator(file)).toBeDisabled();await expect(page.locator('[data-account-plan]')).toBeDisabled();await expect(page.locator(status)).toContainText('chưa được cấu hình');await expect(page.locator('#rescuePanel [data-refresh]')).toBeEnabled();
 });
 
 test('native comparison/mock Auth: old file differences, unknown keys and private notes remain read-only',async({page,context})=>{

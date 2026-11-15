@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.29.1 — 15/11/2026 (đang PR):** owner yêu cầu duyệt 40 bài 4.0–5.0 không qua HLV người. Claude rà toàn bộ và sửa 6 bài (`PU-087/089/094/097/098/109`: luật Erne, nhắc kính bảo hộ, wording); điểm cũ vẫn so sánh được. Đây là **rà soát nội bộ trên văn bản, không phải đánh giá của HLV**, chưa thử trên sân. [Kết quả](docs/CONTENT_REVIEW_4_0_5_0.md) · [Release notes](RELEASE_V5.29.1.md).
+**V5.30.0 — 15/11/2026 (đang PR):** [PR5b2d2b/c](docs/RESTORE_DESIGN_PR5B2D2.md) — Settings → Cứu hộ cache V6 xem được thao tác **chưa gửi** có trong tệp mà máy không còn (chỉ đọc) và đưa lại **từng mục** Mục tiêu/lịch tập hoặc Check-in vào hàng chờ trên máy, sau khi pull dữ liệu mới và chỉ khi bản ghi máy chủ chưa đổi và máy không có thay đổi mới hơn; không tự gửi, không ghi đè dữ liệu đã tải. Chỉ có tác dụng ở địa chỉ thử nghiệm bật nguồn tài khoản; chưa thử trên Managed staging. [Release notes](RELEASE_V5.30.0.md).
+
+**V5.29.1 — 15/11/2026 (đã phát hành, #63):** owner yêu cầu duyệt 40 bài 4.0–5.0 không qua HLV người. Claude rà toàn bộ và sửa 6 bài (`PU-087/089/094/097/098/109`: luật Erne, nhắc kính bảo hộ, wording); điểm cũ vẫn so sánh được. Đây là **rà soát nội bộ trên văn bản, không phải đánh giá của HLV**, chưa thử trên sân. [Kết quả](docs/CONTENT_REVIEW_4_0_5_0.md) · [Release notes](RELEASE_V5.29.1.md).
 
 **V5.29.0 — 15/11/2026 (đã phát hành, #61):** bổ sung 16 bài 4.0–4.5 và 4.5–5.0 (`PU-105…120`) cho bốn nhóm trọng tâm còn thiếu (third-drop, transition-reset, kitchen-pressure, doubles-coverage); Học viện thành 120 bài, luân phiên HLV nâng cao ở 4.0–5.0 không còn lặp ô trong bốn buổi liên tiếp. Nội dung do Claude soạn, **chưa có HLV duyệt và chưa thử trên sân**. Không đổi dữ liệu/SQL. [Release notes](RELEASE_V5.29.0.md).
 
@@ -53,7 +55,7 @@ Cập nhật: **10/11/2026** — main `cc0d944` sau #40/app5.14.1, UI/backend/Pa
 | Đã merge #37 | [Static build/Wrangler và cấu hình domain](docs/CLOUDFLARE_WORKERS_STAGING.md) | Main CI và Pages sạch; deployment Cloudflare thực tế chưa đối chiếu SHA |
 | Staging Auth cơ bản | [Operator xác nhận ngày 09/11](docs/STAGING_AUTH_VERIFICATION.md) | Đã nhận email/login/kiểm dữ liệu riêng; tiếp theo A→B/expiry, SMTP và A/B dữ liệu riêng |
 | PR6a đang triển khai | [URL thử mục tiêu/check-in staging](docs/STAGING_SYNC_PR6A.md) | Gate origin/project/query; manual opt-in/read/send; mock/native IDB + Auth local CI, Managed A/B/conflict còn cần owner thử |
-| Thiết kế PR5b2d2 | [Khôi phục từ tệp cứu hộ](docs/RESTORE_DESIGN_PR5B2D2.md) | Chỉ tài liệu: chỉ cứu thao tác chưa gửi, không ghi đè records/cursor/metadata; bốn lát 2a–2d |
+| PR5b2d2 | [Khôi phục từ tệp cứu hộ](docs/RESTORE_DESIGN_PR5B2D2.md) | 2a–2c đã code (V5.30.0): chỉ cứu thao tác chưa gửi của mục tiêu/check-in, từng mục; 2d thử Managed staging còn chờ owner |
 | Phục hồi tiếp theo | PR5b2b/c device state/đủ route, full V6 backup round-trip/purge | Bảo toàn base/pending/frozen/conflicts/provenance/device state; V5 export riêng |
 | Trước pilot | PR6 staging và vận hành | SMTP/Managed gateway, expiry browser, importer repair, encrypted backup/Auth restore/deletion, load/privacy và physical QA |
 
