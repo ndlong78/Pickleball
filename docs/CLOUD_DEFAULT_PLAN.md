@@ -1,6 +1,6 @@
 # Chuyển dữ liệu người tập lên cloud (kế hoạch V5.31+)
 
-Trạng thái: **bước A1 đã có mã ở V5.31.0** (mục 7); các bước A2, C, B, D chưa làm. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
+Trạng thái: **A1 (V5.31.0, mục 7) và A2 (V5.32.0, mục 8) đã có mã**; các bước C, B, D chưa làm. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
 
 ## 1. Quyết định của owner (15/11/2026)
 1. **Chưa đăng nhập thì không lưu được.** Khách vẫn xem nội dung; mọi thao tác lưu yêu cầu đăng nhập.
@@ -49,3 +49,10 @@ Kế hoạch dựa trên đọc mã; chưa bước nào được cài đặt. H�
 - Settings: hiện Tài khoản, ba mục nguồn và Cứu hộ cache trên host chính; Nhập dữ liệu và Dọn cache vẫn là công cụ vận hành (cần `?pilot=`/`?maintenance=`). Ở chế độ tự động, các nút/ô chọn nguồn thủ công bị ẩn và thay bằng mô tả ngắn.
 - **Không đổi:** gửi vẫn thủ công; không nhập dữ liệu cũ; không ghi/xóa 18 khóa localStorage; khách (chưa đăng nhập) vẫn lưu trên máy cho tới bước B; đăng ký vẫn đóng cho tới bước D; host khác (bản phụ Pages, preview) giữ hành vi thiết bị.
 - Kiểm thử: `source-adopter.test.js` (7), cấu hình cổng và bề mặt Settings (đã cập nhật), `staging-account.spec` thêm 6 ca cho URL thường ở bốn viewport (tự chọn nguồn, không gửi/nhập, đổi tài khoản, host khác). **Chưa thử trên project Supabase thật.**
+
+## 8. Bước A2 — đã cài đặt (V5.32.0)
+- `staging-pilot.js` có `syncer()` dùng chung cho ba runtime. Nó chỉ quyết định **khi nào** gọi `controller.sync()` có sẵn; khóa nhiều tab (lease), lùi dần theo từng yêu cầu, yêu cầu bất biến/idempotent và xử lý xung đột vẫn nằm trong sync controller.
+- Hành vi: chờ khoảng 1,2 giây sau thay đổi cuối rồi gửi khi còn thao tác `pending`/`deferred`. Kết quả `synced`/`pending` xóa lùi dần; mọi kết quả khác (mất mạng, hết phiên, tab khác đang giữ khóa, `needs_review`, lỗi máy chủ) lùi dần 5 s → 10 s → … tối đa 5 phút. Focus hoặc có mạng lại thì thử ngay; đổi tài khoản thì đặt lại. Không chạy khi đang bận, offline, chưa đọc xong lần đầu hoặc `auto` tắt.
+- Thao tác `sending` (đã gửi, chưa rõ kết quả), `conflict`, `blocked` **không** tự gửi lại: vẫn cần nút "Thử lại" hoặc quyết định của người dùng như trước.
+- Không có lịch đọc định kỳ: đọc lại diễn ra sau mỗi lần gửi, khi đăng nhập và khi bấm "Đọc dữ liệu tài khoản". Thay đổi từ thiết bị khác chỉ xuất hiện sau một trong các thời điểm đó.
+- Kiểm thử: `source-syncer.test.js` (7 ca, đồng hồ giả: debounce, không gửi khi chưa đủ điều kiện, lùi dần có trần và số lần thử trong một giờ bị chặn, đổi tài khoản), `staging-account.spec` (tự gửi đúng một lần ở bốn viewport; lưu khi offline rồi gửi khi có mạng; xung đột gửi một lần rồi dừng). **Chưa thử trên project Supabase thật.**

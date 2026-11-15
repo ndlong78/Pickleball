@@ -27,7 +27,7 @@ async function send(page,kind){await route(page,'settings');await page.locator('
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([key])=>key.startsWith('pickleup_')&&key!=='pickleup_auth_v6').sort()));
 for(const width of [390,820,1180,1440])test('real account-data flags, mock RPC: entry, independent source, manual queue and maintenance off-switch '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});const f=await setup(context);await visit(page,off);await expect(page.locator('[data-sync-body]')).toBeHidden();await expect(page.locator('[data-activity-body]')).toBeHidden();await expect(page.locator('[data-plan-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
- await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.31.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
+ await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.32.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
  expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode,PICKLEUP_IMPORT_CONFIG.enabled])).toEqual(['guest','guest','guest',false]);
  const before=await legacy(page);await enable(page,'activity');expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest']);await academySave(page,17);expect(new URL(page.url()).searchParams.get('pilot')).toBe('account-data');expect(f.calls.some(c=>c.name==='apply_event_operation')).toBe(false);await send(page,'activity');
  await academySave(page,18);await route(page,'settings');await expect(page.locator(activityStatus)).toContainText('Còn thay đổi chờ gửi');const count=f.calls.length;
@@ -52,7 +52,7 @@ test('preview URL cannot activate account-data trial or show the entry action',a
 // ---- V5.31 (plan A1): on the main host a signed-in user gets the account source by default ----
 const modes=page=>page.evaluate(()=>[PICKLEUP_DATA.getState(),PICKLEUP_ACTIVITY.getState(),PICKLEUP_PLANS.getState()].map(s=>s.mode+':'+(s.busy?'busy':s.snapshot?.cursor?.epoch?'ready':'empty')));
 const adopted=async page=>expect.poll(()=>modes(page),{timeout:15000}).toEqual(['account:ready','account:ready','account:ready']);
-for(const width of [390,820,1180,1440])test('default URL, mock RPC: signed-in user gets all three account sources without any choice; nothing is sent or imported '+width,async({page,context})=>{
+for(const width of [390,820,1180,1440])test('default URL, mock RPC: signed-in user gets all three account sources without any choice; saves sync on their own, nothing is imported '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});const f=await setup(context);const before=await (async()=>{await visit(page,normal);return legacy(page)})();
  await adopted(page);
  for(const id of ['accountPanel','syncPilot','activityPilot','planPilot','accountRescue'])await expect(page.locator('#'+id)).toBeVisible();
@@ -61,22 +61,49 @@ for(const width of [390,820,1180,1440])test('default URL, mock RPC: signed-in us
  await expect(page.locator('#syncPilot [data-auto-source]')).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getView().timezone)).toBeTruthy();
  expect(f.calls.some(c=>c.name.startsWith('apply_'))).toBe(false);expect(f.calls.some(c=>/import/.test(c.name))).toBe(false);expect(await legacy(page)).toBe(before);
- await academySave(page,16);expect(new URL(page.url()).searchParams.has('pilot')).toBe(false);expect(f.calls.some(c=>c.name==='apply_event_operation')).toBe(false);
- await send(page,'activity');expect(f.calls.filter(c=>c.name==='apply_event_operation')).toHaveLength(1);expect(await legacy(page)).toBe(before);
+ // A2: the saved score is sent on its own, exactly once, without opening Settings or pressing Sync.
+ await academySave(page,16);expect(new URL(page.url()).searchParams.has('pilot')).toBe(false);
+ await expect.poll(()=>f.calls.filter(c=>c.name==='apply_event_operation').length,{timeout:10000}).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>(PICKLEUP_ACTIVITY.getState().snapshot?.outbox||[]).filter(o=>['pending','deferred','sending'].includes(o.state)).length)).toBe(0);
+ await page.waitForTimeout(1500);expect(f.calls.filter(c=>c.name==='apply_event_operation')).toHaveLength(1);expect(await legacy(page)).toBe(before);
  await page.reload();await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await Promise.all([PICKLEUP_DATA.ready,PICKLEUP_ACTIVITY.ready,PICKLEUP_PLANS.ready])});await adopted(page);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 test('default URL: sign-out returns to the device source; another account adopts its own empty source and never sees A',async({page,context})=>{
- const f=await setup(context);await visit(page,normal);await adopted(page);await academySave(page,15);await route(page,'settings');
+ const f=await setup(context);await visit(page,normal);await adopted(page);await academySave(page,15);
+ await expect.poll(()=>f.calls.filter(c=>c.owner===A&&c.name==='apply_event_operation').length,{timeout:10000}).toBe(1);await route(page,'settings');
  await page.evaluate(()=>SWITCH_STAGING_OWNER(null));await expect.poll(()=>page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest','guest']);
  const quiet=f.calls.length;await page.waitForTimeout(300);expect(f.calls).toHaveLength(quiet);
  await page.evaluate(B=>SWITCH_STAGING_OWNER(B),B);await adopted(page);
  expect(await page.evaluate(()=>[PICKLEUP_ACTIVITY.getState().owner,PICKLEUP_ACTIVITY.events().length])).toEqual([B,0]);
  expect(f.calls.some(c=>c.owner===B&&c.name.startsWith('apply_'))).toBe(false);
- expect(await page.evaluate(async owner=>{const db=await PickleUpLocalRepository.open();try{return (await db.scope('user:'+owner).listOutbox()).filter(o=>o.state==='pending').length}finally{db.close()}},A)).toBe(1);
+ expect(f.servers.get(B).changes.length).toBe(0);
 });
 test('default URL on a preview or other host stays device-only',async({page,context})=>{
  const site='https://preview-pickleup-staging.home-309.workers.dev',f=await setup(context,undefined,site);await visit(page,site+'/?page=settings');
  expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest','guest']);
  await expect(page.locator('#accountPanel')).toBeHidden();expect(f.calls).toHaveLength(0);
+});
+// ---- V5.32 (plan A2): automatic sending ----
+const applied=(f,name,owner=A)=>f.calls.filter(c=>c.owner===owner&&c.name===name).length;
+async function saveGoal(page,days){await route(page,'progress');await page.locator('#wgDays').selectOption(String(days));await page.locator('#wgSave').click();await expect(page.locator('#wgStatus')).toContainText('kho tài khoản')}
+test('default URL: a change saved offline stays queued, is sent once when the connection returns, and survives a reload in between',async({page,context})=>{
+ const f=await setup(context);await visit(page,normal);await adopted(page);await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getView().timezone)).toBeTruthy();
+ await context.setOffline(true);await saveGoal(page,4);await page.waitForTimeout(2500);expect(applied(f,'apply_sync_operation')).toBe(0);
+ expect(await page.evaluate(()=>PICKLEUP_DATA.pending('user_preferences','self'))).toBe(true);
+ await page.reload();await page.evaluate(async()=>{await PICKLEUP_PAGE_LOADER.ensure('settings');await PICKLEUP_DATA.ready});await page.waitForTimeout(2000);expect(applied(f,'apply_sync_operation')).toBe(0);
+ expect(await page.evaluate(()=>PICKLEUP_DATA.getState().projection.goal.days)).toBe(4);
+ await context.setOffline(false);await expect.poll(()=>applied(f,'apply_sync_operation'),{timeout:10000}).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.pending('user_preferences','self'))).toBe(false);expect(f.servers.get(A).rows.get('user_preferences:self').target_days).toBe(4);
+ await page.waitForTimeout(1500);expect(applied(f,'apply_sync_operation')).toBe(1);
+});
+test('default URL: a conflicting change is sent once, stops for review and is not retried in a loop; the conflict is listed for the user',async({page,context})=>{
+ const f=await setup(context),server=f.servers.get(A);await visit(page,normal);await adopted(page);await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getView().timezone)).toBeTruthy();
+ await saveGoal(page,4);await expect.poll(()=>applied(f,'apply_sync_operation'),{timeout:10000}).toBe(1);await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.pending('user_preferences','self'))).toBe(false);
+ const rev=await page.evaluate(()=>PICKLEUP_DATA.getState().projection.prefRow.baseRevision);
+ server.apply({p_operation_id:require('node:crypto').randomUUID(),p_kind:'user_preferences',p_entity_key:'self',p_action:'put',p_expected_revision:rev,p_epoch:server.epoch,p_payload:{target_days:2,level_band:'1.0–2.0',session_minutes:45,gentle:false,goal_configured:true}});
+ await saveGoal(page,5);await expect.poll(()=>applied(f,'apply_sync_operation'),{timeout:10000}).toBe(2);
+ await expect.poll(()=>page.evaluate(()=>PICKLEUP_DATA.getState().snapshot.conflicts.filter(c=>c.state==='open').length)).toBe(1);
+ await page.waitForTimeout(4000);expect(applied(f,'apply_sync_operation')).toBe(2);expect(server.rows.get('user_preferences:self').target_days).toBe(2);
+ await route(page,'settings');await expect(page.locator('[data-sync-conflicts] button').first()).toBeVisible();
 });
