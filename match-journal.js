@@ -37,12 +37,12 @@ async function submit(){
  const previous=data.isAccount()?[]:read();if(!data.isAccount()&&!validateList(previous)){$("matchStatus").textContent="Lịch sử hiện tại không hợp lệ. Hãy sao lưu trước khi ghi thêm.";return}
  saving=true;controls();$("matchStatus").textContent="Đang lưu trận đấu…";
  try{
-  if(data.isAccount())await data.saveMatch({mode:entry.mode,ours,theirs,focus:entry.focus,note:entry.note,doubles_issue:entry.doublesIssue||null});else localStorage.setItem(KEY,JSON.stringify(previous.concat(entry).slice(-500)));
+  if(data.isAccount())await data.saveMatch({mode:entry.mode,ours,theirs,focus:entry.focus,note:entry.note,doubles_issue:entry.doublesIssue||null});else{window.PickleUpGuestWrites?.require();localStorage.setItem(KEY,JSON.stringify(previous.concat(entry).slice(-500)))}
   if(stamp!==data.token())return;
   $("matchNotes").value="";$("matchOurs").value="";$("matchTheirs").value="";if($("matchDoublesIssue"))$("matchDoublesIssue").value="";
   $("matchStatus").textContent=data.isAccount()?"Đã lưu trận đấu trên thiết bị · chờ đồng bộ. Không tự xác nhận buổi tập.":"Đã lưu trận đấu và trọng tâm cần luyện tập.";
   draw();document.dispatchEvent(new Event("pickleup:match-saved"));
- }catch(err){if(stamp===data.token())$("matchStatus").textContent=data.isAccount()?PickleUpActivityHistory.error(err):"Không lưu được nhật ký: "+err.message}
+ }catch(err){if(stamp===data.token())$("matchStatus").textContent=data.isAccount()?PickleUpActivityHistory.error(err):err?.code==="sign_in_required"?err.message:"Không lưu được nhật ký: "+err.message}
  finally{if(stamp===data.token()){saving=false;controls()}}
 }
 function controls(){for(const id of ["matchMode","matchFocus","matchOurs","matchTheirs","matchDoublesIssue","matchNotes","matchSave"])$(id).disabled=saving||!data.canWrite()}

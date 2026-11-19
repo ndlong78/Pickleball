@@ -28,6 +28,8 @@ document.getElementById('backupAll').addEventListener('click',()=>{
 });
 document.getElementById('restoreFile').addEventListener('change',async event=>{
  const file=event.target.files?.[0];if(!file||busy)return;
+ // V5.34: on the cloud-only host a signed-out visitor cannot write device data; use the account importer instead.
+ if(window.PickleUpGuestWrites?.allowed()===false){status.textContent=window.PickleUpGuestWrites.MESSAGE+' Sau khi đăng nhập, dùng mục Nhập dữ liệu cũ để đưa tệp sao lưu vào tài khoản.';event.target.value='';return}
  controls(true);
  try{
   if(file.size>core.MAX_BYTES)throw new core.BackupError('too_large');

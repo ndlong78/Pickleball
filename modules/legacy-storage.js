@@ -124,6 +124,30 @@ if(root.document){
   }catch(_){showBlocked('Chưa đọc được trạng thái khôi phục an toàn.');return {status:'blocked'}}
  })();
 }
+/* V5.34 (cloud plan B): on the main host, where accounts are the primary store, a signed-out visitor can read the data
+   already on this device but cannot save new data to it. Pages call require() at the start of their device-storage
+   (guest) branch; account branches are unaffected. Presentation gate only: the server Auth/RLS boundary is unchanged,
+   other hosts, ?pilot=/?maintenance= operator URLs and loopback test hosts keep device storage. */
+const MAIN_ORIGIN='https://pickleup-staging.home-309.workers.dev',MAIN_PATHS=new Set(['/','/index.html','/Pickleball/','/Pickleball/index.html']),AUTH_KEY='pickleup_auth_v6';
+const SIGN_IN='Cần đăng nhập để lưu. Mở trang Dữ liệu → Tài khoản để đăng nhập. Dữ liệu cũ trên máy này vẫn xem được.';
+class SignInRequired extends Error{constructor(){super(SIGN_IN);this.code='sign_in_required';this.name='SignInRequired'}}
+function cloudOnly(location=root.location){
+ try{const u=new URL(location.href);if(u.origin!==MAIN_ORIGIN||!MAIN_PATHS.has(u.pathname)||u.searchParams.has('pilot')||u.searchParams.has('maintenance'))return false;return root.PICKLEUP_AUTH_CONFIG?.enabled!==false}catch(_){return false}
+}
+function signedIn(storage=root.localStorage){
+ // Pages with account sources trust what Auth told them (an expired session has no owner there). Only pages without
+ // them (Home) fall back to the session Supabase keeps on this device.
+ const views=[];
+ for(const source of [root.PICKLEUP_DATA,root.PICKLEUP_ACTIVITY,root.PICKLEUP_PLANS]){try{const v=source?.getView?source.getView():source?.getState?.();if(v&&v.mode!=='loading')views.push(v)}catch(_){}}
+ if(views.length)return views.some(v=>typeof v.owner==='string'&&v.owner.length>0);
+ try{const raw=storage?.getItem(AUTH_KEY);if(!raw)return false;const id=JSON.parse(raw)?.user?.id;return typeof id==='string'&&id.length>0}catch(_){return false}
+}
+const guestWrites=Object.freeze({
+ MESSAGE:SIGN_IN,SignInRequired,cloudOnly:location=>cloudOnly(location),signedIn:storage=>signedIn(storage),
+ allowed(){return !cloudOnly()||signedIn()},
+ require(){if(cloudOnly()&&!signedIn())throw new SignInRequired()}
+});
+api.guestWrites=guestWrites;root.PickleUpGuestWrites=guestWrites;
 root.PickleUpLegacyStorage=api;
 if(typeof module!=='undefined')module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

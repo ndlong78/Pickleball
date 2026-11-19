@@ -44,11 +44,11 @@ async function assess(){
   const item={id:"AC-"+Date.now(),level,values,average:Number(average.toFixed(2)),ready,date:new Date().toISOString()};
   saving=true;controls();$("advancedCheckResult").textContent="Đang lưu bài kiểm tra…";
   if(data.isAccount())await data.saveAssessment("advanced",values,level);
-  else{const old=read();if(!validateList(old))throw Error("Lịch sử cũ không hợp lệ; không ghi đè dữ liệu");const next=old.concat(item).slice(-200);localStorage.setItem(KEY,JSON.stringify(next))}
+  else{window.PickleUpGuestWrites?.require();const old=read();if(!validateList(old))throw Error("Lịch sử cũ không hợp lệ; không ghi đè dữ liệu");const next=old.concat(item).slice(-200);localStorage.setItem(KEY,JSON.stringify(next))}
   if(stamp!==data.token())return;
   $("advancedCheckResult").textContent=(ready?"Đạt ngưỡng luyện tập nội bộ của nhóm "+level+". ":"Chưa đạt ngưỡng luyện tập nội bộ của nhóm "+level+". ")+"Trung bình "+average.toFixed(1)+"/20. "+(low.length?"Nên ưu tiên: "+low.join(", ")+". ":"Tiếp tục tập phối hợp và kiểm chứng qua trận đấu.")+" Không phải chứng nhận DUPR hoặc xếp hạng 4.0."+(data.isAccount()?" Đã lưu lượt mới trên thiết bị · chờ đồng bộ.":"");
   showHistory();
- }catch(err){if(stamp===data.token())$("advancedCheckResult").textContent=data.isAccount()?PickleUpActivityHistory.error(err):"Chưa lưu: "+err.message}
+ }catch(err){if(stamp===data.token())$("advancedCheckResult").textContent=data.isAccount()?PickleUpActivityHistory.error(err):err?.code==="sign_in_required"?err.message:"Chưa lưu: "+err.message}
  finally{if(stamp===data.token()){saving=false;controls()}}
 }
 function controls(){for(const el of [...$("advancedCheckInputs").querySelectorAll("input"),$("advancedCheckSave"),$("advancedLevel")])el.disabled=saving||!data.canWrite()}

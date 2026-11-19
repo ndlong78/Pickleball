@@ -11,7 +11,8 @@ let attemptBusy=false,activityToken=activity?.token();
 let planToken=plansSource?.token();
 const logApi=window.PICKLEUP_TRAINING_LOG,conditionsApi=window.PICKLEUP_PRACTICE_CONDITIONS;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"null")??fallback}catch(_){return fallback}}
-function save(){if(plansSource?.isAccount())return;try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
+// Signed-out on the cloud-only host: the clock state stays in this page only (V5.34).
+function save(){if(plansSource?.isAccount()||window.PickleUpGuestWrites?.allowed()===false)return;try{if(state)localStorage.setItem(storageKey,JSON.stringify(state))}catch(_){message("Không lưu được trạng thái đồng hồ; hãy giữ trang đang mở.")}}
 function message(value){$("pcRunMessage").textContent=value}
 function checkpointControls(){
  const panel=$("pcCheckpointPanel");if(!panel)return;panel.hidden=!plan||!plansSource?.isAccount();
@@ -115,12 +116,12 @@ async function saveAttempt(){
   if(!conditions)throw Error("Hãy chọn đủ cách cấp bóng, tốc độ và vùng mục tiêu để ghi lượt tập có thể so sánh.");
   const value={planId:plan.id,exerciseId:drill.id,skill:drill.skill,level:plan.level,kind:state.index===4?"assessment":"drill",hits,note:$("pcAttemptNote").value,conditions};
   attemptBusy=true;render();message("Đang lưu lượt tập…");
-  if(account)await activity.saveTraining(value);else logApi.record(localStorage,value);
+  if(account)await activity.saveTraining(value);else{window.PickleUpGuestWrites?.require();logApi.record(localStorage,value)}
   if(sourceStamp!==plansSource?.token()||activityStamp!==activity?.token()||key!==renderedDrillKey)return;
   input.value="";$("pcAttemptNote").value="";
   message((account?"Đã lưu trong kho tài khoản trên thiết bị · chờ đồng bộ hoạt động. ":"")+"Đã lưu "+hits+"/20 cho "+drill.skillName+". Có thể ghi thêm lần tập khác.");
   document.dispatchEvent(new Event("pickleup:training-log-updated"));
- }catch(e){if(sourceStamp===plansSource?.token()&&activityStamp===activity?.token()&&key===renderedDrillKey)message(account?(window.PickleUpActivityHistory?.error(e)||"Chưa lưu được. Giữ dữ liệu nhập và kiểm tra Dữ liệu."):"Không thể lưu lần tập: "+e.message)}
+ }catch(e){if(sourceStamp===plansSource?.token()&&activityStamp===activity?.token()&&key===renderedDrillKey)message(account?(window.PickleUpActivityHistory?.error(e)||"Chưa lưu được. Giữ dữ liệu nhập và kiểm tra Dữ liệu."):e?.code==="sign_in_required"?e.message:"Không thể lưu lần tập: "+e.message)}
  finally{if(sourceStamp===plansSource?.token()&&activityStamp===activity?.token()){attemptBusy=false;render()}}
 }
 async function toggleWake(){

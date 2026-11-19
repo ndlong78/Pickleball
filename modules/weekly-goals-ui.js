@@ -53,11 +53,11 @@ byId("wgSave").addEventListener("click",async()=>{
  const stamp=sourceTag;
  try{
   if(data?.isAccount())await data.savePreferences({target_days:Number(days.value),level_band:level.value,goal_configured:true},editRevision,{restore:data.deleted('user_preferences','self')});
-  else core.saveSettings(localStorage,{days:Number(days.value),level:level.value});
+  else{window.PickleUpGuestWrites?.require();core.saveSettings(localStorage,{days:Number(days.value),level:level.value})}
   if(stamp!==sourceTag)return;dirty=false;hydrate();
   byId("wgStatus").textContent=data?.isAccount()?"Đã lưu trong kho tài khoản trên thiết bị · chờ đồng bộ.":"Đã lưu mục tiêu trên thiết bị này.";
   redraw();document.dispatchEvent(new Event("pickleup:weekly-goal-saved"));
- }catch(_){if(stamp===sourceTag)byId("wgStatus").textContent="Không lưu được. Kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ; lựa chọn cần 1–5 ngày mỗi tuần."}
+ }catch(e){if(stamp===sourceTag)byId("wgStatus").textContent=e?.code==='sign_in_required'?e.message:"Không lưu được. Kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ; lựa chọn cần 1–5 ngày mỗi tuần."}
 });
 byId("wgRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate()}redraw()});
 document.addEventListener("pickleup:activity-data",redraw);

@@ -23,9 +23,9 @@ $('assessBtn').addEventListener('click',async()=>{
  if(saving||!data.canWrite())return;const stamp=data.token(),answers=Object.fromEntries(criteria.map(c=>[c[0],Number($('assess-'+c[0]).value)]));saving=true;render();$('assessResult').textContent='Đang lưu tự đánh giá…';
  try{
   if(data.isAccount())await data.saveAssessment('self',answers);
-  else localStorage.setItem('pickleup_assessment_v1',JSON.stringify({schemaVersion:1,answers,date:new Date().toISOString()}));
+  else{window.PickleUpGuestWrites?.require();}if(!data.isAccount())localStorage.setItem('pickleup_assessment_v1',JSON.stringify({schemaVersion:1,answers,date:new Date().toISOString()}));
   if(stamp!==data.token())return;dirty=false;feedbackVersion=version();show({answers});if(data.isAccount())$('assessResult').textContent+=' Đã lưu lượt mới trên thiết bị · chờ đồng bộ.';
- }catch(e){if(stamp===data.token()){feedbackVersion=version();$('assessResult').textContent=data.isAccount()?PickleUpActivityHistory.error(e):'Không thể lưu trên trình duyệt. Hãy kiểm tra cài đặt lưu trữ.'}}
+ }catch(e){if(stamp===data.token()){feedbackVersion=version();$('assessResult').textContent=data.isAccount()?PickleUpActivityHistory.error(e):e?.code==='sign_in_required'?e.message:'Không thể lưu trên trình duyệt. Hãy kiểm tra cài đặt lưu trữ.'}}
  finally{if(stamp===data.token()){saving=false;render()}}
 });
 document.addEventListener('pickleup:activity-data',render);render();
