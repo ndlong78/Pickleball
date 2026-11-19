@@ -60,10 +60,10 @@ el("wpSave").addEventListener("click",async()=>{
  const stamp=sourceTag;
  try{
   if(data?.isAccount())await data.savePreferences({session_minutes:Number(minutes.value),gentle:gentle.checked},editRevision,{restore:data.deleted('user_preferences','self')});
-  else planner.saveSettings(localStorage,{minutes:Number(minutes.value),gentle:gentle.checked});
+  else{window.PickleUpGuestWrites?.require();planner.saveSettings(localStorage,{minutes:Number(minutes.value),gentle:gentle.checked})}
   if(stamp!==sourceTag)return;dirty=false;hydrate();
   el("wpStatus").textContent=data?.isAccount()?"Đã lưu lịch trong kho tài khoản trên thiết bị · chờ đồng bộ.":"Đã lưu tùy chọn lịch tập trên thiết bị này.";draw();
- }catch(_){if(stamp===sourceTag)el("wpStatus").textContent="Không lưu được lịch tập; hãy kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ."}
+ }catch(e){if(stamp===sourceTag)el("wpStatus").textContent=e?.code==='sign_in_required'?e.message:"Không lưu được lịch tập; hãy kiểm tra nguồn dữ liệu, xung đột và quyền lưu trữ."}
 });
 el("wpRefresh").addEventListener("click",()=>{if(data?.isAccount()){dirty=false;hydrate();document.dispatchEvent(new Event("pickleup:discard-checkin-drafts"))}draw()});
 document.addEventListener("pickleup:activity-data",draw);

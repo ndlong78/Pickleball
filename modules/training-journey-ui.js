@@ -65,7 +65,7 @@ async function checkin(status){
  const minutes=status==="done"?Number($("jTodayMinutes").value):null;
  try{
   if(data?.isAccount())await data.saveCheckin({day,status,minutes,lessonId:current?.lesson?.id||null,timezone:source.timezone,expectedLocalRevision:revision,restore:viewDeleted});
-  else{const next=c.change(c.read(raw(c.KEY)),day,status,minutes,current?.lesson?.id||null);c.save(localStorage,next)}
+  else{window.PickleUpGuestWrites?.require();const next=c.change(c.read(raw(c.KEY)),day,status,minutes,current?.lesson?.id||null);c.save(localStorage,next)}
   const nextSource=data?.getView();if(nextSource&&stamp!==nextSource.owner+':'+nextSource.mode)return;draftDirty=false;redraw();
   $("jCheckStatus").textContent=(data?.isAccount()?"Kho tài khoản trên thiết bị · chờ đồng bộ. ":"")+(status==="clear"?"Đã xóa xác nhận hôm nay.":status==="skipped"?"Đã đánh dấu bỏ qua hôm nay.":"Đã ghi nhận "+minutes+" phút tập thực tế hôm nay.");
   document.dispatchEvent(new Event("pickleup:week-checkins-updated"));

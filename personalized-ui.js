@@ -59,7 +59,7 @@ function addExercise(container,exercise,i){
 let current=null,createIntent=null,resultDirty=false,editRevision=null,historyPage=0;
 function render(plan,explicit=false){
  const previous=current?.id;current=plan;const area=$("pcPlan");area.replaceChildren();
- if(plan&&explicit&&!plansSource?.isAccount()){try{localStorage.setItem("pickleup_selected_plan_v31",JSON.stringify({source:"basic",id:plan.id}))}catch(_){}}
+ if(plan&&explicit&&!plansSource?.isAccount()&&window.PickleUpGuestWrites?.allowed()!==false){try{localStorage.setItem("pickleup_selected_plan_v31",JSON.stringify({source:"basic",id:plan.id}))}catch(_){}}
  area.dataset.planId=plan?.id||"";
  if(!plansSource?.isAccount())document.dispatchEvent(new CustomEvent("pickleup:plan-selected",{detail:{plan}}));
  if(!plan){$("pcPostScore").value="";$("pcLastOutcome").textContent="";area.append(element("p","Chưa có kế hoạch. Hãy nhập điểm và chọn Tạo giáo án 60 phút.","pc-muted"));$("pcCompletion").hidden=true;return}
@@ -97,13 +97,14 @@ async function generate(){
    if(createIntent?.signature!==signature){const snapshot=core.createPlan(scores,plans,level,new Date().toISOString());createIntent={signature,id:crypto.randomUUID(),operationId:crypto.randomUUID(),value:{source:'basic',schema_version:1,level_band:level,plan_snapshot:snapshot}}}
    const {signature:ignored,...intent}=createIntent;await plansSource.create(intent);if(stamp!==plansSource.token())return;createIntent=null;resultDirty=false;render(history().find(p=>p.id===intent.id)||null);renderHistory();controls();setStatus('Đã tạo giáo án trong kho tài khoản trên thiết bị · chọn giáo án và bấm đồng bộ.');return;
   }
+  window.PickleUpGuestWrites?.require();
   const plan=core.createPlan(scores,plans,level,new Date().toISOString());
   const next=plans.concat(plan).slice(-100);
   localStorage.setItem(storageKey,JSON.stringify(next));
   render(plan,true);renderHistory();
   setStatus("Đã tạo và lưu giáo án với ba ưu tiên: "+plan.exercises.map(e=>e.skillName).join(", ")+". Tạo lần kế tiếp để luân phiên bài tập.");
   document.dispatchEvent(new Event("pickleup:personal-plan-updated"));
- }catch(err){if(operationToken!==plansSource?.token())return;setStatus(plansSource?.isAccount()?"Chưa tạo được giáo án; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.":"Không thể tạo giáo án: "+err.message)}
+ }catch(err){if(operationToken!==plansSource?.token())return;setStatus(plansSource?.isAccount()?"Chưa tạo được giáo án; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.":err?.code==="sign_in_required"?err.message:"Không thể tạo giáo án: "+err.message)}
 }
 async function complete(){
  if(!current)return;
@@ -114,6 +115,7 @@ async function complete(){
   try{await plansSource.complete(id,score,revision);if(stamp!==plansSource.token())return;resultDirty=false;render(history().find(p=>p.id===id)||null);renderHistory();setStatus('Đã lưu kết quả trên thiết bị · chờ đồng bộ. Không tự tạo nhật ký tập hoặc attendance.')}catch(_){if(stamp===plansSource.token())setStatus('Chưa lưu được kết quả; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.')}return;
  }
  try{
+  window.PickleUpGuestWrites?.require();
   const plans=history(),i=plans.findIndex(p=>p.id===current.id);
   if(i<0)throw Error("Không tìm thấy kế hoạch; hãy tạo giáo án mới.");
   const wasCompleted=Boolean(plans[i].completedAt);
@@ -134,7 +136,7 @@ async function complete(){
   const d=score-updated.checkpoint.baseline;
   setStatus("Đã lưu kết quả: "+score+"/20 ("+(d>=0?"+":"")+d+" so với đầu vào)."+logWarning);
   document.dispatchEvent(new Event("pickleup:personal-plan-updated"));
- }catch(err){setStatus("Không lưu được: "+err.message)}
+ }catch(err){setStatus(err?.code==="sign_in_required"?err.message:"Không lưu được: "+err.message)}
 }
 function controls(){
  const writable=plansSource?plansSource.canWrite(current?.id):true;for(const id of ['pcGenerate','pcLoad','pcComplete'])if($(id))$(id).disabled=!writable;

@@ -5,6 +5,8 @@ window.PICKLEUP_FILL_LEVELS?.(level);
 {const heading=document.querySelector('#academy .sectionHead h2'),range=window.PICKLEUP_LESSON_RANGE;if(heading&&range&&data.length)heading.textContent=data.length+' buổi tập từ '+range.replace('–',' đến ')}
 const activity=window.PICKLEUP_ACTIVITY,plans=window.PICKLEUP_PLANS;
 const privatePractice=()=>plans?.isAccount()||activity?.isAccount();
+// V5.34: a signed-out visitor on the cloud-only host keeps checklist/focus/selection in this page only.
+const deviceWrites=()=>window.PickleUpGuestWrites?.allowed()!==false;
 const practice=window.PICKLEUP_ACADEMY_PRACTICE;
 let practiceFocus=null;
 let seedGuest=true,planToken=plans?.token(),remembering=false,selectionId=plans?.academySelection().id;
@@ -149,7 +151,7 @@ function showFocus(x){
  document.getElementById('academyFocusDone').textContent=done?'Bỏ đánh dấu':'Đánh dấu đã tập';
  timerView();practiceControls();
 }
-function moveFocus(delta){const x=get();if(!x)return;const index=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));if(privatePractice()){practice?.edit({lessonId:x.id,action:'focus',index});return}stopTick();focusTimer=null;focusPositions[x.id]=index;try{localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
+function moveFocus(delta){const x=get();if(!x)return;const index=Math.max(0,Math.min(5,currentFocusIndex(x)+delta));if(privatePractice()){practice?.edit({lessonId:x.id,action:'focus',index});return}stopTick();focusTimer=null;focusPositions[x.id]=index;try{if(deviceWrites())localStorage.setItem(focusKey,JSON.stringify(focusPositions))}catch(_){}showFocus(x)}
 document.getElementById('academyFocusToggle').addEventListener('click',()=>{if(focusEnabled)pauseTimer();focusEnabled=!focusEnabled;showFocus(get())});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&focusTimer?.endsAt!==null){pauseTimer();timerView()}});
 document.getElementById('academyFocusPrev').addEventListener('click',()=>moveFocus(-1));
@@ -160,7 +162,7 @@ document.getElementById('academyFocusDone').addEventListener('click',()=>{
  if(privatePractice()){practice?.edit({lessonId:x.id,action:'check',index:i,checked:!done.has(i)});return}
  if(done.has(i))done.delete(i);else done.add(i);
  stepRecords[x.id]=[...done].sort((a,b)=>a-b);
- try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ try{if(!privatePractice()&&deviceWrites())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
 function drawSteps(x){
@@ -197,13 +199,13 @@ document.getElementById('academyStepList').addEventListener('change',event=>{
  if(privatePractice()){practice?.edit({lessonId:x.id,action:'check',index,checked:input.checked});drawSteps(x);return}
  if(input.checked)done.add(index);else done.delete(index);
  stepRecords[x.id]=[...done].sort((a,b)=>a-b);
- try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ try{if(!privatePractice()&&deviceWrites())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
 document.getElementById('academyResetSteps').addEventListener('click',()=>{
  const x=get();if(!x)return;
  if(privatePractice()){practice?.edit({lessonId:x.id,action:'reset'});return}
- delete stepRecords[x.id];try{if(!privatePractice())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
+ delete stepRecords[x.id];try{if(!privatePractice()&&deviceWrites())localStorage.setItem(stepsKey,JSON.stringify(stepRecords))}catch(_){}
  drawSteps(x);
 });
 let selectedLevel=null;
@@ -290,7 +292,7 @@ detail.addEventListener('click',event=>{
 function show(persistSelection=false){const x=get();if(!x){detail.textContent='Chưa tải được giáo án. Vui lòng tải lại trang khi có mạng.';return}
 if(formLesson!==x.id){formLesson=x.id;dirty=false;feedbackVersion=null}
 if(focusTimer&&focusTimer.lessonId!==x.id){stopTick();focusTimer=null}
-if(!privatePractice()&&seedGuest){resumedId=x.id;try{if(plans)plans.rememberGuestLesson(x.id);else localStorage.setItem(selectionKey,x.id)}catch(_){}}
+if(!privatePractice()&&seedGuest&&deviceWrites()){resumedId=x.id;try{if(plans)plans.rememberGuestLesson(x.id);else localStorage.setItem(selectionKey,x.id)}catch(_){}}
 if(persistSelection)rememberLesson(x.id);
 refreshLearning();
 drawSteps(x);
@@ -320,6 +322,7 @@ document.getElementById('academySave').addEventListener('click',async()=>{
   finally{if(stamp===activity.token()&&selectionStamp===plans?.token()){saving=false;controls();renderAttempts()}}
   return;
  }
+ if(window.PickleUpGuestWrites&&!window.PickleUpGuestWrites.allowed()){status.textContent=window.PickleUpGuestWrites.MESSAGE;return}
  const date=new Date().toISOString(),nextRecord={score:v,date,skill:x.skill,level:x.level};
  if(Number.isInteger(x.assessmentVersion))nextRecord.av=trends.lessonVersion(x);
  try{
@@ -364,7 +367,7 @@ document.addEventListener('pickleup:academy-practice-data',acceptPractice);
 document.getElementById('academyPracticeRetry')?.addEventListener('click',()=>practice?.retry());
 async function rememberLesson(id){
  if(remembering)return;const stamp=plans?.token();remembering=true;controls();
- try{if(plans)await plans.chooseLesson(id);else localStorage.setItem(selectionKey,id);if(stamp===plans?.token()){resumedId=id;selectionId=id;refreshLearning()}}
+ try{if(plans)await plans.chooseLesson(id);else if(deviceWrites())localStorage.setItem(selectionKey,id);if(stamp===plans?.token()){resumedId=id;selectionId=id;refreshLearning()}}
  catch(_){}finally{if(stamp===plans?.token()){remembering=false;controls()}}
 }
 document.getElementById('academyRemember').addEventListener('click',()=>{const x=get();if(x)rememberLesson(x.id)});

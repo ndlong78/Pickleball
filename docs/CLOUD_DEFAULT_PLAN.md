@@ -1,6 +1,6 @@
 # Chuyển dữ liệu người tập lên cloud (kế hoạch V5.31+)
 
-Trạng thái: **A1 (V5.31.0, mục 7), A2 (V5.32.0, mục 8) và C (V5.33.0, mục 9) đã có mã**; các bước B, D chưa làm. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
+Trạng thái: **A1 (V5.31.0, mục 7), A2 (V5.32.0, mục 8), C (V5.33.0, mục 9) và B (V5.34.0, mục 10) đã có mã**; bước D chưa làm. Owner xác nhận ngày 19/11/2026 rằng đăng nhập OTP, tự đồng bộ giữa hai trình duyệt, lưu khi mất mạng và nhập dữ liệu cũ đã chạy được trên project thật. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
 
 ## 1. Quyết định của owner (15/11/2026)
 1. **Chưa đăng nhập thì không lưu được.** Khách vẫn xem nội dung; mọi thao tác lưu yêu cầu đăng nhập.
@@ -65,3 +65,11 @@ Kế hoạch dựa trên đọc mã; chưa bước nào được cài đặt. H�
 - Sau khi nhập xong ở chế độ tự động, ba nguồn tài khoản được đọc lại để hiển thị dữ liệu vừa nhập.
 - **Không đổi:** không tự nhập; không ghi/xóa localStorage; lõi mapper, checkpoint, idempotency và RPC nhập giữ nguyên. Ô "đã giữ tệp gốc/bản cứu hộ" vẫn bắt buộc — nên tải bản cứu hộ ở phần phía trên trước khi nhập.
 - Kiểm thử: `import-pilot.spec` thêm 2 ca (luồng đầy đủ từ dữ liệu máy với RPC nhập mô phỏng: mời → nạp → preview → xác nhận → nhập → "đã được nhập", localStorage không đổi; không có dữ liệu thì không mời), `staging-account.spec` thêm 2 ca trên host chính (mời và nạp không gửi gì; URL vận hành tắt bộ nhập). **Chưa thử trên project Supabase thật.**
+
+## 10. Bước B — đã cài đặt (V5.34.0)
+- `modules/legacy-storage.js` (nạp ở mọi trang, kể cả Home) có `PickleUpGuestWrites`: `cloudOnly()` đúng khi ở host chính, đúng đường dẫn, không có `?pilot=`/`?maintenance=` và Auth không bị tắt; `signedIn()` đúng khi có phiên Supabase lưu trên máy (`pickleup_auth_v6`) hoặc một trong ba runtime tài khoản có owner. `require()` ném lỗi `sign_in_required` với thông báo "Cần đăng nhập để lưu…".
+- Mọi nhánh ghi dữ liệu khách gọi `require()` trước khi ghi: mục tiêu tuần, lịch tập, check-in (Hành trình và Tiến bộ), điểm Học viện, tự đánh giá, kiểm tra chuyển cấp, kiểm tra nâng cao, nhật ký trận, tạo/hoàn thành giáo án cơ bản và nâng cao (kèm nhật ký tập), lượt tập Trên sân, điểm tuần ở Home (lưu và xóa), khôi phục sao lưu V5 (trỏ sang bộ nhập).
+- Trạng thái tạm chỉ giữ trong trang: checklist/bước tập trung Học viện, bài Học viện đang xem, giáo án đang chọn, trạng thái đồng hồ Trên sân.
+- Dữ liệu cũ trên máy vẫn được đọc và hiển thị; không có gì bị xóa hay ghi đè. Host khác, URL vận hành và host test loopback giữ hành vi thiết bị.
+- Đây là cổng giao diện; ranh giới thật vẫn là Auth/RLS phía máy chủ. Trên trang có nguồn tài khoản, trạng thái Auth của các nguồn đó quyết định (phiên hết hạn → không có owner → không ghi xuống máy). Chỉ ở Home (không nạp nguồn tài khoản) cổng dựa vào phiên Supabase còn lưu trên máy, nên một phiên đã hết hạn ở đó vẫn có thể lưu điểm tuần xuống máy.
+- Kiểm thử: `guest-writes.test.js` (5 ca), `staging-account.spec` thêm 4 ca (chưa đăng nhập: mục tiêu, check-in, điểm Học viện, trận đấu bị từ chối và localStorage không đổi ở 390/1440; khôi phục V5 bị từ chối và đăng nhập thì mở; URL vận hành vẫn lưu trên máy).

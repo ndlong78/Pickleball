@@ -27,7 +27,7 @@ async function send(page,kind){await route(page,'settings');await page.locator('
 const legacy=page=>page.evaluate(()=>JSON.stringify(Object.entries(localStorage).filter(([key])=>key.startsWith('pickleup_')&&key!=='pickleup_auth_v6').sort()));
 for(const width of [390,820,1180,1440])test('real account-data flags, mock RPC: entry, independent source, manual queue and maintenance off-switch '+width,async({page,context})=>{
  await page.setViewportSize({width,height:900});const f=await setup(context);await visit(page,off);await expect(page.locator('[data-sync-body]')).toBeHidden();await expect(page.locator('[data-activity-body]')).toBeHidden();await expect(page.locator('[data-plan-body]')).toBeHidden();expect(f.calls).toHaveLength(0);
- await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.33.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
+ await page.goto(trial);await expect(page).toHaveURL(trial);await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-staging-build]')).toContainText('5.34.0');await expect(page.locator('[data-activity-staging]')).toBeVisible();await expect(page.locator('[data-plan-staging]')).toBeVisible();await expect(page.locator('[data-staging-open]')).toBeHidden();expect(f.calls).toHaveLength(0);
  expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode,PICKLEUP_IMPORT_CONFIG.enabled])).toEqual(['guest','guest','guest',false]);
  const before=await legacy(page);await enable(page,'activity');expect(await page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest']);await academySave(page,17);expect(new URL(page.url()).searchParams.get('pilot')).toBe('account-data');expect(f.calls.some(c=>c.name==='apply_event_operation')).toBe(false);await send(page,'activity');
  await academySave(page,18);await route(page,'settings');await expect(page.locator(activityStatus)).toContainText('Còn thay đổi chờ gửi');const count=f.calls.length;
@@ -121,4 +121,31 @@ test('default URL: a signed-in user with legacy device data is invited to import
 });
 test('operator and maintenance URLs keep the importer off',async({page,context})=>{
  await setup(context);for(const url of [trial,off]){await visit(page,url);expect(await page.evaluate(()=>PICKLEUP_IMPORT_CONFIG.enabled)).toBe(false);await expect(page.locator('[data-import-body]')).toBeHidden()}
+});
+// ---- V5.34 (plan B): signed out on the main host = read device data, cannot save ----
+// The fixture treats an empty owner as account A on load, so sign out after the page is up (routing keeps the session).
+async function signedOut(page,context){const f=await setup(context);await visit(page,normal);await page.evaluate(()=>SWITCH_STAGING_OWNER(null));
+ await expect.poll(()=>page.evaluate(()=>[PICKLEUP_DATA.getState().mode,PICKLEUP_ACTIVITY.getState().mode,PICKLEUP_PLANS.getState().mode])).toEqual(['guest','guest','guest']);return f}
+for(const width of [390,1440])test('default URL, signed out: saving a goal, a check-in, an Academy score or a match is refused with a sign-in message; device data stays readable and unchanged '+width,async({page,context})=>{
+ await page.setViewportSize({width,height:900});const f=await signedOut(page,context);const before=await legacy(page);
+ expect(await page.evaluate(()=>PickleUpGuestWrites.allowed())).toBe(false);
+ await route(page,'progress');await expect(page.locator('#wgDays')).toHaveValue('5');await page.locator('#wgDays').selectOption('2');await page.locator('#wgSave').click();
+ await expect(page.locator('#wgStatus')).toContainText('Cần đăng nhập để lưu');
+ await route(page,'journey');await page.locator('#jTodayMinutes').fill('40');await page.locator('#jDone').click();await expect(page.locator('#jCheckStatus')).toContainText('Cần đăng nhập để lưu');
+ await route(page,'academy');await page.locator('#academyWeek').selectOption('PU-001');await page.locator('#academyScore').fill('12');await page.locator('#academySave').click();await expect(page.locator('#academyStatus')).toContainText('Cần đăng nhập để lưu');
+ await route(page,'matches');await page.locator('#matchOurs').fill('11');await page.locator('#matchTheirs').fill('7');await page.locator('#matchSave').click();await expect(page.locator('#matchStatus')).toContainText('Cần đăng nhập để lưu');
+ expect(await legacy(page)).toBe(before);expect(f.calls.some(c=>c.name.startsWith('apply_'))).toBe(false);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+test('default URL, signed out: restoring a V5 backup is refused and points to the importer; signing in lifts the gate',async({page,context})=>{
+ await signedOut(page,context);const before=await legacy(page);
+ await route(page,'academy');await expect(page.locator('#restoreFile')).toBeEnabled();await page.locator('#restoreFile').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from('{"app":"PickleUp","schemaVersion":1}')});
+ await expect(page.locator('#backupStatus')).toContainText('Cần đăng nhập để lưu');await expect(page.locator('#backupStatus')).toContainText('Nhập dữ liệu cũ');expect(await legacy(page)).toBe(before);
+ await page.evaluate(A=>SWITCH_STAGING_OWNER(A),A);await adopted(page);expect(await page.evaluate(()=>PickleUpGuestWrites.allowed())).toBe(true);
+});
+test('operator trial URL keeps device storage for a signed-out visitor',async({page,context})=>{
+ await setup(context);await visit(page,trial);await page.evaluate(()=>SWITCH_STAGING_OWNER(null));
+ expect(await page.evaluate(()=>PickleUpGuestWrites.allowed())).toBe(true);
+ await route(page,'progress');await page.locator('#wgDays').selectOption('2');await page.locator('#wgSave').click();await expect(page.locator('#wgStatus')).toContainText('Đã lưu mục tiêu trên thiết bị');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('pickleup_weekly_goal_v46')).days)).toBe(2);
 });

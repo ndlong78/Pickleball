@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.33.0 — 16/11/2026 (đang PR):** bước C của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, người đã đăng nhập có dữ liệu cũ trên máy được **mời nhập vào tài khoản**: nút "Dùng dữ liệu đang có trên máy này" nạp thẳng dữ liệu máy (không cần xuất tệp), sau đó vẫn là xem trước → xác nhận → nhập như bộ nhập sẵn có. Không tự nhập; dữ liệu trên máy không bị xóa. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.33.0.md).
+**V5.34.0 — 19/11/2026 (đang PR):** bước B của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, **chưa đăng nhập thì không lưu được**: các nút lưu (mục tiêu, lịch, check-in, điểm Học viện, đánh giá, giáo án, nhật ký tập/trận, điểm tuần, khôi phục sao lưu V5) báo cần đăng nhập; dữ liệu cũ trên máy vẫn xem được và không bị xóa. Trạng thái tạm (đồng hồ, checklist, bài đang xem) chỉ giữ trong trang. Owner đã xác nhận đăng nhập, tự đồng bộ, lưu offline và nhập dữ liệu cũ chạy được trên máy chủ thật trước bước này. [Release notes](RELEASE_V5.34.0.md).
+
+**V5.33.0 — 16/11/2026 (đã phát hành, #72):** bước C của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, người đã đăng nhập có dữ liệu cũ trên máy được **mời nhập vào tài khoản**: nút "Dùng dữ liệu đang có trên máy này" nạp thẳng dữ liệu máy (không cần xuất tệp), sau đó vẫn là xem trước → xác nhận → nhập như bộ nhập sẵn có. Không tự nhập; dữ liệu trên máy không bị xóa. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.33.0.md).
 
 **V5.32.0 — 15/11/2026 (đã phát hành, #71):** bước A2 của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — trên host chính, thay đổi của người đã đăng nhập **tự gửi lên máy chủ** sau khi lưu và khi có mạng lại (lùi dần khi lỗi, dừng chờ người dùng khi xung đột); nút Đồng bộ vẫn gửi ngay. Chưa thử trên project Supabase thật. [Release notes](RELEASE_V5.32.0.md).
 

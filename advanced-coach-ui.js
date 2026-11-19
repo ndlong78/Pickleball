@@ -74,7 +74,7 @@ function select(plan,activate=true){
  planCard($("acCoachPlan"),plan,activate||plansSource?.isAccount());
  if(!plan)return;
  if(activate&&!plansSource?.isAccount()){
-  try{localStorage.setItem(selectionKey,JSON.stringify({source:"advanced",id:plan.id}))}catch(_){}
+  if(window.PickleUpGuestWrites?.allowed()!==false)try{localStorage.setItem(selectionKey,JSON.stringify({source:"advanced",id:plan.id}))}catch(_){}
   document.dispatchEvent(new CustomEvent("pickleup:plan-selected",{detail:{plan}}));
   $("acCoachRun").disabled=false;
  }else $("acCoachRun").disabled=true;
@@ -105,12 +105,13 @@ async function make(){
    if(createIntent?.signature!==signature){const snapshot=core.createPlan(scores,plans,level,new Date().toISOString(),window.PICKLEUP_ADVANCED_CURRICULUM||[],{focusMetric:requested});createIntent={signature,id:crypto.randomUUID(),operationId:crypto.randomUUID(),value:{source:'advanced',schema_version:1,level_band:level,plan_snapshot:snapshot}}}
    const {signature:ignored,...intent}=createIntent;await plansSource.create(intent);if(stamp!==plansSource.token())return;createIntent=null;resultDirty=false;select(history().find(p=>p.id===intent.id)||null,false);showHistory();controls();status('Đã tạo giáo án trong kho tài khoản trên thiết bị · chọn giáo án và bấm đồng bộ.');return;
   }
+  window.PickleUpGuestWrites?.require();
   const plan=core.createPlan(scores,plans,$("acCoachLevel").value,new Date().toISOString(),window.PICKLEUP_ADVANCED_CURRICULUM||[],{focusMetric:requested});
   const next=plans.concat(plan).slice(-100);
   localStorage.setItem(core.KEY,JSON.stringify(next));
   select(plan,true);showHistory();
   status("Đã tạo và lưu giáo án mới. Ba ưu tiên: "+plan.exercises.map(e=>e.skillName).join(", ")+". "+(requested?"Đã áp dụng ưu tiên được bạn chọn từ nhật ký trận đấu.":"Chọn thuần theo điểm kỹ năng."));
- }catch(err){if(operationToken!==plansSource?.token())return;status(plansSource?.isAccount()?"Chưa tạo được giáo án; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.":"Không tạo được giáo án: "+err.message)}
+ }catch(err){if(operationToken!==plansSource?.token())return;status(plansSource?.isAccount()?"Chưa tạo được giáo án; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.":err?.code==="sign_in_required"?err.message:"Không tạo được giáo án: "+err.message)}
 }
 async function complete(){
  if(!current)return;
@@ -121,6 +122,7 @@ async function complete(){
   try{await plansSource.complete(id,result,revision);if(stamp!==plansSource.token())return;resultDirty=false;select(history().find(p=>p.id===id)||null,true);showHistory();controls();status('Đã lưu kết quả trên thiết bị · chờ đồng bộ. Không tự tạo nhật ký tập hoặc attendance.')}catch(_){if(stamp===plansSource.token())status('Chưa lưu được; giữ điểm nhập và kiểm tra quyền lưu trữ hoặc xung đột trong Dữ liệu.')}return;
  }
  try{
+  window.PickleUpGuestWrites?.require();
   const plans=writableHistory(),idx=plans.findIndex(p=>p.id===current.id);
   if(idx<0)throw Error("Không tìm thấy giáo án đã lưu.");
   const before=plans[idx],updated={...before,completedAt:new Date().toISOString(),checkScore:result};
@@ -135,7 +137,7 @@ async function complete(){
   $("acCoachSource").textContent="Điểm sau tập đã cập nhật. Giáo án mới sẽ dùng kết quả này.";
   select(updated,true);showHistory();
   status("Đã lưu: "+result+"/20 ("+sign+note+" so với đầu vào)."+logMessage);
- }catch(err){status("Lỗi lưu kết quả: "+err.message)}
+ }catch(err){status(err?.code==="sign_in_required"?err.message:"Lỗi lưu kết quả: "+err.message)}
 }
 function controls(){const writable=plansSource?plansSource.canWrite(current?.id):true;for(const id of ['acCoachCreate','acCoachImport','acCoachSave'])if($(id))$(id).disabled=!writable;const chosen=plansSource?.isAccount()?plansSource.selected():read(selectionKey,null);$("acCoachRun").disabled=!current||chosen?.id!==current.id}
 function sourceUpdate(changed){

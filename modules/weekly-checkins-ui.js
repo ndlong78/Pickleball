@@ -46,7 +46,7 @@ cards.addEventListener("click",async event=>{
  const state=source?.getView(),stamp=state?state.owner+':'+state.mode:'guest';
  try{
   if(source?.isAccount())await source.saveCheckin({day,status,minutes,lessonId:card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null,timezone:state.timezone,expectedLocalRevision:button.dataset.revision,restore:button.dataset.restore==='true'});
-  else{const next=c.change(load(),day,status,minutes,card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null);c.save(localStorage,next)}
+  else{window.PickleUpGuestWrites?.require();const next=c.change(load(),day,status,minutes,card.querySelector("a[data-lesson-id]")?.dataset.lessonId||null);c.save(localStorage,next)}
   const current=source?.getView();if(current&&stamp!==current.owner+':'+current.mode)return;
   drafts.delete(day);document.dispatchEvent(new Event("pickleup:week-checkins-updated"));
   $("wcStatus").textContent=(source?.isAccount()?"Kho tài khoản trên thiết bị · chờ đồng bộ. ":"")+(status==="clear"?"Đã xóa ghi nhận ngày "+day+".":"Đã lưu ghi nhận ngày "+day+".");
