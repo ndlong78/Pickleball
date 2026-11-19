@@ -1,6 +1,6 @@
 # Chuyển dữ liệu người tập lên cloud (kế hoạch V5.31+)
 
-Trạng thái: **A1 (V5.31.0, mục 7), A2 (V5.32.0, mục 8), C (V5.33.0, mục 9) và B (V5.34.0, mục 10) đã có mã**; bước D chưa làm. Owner xác nhận ngày 19/11/2026 rằng đăng nhập OTP, tự đồng bộ giữa hai trình duyệt, lưu khi mất mạng và nhập dữ liệu cũ đã chạy được trên project thật. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
+Trạng thái: **A1 (V5.31.0, mục 7), A2 (V5.32.0, mục 8), C (V5.33.0, mục 9) và B (V5.34.0, mục 10) và D (V5.35.0, mục 11) đã có mã**; toàn bộ lộ trình đã cài đặt. Owner xác nhận ngày 19/11/2026 rằng đăng nhập OTP, tự đồng bộ giữa hai trình duyệt, lưu khi mất mạng và nhập dữ liệu cũ đã chạy được trên project thật. Baseline kế hoạch: main `bbc35d7` / V5.30.0. Không đổi kiến trúc: vẫn static HTML/CSS/vanilla JS, tám route, Supabase (Auth OTP, RLS, RPC/CAS) và IndexedDB + outbox đã có từ V6.
 
 ## 1. Quyết định của owner (15/11/2026)
 1. **Chưa đăng nhập thì không lưu được.** Khách vẫn xem nội dung; mọi thao tác lưu yêu cầu đăng nhập.
@@ -34,7 +34,9 @@ Hệ quả owner cần biết: project Supabase `rfeoeagklmaqmkcdhprb` (trước
 Thứ tự A1 → A2 → C → B → D: chỉ chặn lưu của khách (B) sau khi đã có đường nhập dữ liệu cũ (C), để không ai bị kẹt dữ liệu.
 
 ## 5. Việc owner phải làm (Claude không có quyền)
-- [ ] Supabase → Authentication: bật cho phép đăng ký; đặt giới hạn gửi email/OTP; xác nhận SMTP riêng gửi được tới hộp thư ngoài.
+- [x] Supabase → Authentication: bật cho phép đăng ký (owner báo 19/11/2026); SMTP riêng đã cấu hình (owner báo 15/11).
+- [ ] Đặt giới hạn gửi email/OTP và đăng ký theo IP (Rate Limits) phù hợp; bật CAPTCHA nếu thấy đăng ký rác.
+- [ ] Chọn kênh nhận yêu cầu xóa tài khoản (email hỗ trợ) để ghi vào mục Tài khoản; quy trình xóa hiện làm thủ công trong Supabase Dashboard.
 - [ ] Xác nhận 9 migrations đã áp dụng (owner đã báo migration 8 và 9).
 - [ ] Sao lưu: gói Free không có khôi phục theo thời điểm. Quyết định cách sao lưu định kỳ trước bước D.
 - [ ] Thử thật trên thiết bị sau từng bước (đăng nhập, lưu, đồng bộ, offline, đổi tài khoản).
@@ -73,3 +75,11 @@ Kế hoạch dựa trên đọc mã; chưa bước nào được cài đặt. H�
 - Dữ liệu cũ trên máy vẫn được đọc và hiển thị; không có gì bị xóa hay ghi đè. Host khác, URL vận hành và host test loopback giữ hành vi thiết bị.
 - Đây là cổng giao diện; ranh giới thật vẫn là Auth/RLS phía máy chủ. Trên trang có nguồn tài khoản, trạng thái Auth của các nguồn đó quyết định (phiên hết hạn → không có owner → không ghi xuống máy). Chỉ ở Home (không nạp nguồn tài khoản) cổng dựa vào phiên Supabase còn lưu trên máy, nên một phiên đã hết hạn ở đó vẫn có thể lưu điểm tuần xuống máy.
 - Kiểm thử: `guest-writes.test.js` (5 ca), `staging-account.spec` thêm 4 ca (chưa đăng nhập: mục tiêu, check-in, điểm Học viện, trận đấu bị từ chối và localStorage không đổi ở 390/1440; khôi phục V5 bị từ chối và đăng nhập thì mở; URL vận hành vẫn lưu trên máy).
+
+## 11. Bước D — đã cài đặt (V5.35.0)
+- `modules/auth-config.js`: `allowSignup: true`. Đăng nhập vẫn chỉ bật trên host chính có Auth (`PickleUpAuthOrigin`); GitHub Pages và host khác vẫn tắt.
+- Mục Tài khoản (Dữ liệu): ô "Đăng ký tài khoản mới nếu chưa có" hiển thị; hướng dẫn đăng ký bằng mã email (không mật khẩu). `signInWithOtp` chỉ gửi `shouldCreateUser: true` khi người dùng tích ô, nên gõ nhầm email khi đăng nhập không tạo tài khoản.
+- Thông báo lỗi: email chưa có tài khoản (`otp_disabled`/"Signups not allowed for otp") → nhắc tích ô đăng ký; đăng ký bị tắt phía máy chủ (`signup_disabled`) → "Đăng ký mới đang tạm đóng…". Gửi mã thành công → nhắc kiểm tra thư rác.
+- Mục "Dữ liệu tài khoản và xóa tài khoản": liệt kê dữ liệu lưu (email và dữ liệu tập do người dùng lưu), nơi lưu (Supabase của ứng dụng, RLS theo tài khoản), không dùng cho quảng cáo/không chia sẻ; **chưa có nút tự xóa**, yêu cầu xóa gửi người quản trị; tệp đã tải và cache trình duyệt không xóa từ xa được.
+- Giới hạn: quy trình xóa theo [chính sách §4](PILOT_OPERATING_POLICY.md) (reauth, preview/export, xóa Auth identity + dữ liệu qua quy trình đặc quyền) **chưa được tự động hóa**; backup định kỳ vẫn chưa vận hành (gói Free). Lạm dụng đăng ký được hạn chế bằng Rate Limits/CAPTCHA của Supabase do owner cấu hình.
+- Kiểm thử: `auth-adapter.test.js` thêm ca thông báo đăng ký; `auth-origin.test.js` kiểm `allowSignup` mở trên mọi host có cấu hình.
