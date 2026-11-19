@@ -72,6 +72,8 @@ function createAuthAdapter(client,{rpcTransport,allowSignup=true}={}){
   if(!error)return null;
   if(error.status===429||error.code==="over_email_send_rate_limit")return "Gửi quá nhiều mã. Vui lòng chờ rồi thử lại.";
   if(error.code==="otp_expired"||error.status===403)return "Mã sai hoặc đã hết hạn. Kiểm tra mã hoặc yêu cầu mã mới.";
+  if(error.code==="signup_disabled")return "Đăng ký mới đang tạm đóng. Tài khoản đã có vẫn đăng nhập được.";
+  if(error.code==="otp_disabled"||/signups not allowed/i.test(String(error.message||"")))return allowSignup?"Email này chưa có tài khoản. Tích “Đăng ký tài khoản mới nếu chưa có” rồi gửi lại mã.":"Email này chưa có tài khoản được cấp.";
   return "Không thực hiện được. Kiểm tra kết nối hoặc thử lại sau.";
  }
  return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,syncRpc,eventRpc,planRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};

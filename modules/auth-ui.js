@@ -29,7 +29,7 @@ async function init(){
 }
 async function run(fn){if(maintenance.size)return;const stamp=++serial;busy=true;controls();try{const result=await fn();if(stamp!==serial||result?.stale)return;if(result?.error)status.textContent=result.error;else status.textContent="Đã thực hiện."}finally{if(stamp===serial){busy=false;controls()}}}
 form.addEventListener("submit",event=>{event.preventDefault();if(busy||!form.reportValidity())return;run(async()=>{const result=await adapter.verify(email.value.trim(),otp.value.trim());otp.value="";return result})});
-send.addEventListener("click",()=>{if(busy||Date.now()<until||!email.reportValidity())return;run(async()=>{const result=await adapter.requestOtp(email.value.trim(),signup.checked);if(!result.error&&!result.stale){until=Date.now()+60000;status.textContent="Nếu email được phép, mã đã được gửi. Kiểm tra hộp thư.";return {stale:true}}return result})});
+send.addEventListener("click",()=>{if(busy||Date.now()<until||!email.reportValidity())return;run(async()=>{const result=await adapter.requestOtp(email.value.trim(),signup.checked);if(!result.error&&!result.stale){until=Date.now()+60000;status.textContent="Nếu email hợp lệ, mã đã được gửi. Kiểm tra hộp thư, cả mục thư rác/quảng cáo; mã chỉ dùng một lần.";return {stale:true}}return result})});
 logout.addEventListener("click",()=>run(()=>adapter.logout()));
 probe.addEventListener("click",()=>run(async()=>{const data=await adapter.privateRead();return {error:data.status==="ok"||data.status==="applied"?null:"Trạng thái dữ liệu riêng: "+data.status}}));
 setInterval(controls,1000);

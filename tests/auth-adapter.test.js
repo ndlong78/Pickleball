@@ -65,3 +65,18 @@ test('a connected pilot adapter denies signup but still requests OTP for existin
  const adapter=createAuthAdapter(client,{allowSignup:false});
  try{await adapter.ready;assert.ok((await adapter.requestOtp('fixture@example.invalid',true)).error);assert.equal(requests,0);assert.equal((await adapter.requestOtp('fixture@example.invalid',false)).error,null);assert.equal(requests,1)}finally{adapter.destroy()}
 });
+
+test('open signup: unknown email without the signup box gets a hint, closed project says so',async()=>{
+ let reply;
+ const client={auth:{onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}}},getSession:async()=>({data:{session:null}}),signInWithOtp:async args=>reply(args)}};
+ const adapter=createAuthAdapter(client,{allowSignup:true});
+ try{
+  await adapter.ready;
+  reply=args=>{assert.equal(args.options.shouldCreateUser,false);return {error:{status:422,code:'otp_disabled',message:'Signups not allowed for otp'}}};
+  assert.match((await adapter.requestOtp('fixture@example.invalid',false)).error,/chưa có tài khoản.*Đăng ký tài khoản mới/);
+  reply=args=>{assert.equal(args.options.shouldCreateUser,true);return {error:{status:422,code:'signup_disabled',message:'Signups not allowed for this instance'}}};
+  assert.match((await adapter.requestOtp('fixture@example.invalid',true)).error,/Đăng ký mới đang tạm đóng/);
+  reply=args=>{assert.equal(args.options.shouldCreateUser,true);return {}};
+  assert.equal((await adapter.requestOtp('fixture@example.invalid',true)).error,null);
+ }finally{adapter.destroy()}
+});

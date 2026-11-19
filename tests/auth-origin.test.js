@@ -21,12 +21,12 @@ test('loopback Auth requires a loopback backend, never the Managed project',()=>
   assert.equal(allowed({href:'http://'+hostname+':4173/'},project),false);
  }
 });
-test('deployment config is disabled on Pages or without its helper; signup stays closed',()=>{
+test('deployment config is disabled on Pages or without its helper; signup is open wherever auth is configured',()=>{
  for(const [href,helper,enabled]of [[stage+'/',true,true],['https://ndlong78.github.io/Pickleball/',true,false],['http://127.0.0.1:4173/',true,false],[stage+'/',false,false]]){
   const window={location:{href}},context=vm.createContext({window,URL});
   if(helper)vm.runInContext(originSource,context);
   vm.runInContext(configSource,context);
   assert.equal(window.PICKLEUP_AUTH_CONFIG.enabled,enabled);
-  assert.equal(window.PICKLEUP_AUTH_CONFIG.allowSignup,false);
+  assert.equal(window.PICKLEUP_AUTH_CONFIG.allowSignup,true);
  }
 });
