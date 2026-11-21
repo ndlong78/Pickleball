@@ -80,3 +80,19 @@ test('open signup: unknown email without the signup box gets a hint, closed proj
   assert.equal((await adapter.requestOtp('fixture@example.invalid',true)).error,null);
  }finally{adapter.destroy()}
 });
+
+test('deleteAccount calls only the own-account RPC with the fixed confirmation and narrows the reply',async()=>{
+ let event,calls=[],reply={status:'deleted',extra:'x'};
+ const client={auth:{onAuthStateChange(fn){event=fn;return {data:{subscription:{unsubscribe(){}}}}},getSession:async()=>({data:{session:null}})}};
+ const adapter=createAuthAdapter(client,{rpcTransport:async(method,args,token)=>{calls.push({method,args,token});return reply}});
+ try{
+  await adapter.ready;
+  assert.deepEqual(await adapter.deleteAccount('A'),{status:'auth_required'});assert.equal(calls.length,0);
+  event('SIGNED_IN',{user:{id:'A',email:'a@example.invalid'},access_token:'fixture-A',expires_at:Math.floor(Date.now()/1000)+3600});
+  assert.deepEqual(await adapter.deleteAccount('B'),{status:'auth_required'});assert.equal(calls.length,0);
+  assert.deepEqual(await adapter.deleteAccount('A'),{status:'deleted'});
+  assert.deepEqual(calls,[{method:'delete_own_account',args:{p_confirmation:'delete-own-account-v1'},token:'fixture-A'}]);
+  reply={status:'reauth_required'};assert.deepEqual(await adapter.deleteAccount('A'),{status:'reauth_required'});
+  reply={status:'something_else'};assert.deepEqual(await adapter.deleteAccount('A'),{status:'invalid'});
+ }finally{adapter.destroy()}
+});

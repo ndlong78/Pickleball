@@ -132,7 +132,7 @@
 <p data-auto-source>Chưa có tài khoản: nhập email, tích “Đăng ký tài khoản mới nếu chưa có” rồi gửi mã. Không cần mật khẩu; mỗi lần đăng nhập dùng mã gửi qua email.</p>
 <details data-account-privacy><summary>Dữ liệu tài khoản và xóa tài khoản</summary>
 <p>Tài khoản lưu email đăng nhập và dữ liệu tập bạn chủ động lưu: mục tiêu/lịch tập, check-in, điểm Học viện, đánh giá, nhật ký tập, trận đấu và giáo án cá nhân. Dữ liệu nằm trên máy chủ Supabase của ứng dụng, mỗi tài khoản chỉ đọc/ghi được dữ liệu của chính mình. Ứng dụng không dùng dữ liệu cho quảng cáo và không bán hoặc chia sẻ cho bên thứ ba.</p>
-<p>Chưa có nút tự xóa tài khoản. Muốn xóa tài khoản và dữ liệu, hãy gửi yêu cầu cho người quản trị ứng dụng từ đúng email đã đăng ký. Trước khi xóa, bạn có thể tải cache hoạt động/giáo án ở các mục bên trên. Tệp đã tải về và cache trong trình duyệt không thể xóa từ xa; hãy tự xóa trên thiết bị của bạn.</p>
+<p>Tự xóa tài khoản: khi đã đăng nhập, mở “Xóa tài khoản” bên dưới, nhận mã qua email rồi xác nhận. Tài khoản và toàn bộ dữ liệu trên máy chủ bị xóa ngay, không hoàn tác. Trước khi xóa, bạn có thể tải cache hoạt động/giáo án ở các mục bên trên. Tệp đã tải về và cache trong trình duyệt không thể xóa từ xa; hãy tự xóa trên thiết bị của bạn.</p>
 </details>
 <p role="status" aria-live="polite">Chế độ khách</p>
 <form hidden>
@@ -144,6 +144,15 @@
 </form>
 <button type="button" data-private hidden>Kiểm tra truy cập dữ liệu riêng</button>
 <button type="button" data-logout hidden>Đăng xuất trên trình duyệt này</button>
+<details data-account-delete hidden><summary>Xóa tài khoản</summary>
+<p><strong>Xóa vĩnh viễn</strong> tài khoản đang đăng nhập cùng mục tiêu, check-in, điểm, đánh giá, nhật ký, trận đấu và giáo án trên máy chủ. Thay đổi chưa đồng bộ trên máy này sẽ mất. Không hoàn tác được; đăng ký lại bằng cùng email sẽ là tài khoản mới, trống.</p>
+<ol><li>Bấm gửi mã: mã được gửi tới email của tài khoản.</li><li>Nhập mã trong 10 phút và gõ <strong>XÓA TÀI KHOẢN</strong>.</li><li>Bấm xóa vĩnh viễn.</li></ol>
+<button type="button" data-delete-send>Gửi mã xác nhận xóa tới email</button>
+<label>Mã trong email <input data-delete-otp inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" minlength="6" maxlength="10"></label>
+<label>Gõ XÓA TÀI KHOẢN <input data-delete-phrase autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40"></label>
+<button type="button" data-delete-confirm>Xóa vĩnh viễn tài khoản</button>
+<p aria-live="polite" data-delete-status></p>
+</details>
 </div>
 <div class="card" id="pageDiagnostics" data-surface-hidden style="padding:20px">
 <div class="sectionHead" style="margin-bottom:8px"><div><div class="kicker">Chẩn đoán kỹ thuật</div>

@@ -2,7 +2,7 @@
 'use strict';
 const http=require('node:http'),fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
 const ROOT=path.resolve(__dirname,'../..');
-const ALLOWED=new Set(['/auth/v1/otp','/auth/v1/verify','/auth/v1/token','/auth/v1/logout','/auth/v1/user','/auth/v1/settings',...['pull_changes','begin_import','import_batch','finish_import','get_import_status','prepare_sync','apply_sync_operation','apply_event_operation','apply_plan_operation'].map(n=>'/rest/v1/rpc/'+n)]);
+const ALLOWED=new Set(['/auth/v1/otp','/auth/v1/verify','/auth/v1/token','/auth/v1/logout','/auth/v1/user','/auth/v1/settings',...['pull_changes','begin_import','import_batch','finish_import','get_import_status','prepare_sync','apply_sync_operation','apply_event_operation','apply_plan_operation','delete_own_account'].map(n=>'/rest/v1/rpc/'+n)]);
 const TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.webmanifest':'application/manifest+json','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon'};
 const listen=(server,port)=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',()=>resolve(server.address().port))});
 function fixtureError(){return Object.assign(new Error('fixture_error'),{code:'fixture_error'})}

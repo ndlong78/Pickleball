@@ -32,7 +32,7 @@ jwt_expiry = 3600
 enable_signup = true
 [auth.rate_limit]
 # Ephemeral local fixture accounts only; never a Managed SMTP configuration.
-email_sent = 20
+email_sent = 40
 [auth.email]
 enable_signup = true
 enable_confirmations = true

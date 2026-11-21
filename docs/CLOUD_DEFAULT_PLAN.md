@@ -35,10 +35,12 @@ Thứ tự A1 → A2 → C → B → D: chỉ chặn lưu của khách (B) sau k
 
 ## 5. Việc owner phải làm (Claude không có quyền)
 - [x] Supabase → Authentication: bật cho phép đăng ký (owner báo 19/11/2026); SMTP riêng đã cấu hình (owner báo 15/11).
-- [ ] Đặt giới hạn gửi email/OTP và đăng ký theo IP (Rate Limits) phù hợp; bật CAPTCHA nếu thấy đăng ký rác.
-- [ ] Chọn kênh nhận yêu cầu xóa tài khoản (email hỗ trợ) để ghi vào mục Tài khoản; quy trình xóa hiện làm thủ công trong Supabase Dashboard.
+- [x] Owner xác nhận đăng ký mới chạy được (21/11/2026).
+- [ ] Đặt Rate Limits theo [ACCOUNT_OPERATIONS §1](ACCOUNT_OPERATIONS.md); **không** bật CAPTCHA khi ứng dụng chưa gửi `captchaToken`.
+- [ ] Cài SQL `supabase/manual/staging_upgrade_20261121000100.sql` (xóa tài khoản) — [ACCOUNT_OPERATIONS §2](ACCOUNT_OPERATIONS.md).
+- [ ] Cấu hình sao lưu (khóa age, secrets, `BACKUP_ENABLED`) và chạy thử — [ACCOUNT_OPERATIONS §3](ACCOUNT_OPERATIONS.md).
 - [ ] Xác nhận 9 migrations đã áp dụng (owner đã báo migration 8 và 9).
-- [ ] Sao lưu: gói Free không có khôi phục theo thời điểm. Quyết định cách sao lưu định kỳ trước bước D.
+- [ ] Sao lưu: gói Free không có khôi phục theo thời điểm. V5.36.0 có workflow sao lưu mã hóa hằng ngày; còn chờ owner cấu hình và diễn tập khôi phục trên project thử.
 - [ ] Thử thật trên thiết bị sau từng bước (đăng nhập, lưu, đồng bộ, offline, đổi tài khoản).
 - [ ] Lát 2d (khôi phục) vẫn chưa đạt: lần thử đầu báo "Chưa nhận diện được định dạng"; cần tên tệp hoặc kết quả lệnh kiểm tra.
 
@@ -83,3 +85,9 @@ Kế hoạch dựa trên đọc mã; chưa bước nào được cài đặt. H�
 - Mục "Dữ liệu tài khoản và xóa tài khoản": liệt kê dữ liệu lưu (email và dữ liệu tập do người dùng lưu), nơi lưu (Supabase của ứng dụng, RLS theo tài khoản), không dùng cho quảng cáo/không chia sẻ; **chưa có nút tự xóa**, yêu cầu xóa gửi người quản trị; tệp đã tải và cache trình duyệt không xóa từ xa được.
 - Giới hạn: quy trình xóa theo [chính sách §4](PILOT_OPERATING_POLICY.md) (reauth, preview/export, xóa Auth identity + dữ liệu qua quy trình đặc quyền) **chưa được tự động hóa**; backup định kỳ vẫn chưa vận hành (gói Free). Lạm dụng đăng ký được hạn chế bằng Rate Limits/CAPTCHA của Supabase do owner cấu hình.
 - Kiểm thử: `auth-adapter.test.js` thêm ca thông báo đăng ký; `auth-origin.test.js` kiểm `allowSignup` mở trên mọi host có cấu hình.
+
+## 12. Sau D — xóa tài khoản và sao lưu (V5.36.0)
+- Xóa tài khoản tự phục vụ: RPC `public.delete_own_account(p_confirmation)` (migration `20261121000100`), security definer với `search_path=''`, chỉ `authenticated`; xóa `auth.users` của `auth.uid()` khi token có `amr` trong 10 phút, mọi bảng `ON DELETE CASCADE`. Giao diện: gửi mã email, gõ cụm xác nhận, xác minh mã rồi xóa, đăng xuất cục bộ.
+- Sao lưu: `scripts/backup_db.sh` + `.github/workflows/db-backup.yml` (lịch hằng ngày, mã hóa age, artifact 35 ngày, cổng `BACKUP_ENABLED`). CI backend chạy script trên Supabase local mỗi PR.
+- Kiểm thử: pgTAP `009_account_deletion` (26 ca), unit adapter, Playwright `account-delete.spec` (mock, 390/1440), real-Auth browser (GoTrue/Mailpit thật, Chromium + WebKit): đăng nhập → dữ liệu → mã xóa thứ hai → xóa → không còn user/dòng trên DB.
+- Hướng dẫn owner: [ACCOUNT_OPERATIONS.md](ACCOUNT_OPERATIONS.md).
