@@ -99,6 +99,44 @@ async function freshAccountRead(browser,context,host,writer){
   await page.evaluate(async()=>{PICKLEUP_ROUTER.openPage('progress');await PICKLEUP_PAGE_LOADER.ensure('progress')});await until(()=>page.locator('#wgDays').isEnabled());assert.equal(await page.locator('#wgDays').inputValue(),String(expected.goal));
  }finally{await receiver.close()}
 }
+async function mailIds(email){
+ const response=await fetch('http://127.0.0.1:54324/api/v1/messages',{redirect:'error'});assert.equal(response.status,200);
+ return new Set((await response.json()).messages.filter(m=>m.To.some(to=>to.Address===email)).map(m=>m.ID));
+}
+async function newOtp(email,seen){
+ return until(async()=>{
+  const response=await fetch('http://127.0.0.1:54324/api/v1/messages',{redirect:'error'});assert.equal(response.status,200);
+  for(const message of (await response.json()).messages){
+   if(seen.has(message.ID)||!message.To.some(to=>to.Address===email))continue;
+   const detail=await fetch('http://127.0.0.1:54324/api/v1/message/'+encodeURIComponent(message.ID),{redirect:'error'});assert.equal(detail.status,200);const body=await detail.json();
+   return (body.Text||body.HTML).match(/\b([0-9]{6,10})\b/)?.[1];
+  }
+ },30000);
+}
+const dbProof=sql=>execFileSync('docker',['exec','supabase_db_pickleup-v6','psql','-XAt','-U','postgres','-d','postgres','-c',sql],{encoding:'utf8',timeout:15000,stdio:['ignore','pipe','pipe']}).trim();
+async function deleteAccountUI(browser,name,host){
+ // Independent fixture account: real OTP sign-in, server data, then self-service
+ // deletion through a second emailed code. Verifies Auth user and rows are gone.
+ const context=await browser.newContext({viewport:{width:390,height:900}});let page;
+ try{
+  const email='delete-'+crypto.randomUUID()+'@example.invalid';
+  phase=name+':delete_ui_login';page=await context.newPage();await page.goto(host.appOrigin+'/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await login(page,email);
+  await until(()=>page.locator('[data-sync-enable]').isEnabled());await page.locator('[data-sync-enable]').click();await hasText(page,'#syncPilot [role=status]','Đã đọc kho tài khoản');
+  await page.evaluate(async()=>{PICKLEUP_ROUTER.openPage('progress');await PICKLEUP_PAGE_LOADER.ensure('progress')});await until(()=>page.locator('#wgDays').isEnabled());await page.locator('#wgDays').selectOption('4');await page.locator('#wgSave').click();await hasText(page,'#wgStatus','chờ đồng bộ');await page.evaluate(()=>PICKLEUP_ROUTER.openPage('settings'));await page.locator('[data-sync-send]').click();await hasText(page,'#syncPilot [role=status]','Đã đồng bộ');
+  const owner=(await canonical(page)).owner;assert.equal(/^[a-f0-9-]{36}$/.test(owner),true);
+  assert.equal(dbProof("select count(*)::text from public.user_preferences where user_id='"+owner+"'::uuid"),'1');
+  phase=name+':delete_ui_phrase_gate';await page.locator('[data-account-delete] summary').click();
+  const seen=await mailIds(email);await until(()=>page.locator('[data-delete-send]').isEnabled(),70000);await page.locator('[data-delete-send]').click();await hasText(page,'[data-delete-status]','Mã xác nhận xóa đã được gửi');
+  const code=await newOtp(email,seen);await page.locator('[data-delete-otp]').fill(code);await page.locator('[data-delete-phrase]').fill('xoa');assert.equal(await page.locator('[data-delete-confirm]').isDisabled(),true);
+  phase=name+':delete_ui_confirm';await page.locator('[data-delete-phrase]').fill('xóa tài khoản');await until(()=>page.locator('[data-delete-confirm]').isEnabled());await page.locator('[data-delete-confirm]').click();
+  await hasText(page,authStatus,'Đã xóa tài khoản');assert.equal(await page.locator('[data-account-delete]').isHidden(),true);assert.equal(await page.evaluate(()=>localStorage.getItem('pickleup_auth_v6')===null),true);
+  phase=name+':delete_ui_server_rows_removed';
+  assert.equal(dbProof("select count(*)::text from auth.users where id='"+owner+"'::uuid"),'0');
+  assert.equal(dbProof("select (select count(*) from public.user_preferences where user_id='"+owner+"'::uuid)+(select count(*) from pickleup_private.sync_changes where user_id='"+owner+"'::uuid)+(select count(*) from pickleup_private.sync_heads where user_id='"+owner+"'::uuid)"),'0');
+  assert.equal(host.state.rpc.filter(r=>r.name==='delete_own_account').length>=1,true);
+  process.stdout.write('PASS '+name+': self-service deletion with real second OTP, phrase gate, own Auth user and server rows removed, local session cleared\n');
+ }finally{await context.close()}
+}
 async function purgeProductUI(browser,name,host){
  // Independent local fixture account, actual OTP/UI/RPC. No storageState copy,
  // request mocks, traces, disk download, credentials or private assertion output.
@@ -433,6 +471,7 @@ async function runEngine(engine,name,host){
   assert.equal(await next.evaluate(()=>PICKLEUP_ACTIVITY.getState().snapshot),null);assert.equal(await next.evaluate(()=>PICKLEUP_ACADEMY_PRACTICE.getState().row),null);assert.equal(await next.evaluate(()=>PICKLEUP_COURT_CHECKPOINT.getState().row),null);assert.equal(await next.locator('#matchNotes').inputValue(),'');assert.equal(await next.locator('#pcAttemptNote').inputValue(),'');assert.equal(await next.locator('#pcPostScore').inputValue(),'');assert.equal(await next.evaluate(()=>PICKLEUP_ACTIVITY.events('skill_assessments').length),0);await next.evaluate(()=>{window.PR5A2_LIFE?.close();window.PR5A2_DB?.close()});
   await next.reload();await hasText(next,authStatus,'Chế độ khách');assert.equal(await legacy(next),before);
   await purgeProductUI(browser,name,host);
+  await deleteAccountUI(browser,name,host);
   process.stdout.write('PASS '+name+': read-only rescue file comparison without RPC or data changes, repository-only cache purge with real Auth/private pull leaves server/session unchanged and rereads cloud, fresh browser reads all account sources with verified session in RAM and no IDB/guest copy or writes, real OTP UI, wrong code, session/checkpoint reload, commit-loss replay, 4 items, native tab logout, A/B isolation with delayed A response, paginated canonical cache/delta/full-resync keeps pending, fenced sender/conflict resolution/commit replay, account source opt-in and actual preferences/check-in UI with queued reload/retry and real-server conflict preview/decision, four activity event kinds via fenced API with native reload/exact replay and independent cursor, independent event consent and archive/delete repair with real RPC conflicts and opt-out/replay, Academy product UI source/save/comparability/reload replay/delete and real conflict decision, self/stage/advanced and match product UI save/sync/restore with distinct scales, no legacy mirror or attendance, real match HTTP200 delete conflict and reviewed archive, API-only fenced plans/selections with real commit-loss replay/CAS/dependency/restore and late A response ignored after B, standalone plan client independent consent/queue/reload replay/selection dependency/result conflict review/delete restore and pending A isolation, real basic/advanced plan product UI consent/create/choose/ACK/Court/result/delete/restore and HTTP200 conflict preview/decision without legacy mirror or attendance, training product UI own ACK plan/local save/comparable results/commit-loss reload replay/delete HTTP200 conflict and reviewed archive, Academy selection product UI sparse choice/local save/real commit-loss reload replay/persisted device checklist/focus isolation/HTTP200 conflict review/clear without personal choice loss, Court paused checkpoint local save/noRPC/reload/explicit restore/logout isolation, seven-store own cache rescue export and read-only file preview without writes/RPC and logout clears link, PWA exclusion\n');
  }catch(error){
   const text=await currentPage?.locator(importStatus).textContent({timeout:1000}).catch(()=>null);
@@ -448,7 +487,7 @@ async function main(){
  const config=JSON.parse(execFileSync('supabase',['status','-o','json'],{encoding:'utf8',timeout:15000,stdio:['ignore','pipe','pipe']}));
  assert.equal(config.API_URL,'http://127.0.0.1:54321');
  const host=await start({backendURL:config.API_URL,anonKey:config.ANON_KEY});diagnostics=host.state;
- const watchdog=setTimeout(()=>{process.stderr.write('FAIL real Auth browser: bounded runtime exceeded\n');process.exit(1)},240000);watchdog.unref();
+ const watchdog=setTimeout(()=>{process.stderr.write('FAIL real Auth browser: bounded runtime exceeded\n');process.exit(1)},360000);watchdog.unref();
  try{for(const [name,engine]of [['Chromium',chromium],['WebKit',webkit]]){host.state.rpc.length=0;host.state.dropCount=0;host.state.syncDropCount=0;host.state.eventDropCount=0;host.state.planDropCount=0;await runEngine(engine,name,host)}}finally{clearTimeout(watchdog);await host.close()}
 }
 if(require.main===module)main().catch(error=>{const kind=['AssertionError','TimeoutError','Error'].includes(error.name)?error.name:'Error';process.stderr.write('FAIL real Auth browser: '+phase+' ['+kind+'] ui='+diagnostics?.ui+' dropped='+diagnostics?.dropCount+' activity='+JSON.stringify(diagnostics?.activityDiagnostic||null)+' plan='+JSON.stringify(diagnostics?.planDiagnostic||null)+' HTTP '+JSON.stringify(diagnostics?.http.slice(-5)||[])+'\n');process.exitCode=1});

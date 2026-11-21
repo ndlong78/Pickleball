@@ -39,6 +39,7 @@ jobs:
           python3 scripts/build_legacy_epoch_upgrade.py --check
           python3 scripts/build_lesson_domain_upgrade.py --check
           python3 scripts/build_advanced_levels_upgrade.py --check
+          python3 scripts/build_account_deletion_upgrade.py --check
       - uses: supabase/setup-cli@v1
         with:
           version: 2.54.11
@@ -83,6 +84,11 @@ jobs:
           supabase db reset --local --version 20261114000100
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < supabase/manual/staging_upgrade_20261115000100.sql
           docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/advanced_levels_upgrade_verify.sql
+      - name: Upgrade existing nine-migration DB through the account-deletion SQL Editor bundle
+        run: |
+          supabase db reset --local --version 20261115000100
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < supabase/manual/staging_upgrade_20261121000100.sql
+          docker exec -i supabase_db_pickleup-v6 psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < scripts/fixtures/account_deletion_upgrade_verify.sql
       - name: Verify migration reset from empty local DB
         run: supabase db reset --local
       - name: pgTAP schema, ownership, constraints and sync tests
@@ -97,6 +103,15 @@ jobs:
         run: python3 scripts/test_activity.py
       - name: Plan and selection REST, immutable snapshots, CAS and epoch race
         run: python3 scripts/test_plans.py
+      - name: Encrypted backup script against local DB (decrypt, list, auth rows)
+        run: |
+          sudo apt-get install -y -qq age >/dev/null
+          key="$RUNNER_TEMP/backup-key.txt"; age-keygen -o "$key" 2>/dev/null
+          BACKUP_DB_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' BACKUP_AGE_RECIPIENT="$(age-keygen -y "$key")" BACKUP_OUT_DIR="$RUNNER_TEMP/backup" bash scripts/backup_db.sh
+          mkdir -p "$RUNNER_TEMP/restore" && age -d -i "$key" "$RUNNER_TEMP"/backup/*.tar.age | tar -C "$RUNNER_TEMP/restore" -xf -
+          docker run --rm -v "$RUNNER_TEMP/restore:/r" postgres:17 sh -c 'pg_restore --list /r/data.dump | grep -q "TABLE DATA public user_preferences" && pg_restore --list /r/data.dump | grep -q "TABLE DATA pickleup_private sync_changes" && pg_restore --list /r/auth.dump | grep -q "TABLE DATA auth users" && pg_restore --list /r/auth.dump | grep -q "TABLE DATA auth identities"'
+          grep -q 'db-backup-v1' "$RUNNER_TEMP/restore/manifest.json"
+          rm -rf "$RUNNER_TEMP/backup" "$RUNNER_TEMP/restore" "$key"
       - name: Real OTP, email capture, refresh and private RPC
         run: python3 scripts/test_auth.py
       - name: Install real Auth browser engines

@@ -1,0 +1,37 @@
+name: Database backup
+# Daily encrypted logical backup of the real PickleUp project (owner-configured).
+# Runs only on schedule or manual dispatch from the default branch, never on PRs.
+# Disabled until the owner sets repository variable BACKUP_ENABLED=true and the
+# secrets SUPABASE_DB_URL (Session pooler URI) and BACKUP_AGE_RECIPIENT (age public key).
+on:
+  schedule:
+    - cron: '17 19 * * *' # 02:17 Asia/Ho_Chi_Minh
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+jobs:
+  backup:
+    if: vars.BACKUP_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install age
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq age
+      - name: Dump and encrypt
+        env:
+          BACKUP_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          BACKUP_OUT_DIR: ${{ runner.temp }}/backup
+        run: bash scripts/backup_db.sh
+      - name: Keep encrypted file 35 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: pickleup-db-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/backup/*.tar.age
+          retention-days: 35
+          if-no-files-found: error
+          compression-level: 0

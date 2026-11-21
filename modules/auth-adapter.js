@@ -64,6 +64,12 @@ function createAuthAdapter(client,{rpcTransport,allowSignup=true}={}){
    return stamp===generation&&session?.user.id===owner?result:{status:"stale"};
   }catch(_){return {status:stamp===generation?"network_error":"stale"}}finally{controllers.delete(controller)}
  }
+ // Server deletes only auth.uid() and only right after an email-code sign-in (amr < 10 min).
+ async function deleteAccount(owner){
+  if(!session||owner!==session.user.id)return {status:"auth_required"};
+  const result=await privateRpc(owner,"delete_own_account",{p_confirmation:"delete-own-account-v1"});
+  return ["deleted","reauth_required","auth_required","invalid","stale","network_error","unavailable"].includes(result?.status)?{status:result.status}:{status:"invalid"};
+ }
  function importRpc(owner,method,args){return ['pull_changes','begin_import','import_batch','finish_import','get_import_status'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
  function syncRpc(owner,method,args){return ['prepare_sync','apply_sync_operation','pull_changes'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
  function planRpc(owner,method,args){return ['prepare_sync','apply_plan_operation','pull_changes'].includes(method)?privateRpc(owner,method,args):Promise.resolve({status:"invalid"})}
@@ -76,7 +82,7 @@ function createAuthAdapter(client,{rpcTransport,allowSignup=true}={}){
   if(error.code==="otp_disabled"||/signups not allowed/i.test(String(error.message||"")))return allowSignup?"Email này chưa có tài khoản. Tích “Đăng ký tài khoản mới nếu chưa có” rồi gửi lại mã.":"Email này chưa có tài khoản được cấp.";
   return "Không thực hiện được. Kiểm tra kết nối hoặc thử lại sau.";
  }
- return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,importRpc,syncRpc,eventRpc,planRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
+ return {getGeneration:()=>generation,ready,requestOtp,verify,logout,privateRead,deleteAccount,importRpc,syncRpc,eventRpc,planRpc,subscribe(fn){listeners.add(fn);fn({...state});return ()=>listeners.delete(fn)},destroy(){stopped=true;clearInterval(expiryTimer);invalidate();subscription.unsubscribe();listeners.clear()}};
 }
 async function connect(config){
  if(!config?.enabled||!root.PickleUpAuthOrigin?.allowed(root.location,config.url))throw Error("Auth origin disabled");
