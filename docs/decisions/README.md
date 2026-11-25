@@ -14,3 +14,4 @@ Quy ước:
 | [0002](0002-cloud-default.md) | Cloud là nguồn dữ liệu chính, chặn lưu khi chưa đăng nhập, mở đăng ký | active | 15/11/2026 |
 | [0003](0003-auto-merge.md) | Agent được tự merge khi CI xanh | active | 25/11/2026 |
 | [0004](0004-agent-rules-structure.md) | AGENTS.md V3: rule ID, decision records, sổ bài học | active | 25/11/2026 |
+| [0005](0005-gate-guard.md) | Gate guard: cổng kiểm thử nằm ngoài tầm sửa của PR | active | 25/11/2026 |

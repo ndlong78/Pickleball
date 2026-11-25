@@ -1,0 +1,35 @@
+name: Gate guard
+# Flags pull requests that weaken the evaluation gates (AGENTS.md [CI-03], [CI-06]).
+# pull_request_target runs this file and scripts/gate-guard*.cjs from the base branch, so a
+# pull request cannot change the guard that judges it. The job only reads the PR file list via
+# the API; it never checks out or executes code from the pull request.
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: gate-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  gate-guard:
+    name: gate-guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Check gate changes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: node scripts/gate-guard.cjs
