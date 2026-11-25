@@ -46,6 +46,10 @@
           {
             "context": "backend",
             "integration_id": 15368
+          },
+          {
+            "context": "gate-guard",
+            "integration_id": 15368
           }
         ]
       }

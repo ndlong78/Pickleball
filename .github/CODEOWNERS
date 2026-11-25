@@ -1,0 +1,11 @@
+# Vùng cổng kiểm thử và dữ liệu (AGENTS.md [CI-06]). Hiện chỉ để ghi nhận: PR do agent tạo
+# đứng tên owner nên GitHub không cho owner tự approve. Chỉ bật "Require review from Code
+# Owners" khi agent dùng tài khoản GitHub riêng. Xem docs/decisions/0005-gate-guard.md.
+/tests/                   @ndlong78
+/scripts/gate-guard*.cjs  @ndlong78
+/scripts/test_*           @ndlong78
+/playwright.config.cjs    @ndlong78
+/.github/                 @ndlong78
+/supabase/                @ndlong78
+/package.json             @ndlong78
+/package-lock.json        @ndlong78

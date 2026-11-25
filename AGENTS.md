@@ -84,11 +84,12 @@ Production: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers, 
 - [CI-03] PR tính năng/sửa lỗi **không** được nới assertion, timeout, retry hay xóa/skip test hiện có. Nếu test cũ sai đặc tả, sửa ở PR riêng (`fix/test-*`) và nêu lý do trong mục "Dự đoán tác động" của PR template. Thay đổi `.github/workflows/**`, `playwright.config.cjs` hoặc gate CI phải nêu rõ trong PR.
 - [CI-04] Backend CI (`.github/workflows/backend-checks.yml`): migrations/pgTAP, REST/concurrency trên Supabase local/DB ephemeral; xem [`docs/BACKEND_PR1A.md`](docs/BACKEND_PR1A.md). Không secrets production, không deploy từ PR. Phân biệt fallback PostgreSQL/PostgREST + Auth fixture với Supabase local đầy đủ; không gọi fixture là kiểm chứng Auth UI.
 - [CI-05] Mọi `tests/*.test.js` phải có trong `npm run test:unit` (được `tests/agent-harness.test.js` kiểm tra).
+- [CI-06] Workflow `gate-guard` ([ADR-0005](docs/decisions/0005-gate-guard.md)) chạy từ `main` trên mọi PR và fail khi PR làm yếu cổng kiểm thử: giảm assertion, thêm skip/only/fixme, đổi retry/flaky, tăng timeout, xóa test hoặc bỏ test khỏi `testMatch`/`test:unit`, xóa/sửa dòng workflow có sẵn, sửa migration đã có, sửa chính bộ gate-guard. Trước khi mở PR chạy `npm run check:gates`. Chỉ owner gắn label `gates-change` để cho qua.
 
 ## MERGE — merge và sau merge
 
 - [MERGE-01] **Agent được tự merge khi CI xanh** ([ADR-0003](docs/decisions/0003-auto-merge.md)). Điều kiện: mọi workflow của PR `completed/success` đúng HEAD SHA, 0 fail, 0 flaky; không còn review/blocker chưa xử lý; merge bằng `expectedHeadSha`.
-- [MERGE-02] **Không tự merge** khi: PR cần owner thao tác trước (chạy SQL trên project thật, đặt secret, đổi cấu hình Supabase) mà thiếu thao tác đó sẽ làm hỏng production; PR làm yếu cổng kiểm thử theo [CI-03]; hoặc người dùng của nhiệm vụ hiện tại yêu cầu không merge. Khi đó mở PR và báo owner.
+- [MERGE-02] **Không tự merge** khi: PR cần owner thao tác trước (chạy SQL trên project thật, đặt secret, đổi cấu hình Supabase) mà thiếu thao tác đó sẽ làm hỏng production; PR làm yếu cổng kiểm thử theo [CI-03] hoặc bị `gate-guard` báo; PR có label `gates-change`; hoặc người dùng của nhiệm vụ hiện tại yêu cầu không merge. Khi đó mở PR và báo owner. **Agent không bao giờ tự gắn hoặc gỡ label `gates-change`.**
 - [MERGE-03] Merge vào `main` = deploy production qua Cloudflare. Sau merge, kiểm tra `main` HEAD == merge SHA, CI `main` và Pages/Cloudflare **cùng merge SHA** nếu workflow chạy. Push chỉ tài liệu có thể không tạo CI `main` do path filters; nêu rõ, không tuyên bố CI không tồn tại. Nếu CI sau merge flaky, báo rõ chưa đạt "clean run" và mở PR sửa.
 
 ## REPORT — báo cáo
