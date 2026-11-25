@@ -4,6 +4,7 @@ test('guest settings works without configuration and preserves local training',a
  await page.goto('/?page=settings');
  await expect(page.locator('#accountPanel')).toBeVisible();
  await expect(page.locator('#accountPanel [role=status]')).toContainText('Chế độ khách');
+ await expect(page.locator('#accountPanel form')).toBeHidden();
  await expect(page.locator('#accountPanel')).toContainText('không nhập hoặc đồng bộ');
 });
 test.describe('mock Auth transport, real SDK; no credential artifacts',()=>{
