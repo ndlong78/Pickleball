@@ -13,7 +13,7 @@ Mã schema/RLS/RPC, Auth OTP/session, IDB/importer, UI sync mục tiêu/check-in
 - Ngân sách tự động **0 USD**: không tự nâng gói, mua domain/SMTP hoặc bật add-on trả phí. Khi sắp chạm quota, báo lựa chọn giảm tải hoặc nâng gói cùng chi phí thực tế; không âm thầm cắt lịch sử để giữ free. Kiểm tra quota trong dashboard trước provisioning, không dựa bảng giá cũ trong blueprint. Ngưỡng cảnh báo đề xuất70%/85% DB/egress/email quota; chỉ tuyên bố đã giám sát sau khi có job thực sự.
 - Development và CI không cần cloud project trả phí. Nếu một Free project không đủ tách staging/pilot thì dùng local staging hoặc trì hoãn pilot, không dùng dữ liệu thật làm fixture và không tự trả phí tạo project thứ hai.
 - Quyền chủ động không thay thế quyền truy cập thực tế. Hiện chưa có kết nối/quyền Supabase, SMTP hay kho backup được cấu hình trong môi trường; không tự tìm secrets. Cấu hình bảo mật qua cơ chế kết nối được hỗ trợ khi cần, không gửi secret vào chat.
-- Giữ yêu cầu **không tự merge**. Việc sửa production, tạo database production hoặc dùng secrets production vẫn nằm ngoài tác vụ hiện tại. PR1a local/schema/CI có thể tiến hành theo ủy quyền này; không cần chờ một lần duyệt lại provider/CAS/retention. Provisioning pilot nhận dữ liệu thật cần kiểm chứng các gate ở mục5.
+- ~~Giữ yêu cầu **không tự merge**.~~ *(Đã thay 25/11/2026: agent được tự merge khi CI xanh, xem [ADR-0003](decisions/0003-auto-merge.md).)* Việc sửa production, tạo database production hoặc dùng secrets production vẫn nằm ngoài tác vụ hiện tại. PR1a local/schema/CI có thể tiến hành theo ủy quyền này; không cần chờ một lần duyệt lại provider/CAS/retention. Provisioning pilot nhận dữ liệu thật cần kiểm chứng các gate ở mục5.
 
 ## 2. Auth đơn giản cho MVP
 
