@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="description" content="Lộ trình tập Pickleball 60 phút mỗi tuần, dành cho người mới bắt đầu.">
   <title>PickleUp · Huấn luyện Pickleball</title>
-  <script>window.PICKLEUP_BUILD="5.36.0"</script>
+  <script>window.PICKLEUP_BUILD="5.37.0"</script>
   <style>
     /* Font loaded without blocking critical CSS; system font fallback is immediate. */
     :root{--bg:#f6f7f2;--ink:#142d30;--muted:#6b7b79;--green:#b8ef49;--green2:#eaffc9;--line:#dfe6df;--white:#fff;--radius:20px}
@@ -67,11 +67,11 @@
 .th-row span{overflow-wrap:anywhere}.th-row strong{white-space:nowrap}
 @media(max-width:750px){.th-filters{grid-template-columns:1fr}.th-panel{padding:16px}.pc-run-buttons button{min-height:50px;font-size:13px}.pc-run-clock{position:sticky;top:0;background:#fff;z-index:3;padding:10px 0;border-bottom:1px solid #e4eae0}.pc-run-card{scroll-margin-top:12px}.pc-attempt input{min-height:48px}}
 </style>
-<link rel="stylesheet" href="./responsive.css?v=5.36.0">
+<link rel="stylesheet" href="./responsive.css?v=5.37.0">
 
 
 
-<link rel="stylesheet" href="./modules/page-layout.css?v=5.36.0">
+<link rel="stylesheet" href="./modules/page-layout.css?v=5.37.0">
 <script>document.documentElement.classList.add("pickleup-routing")</script>
 </head>
 <body>
@@ -97,6 +97,7 @@
 <a href="?page=journey" data-route="journey"><span class="page-nav-icon" aria-hidden="true">🧭</span><span><strong>Hành trình</strong><small>Đánh giá → lịch → tập → xác nhận</small></span></a>
 <a href="?page=coach" data-route="coach"><span class="page-nav-icon" aria-hidden="true">🎯</span><span><strong>HLV cá nhân</strong><small>Tự đánh giá và tạo giáo án riêng</small></span></a>
 <a href="?page=matches" data-route="matches"><span class="page-nav-icon" aria-hidden="true">🏓</span><span><strong>Thi đấu</strong><small>Nhật ký trận và chiến thuật</small></span></a>
+<a href="?page=video" data-route="video"><span class="page-nav-icon" aria-hidden="true">🎥</span><span><strong>Phân tích động tác</strong><small>Video tư thế, xử lý trên máy</small></span></a>
 <a href="?page=settings" data-route="settings"><span class="page-nav-icon" aria-hidden="true">⚙️</span><span><strong>Dữ liệu</strong><small>Sao lưu, khôi phục, cứu hộ</small></span></a>
 </div>
 </nav>
@@ -118,6 +119,7 @@
 <div id="mount-academy" class="page-mount" data-pickleup-page="academy" aria-label="Nội dung academy"></div>
 
 <div id="mount-matches" class="page-mount" data-pickleup-page="matches" aria-label="Nội dung matches"></div>
+<div id="mount-video" class="page-mount" data-pickleup-page="video" aria-label="Nội dung video"></div>
 
 <section class="section" id="levelRoadmap" data-pickleup-page="academy"><div class="sectionHead"><div><div class="kicker">Hành trình dài hạn</div><h2>Từ mới bắt đầu đến 5.0</h2><p class="sub">Mỗi cấp độ mở rộng kỹ thuật và chiến thuật. Đây là lộ trình tham khảo, không phải chứng nhận xếp hạng.</p></div></div><div class="roadmap" id="levelCards"></div></section>
 <section class="section" id="selfAssessment" data-pickleup-page="coach"><p class="domain-notice" data-activity-notice role="status"></p><div class="sectionHead"><div><div class="kicker">Đánh giá đầu vào</div><h2>Khám phá điểm xuất phát</h2><p class="sub">Chọn mức độ bạn thực hiện ổn định được trong trận đấu, không phải cú đánh tốt nhất từng làm.</p></div></div><div class="card selftest" id="assessmentFields"></div><div class="card" style="padding:20px;margin-top:12px"><div class="backupactions"><button id="assessBtn" type="button">Đánh giá và lưu</button></div><p id="assessResult" class="outcome" role="status"></p></div></section>
@@ -131,12 +133,12 @@
  <button type="button" data-nav-more-toggle aria-expanded="false" aria-controls="pageNavMore"><span class="dock-icon" aria-hidden="true">☰</span><span>Thêm</span></button>
 </nav>
 <footer class="footer"><div class="shell footflex"><span>© 2026 PickleUp · Website luyện tập Pickleball</span><span>Hoạt động trực tiếp trên trình duyệt · Không cần tài khoản</span></div></footer>
-<script src="./modules/legacy-storage.js?v=5.36.0"></script>
-<script src="./modules/page-catalog.js?v=5.36.0"></script>
-<script src="./modules/page-loader.js?v=5.36.0"></script>
-<script src="./modules/web-vitals.js?v=5.36.0"></script>
-<script src="./modules/page-router.js?v=5.36.0"></script>
-<script src="./mobile-ui.js?v=5.36.0" defer></script>
-<script src="./modules/pwa-client.js?v=5.36.0"></script>
+<script src="./modules/legacy-storage.js?v=5.37.0"></script>
+<script src="./modules/page-catalog.js?v=5.37.0"></script>
+<script src="./modules/page-loader.js?v=5.37.0"></script>
+<script src="./modules/web-vitals.js?v=5.37.0"></script>
+<script src="./modules/page-router.js?v=5.37.0"></script>
+<script src="./mobile-ui.js?v=5.37.0" defer></script>
+<script src="./modules/pwa-client.js?v=5.37.0"></script>
 </body>
 </html>

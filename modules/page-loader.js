@@ -15,6 +15,7 @@ const PAGE_FILES={
  academy:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/data/academy-practice-runtime.js","modules/academy-trends-core.js","advanced-diagrams.js","court-diagrams.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/backup-v1-core.js","modules/assessments-and-backup.js","modules/content-core.js","modules/academy-lesson-core.js","modules/academy-page.js"],
  progress:[...ACCOUNT_FILES,...DOMAIN_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/weekly-practice.js","modules/academy-trends-core.js","modules/academy-insights-core.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/plan-reality-core.js","personalized-core.js","practice-conditions.js","training-log-core.js","dashboard.js","modules/academy-insights-ui.js","modules/weekly-goals-ui.js","modules/weekly-plan-ui.js","modules/weekly-checkins-ui.js","modules/plan-reality-ui.js","stage-assessment.js","training-history-ui.js","training-evaluation-core.js","training-evaluation-ui.js"],
  matches:[...ACCOUNT_FILES,...ACTIVITY_FILES,...PLAN_FILES,"practice-conditions.js","advanced-coach-core.js","tactical-insights-core.js","match-journal.js","tactical-insights-ui.js"],
+ video:["modules/video-analysis-core.js","modules/video-analysis-ui.js"],
  settings:[...ACCOUNT_FILES,"modules/settings-surface.js",...DOMAIN_FILES,...ACTIVITY_FILES,...PLAN_FILES,"modules/data/account-rescue-core.js","modules/data/restore-preview-core.js","modules/data/restore-plan-core.js","modules/data/account-rescue-controller.js","modules/data/account-rescue-ui.js","modules/data/rescue-core.js","modules/data/rescue-ui.js","modules/auth-ui.js","modules/weekly-practice.js","modules/academy-trends-core.js","practice-conditions.js","training-log-core.js","advanced-coach-core.js","advanced-readiness.js","match-journal.js","modules/weekly-goals-core.js","modules/weekly-plan-core.js","modules/weekly-checkins-core.js","modules/backup-v1-core.js","modules/assessments-and-backup.js","modules/page-performance.js","modules/data/import-config.js","modules/data/import-core.js","modules/data/import-controller.js","modules/data/import-ui.js","modules/data/sync-ui.js","modules/data/activity-ui.js","modules/data/plan-ui.js","modules/data/account-purge-config.js","modules/data/account-purge-controller.js","modules/data/account-purge-ui.js"]
 };
 const PAGE_STYLES={
@@ -22,9 +23,10 @@ const PAGE_STYLES={
  court:["training-evaluation.css"],
  academy:["advanced.css"],
  progress:["advanced.css","training-evaluation.css"],
- matches:["advanced.css","tactical-insights.css"]
+ matches:["advanced.css","tactical-insights.css"],
+ video:["video-analysis.css"]
 };
-const FRAGMENTS={journey:"pages/journey.html",coach:"pages/coach.html",court:"pages/court.html",academy:"pages/academy.html",progress:"pages/progress.html",matches:"pages/matches.html",settings:"pages/settings.html"};
+const FRAGMENTS={journey:"pages/journey.html",coach:"pages/coach.html",court:"pages/court.html",academy:"pages/academy.html",progress:"pages/progress.html",matches:"pages/matches.html",video:"pages/video.html",settings:"pages/settings.html"};
 const fragmentPromises=new Map();
 const mountedFragments=new Set();
 function ensureMarkup(page){

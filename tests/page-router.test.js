@@ -11,7 +11,7 @@ function create(urlString){
   nodes.set(id,el);all.push(el);
  }
  for(const id of ["pageHeading","pageDescription","pageKicker"])nodes.set(id,{textContent:""});
- const pages=["home","journey","coach","court","academy","progress","matches","settings"];
+ const pages=["home","journey","coach","court","academy","progress","matches","video","settings"];
  for(const id of pages){
   const attr=new Map();
   links.push({dataset:{route:id},getAttribute(){return"?page="+id},setAttribute(k,v){attr.set(k,v)},removeAttribute(k){attr.delete(k)},get current(){return attr.get("aria-current")}});
@@ -54,8 +54,8 @@ test("legacy hash anchors canonicalize to a shareable query page",()=>{
  assert.match(app.win.location.href,/page=matches#matchJournal/);
  assert.ok(app.nodes.get("matchJournal").attrs.has("data-page-current"));
 });
-test("all eight pages resolve a top-level URL",()=>{
- for(const page of ["home","coach","court","academy","progress","matches","settings"]){
+test("all nine pages resolve a top-level URL",()=>{
+ for(const page of ["home","coach","court","academy","progress","matches","video","settings"]){
   const app=create("https://example.org/Pickleball/?page="+page);
   assert.equal(app.win.PICKLEUP_ROUTER.getPage(),page);
  }

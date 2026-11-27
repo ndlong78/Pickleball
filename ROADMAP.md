@@ -1,6 +1,8 @@
 # PICKLEUP — PRODUCT ROADMAP
 
-**V5.36.0 — 21/11/2026 (đang PR):** **tự xóa tài khoản** và **sao lưu tự động**. Dữ liệu → Tài khoản → Xóa tài khoản: nhận mã qua email, gõ `XÓA TÀI KHOẢN`, xác nhận; máy chủ chỉ xóa chính tài khoản đang đăng nhập khi vừa xác thực mã trong 10 phút, kèm toàn bộ dữ liệu (cần owner cài [SQL 20261121000100](supabase/manual/staging_upgrade_20261121000100.sql)). Workflow sao lưu hằng ngày `pg_dump` → mã hóa age → artifact GitHub 35 ngày, tắt cho tới khi owner cấu hình. Hướng dẫn giới hạn đăng ký/OTP, cài SQL, sao lưu và khôi phục: [docs/ACCOUNT_OPERATIONS.md](docs/ACCOUNT_OPERATIONS.md). [Release notes](RELEASE_V5.36.0.md).
+**V5.37.0 — 27/11/2026 (đang PR):** route mới **Phân tích động tác** (`?page=video`, menu Thêm) theo [ADR-0006](docs/decisions/0006-video-analysis.md). Chọn hoặc quay clip 3–10 giây ở tư thế chuẩn bị; MediaPipe Pose nhận diện khung xương **ngay trên máy**, đưa tối đa hai gợi ý (gối, hông, độ rộng chân, tay cầm vợt) kèm số đo và khung xương. Video không rời thiết bị và không được lưu. Nhận xét là gợi ý tham khảo, ngưỡng ban đầu, **chưa được HLV kiểm chứng**. Bộ phân tích (~21 MB) chỉ tải khi người dùng bấm, và chỉ chạy khi khớp mã băm ghim. Chưa lưu số đo lên tài khoản (PR backend sau). [Release notes](RELEASE_V5.37.0.md).
+
+**V5.36.0 — 21/11/2026 (đã phát hành, #75):** **tự xóa tài khoản** và **sao lưu tự động**. Dữ liệu → Tài khoản → Xóa tài khoản: nhận mã qua email, gõ `XÓA TÀI KHOẢN`, xác nhận; máy chủ chỉ xóa chính tài khoản đang đăng nhập khi vừa xác thực mã trong 10 phút, kèm toàn bộ dữ liệu (cần owner cài [SQL 20261121000100](supabase/manual/staging_upgrade_20261121000100.sql)). Workflow sao lưu hằng ngày `pg_dump` → mã hóa age → artifact GitHub 35 ngày, tắt cho tới khi owner cấu hình. Hướng dẫn giới hạn đăng ký/OTP, cài SQL, sao lưu và khôi phục: [docs/ACCOUNT_OPERATIONS.md](docs/ACCOUNT_OPERATIONS.md). [Release notes](RELEASE_V5.36.0.md).
 
 **V5.35.0 — 19/11/2026 (đã phát hành, #74):** bước D của [kế hoạch cloud](docs/CLOUD_DEFAULT_PLAN.md) — **mở đăng ký** trên host chính sau khi owner bật đăng ký và SMTP riêng trong Supabase. Mục Tài khoản hiện ô "Đăng ký tài khoản mới nếu chưa có", hướng dẫn đăng ký bằng mã email, báo rõ khi email chưa có tài khoản hoặc khi đăng ký bị tắt phía máy chủ, và có mục "Dữ liệu tài khoản và xóa tài khoản" (dữ liệu nào được lưu, ở đâu; chưa có nút tự xóa — gửi yêu cầu cho người quản trị). Không đổi SQL/RLS/IndexedDB. [Release notes](RELEASE_V5.35.0.md).
 
@@ -107,7 +109,8 @@ Mỗi drill cần có cách tổ chức, điều kiện thực hiện, tiêu ch�
 | V3.7 beta | Tách HTML theo trang, giảm DOM khởi động, cache fragments | Đã triển khai mã nguồn; còn CI và kiểm thử thiết bị thật |
 | V3.8 beta | Benchmark profile thiết bị, tối ưu render Học viện/Dashboard, PWA migration | Đã triển khai mã nguồn; chờ kết quả CI và thiết bị thật |
 | Nội dung 4.0–5.0 | Chiến thuật đôi và thi đấu áp lực | Kế hoạch nội dung, không phải số phiên bản app V4.0 |
-| Sau phạm vi V6 hiện hành | Quản trị huấn luyện viên, phân tích video có quyền riêng tư | Ý tưởng dài hạn; Auth/sync được theo dõi riêng ở kế hoạch V6 |
+| Sau phạm vi V6 hiện hành | Quản trị huấn luyện viên | Ý tưởng dài hạn; Auth/sync được theo dõi riêng ở kế hoạch V6 |
+| V5.37.0 → tiếp | Phân tích video động tác trên thiết bị ([ADR-0006](docs/decisions/0006-video-analysis.md)) | V5.37: tư thế chuẩn bị, chưa lưu. Tiếp: đo trên iPhone/Android thật → lưu số đo lên tài khoản (migration/RLS/RPC) → dink, volley, serve |
 
 ## Phạm vi nội dung dự kiến
 - 1.0–2.0: 8 buổi

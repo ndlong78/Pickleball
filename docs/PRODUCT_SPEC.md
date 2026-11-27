@@ -15,7 +15,7 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 
 **Ưu tiên sản phẩm:** đúng kỹ thuật, tính liên tục của buổi tập, mục tiêu vừa sức, hồi phục, khả năng xem lại bằng dữ liệu xác thực; không chạy theo số lượng màn hình hoặc phiên bản. Các tính năng mới phải có ý nghĩa đối với người chơi và kiểm thử được.
 
-## 2. Bản đồ tám trang (route ID là hợp đồng)
+## 2. Bản đồ chín trang (route ID là hợp đồng)
 
 | Route | Mục tiêu và chức năng chính | Những điều cần giữ |
 |---|---|---|
@@ -26,11 +26,12 @@ PickleUp là web/PWA huấn luyện **pickleball bằng tiếng Việt**, dùng 
 | `academy` — Học viện | **120 giáo án hiện có trong khoảng 1.0–5.0** (40 bài 4.0–5.0 từ V5.27.0/V5.29.0, rà soát nội bộ, không có HLV người duyệt), chọn bài, lưu điểm, đồng hồ từng bước | Bài Học viện và giáo án cá nhân là hai dạng khác nhau |
 | `progress` — Tiến bộ | Lịch sử kiểm tra, mục tiêu tuần, lịch đề xuất, check-in và kế hoạch–thực tế | Phân biệt các nguồn dữ liệu theo nghĩa |
 | `matches` — Thi đấu | Nhật ký trận, chiến thuật và phối hợp đánh đôi | Không tự suy ra chất lượng thi đấu từ bài kỹ thuật |
+| `video` — Phân tích động tác (V5.37, [ADR-0006](decisions/0006-video-analysis.md)) | Phân tích tư thế chuẩn bị từ một clip ≤ 15 s bằng MediaPipe ngay trên máy; tối đa hai gợi ý, khung xương tại khung hình tiêu biểu, chẩn đoán hiệu năng | Video không rời máy và không lưu; nhận xét là gợi ý tham khảo, chưa được HLV kiểm chứng; không phải điểm /20, DUPR hay attendance |
 | `settings` — Dữ liệu | Xuất/nhập JSON và cứu hộ dữ liệu khách; công cụ tài khoản/pilot và chẩn đoán hiệu năng chỉ hiện trên staging/localhost (V5.18, `debug=1` mở riêng chẩn đoán) | Tương thích ngược, xác nhận trước ghi đè |
 
 **Trang bài Học viện (V5.20):** nội dung trước điều khiển; tầng 1 hiện sơ đồ, 3 điểm cần nhớ và một hành động "Bắt đầu tập" (chỉ mở chế độ tập trung, không lưu/xác nhận); tầng 2 thu gọn gồm luật theo kỹ năng (tự mở cho 1.0–2.5), lỗi thường gặp, chuẩn bị và lộ trình 60 phút.
 
-`modules/page-catalog.js` là nguồn đúng cuối cùng cho danh mục route/section. Từ V5.18, menu chính và dock dùng 4 tab (`home`, `academy`, `court`, `progress`) cộng menu **Thêm** (`journey`, `coach`, `matches`, `settings`); không bỏ route nào. Cả menu điều hướng chính, menu cố định và link sâu `?page=...#section` phải hoạt động, kể cả khi đổi trang rồi quay lại. `journey` là trang mới **thêm vào**, không thay thế các trang chuyên môn.
+`modules/page-catalog.js` là nguồn đúng cuối cùng cho danh mục route/section. Từ V5.18, menu chính và dock dùng 4 tab (`home`, `academy`, `court`, `progress`) cộng menu **Thêm** (`journey`, `coach`, `matches`, `video` từ V5.37, `settings`); không bỏ route nào. Cả menu điều hướng chính, menu cố định và link sâu `?page=...#section` phải hoạt động, kể cả khi đổi trang rồi quay lại. `journey` là trang mới **thêm vào**, không thay thế các trang chuyên môn.
 
 **Phân biệt:** lộ trình roadmap tới 5.0 là định hướng nội dung; đừng viết rằng thư viện đã có bài đến 5.0 khi thực tế chưa có.
 
