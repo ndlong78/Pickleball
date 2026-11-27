@@ -25,7 +25,7 @@ async function preview(page){await page.locator('[data-import-groups] input[valu
 async function consent(page){await page.locator('[data-import-rescue]').check();await page.locator('[data-import-consent]').check()}
 test('shipped flag stays off and guest/rescue stay available',async({page})=>{await page.goto('/Pickleball/?page=settings');await expect(page.locator('#importPilot')).toBeVisible();await expect(page.locator('[data-import-body]')).toBeHidden();await expect(page.locator('#rescuePanel')).toBeVisible()});
 for(const width of [390,820,1180,1440])test('mock Auth/RPC, real mapper and IDB: explicit consent and no legacy writes '+width,async({page,context})=>{
- await setup(context);await page.setViewportSize({width,height:900});await page.goto('/Pickleball/?page=settings');await expect(page.locator('[data-import-body]')).toBeVisible();
+ await setup(context);await page.setViewportSize({width,height:900});await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-import-body]')).toBeVisible();
  const before=await page.evaluate(()=>{localStorage.setItem('pickleup_scores','{"keep":"original"}');return JSON.stringify(Object.entries(localStorage).sort())});
  await source(page);await preview(page);await expect(page.locator('[data-import-start]')).toBeDisabled();expect(await page.evaluate(()=>IMPORT_CALLS.filter(c=>c.name==='begin_import').length)).toBe(0);
  await consent(page);await page.locator('[data-import-start]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Phiên nhập đã hoàn tất');
@@ -42,7 +42,7 @@ test('switch A to B clears private preview and ignores late A response',async({p
  await setup(context,{delay:true});await page.goto('/Pickleball/?page=settings');await source(page);await preview(page);await consent(page);await page.locator('[data-import-start]').click();await page.waitForFunction(()=>typeof window.RELEASE_IMPORT==='function');await page.evaluate(()=>{SWITCH_IMPORT_ACCOUNT();RELEASE_IMPORT()});await expect(page.locator('[data-import-account]')).toContainText('b@example.invalid');await expect(page.locator('[data-import-summary]')).toBeEmpty();expect(await page.evaluate(()=>IMPORT_CALLS.filter(c=>c.name==='import_batch').length)).toBe(0);
 });
 test('quarantine requires explicit acceptance and report preserves exact source text',async({page,context})=>{
- await setup(context);await page.goto('/Pickleball/?page=settings');await expect(page.locator('[data-import-body]')).toBeVisible();await expect(page.locator('#importPilot input[type=file]')).toBeEnabled();
+ await setup(context);await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-import-body]')).toBeVisible();await expect(page.locator('#importPilot input[type=file]')).toBeEnabled();
  const text='  '+JSON.stringify({app:'PickleUp',schemaVersion:1,scores:{0:{score:5,date:'2026-01-01T10:00:00Z'},1:{score:'5',date:'2026-01-01T10:00:00Z'},2:{score:6,date:'2026-01-01T10:00:00Z',future:'unknown'}}})+'\n';
  await page.locator('#importPilot input[type=file]').setInputFiles({name:'quarantine.json',mimeType:'application/json',buffer:Buffer.from(text)});await expect(page.locator('#importPilot [role=status]')).toContainText('Tệp đã đọc');await page.locator('[data-import-groups] input[value=scores]').check();await page.locator('[data-import-preview]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Còn mục');await page.getByRole('button',{name:'Giữ mục này trong quarantine'}).click();await page.locator('[data-import-preview]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Preview sẵn sàng');await consent(page);await expect(page.locator('[data-import-start]')).toBeDisabled();
  const pending=page.waitForEvent('download');await page.locator('[data-import-report]').click();const downloaded=await pending;const artifact=JSON.parse(await require('node:fs/promises').readFile(await downloaded.path(),'utf8'));expect(artifact.sourceText).toBe(text);expect(artifact.report.some(row=>row.disposition==='invalid')).toBe(true);
@@ -52,7 +52,7 @@ test('quarantine requires explicit acceptance and report preserves exact source 
 // ---- V5.33 (plan C): import straight from this device's legacy data, no file export needed ----
 test('device data button: invitation, preview and confirmed import run from localStorage; the device data is untouched and the invitation then says it was imported',async({page,context})=>{
  await setup(context);await context.addInitScript(()=>{if(!localStorage.getItem('pickleup_scores'))localStorage.setItem('pickleup_scores',JSON.stringify({0:{score:5,date:'2026-01-01T10:00:00Z'}}))});
- await page.goto('/Pickleball/?page=settings');await expect(page.locator('[data-import-body]')).toBeVisible();
+ await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-import-body]')).toBeVisible();
  await expect(page.locator('[data-import-invite]')).toContainText('dữ liệu cũ chưa nhập');await expect(page.locator('[data-import-invite]')).toContainText('1 nhóm');
  const before=await page.evaluate(()=>JSON.stringify(Object.entries(localStorage).sort()));expect(await page.evaluate(()=>IMPORT_CALLS.length)).toBe(0);
  await page.locator('[data-import-device]').click();await expect(page.locator('#importPilot [role=status]')).toContainText('Đã đọc dữ liệu trên máy này');
@@ -66,7 +66,7 @@ test('device data button: invitation, preview and confirmed import run from loca
  await page.reload();await expect(page.locator('[data-import-invite]')).toContainText('đã được nhập vào tài khoản');expect(await page.evaluate(()=>IMPORT_CALLS.length)).toBe(0);
 });
 test('device data button: no legacy data means no invitation and a disabled button; an account switch re-evaluates the invitation for the new account',async({page,context})=>{
- await setup(context);await page.goto('/Pickleball/?page=settings');await expect(page.locator('[data-import-body]')).toBeVisible();
+ await setup(context);await page.goto('/Pickleball/?page=settings');await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));await expect(page.locator('[data-import-body]')).toBeVisible();
  await expect(page.locator('[data-import-invite]')).toBeHidden();await expect(page.locator('[data-import-device]')).toBeDisabled();
  await page.evaluate(()=>localStorage.setItem('pickleup_scores',JSON.stringify({0:{score:7,date:'2026-01-02T10:00:00Z'}})));
  await page.evaluate(()=>SWITCH_IMPORT_ACCOUNT());await expect(page.locator('[data-import-invite]')).toContainText('dữ liệu cũ chưa nhập');await expect(page.locator('[data-import-account]')).toContainText('b@example.invalid');
