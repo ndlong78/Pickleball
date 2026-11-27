@@ -3,6 +3,7 @@ const {navigate}=require("./helpers/navigation.cjs");
 const REMOTE=/cdn\.jsdelivr\.net|storage\.googleapis\.com/;
 
 for(const screen of [
+ {name:"narrow phone",width:320,height:640},
  {name:"iPhone",width:390,height:844},
  {name:"iPad portrait",width:820,height:1180},
  {name:"iPad landscape",width:1180,height:820},
@@ -43,6 +44,9 @@ test("Home does not load the video analysis modules or vendor engine",async({pag
  expect(names.some(n=>/video-analysis|vendor\/mediapipe/.test(n))).toBe(false);
 });
 
+test.describe("engine integrity",()=>{
+ // page.route() cannot see requests a service worker handles (WebKit), so block the worker here.
+ test.use({serviceWorkers:"block"});
 test("tampered engine downloads are refused by the pinned SHA-256 and nothing runs",async({page})=>{
  const served=[];
  await page.route(REMOTE,route=>{served.push(route.request().url());route.fulfill({status:200,headers:{"access-control-allow-origin":"*","content-type":"application/octet-stream"},body:Buffer.alloc(1024,7)})});
@@ -59,6 +63,7 @@ test("tampered engine downloads are refused by the pinned SHA-256 and nothing ru
  expect(served.some(u=>u.endsWith(".task"))).toBe(true);
  expect(imported,"engine JS must not be imported before both hashes pass").toEqual([]);
  expect(await page.evaluate(()=>JSON.stringify(Object.keys(localStorage).sort()))).toBe(before);
+});
 });
 
 test("non-video files are rejected without creating a preview",async({page})=>{

@@ -8,8 +8,9 @@
 .va-tips{margin:0;padding-left:1.2em;line-height:1.6}
 .va-step progress{width:100%;margin-top:10px}
 .va-step button{min-height:44px;margin-top:8px;max-width:100%}
-.va-file{display:inline-flex;flex-direction:column;gap:6px;min-height:44px}
-.va-file input{max-width:100%}
+/* A file input has a wide intrinsic size; size it from the card, not from its own content. */
+.va-file{display:flex;flex-direction:column;gap:6px;min-height:44px;width:100%;min-width:0}
+.va-file input{display:block;width:100%;min-width:0;max-width:100%}
 .va-stage[hidden],.va-result[hidden],.va-diagnostics[hidden],.va-step progress[hidden]{display:none}
 .va-stage{display:grid;gap:12px;margin-top:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
 .va-stage video,.va-stage canvas{width:100%;height:auto;max-height:60vh;border-radius:12px;background:#0b1220;object-fit:contain}
