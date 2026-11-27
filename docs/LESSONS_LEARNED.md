@@ -85,3 +85,11 @@ Mẫu bắt buộc (`tests/agent-harness.test.js` kiểm tra đủ các trườn
 - **Kiểm chứng:** chưa có test; quy tắc [MERGE-03].
 - **Nguồn:** `docs/RELEASE_CHECKLIST.md` §5.
 - **Trạng thái:** active
+
+## LL-010: Khôi phục dữ liệu phải tắt trigger, nếu không ledger epoch bị ghi trùng
+- **Triệu chứng:** nạp `auth.sql` + `data.sql` vào DB mới mà không `SET session_replication_role = replica` thì lỗi `duplicate key value violates unique constraint "epoch_ledger_pkey"`.
+- **Nguyên nhân gốc:** trigger `capture_first_write_epoch` (AFTER INSERT trên `pickleup_private.sync_heads`) tự ghi ledger, trong khi bản dump cũng đã chứa các dòng ledger đó.
+- **Phòng ngừa:** chỉ khôi phục bằng `scripts/restore_db.sh`: một transaction, tắt trigger, chặn DB đích không trống hoặc lệch lịch sử migration, chặn ref production. Khi thêm trigger mới tự ghi dữ liệu, kiểm lại bước diễn tập khôi phục.
+- **Kiểm chứng:** bước "Restore drill on local Supabase" trong `.github/workflows/backend-checks.yml`; tái hiện lỗi trên PostgreSQL 16 cục bộ với fixture (không có `replica` → lỗi trên, rollback, DB đích còn 0 dòng).
+- **Nguồn:** PR thêm `scripts/restore_db.sh` (27/11/2026), migration `20261111000100_legacy_writer_epoch_guard.sql`.
+- **Trạng thái:** active

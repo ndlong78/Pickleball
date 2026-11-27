@@ -121,6 +121,18 @@ jobs:
           # Disable Playwright protocol logging; the runner emits phase enums only.
           DEBUG: ""
         run: npm run test:auth:browser
+      - name: Restore drill on local Supabase (backup, reset, restore, compare row counts)
+        run: |
+          db='postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+          key="$RUNNER_TEMP/drill-key.txt"; age-keygen -o "$key" 2>/dev/null
+          docker run --rm --network host -v "$PWD/scripts:/s:ro" postgres:17 psql "$db" -X -At -F '|' -v ON_ERROR_STOP=1 -f /s/db_row_counts.sql > "$RUNNER_TEMP/source-counts"
+          cat "$RUNNER_TEMP/source-counts"
+          # The drill is only meaningful with real Auth users and app rows from the suites above.
+          awk -F'|' '$1=="auth.users"&&$2>0{u=1} $1!~/^auth\./&&$2>0{a++} END{exit !(u&&a>=3)}' "$RUNNER_TEMP/source-counts"
+          BACKUP_DB_URL="$db" BACKUP_AGE_RECIPIENT="$(age-keygen -y "$key")" BACKUP_OUT_DIR="$RUNNER_TEMP/drill" bash scripts/backup_db.sh
+          supabase db reset --local
+          RESTORE_DB_URL="$db" RESTORE_BACKUP_FILE="$(ls "$RUNNER_TEMP"/drill/*.tar.age)" RESTORE_AGE_KEY="$key" RESTORE_EXPECT_COUNTS="$RUNNER_TEMP/source-counts" bash scripts/restore_db.sh
+          rm -rf "$RUNNER_TEMP/drill" "$key" "$RUNNER_TEMP/source-counts"
       - name: Clean up local containers
         if: always()
         run: supabase stop --no-backup
