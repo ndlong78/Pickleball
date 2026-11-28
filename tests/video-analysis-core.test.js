@@ -131,3 +131,28 @@ test("thresholds are frozen and exposed for review",()=>{
  assert.ok(Object.isFrozen(core.THRESHOLDS));
  assert.equal(core.THRESHOLDS.kneeStraight,160);
 });
+
+
+test("video files are recognised even when the picker reports no MIME type",()=>{
+ assert.equal(core.isVideoFile({type:"video/quicktime",name:"IMG_0001.MOV"}),true);
+ assert.equal(core.isVideoFile({type:"video/mp4",name:"a.mp4"}),true);
+ assert.equal(core.isVideoFile({type:"",name:"IMG_0001.MOV"}),true);
+ assert.equal(core.isVideoFile({type:"",name:"clip.mp4"}),true);
+ assert.equal(core.isVideoFile({type:"application/octet-stream",name:"clip.m4v"}),true);
+ assert.equal(core.isVideoFile({type:"text/plain",name:"notes.txt"}),false);
+ assert.equal(core.isVideoFile({type:"text/plain",name:"fake.mp4"}),false);
+ assert.equal(core.isVideoFile({type:"",name:"photo.jpg"}),false);
+ assert.equal(core.isVideoFile(null),false);
+});
+
+test("in-app browsers that break file pickers are detected; normal Safari/Chrome are not",()=>{
+ const ios="Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko)";
+ assert.equal(core.inAppBrowser(ios+" Version/18.1 Mobile/15E148 Safari/604.1"),null);
+ assert.equal(core.inAppBrowser("Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Mobile Safari/537.36"),null);
+ assert.equal(core.inAppBrowser(ios+" Mobile/15E148 Zalo iOS/489"),"Zalo");
+ assert.equal(core.inAppBrowser(ios+" Mobile/15E148 [FBAN/FBIOS;FBAV/490.0]"),"Facebook/Messenger");
+ assert.equal(core.inAppBrowser(ios+" Mobile/15E148 Instagram 360.0"),"Instagram");
+ assert.equal(core.inAppBrowser("Mozilla/5.0 (Linux; Android 14; wv) AppleWebKit/537.36 Version/4.0 Chrome/131.0 Mobile Safari/537.36 Line/14.0"),"LINE");
+ assert.equal(core.inAppBrowser("Mozilla/5.0 (Linux; Android 14; Pixel 8 Build/AP; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0 Mobile Safari/537.36"),"WebView");
+ assert.equal(core.inAppBrowser(""),null);
+});

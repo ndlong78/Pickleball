@@ -66,6 +66,18 @@ test("tampered engine downloads are refused by the pinned SHA-256 and nothing ru
 });
 });
 
+test("a video can be picked from the device library; the camera is a separate optional input",async({page})=>{
+ await page.goto("/?page=video");
+ await expect(page.locator("#vaFile")).not.toHaveAttribute("capture",/.*/);
+ await expect(page.locator("#vaFile")).toHaveAttribute("accept",/^video\/\*,.*\.mov/);
+ await expect(page.locator('label[for="vaFile"]')).toContainText("Chọn video từ máy");
+ await expect(page.locator("#vaCapture")).toHaveAttribute("capture","environment");
+ await expect(page.locator('label[for="vaCapture"]')).toContainText("Quay video mới");
+ await expect(page.locator("#videoAnalysis")).toContainText("không gửi lên máy chủ");
+ await page.locator("#vaCapture").setInputFiles({name:"notes.txt",mimeType:"text/plain",buffer:Buffer.from("not a video")});
+ await expect(page.locator("#vaFileStatus")).toHaveText("Tệp này không phải video.");
+});
+
 test("non-video files are rejected without creating a preview",async({page})=>{
  await page.goto("/?page=video");
  await page.locator("#vaFile").setInputFiles({name:"notes.txt",mimeType:"text/plain",buffer:Buffer.from("not a video")});
