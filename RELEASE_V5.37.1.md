@@ -20,6 +20,14 @@ Owner yêu cầu "cho phép upload từ thiết bị". Ở V5.37.0, ô chọn vi
 
 "Upload" ở đây là đưa video vào trình duyệt để phân tích. Video **vẫn không gửi lên máy chủ** [PROD-11], và trang ghi rõ điều đó.
 
+## Khi bấm chọn video mà "không phản ứng"
+Owner báo lại: "nút upload không phản ứng". Các nguyên nhân có thể và cách xử lý:
+- Ngay khi chọn tệp, trang báo **"Đang mở video…"** thay vì im lặng chờ.
+- Gọi `video.load()` sau khi gán nguồn, vì iOS Safari có thể không tự đọc video từ blob.
+- Nhận video cả khi trình chọn trả kiểu MIME rỗng (một số máy Android và trình duyệt trong app), dựa theo đuôi `.mov/.mp4/.m4v/.webm/…`. `accept` có thêm các đuôi này.
+- Phát hiện trình duyệt trong app (**Zalo, Facebook/Messenger, Instagram, LINE, TikTok, Android WebView**), là nơi thường chặn chọn tệp. Trang hướng dẫn mở bằng Safari hoặc Chrome.
+- Thông báo lỗi khi không mở được video gợi ý quay bằng camera của ứng dụng hoặc chọn MP4/MOV.
+
 ## Kiểm chứng
 Engine MediaPipe thật, Chromium headless trong container (GPU giả lập bằng phần mềm, nên số tuyệt đối **không** đại diện điện thoại):
 

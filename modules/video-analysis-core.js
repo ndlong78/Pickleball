@@ -133,7 +133,23 @@ function representativeFrame(frames,size,result){
  return best;
 }
 
-const api=Object.freeze({VERSION,DISCLAIMER,THRESHOLDS:T,LANDMARKS:L,angle,median,viewOf,frameQuality,frameMetrics,analyzeReadyPosition,representativeFrame});
+const VIDEO_EXT=/\.(mov|mp4|m4v|webm|3gp|3g2|mkv|avi)$/i;
+/** True for video files, including pickers that report an empty MIME type (some Android and in-app browsers). */
+function isVideoFile(file){
+ if(!file)return false;
+ const type=String(file.type||"").toLowerCase();
+ if(type)return type.startsWith("video/")||(type==="application/octet-stream"&&VIDEO_EXT.test(String(file.name||"")));
+ return VIDEO_EXT.test(String(file.name||""));
+}
+/** In-app browsers (Zalo, Facebook, Messenger, Instagram, LINE, TikTok, Android WebView) often break file pickers. */
+function inAppBrowser(ua){
+ const s=String(ua||"");
+ const m=s.match(/\b(Zalo|FBAN|FBAV|FB_IAB|Messenger|Instagram|Line\/|TikTok|musical_ly|BytedanceWebview)/i);
+ if(m)return /^fb|messenger/i.test(m[1])?"Facebook/Messenger":/^line/i.test(m[1])?"LINE":/tiktok|musical|bytedance/i.test(m[1])?"TikTok":m[1].replace(/\/$/,"");
+ return /; wv\)/.test(s)?"WebView":null;
+}
+
+const api=Object.freeze({VERSION,DISCLAIMER,THRESHOLDS:T,LANDMARKS:L,angle,median,viewOf,frameQuality,frameMetrics,analyzeReadyPosition,representativeFrame,isVideoFile,inAppBrowser});
 root.PICKLEUP_VIDEO_CORE=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window==="undefined"?globalThis:window);

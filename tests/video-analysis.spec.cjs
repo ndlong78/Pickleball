@@ -69,7 +69,7 @@ test("tampered engine downloads are refused by the pinned SHA-256 and nothing ru
 test("a video can be picked from the device library; the camera is a separate optional input",async({page})=>{
  await page.goto("/?page=video");
  await expect(page.locator("#vaFile")).not.toHaveAttribute("capture",/.*/);
- await expect(page.locator("#vaFile")).toHaveAttribute("accept","video/*");
+ await expect(page.locator("#vaFile")).toHaveAttribute("accept",/^video\/\*,.*\.mov/);
  await expect(page.locator('label[for="vaFile"]')).toContainText("Chọn video từ máy");
  await expect(page.locator("#vaCapture")).toHaveAttribute("capture","environment");
  await expect(page.locator('label[for="vaCapture"]')).toContainText("Quay video mới");

@@ -106,11 +106,14 @@ async function onFile(event){
  resetResult();releaseVideo();state.file=null;updateRunButton();
  const file=input.files&&input.files[0];
  if(!file){text(status,"");if(stage)stage.hidden=true;return}
- if(!/^video\//.test(file.type||"")){text(status,"Tệp này không phải video.");input.value="";return}
+ if(!core.isVideoFile(file)){text(status,"Tệp này không phải video.");input.value="";return}
  if(file.size>LIMITS.maxBytes){text(status,"Video quá lớn (tối đa 300 MB). Hãy cắt ngắn còn 3–10 giây.");input.value="";return}
+ text(status,"Đang mở video…");
  state.videoUrl=URL.createObjectURL(file);
  video.src=state.videoUrl;
- try{await waitFor(video,"loadedmetadata",15000)}catch(_){releaseVideo();text(status,"Trình duyệt không mở được video này.");return}
+ // iOS Safari may not load a blob source on its own; load() starts reading metadata now.
+ try{video.load()}catch(_){}
+ try{await waitFor(video,"loadedmetadata",15000)}catch(_){releaseVideo();text(status,"Trình duyệt không mở được video này. Thử quay lại bằng camera của ứng dụng, hoặc chọn video định dạng MP4/MOV.");return}
  if(!(video.duration>0)||!Number.isFinite(video.duration)){releaseVideo();text(status,"Không đọc được độ dài video.");return}
  if(video.duration>LIMITS.maxSeconds){releaseVideo();text(status,"Video dài "+Math.round(video.duration)+" giây. Hãy cắt còn tối đa 15 giây.");return}
  state.file={name:file.name,bytes:file.size,type:file.type,duration:video.duration,width:video.videoWidth,height:video.videoHeight};
@@ -272,6 +275,8 @@ function init(){
  $("vaRun").addEventListener("click",()=>{run()});
  $("vaCopyDiag").addEventListener("click",()=>{copyDiagnostics()});
  root.addEventListener("pagehide",releaseVideo);
+ const app=core.inAppBrowser(navigator.userAgent);
+ if(app)text($("vaFileStatus"),"Bạn đang mở trang trong trình duyệt của "+app+", nơi thường không cho chọn video. Hãy mở bằng Safari hoặc Chrome (menu ⋯ → Mở bằng trình duyệt).");
  if(!simdSupported())text($("vaEngineStatus"),"Trình duyệt này chưa hỗ trợ WebAssembly SIMD (cần Safari 16.4+, Chrome/Edge 91+ hoặc Firefox 89+).");
 }
 root.PICKLEUP_VIDEO_UI=Object.freeze({ENGINE,LIMITS,loadEngine,isReady:()=>!!state.engine});
