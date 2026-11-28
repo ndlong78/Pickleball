@@ -13,6 +13,13 @@ Owner thử V5.37.0 trên điện thoại ngày 28/11/2026 và báo "chạy rấ
 - Timestamp tăng dần qua mọi clip trong phiên.
 - Chẩn đoán thêm "Cách lấy khung" và tách "Nhận diện TB" với "Chờ khung TB", để biết điện thoại chậm ở khâu nào.
 
+## Chọn video có sẵn trên máy
+Owner yêu cầu "cho phép upload từ thiết bị". Ở V5.37.0, ô chọn video có `capture="environment"`; trên iPhone và Android, thuộc tính này mở thẳng camera, nên không chọn được video có sẵn. Nay có hai nút riêng:
+- **Chọn video từ máy (thư viện ảnh, tệp)**: không có `capture`;
+- **Quay video mới bằng camera**: giữ `capture`.
+
+"Upload" ở đây là đưa video vào trình duyệt để phân tích. Video **vẫn không gửi lên máy chủ** [PROD-11], và trang ghi rõ điều đó.
+
 ## Kiểm chứng
 Engine MediaPipe thật, Chromium headless trong container (GPU giả lập bằng phần mềm, nên số tuyệt đối **không** đại diện điện thoại):
 

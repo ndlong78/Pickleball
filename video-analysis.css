@@ -9,6 +9,7 @@
 .va-step progress{width:100%;margin-top:10px}
 .va-step button{min-height:44px;margin-top:8px;max-width:100%}
 /* A file input has a wide intrinsic size; size it from the card, not from its own content. */
+.va-files{display:grid;gap:10px}
 .va-file{display:flex;flex-direction:column;gap:6px;min-height:44px;width:100%;min-width:0}
 .va-file input{display:block;width:100%;min-width:0;max-width:100%}
 .va-stage[hidden],.va-result[hidden],.va-diagnostics[hidden],.va-step progress[hidden]{display:none}

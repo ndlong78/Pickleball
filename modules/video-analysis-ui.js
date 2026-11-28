@@ -101,6 +101,8 @@ function waitFor(target,event,ms){
 
 async function onFile(event){
  const input=event.target,status=$("vaFileStatus"),video=$("vaVideo"),stage=$("vaStage");
+ // Library picker and camera share one preview: choosing in one clears the other.
+ for(const id of ["vaFile","vaCapture"]){const other=$(id);if(other&&other!==input)other.value=""}
  resetResult();releaseVideo();state.file=null;updateRunButton();
  const file=input.files&&input.files[0];
  if(!file){text(status,"");if(stage)stage.hidden=true;return}
@@ -266,6 +268,7 @@ function init(){
  const load=$("vaLoad");if(!load||load.dataset.bound)return;load.dataset.bound="1";
  load.addEventListener("click",()=>{loadEngine()});
  $("vaFile").addEventListener("change",onFile);
+ $("vaCapture").addEventListener("change",onFile);
  $("vaRun").addEventListener("click",()=>{run()});
  $("vaCopyDiag").addEventListener("click",()=>{copyDiagnostics()});
  root.addEventListener("pagehide",releaseVideo);
