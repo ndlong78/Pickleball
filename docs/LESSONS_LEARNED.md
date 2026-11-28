@@ -93,3 +93,11 @@ Mẫu bắt buộc (`tests/agent-harness.test.js` kiểm tra đủ các trườn
 - **Kiểm chứng:** bước "Restore drill on local Supabase" trong `.github/workflows/backend-checks.yml`; tái hiện lỗi trên PostgreSQL 16 cục bộ với fixture (không có `replica` → lỗi trên, rollback, DB đích còn 0 dòng).
 - **Nguồn:** PR thêm `scripts/restore_db.sh` (27/11/2026), migration `20261111000100_legacy_writer_epoch_guard.sql`.
 - **Trạng thái:** active
+
+## LL-011: Test đọc biến toàn cục ngay sau một thao tác làm trang tự reload
+- **Triệu chứng:** WebKit CI, `backup-v1.spec.cjs`: `ReferenceError: Can't find variable: PICKLEUP_PAGE_LOADER` sau khi khôi phục V1, qua khi retry (PR #81, run 46025178418). Cùng run, `import-pilot.spec.cjs` không thấy `[data-import-body]` trong 5 s ngay sau `goto`.
+- **Nguyên nhân gốc:** khôi phục thành công gọi `location.reload()` sau khi ghi localStorage. Test chờ localStorage đổi (xảy ra trước reload) rồi `evaluate` vào document mới khi script chưa nạp. Ở test import, fragment Settings và hơn 50 module được nạp lazy, trên máy CI tải nặng có lúc mất hơn 5 s, trong khi test không chờ loader.
+- **Phòng ngừa:** thao tác nào gây reload thì đặt `page.waitForEvent('load')` **trước** thao tác và `await` nó sau. Sau `goto` một trang lazy, `await PICKLEUP_PAGE_LOADER.ensure('<page>')` trước khi kiểm phần tử của fragment (như LL-002). Không tăng timeout, không thêm retry.
+- **Kiểm chứng:** `tests/backup-v1.spec.cjs`, `tests/import-pilot.spec.cjs`; local Chromium lặp 5 lần: 90/90 pass. WebKit chạy trên CI.
+- **Nguồn:** PR #81, commit sửa test trong PR này; `modules/assessments-and-backup.js` (reload sau restore).
+- **Trạng thái:** active

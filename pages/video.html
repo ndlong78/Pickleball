@@ -1,0 +1,50 @@
+<!-- PickleUp V5.37 · video · static trusted page markup (ADR-0006) -->
+<section class="section" id="videoAnalysis" data-pickleup-page="video">
+<div class="sectionHead"><div><div class="kicker">Thử nghiệm · Phân tích động tác</div><h2>Phân tích tư thế chuẩn bị</h2><p class="sub">Quay 3–10 giây đứng ở tư thế chuẩn bị (có thể nhún nhẹ). Ứng dụng nhận diện khung xương ngay trên máy và đưa tối đa hai gợi ý chỉnh sửa.</p></div></div>
+<div class="va-notices">
+ <p class="va-notice va-privacy"><strong>Video không rời thiết bị.</strong> Không tải lên máy chủ, không lưu lại; đóng trang là video được giải phóng.</p>
+ <p class="va-notice va-caution"><strong>Gợi ý tham khảo.</strong> Ngưỡng ban đầu, chưa được HLV kiểm chứng. Không phải điểm kiểm tra, DUPR hay xác nhận buổi tập. Nếu đau, hãy dừng tập.</p>
+</div>
+<div class="va-grid">
+ <div class="card va-step">
+  <h3>1. Cách quay</h3>
+  <ul class="va-tips">
+   <li>Đặt máy cố định (chân đế hoặc tựa vào vật) ngang hông, cách 3–5 m.</li>
+   <li>Quay <strong>nghiêng</strong> để đo gối và hông, hoặc <strong>chính diện</strong> để đo độ rộng chân.</li>
+   <li>Thấy trọn người từ đầu tới chân; chỉ một người trong khung hình.</li>
+   <li>Đủ sáng; quay ngang; 3–10 giây, tối đa 15 giây.</li>
+  </ul>
+ </div>
+ <div class="card va-step">
+  <h3>2. Bộ phân tích</h3>
+  <p class="sub">Tải một lần khoảng 21 MB (MediaPipe Pose, Google, Apache-2.0). Nên dùng Wi-Fi. Mỗi tệp được kiểm tra mã băm trước khi chạy.</p>
+  <button id="vaLoad" type="button" class="primary">Tải bộ phân tích (~21 MB)</button>
+  <progress id="vaLoadProgress" max="100" value="0" hidden></progress>
+  <p class="sub" id="vaEngineStatus" role="status"></p>
+ </div>
+ <div class="card va-step">
+  <h3>3. Chọn hoặc quay video</h3>
+  <label class="va-file" for="vaFile">Chọn video<input id="vaFile" type="file" accept="video/*" capture="environment"></label>
+  <p class="sub" id="vaFileStatus" role="status"></p>
+  <button id="vaRun" type="button" class="primary" disabled>Phân tích video</button>
+  <progress id="vaRunProgress" max="100" value="0" hidden></progress>
+ </div>
+</div>
+<div class="va-stage" id="vaStage" hidden>
+ <video id="vaVideo" muted playsinline preload="auto" aria-label="Video đã chọn"></video>
+ <canvas id="vaCanvas" aria-label="Khung xương tại khung hình tiêu biểu"></canvas>
+</div>
+<div class="card va-result" id="vaResult" hidden aria-live="polite">
+ <h3 id="vaResultTitle">Kết quả</h3>
+ <ol id="vaFindings" class="va-findings"></ol>
+ <p class="sub" id="vaDisclaimer"></p>
+ <table class="va-metrics"><caption>Số đo (trung vị các khung hình rõ)</caption><tbody id="vaMetrics"></tbody></table>
+ <p class="sub"><a href="?page=academy#academy">Xem bài Học viện kỹ năng Vị trí</a></p>
+</div>
+<details class="card va-diagnostics" id="vaDiagnostics" hidden>
+ <summary>Chẩn đoán hiệu năng (để kiểm thử trên thiết bị thật)</summary>
+ <dl id="vaDiagList"></dl>
+ <button id="vaCopyDiag" type="button" class="linkbtn">Sao chép chẩn đoán</button>
+ <p class="sub" id="vaCopyStatus" role="status"></p>
+</details>
+</section>

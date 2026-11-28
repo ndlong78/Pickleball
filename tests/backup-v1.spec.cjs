@@ -58,8 +58,10 @@ test('V1 rollback failure keeps journal and a later reload finishes recovery',as
 test('V1 old partial backup preserves omitted fields; explicit null clears selected plan',async({page,context})=>{
  const assessment=JSON.stringify({answers:{serve:1,return:1,dink:1,volley:1,position:1,strategy:1}});
  await seed(context,{pickleup_assessment_v1:assessment,pickleup_selected_plan_v31:JSON.stringify({source:'basic',id:'old'})});await settings(page);
+ // A committed restore calls location.reload(); wait for the new document before touching its globals.
+ const reloaded=page.waitForEvent('load');
  page.once('dialog',dialog=>dialog.accept());await page.locator('#restoreFile').setInputFiles(file({selectedPlan:null}));
- await expect.poll(()=>page.evaluate(()=>localStorage.getItem('pickleup_selected_plan_v31'))).toBeNull();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
+ await reloaded;await expect.poll(()=>page.evaluate(()=>localStorage.getItem('pickleup_selected_plan_v31'))).toBeNull();await page.evaluate(()=>PICKLEUP_PAGE_LOADER.ensure('settings'));
  expect(await page.evaluate(()=>localStorage.getItem('pickleup_assessment_v1'))).toBe(assessment);expect(await page.evaluate(key=>localStorage.getItem(key),JOURNAL)).toBeNull();
 });
 test('V1 missing Web Locks refuses restore before guest mutation while normal pages remain usable',async({page,context})=>{

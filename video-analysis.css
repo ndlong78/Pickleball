@@ -1,0 +1,27 @@
+/* PickleUp V5.37 — video movement analysis page (ADR-0006). */
+.va-notices{display:grid;gap:10px;margin:0 0 16px}
+.va-notice{margin:0;padding:12px 14px;border-radius:12px;line-height:1.5}
+.va-privacy{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.45)}
+.va-caution{background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.5)}
+.va-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.va-step h3{margin-top:0}
+.va-tips{margin:0;padding-left:1.2em;line-height:1.6}
+.va-step progress{width:100%;margin-top:10px}
+.va-step button{min-height:44px;margin-top:8px;max-width:100%}
+/* A file input has a wide intrinsic size; size it from the card, not from its own content. */
+.va-file{display:flex;flex-direction:column;gap:6px;min-height:44px;width:100%;min-width:0}
+.va-file input{display:block;width:100%;min-width:0;max-width:100%}
+.va-stage[hidden],.va-result[hidden],.va-diagnostics[hidden],.va-step progress[hidden]{display:none}
+.va-stage{display:grid;gap:12px;margin-top:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.va-stage video,.va-stage canvas{width:100%;height:auto;max-height:60vh;border-radius:12px;background:#0b1220;object-fit:contain}
+.va-result{margin-top:16px}
+.va-findings{padding-left:1.3em;line-height:1.6}
+.va-findings li{margin-bottom:8px}
+.va-metrics{width:100%;border-collapse:collapse;margin-top:10px}
+.va-metrics caption{text-align:left;font-weight:600;padding-bottom:6px}
+.va-metrics th,.va-metrics td{text-align:left;padding:6px 8px;border-top:1px solid rgba(148,163,184,.35);vertical-align:top;overflow-wrap:anywhere}
+.va-diagnostics{margin-top:16px}
+.va-diagnostics summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
+.va-diagnostics dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:4px 12px;margin:10px 0}
+.va-diagnostics dt{font-weight:600}
+.va-diagnostics dd{margin:0;overflow-wrap:anywhere}

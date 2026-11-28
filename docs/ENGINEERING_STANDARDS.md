@@ -15,12 +15,12 @@
 
 **PR6b/V5.15.0:** shared `staging-pilot.js` lazy sau Auth config và trước các domain flags; một guard origin/path/project/publishable key/query. URL thường fail closed; link preferences-checkins giữ phạm vi cũ, account-data mở ba flags để chọn nguồn riêng. Entry dùng điều hướng tài liệu canonical để đổi mode, router tiếp tục giữ query. Không SDK calls trong UI hoặc server/RLS/IDB schema thay đổi. [Hợp đồng](STAGING_ACCOUNT_PR6B.md).
 
-**Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog8 route hiện hành.
+**Baseline lịch sử PR0:** main `8f99fcb` là V5.1.0. [Kiến trúc V6](ARCHITECTURE_V6_DATABASE.md), [dictionary 18 khóa legacy](DATA_DICTIONARY.md), [runbook](MIGRATION_RUNBOOK.md) và [threat model](THREAT_MODEL.md) nay đọc cùng các hợp đồng PR đã merge; từng phần đề xuất chưa là tính năng vận hành. [Policy](PILOT_OPERATING_POLICY.md) ghi quyết định được ủy quyền, không hỏi duyệt lại provider/CAS/Auth. Giữ dữ liệu legacy và QA hiện hữu. `ARCHITECTURE.md` ở root là lịch sử V3.x, không dùng số7 trang thay catalog 9 route hiện hành.
 
 | Thành phần | Trách nhiệm |
 |---|---|
 | `index.html` | Application shell, home, navigation, mount points, mã build |
-| `modules/page-catalog.js` | Danh mục 8 route và section IDs |
+| `modules/page-catalog.js` | Danh mục 9 route và section IDs (`video` từ V5.37) |
 | `modules/page-router.js` | `?page=...#section`, history, điều hướng nội bộ |
 | `mobile-ui.js` | Menu "Thêm" dùng chung cho thanh trên và dock (V5.18); router vẫn giữ `aria-current` |
 | `modules/academy-lesson-core.js` | Mô hình thuần cho bài Học viện 3 tầng: điểm cần nhớ, thời lượng, luật theo kỹ năng và mức mở mặc định (V5.20) |
@@ -101,7 +101,7 @@ Playwright viewport/engine mô phỏng **không** thay thế QA vật lý trên 
 
 Trước sửa: đọc route, module core/UI, storage keys, tests và các tài liệu này. Sau sửa: thêm unit cho logic (ngày địa phương, year boundary, corrupt dữ liệu, tính tuần, lesson comparability), Playwright cho route/điều khiển/viewport, backup migration khi liên quan và PWA offline nếu ảnh hưởng. Không ẩn lỗi bằng thay expectation cho dễ qua. Với thay đổi hành vi, cập nhật `PRODUCT_SPEC.md` và acceptance criteria. Với thay đổi kiến trúc, cập nhật tài liệu này trong cùng PR.
 
-Mọi tối ưu hoặc refactor đều cần kiểm tra regression ở tám trang hiện có và báo rõ đo lường/ảnh hưởng. Luôn ưu tiên an toàn và hồi phục thay vì thúc đẩy người dùng tập quá sức.
+Mọi tối ưu hoặc refactor đều cần kiểm tra regression ở chín trang hiện có và báo rõ đo lường/ảnh hưởng. Luôn ưu tiên an toàn và hồi phục thay vì thúc đẩy người dùng tập quá sức.
 
 PR4c / V5.5.0 tích hợp nguồn tài khoản opt-in và UI sync/conflict cho mục tiêu/check-in ở Journey/Progress; flags vẫn tắt, chưa rollout. Backup V5 chỉ dữ liệu khách; cache V6 hai domain có export riêng chưa round-trip. [Hợp đồng PR4c](SYNC_UI_PR4C.md).
 

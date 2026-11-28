@@ -19,7 +19,7 @@ Playwright CI bật `failOnFlakyTests`: một ca chỉ qua sau retry vẫn làm 
 
 1. Đọc `main` **HEAD SHA**, `package.json` version, PR mở, commit gần nhất, CI/Pages jobs mới nhất. Không đoán phiên bản theo lịch sử hội thoại.
 2. Đọc source, tests, các tệp tài liệu liên quan; xác định **kiểu thay đổi**: code/product/UI, PWA/cache, data/schema, test/CI, tài liệu thuần.
-3. Viết scope nhỏ, acceptance criteria, ảnh hưởng tới 8 route, localStorage/backup, offline, devices và khả năng rollback.
+3. Viết scope nhỏ, acceptance criteria, ảnh hưởng tới 9 route, localStorage/backup, offline, devices và khả năng rollback.
 4. Tạo nhánh từ HEAD mới nhất `feature/vX.Y-description`, `fix/description` hoặc `docs/description`. Không sửa trực tiếp `main`, không force-push hoặc ghi đè nhánh người khác.
 5. Với “hãy tiếp tục” và tác vụ trong phạm vi cho phép, chủ động thực hiện mà không yêu cầu xác nhận mọi bước nhỏ; **cần phê duyệt** khi thay đổi kiến trúc nền, cloud/chi phí, dữ liệu nhạy cảm, xóa dữ liệu hoặc thao tác khó đảo ngược.
 

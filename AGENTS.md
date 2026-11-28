@@ -20,7 +20,7 @@ Production: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers, 
 
 ## PROD — hợp đồng sản phẩm V5.0
 
-- [PROD-01] PWA tiếng Việt có **8 route**: `home`, `journey`, `coach`, `court`, `academy`, `progress`, `matches`, `settings`.
+- [PROD-01] PWA tiếng Việt có **9 route**: `home`, `journey`, `coach`, `court`, `academy`, `progress`, `matches`, `video`, `settings` ([ADR-0006](docs/decisions/0006-video-analysis.md) thêm `video`).
 - [PROD-02] `journey` là luồng trung tâm: đánh giá kỹ năng (tùy chọn) → mục tiêu/lịch tập → chọn hoặc tiếp tục giáo án → luyện tập bằng đúng loại đồng hồ → **xác nhận thủ công** → xem tiến bộ/gợi ý buổi tiếp theo.
 - [PROD-03] **Lịch đã lên ≠ buổi đã tập.** Mở bài, chạy hết đồng hồ, đánh dấu bước hoặc lưu điểm /20 **không được** tự xác nhận attendance. Chỉ check-in do người dùng chủ động lưu mới tính buổi tập thực tế.
 - [PROD-04] **Học viện ≠ Trên sân:** đồng hồ từng bước trong Học viện dùng giáo án thư viện; đồng hồ Trên sân yêu cầu giáo án cá nhân hợp lệ đã tạo/chọn. Không giả định hai định dạng tương thích.
@@ -30,6 +30,7 @@ Production: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers, 
 - [PROD-08] Học viện có **120 bài 1.0–5.0**: 80 bài 1.0–4.0 và 40 bài 4.0–5.0 (24 bài ở V5.27.0, 16 bài ở V5.29.0 theo yêu cầu owner). 40 bài 4.0–5.0 **đã rà soát nội bộ bởi Claude theo yêu cầu owner 15/11/2026, không có HLV người duyệt và chưa hiệu chỉnh trên sân**. Mỗi nhóm 4.0–4.5 và 4.5–5.0 có 20 bài, ít hơn các cấp dưới. Mốc đạt nhóm 4.0–5.0 là đề xuất ban đầu, không phải chứng nhận hay DUPR.
 - [PROD-09] Từ V5.28.0: HLV cá nhân nâng cao, kiểm tra kỹ năng nâng cao và phân tích chiến thuật trên trang Thi đấu hỗ trợ 3.0–5.0. HLV cá nhân cơ bản và Kiểm tra chuyển cấp V2.3 vẫn chỉ 1.0–3.0.
 - [PROD-10] Buổi đầy đủ 60′ = 10′ khởi động, 12′+12′+15′ kỹ thuật, 6′ kiểm tra, 5′ thả lỏng. Buổi 20/30/45′ phải gọi là **phiên rút gọn**. Khuyến khích hồi phục, giảm cường độ khi đau/mệt, không tập bù quá sức.
+- [PROD-11] **Phân tích video** ([ADR-0006](docs/decisions/0006-video-analysis.md)): video xử lý trên thiết bị, không upload, không lưu. Chỉ số đo và nhận xét được phép lưu, qua PR backend riêng. Mọi nhận xét ghi "gợi ý tham khảo, chưa được HLV kiểm chứng" cho tới khi có HLV người duyệt. Kết quả ≠ điểm /20 ≠ DUPR ≠ attendance. JS của MediaPipe tự host; file nhị phân tải ngoài phải khớp SHA-256 ghim sẵn.
 
 ## DATA — dữ liệu, cloud và đồng bộ
 

@@ -54,7 +54,7 @@ for(const screen of devices){
    await expect(page.locator("#matchSummary")).toContainText("1 trận");
    await expect(page.locator("#matchHistory")).toContainText("11–9");
   });
-  test("persistent dock has four tabs plus a shared Thêm menu for the other four routes",async({page})=>{
+  test("persistent dock has four tabs plus a shared Thêm menu for the other five routes",async({page})=>{
    await page.goto("/?page=coach");
    const dock=page.locator("#pickleupMobileDock");
    const links=[
@@ -74,7 +74,7 @@ for(const screen of devices){
    await more.click();
    await expect(panel).toBeVisible();
    await expect(more).toHaveAttribute("aria-expanded","true");
-   await expect(panel.locator("a[data-route]")).toHaveCount(4);
+   await expect(panel.locator("a[data-route]")).toHaveCount(5);
    await expect(panel.locator("a").first()).toBeFocused();
    await page.keyboard.press("Escape");
    await expect(panel).toBeHidden();
@@ -90,6 +90,12 @@ for(const screen of devices){
    await page.locator('#pageNavigation a[data-route="court"]').click();
    await expect(more).not.toHaveAttribute("data-active","");
    await expect(page.locator("[data-nav-more-current]")).toHaveText("");
+   await more.click();
+   await panel.locator('a[data-route="video"]').click();
+   await expect(page).toHaveURL(/page=video/);
+   await expect(page.locator("#videoAnalysis")).toBeVisible();
+   await expect(page.locator("[data-nav-more-current]")).toHaveText("Phân tích động tác");
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
   test("V3.1 generates advanced training, uses court timer and saves results",async({page})=>{
    await page.goto("/?page=coach");
