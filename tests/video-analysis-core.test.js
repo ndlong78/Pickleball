@@ -131,3 +131,4 @@ test("thresholds are frozen and exposed for review",()=>{
  assert.ok(Object.isFrozen(core.THRESHOLDS));
  assert.equal(core.THRESHOLDS.kneeStraight,160);
 });
+

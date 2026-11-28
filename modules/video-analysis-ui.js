@@ -19,7 +19,7 @@ const LIMITS=Object.freeze({maxSeconds:15.5,maxBytes:300*1024*1024,fps:5,maxFram
 // Minimal module using a v128 instruction (same probe as wasm-feature-detect "simd").
 const SIMD_PROBE=new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]);
 const EDGES=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28],[27,31],[28,32]];
-const state={engine:null,loading:null,delegate:null,loadMs:null,videoUrl:null,file:null,running:false,diag:{}};
+const state={clock:0,engine:null,loading:null,delegate:null,loadMs:null,videoUrl:null,file:null,running:false,diag:{}};
 const $=id=>document.getElementById(id);
 const text=(el,value)=>{if(el)el.textContent=value==null?"":String(value)};
 
@@ -67,6 +67,8 @@ async function loadEngine(){
    let engine=null,delegate="GPU";
    try{engine=await vision.PoseLandmarker.createFromOptions(fileset,options("GPU"))}
    catch(_){delegate="CPU";engine=await vision.PoseLandmarker.createFromOptions(fileset,options("CPU"))}
+   // Warm up once (GPU shader compilation can take seconds) so it never stalls a clip.
+   try{const c=document.createElement("canvas");c.width=c.height=128;engine.detectForVideo(c,++state.clock)}catch(_){}
    state.engine=engine;state.delegate=delegate;state.loadMs=Math.round(performance.now()-started);
    text(status,"Bộ phân tích sẵn sàng ("+(delegate==="GPU"?"GPU":"CPU")+").");
    if(button){button.textContent="Bộ phân tích đã sẵn sàng";button.disabled=true}
@@ -152,6 +154,50 @@ function renderDiagnostics(d){
  $("vaDiagnostics").hidden=false;
 }
 
+/**
+ * Sample by playing the clip forward and pausing while each sampled frame is detected
+ * (requestVideoFrameCallback): no seeking, sequential hardware decoding, and no sample is lost however
+ * slow detection is. Between samples the clip plays at 2x. Resolves false when unsupported or blocked,
+ * so the caller can fall back to seeking.
+ */
+function samplePlayback(video,capture,step,stats){
+ if(typeof video.requestVideoFrameCallback!=="function")return Promise.resolve(false);
+ return new Promise(resolve=>{
+  let done=false,next=0,count=0,stall=null;
+  const finish=ok=>{if(done)return;done=true;clearTimeout(stall);video.pause();video.playbackRate=1;resolve(ok)};
+  // A stuck decoder must not hang the page: no presented frame for 8 s ends sampling.
+  const arm=()=>{clearTimeout(stall);stall=setTimeout(()=>finish(count>0),8000)};
+  const resume=async()=>{try{await video.play()}catch(_){finish(count>0)}};
+  const tick=(_now,meta)=>{
+   if(done)return;
+   arm();
+   const t=meta&&Number.isFinite(meta.mediaTime)?meta.mediaTime:video.currentTime;
+   if(t>=next-0.001){
+    video.pause();count++;
+    capture(t);
+    next=t+step;
+    if(count>=LIMITS.maxFrames||next>=video.duration)return finish(true);
+    video.requestVideoFrameCallback(tick);
+    resume();
+    return;
+   }
+   if(video.ended)return finish(count>0);
+   video.requestVideoFrameCallback(tick);
+  };
+  stats.mode="phát video, dừng khi nhận diện";
+  video.addEventListener("ended",()=>finish(count>0),{once:true});
+  (async()=>{
+   try{
+    video.currentTime=0;await waitFor(video,"seeked",5000).catch(()=>{});
+    video.muted=true;video.playbackRate=2;
+    arm();
+    video.requestVideoFrameCallback(tick);
+    await video.play();
+   }catch(_){finish(false)}
+  })();
+ });
+}
+
 async function run(){
  if(state.running||!state.engine||!state.file)return;
  state.running=true;updateRunButton();resetResult();
@@ -159,23 +205,35 @@ async function run(){
  const work=document.createElement("canvas"),scale=Math.min(1,LIMITS.analysisWidth/video.videoWidth);
  work.width=Math.max(1,Math.round(video.videoWidth*scale));work.height=Math.max(1,Math.round(video.videoHeight*scale));
  const wctx=work.getContext("2d",{willReadFrequently:false});
- const frames=[],stamps=[],step=1/LIMITS.fps,started=performance.now();let detectMs=0,seekFails=0,lastTs=0;
+ const frames=[],stamps=[],step=1/LIMITS.fps,started=performance.now();
+ const stats={detectMs:0,seekFails:0,mode:""};
+ // Detect one already-presented frame at media time t. Returns the detection time in ms.
+ const runBase=state.clock+1;
+ const capture=t=>{
+  wctx.drawImage(video,0,0,work.width,work.height);
+  // VIDEO mode needs strictly increasing timestamps for the engine lifetime, across clips.
+  const ts=state.clock=Math.max(state.clock+1,runBase+Math.round(t*1000));
+  const d0=performance.now();
+  const r=state.engine.detectForVideo(work,ts);
+  const ms=performance.now()-d0;stats.detectMs+=ms;
+  const lm=r&&r.landmarks&&r.landmarks[0],w=r&&r.worldLandmarks&&r.worldLandmarks[0];
+  frames.push({t:ts,landmarks:lm?lm.map(p=>({x:p.x,y:p.y,z:p.z,visibility:p.visibility})):[],world:w?w.map(p=>({x:p.x,y:p.y,z:p.z,visibility:p.visibility})):undefined});
+  stamps.push(t);
+  if(bar)bar.value=Math.round(t/video.duration*100);
+  text(status,"Đang phân tích khung hình "+frames.length+"…");
+  return ms;
+ };
  if(bar){bar.hidden=false;bar.value=0}
  try{
   video.pause();
-  for(let t=0,i=0;t<video.duration&&i<LIMITS.maxFrames;t+=step,i++){
-   video.currentTime=Math.min(t,Math.max(0,video.duration-0.001));
-   try{await waitFor(video,"seeked",5000)}catch(_){seekFails++;continue}
-   wctx.drawImage(video,0,0,work.width,work.height);
-   const ts=Math.max(lastTs+1,Math.round(t*1000));lastTs=ts;
-   const d0=performance.now();
-   const r=state.engine.detectForVideo(work,ts);
-   detectMs+=performance.now()-d0;
-   const lm=r&&r.landmarks&&r.landmarks[0],w=r&&r.worldLandmarks&&r.worldLandmarks[0];
-   frames.push({t:ts,landmarks:lm?lm.map(p=>({x:p.x,y:p.y,z:p.z,visibility:p.visibility})):[],world:w?w.map(p=>({x:p.x,y:p.y,z:p.z,visibility:p.visibility})):undefined});
-   stamps.push(t);
-   if(bar)bar.value=Math.round(t/video.duration*100);
-   text(status,"Đang phân tích khung hình "+(i+1)+"…");
+  if(!(await samplePlayback(video,capture,step,stats))){
+   // Fallback: seek to each sample time. Slow on phones (every seek decodes from a keyframe).
+   frames.length=0;stamps.length=0;stats.detectMs=0;stats.mode="tua từng khung";
+   for(let t=0;t<video.duration&&frames.length<LIMITS.maxFrames;t+=step){
+    video.currentTime=Math.min(t,Math.max(0,video.duration-0.001));
+    try{await waitFor(video,"seeked",5000)}catch(_){stats.seekFails++;continue}
+    capture(t);
+   }
   }
   const size={width:video.videoWidth,height:video.videoHeight};
   const result=core.analyzeReadyPosition(frames,size);
@@ -187,7 +245,7 @@ async function run(){
    const ctx=view.getContext("2d");ctx.drawImage(video,0,0,view.width,view.height);drawSkeleton(ctx,frames[pick].landmarks,view.width,view.height);
   }
   const totalMs=Math.round(performance.now()-started);
-  state.diag={"Bộ phân tích":ENGINE.version+" · "+ENGINE.model.name,"Xử lý":state.delegate,"Tải + khởi động (ms)":state.loadMs,"Video":size.width+"×"+size.height+", "+state.file.duration.toFixed(1)+" s","Khung hình phân tích":frames.length+(seekFails?" (lỗi tua "+seekFails+")":""),"Khung hình rõ":result.frames.valid,"Nhận diện TB (ms/khung)":frames.length?Math.round(detectMs/frames.length):"-","Tổng thời gian (ms)":totalMs,"Phiên bản phân tích":result.version,"Trình duyệt":navigator.userAgent};
+  state.diag={"Bộ phân tích":ENGINE.version+" · "+ENGINE.model.name,"Xử lý":state.delegate,"Tải + khởi động (ms)":state.loadMs,"Video":size.width+"×"+size.height+", "+state.file.duration.toFixed(1)+" s","Cách lấy khung":stats.mode,"Khung hình phân tích":frames.length+(stats.seekFails?" (lỗi tua "+stats.seekFails+")":""),"Khung hình rõ":result.frames.valid,"Nhận diện TB (ms/khung)":frames.length?Math.round(stats.detectMs/frames.length):"-","Chờ khung TB (ms/khung)":frames.length?Math.round((totalMs-stats.detectMs)/frames.length):"-","Tổng thời gian (ms)":totalMs,"Phiên bản phân tích":result.version,"Trình duyệt":navigator.userAgent};
   renderDiagnostics(state.diag);
   text(status,"Xong trong "+(totalMs/1000).toFixed(1)+" giây.");
  }catch(err){

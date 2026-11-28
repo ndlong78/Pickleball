@@ -101,3 +101,11 @@ Mẫu bắt buộc (`tests/agent-harness.test.js` kiểm tra đủ các trườn
 - **Kiểm chứng:** `tests/backup-v1.spec.cjs`, `tests/import-pilot.spec.cjs`; local Chromium lặp 5 lần: 90/90 pass. WebKit chạy trên CI.
 - **Nguồn:** PR #81, commit sửa test trong PR này; `modules/assessments-and-backup.js` (reload sau restore).
 - **Trạng thái:** active
+
+## LL-012: MediaPipe VIDEO mode cần timestamp tăng dần suốt vòng đời engine
+- **Triệu chứng:** phân tích clip thứ hai trong cùng phiên báo `Packet timestamp mismatch … Current minimum expected timestamp is 2800001 but received 1000`.
+- **Nguyên nhân gốc:** timestamp tính theo thời gian trong clip (bắt đầu từ 0), trong khi đồ thị MediaPipe ở chế độ VIDEO yêu cầu timestamp tăng dần qua mọi lần `detectForVideo`, kể cả giữa các clip và lần khởi động nóng.
+- **Phòng ngừa:** dùng một đồng hồ đơn điệu cho cả engine (`state.clock`). Mỗi clip lấy mốc mới lớn hơn mọi timestamp đã dùng. Khi đổi cách gọi engine, thử ít nhất hai clip liên tiếp.
+- **Kiểm chứng:** chưa có test tự động (cần engine thật). Tái hiện và kiểm tra bản sửa bằng engine thật trong Chromium headless (V5.37.1, release notes).
+- **Nguồn:** `RELEASE_V5.37.1.md`, `modules/video-analysis-ui.js`.
+- **Trạng thái:** active
