@@ -41,3 +41,6 @@ Engine MediaPipe thật, Chromium headless trong container (GPU giả lập bằ
 
 ## Phiên bản
 App, assets và PWA `5.37.1` (`pickleup-shell-v5-37-1-stable`). Test nâng cấp xóa cache 5.37.0.
+
+## Sau phát hành
+Đã merge #82 (`069a4c9`). CI `main` cùng SHA: Responsive (Chromium + WebKit), Backend, Pages đều success. Owner xác nhận ngày 28/11/2026 trên điện thoại: chọn video từ máy và phân tích **đã hoạt động**. Chưa có số liệu chẩn đoán hiệu năng hay đánh giá độ đúng của gợi ý.
