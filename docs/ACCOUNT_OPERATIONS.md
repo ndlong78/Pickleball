@@ -92,3 +92,17 @@ Khôi phục thật sau sự cố cũng làm như trên, vào một project **m�
 - CI backend chạy `backup_db.sh` trên Supabase local mỗi PR: tạo bản mã hóa, giải mã, kiểm tra có dữ liệu `user_preferences`, `sync_changes`, `auth.users`, `auth.identities`.
 - CI backend còn chạy diễn tập đầy đủ trên Supabase local (PostgreSQL 17, GoTrue thật, user tạo bởi các suite Auth): đếm dòng → backup → `supabase db reset` → `restore_db.sh` → so số dòng từng bảng.
 - Diễn tập khôi phục đầy đủ (sao lưu → DB mới → khôi phục → so số dòng) mới chạy trên PostgreSQL 16 cục bộ với fixture Auth, **chưa** trên Supabase thật. Theo [chính sách §4](PILOT_OPERATING_POLICY.md), chưa gọi là "đã có khôi phục kiểm chứng" cho tới khi owner diễn tập trên một project thử.
+
+## 4. Kho số đo phân tích video (cài một lần)
+Bản client lưu số đo phân tích video lên tài khoản cần bảng và RPC trong [ADR-0007](decisions/0007-video-analysis-store.md).
+1. Dashboard → đúng project `rfeoeagklmaqmkcdhprb` → **SQL Editor** → New query.
+2. Dán toàn bộ [`supabase/manual/staging_upgrade_20261128000100.sql`](../supabase/manual/staging_upgrade_20261128000100.sql) → **Run**.
+3. Kết quả phải là `INSTALLED | 20261128000100`. Nếu báo `Unexpected migration history`, `video_analyses already exists` hoặc lỗi khác: dừng, không sửa tay, gửi nguyên văn thông báo.
+4. Tệp chỉ **thêm** một bảng và ba RPC; không sửa dữ liệu, bảng, policy, quyền hay hàm hiện có. Rollback nếu cần (chỉ khi bảng chưa có dữ liệu cần giữ):
+   ```sql
+   drop function public.record_video_analysis(uuid,jsonb,integer), public.list_video_analyses(integer,timestamptz,integer), public.delete_video_analysis(uuid,integer);
+   drop function pickleup_private.video_analysis_row(public.video_analyses);
+   drop table public.video_analyses;
+   delete from supabase_migrations.schema_migrations where version='20261128000100';
+   ```
+5. Kiểm tra nhanh (chỉ đọc): `select to_regclass('public.video_analyses') is not null as installed;` → `true`.

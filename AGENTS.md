@@ -44,6 +44,7 @@ Production: https://pickleup-staging.home-309.workers.dev/ (Cloudflare Workers, 
 - [DATA-08] Mutable data có server CAS/revision và conflict UI; **không last-write-wins âm thầm**, không tự merge field. Clear bằng tombstone. Events append có UUID/idempotency.
 - [DATA-09] Mọi write qua transaction/RPC có RLS/ownership validation. Auth/RLS/CAS là ranh giới thật; cổng phía client chỉ là rollout control. Tests A/B/anonymous cho cả REST và RPC.
 - [DATA-10] Tự xóa tài khoản (`delete_own_account`) chỉ tác động `auth.uid()` và cần mã email trong 10 phút. Sao lưu mã hóa `db-backup.yml` chỉ chạy theo lịch/dispatch trên `main` khi owner bật; không phải test/CI. Vận hành: [`docs/ACCOUNT_OPERATIONS.md`](docs/ACCOUNT_OPERATIONS.md).
+- [DATA-11] Số đo phân tích video nằm ở `public.video_analyses`, chỉ ghi/đọc/xóa qua `record_video_analysis`, `list_video_analyses`, `delete_video_analysis` ([ADR-0007](docs/decisions/0007-video-analysis-store.md)). **Không** thêm loại dữ liệu mới vào `sync_changes`/`pull_changes` khi client đang chạy còn từ chối `entity_kind` lạ; không lưu video, khung hình hay landmark.
 
 ## ARCH — kiến trúc mã
 
